@@ -62,7 +62,7 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('https://hubsyntax.online/api/customer');
+                const response = await axios.get('http://localhost:4001/api/customer');
                 setUpateForms(response.data);
                 console.log(response.data)
             } catch (error) {
@@ -78,7 +78,7 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('https://hubsyntax.online/api/forms');
+                const response = await axios.get('http://localhost:4001/api/forms');
                 setCreatedForms(response.data);
                 const total = response.data.reduce((acc, form) => acc + (form.submissionCount || form.submissions.length || 0), 0);
                 setTotalSubmissions(total);

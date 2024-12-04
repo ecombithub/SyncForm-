@@ -784,10 +784,10 @@ const Formgenerated = () => {
         console.log('New form object:', JSON.stringify(newForm, null, 2));
 
         const request = isEditing
-            ? axios.put(`https://hubsyntax.online/update-form/${editingFormId}`, newForm, {
+            ? axios.put(`http://localhost:4001/update-form/${editingFormId}`, newForm, {
                 headers: { 'Content-Type': 'application/json' }
             })
-            : axios.post('https://hubsyntax.online/form-data', newForm, {
+            : axios.post('http://localhost:4001/form-data', newForm, {
                 headers: { 'Content-Type': 'application/json' }
             });
 
