@@ -81,6 +81,7 @@ const Formdata = () => {
     const [formToDelete, setFormToDelete] = useState(null);
     const [showCopiedMessage, setShowCopiedMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [copiedFormId, setCopiedFormId] = React.useState(null);
 
     const handleShowFormDetails = (formId) => {
         setIsLoading(true);
@@ -101,8 +102,8 @@ const Formdata = () => {
         try {
             document.execCommand("copy");
             console.log(`Form ID: ${text} copied to clipboard!`);
-            setShowCopiedMessage(true);
-            setTimeout(() => setShowCopiedMessage(false), 2000);
+            setCopiedFormId(text);
+            setTimeout(() => setCopiedFormId(null), 2000);
         } catch (err) {
             console.error('Fallback: Failed to copy text: ', err);
         }
@@ -114,8 +115,8 @@ const Formdata = () => {
             navigator.clipboard.writeText(formId)
                 .then(() => {
                     alert(`Form ID: ${formId} copied to clipboard!`);
-                    setShowCopiedMessage(true);
-                    setTimeout(() => setShowCopiedMessage(false), 2000);
+                    setCopiedFormId(formId);
+                    setTimeout(() => setCopiedFormId(null), 2000);
                 })
                 .catch(err => {
                     console.error('Failed to copy form ID: ', err);
@@ -126,7 +127,6 @@ const Formdata = () => {
             fallbackCopyTextToClipboard(formId);
         }
     };
-
 
     const handleEdit = (formId) => {
         const form = createdForms.find(form => {
@@ -172,7 +172,7 @@ const Formdata = () => {
         setTimeout(async () => {
             try {
 
-                await fetch(`http://localhost:4001/delete-form/${formToDelete}`, {
+                await fetch(`https://hubsyntax.online/delete-form/${formToDelete}`, {
                     method: 'DELETE',
                 });
 
@@ -225,7 +225,7 @@ const Formdata = () => {
     //     const fetchPaymentPlan = async () => {
 
     //         try {
-    //             const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+    //             const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
     //             setUserPlan(response.data);
 
     //             await fetchForms(response.data);
@@ -237,7 +237,7 @@ const Formdata = () => {
 
     //     const fetchForms = async (userPlan) => {
     //         try {
-    //             const response = await fetch('http://localhost:4001/get-forms');
+    //             const response = await fetch('https://hubsyntax.online/get-forms');
     //             if (!response.ok) {
     //                 throw new Error('Network response was not ok');
     //             }
@@ -247,7 +247,7 @@ const Formdata = () => {
     //             if (userPlan?.plan === 'free' && userPlan.status === 'active') {
     //                 const formsToDisable = data.slice(1);
     //                 formsToDisable.forEach(async (form) => {
-    //                     await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
+    //                     await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
     //                         method: 'DELETE',
     //                     });
     //                 });
@@ -267,7 +267,7 @@ const Formdata = () => {
         const fetchPaymentPlan = async () => {
             try {
 
-                const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+                const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
                 setUserPlan(response.data);
 
                 await fetchForms(response.data);
@@ -280,14 +280,14 @@ const Formdata = () => {
         const fetchForms = async (userPlan) => {
             try {
 
-                const response1 = await fetch('http://localhost:4001/get-forms');
+                const response1 = await fetch('https://hubsyntax.online/get-forms');
                 if (!response1.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const formsData = await response1.json();
                 setCreatedForms(formsData);
 
-                const response2 = await axios.get('http://localhost:4001/api/forms');
+                const response2 = await axios.get('https://hubsyntax.online/api/forms');
                 const apiFormsData = response2.data;
 
                 const updatedForms = formsData.map((form1) => {
@@ -305,7 +305,7 @@ const Formdata = () => {
                 if (userPlan?.plan === 'free' && userPlan.status === 'active') {
                     const formsToDisable = updatedForms.slice(1);
                     for (const form of formsToDisable) {
-                        await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
+                        await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
                             method: 'DELETE',
                         });
                     }
@@ -370,7 +370,7 @@ const Formdata = () => {
         try {
 
             setTimeout(async () => {
-                const response = await fetch('http://localhost:4001/copy-form', {
+                const response = await fetch('https://hubsyntax.online/copy-form', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -539,18 +539,24 @@ const Formdata = () => {
                                                                             <div class="noUi-tooltip">Edit</div>
                                                                         </div>
                                                                     </th>
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col">
-                                                                        <div className="form-builder-wrpp-show-Polaris">{form.formId}
+                                                                    <th
+                                                                        data-polaris-header-cell="true"
+                                                                        className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header"
+                                                                        scope="col"
+                                                                    >
+                                                                        <div className="form-builder-wrpp-show-Polaris">
+                                                                            {form.formId}
                                                                             <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
                                                                                 <img src={copy22} alt="" />
                                                                             </div>
-                                                                            {showCopiedMessage && (
+                                                                            {copiedFormId === form.formId && (
                                                                                 <div className="copied-message" style={{ color: 'green' }}>
                                                                                     Copied to clipboard!
                                                                                 </div>
                                                                             )}
                                                                         </div>
                                                                     </th>
+
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
                                                                         {form.totalSubmissions || 0}
                                                                     </th>
