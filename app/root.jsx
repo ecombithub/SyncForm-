@@ -17,6 +17,17 @@ export default function App() {
           rel="stylesheet"
           href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
         />
+        <link
+          rel="stylesheet"
+          href="./index.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+        {/* <script src="//code.tidio.co/3snvje9fsrr1an4mo8tffkv7r9wwdfal.js" async></script> */}
+
         <Meta />
         <Links />
       </head>

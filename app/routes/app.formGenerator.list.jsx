@@ -1,0 +1,776 @@
+import React, { useState, useEffect } from 'react';
+import Formgenerated from './app.formGenerator.new';
+import { Link, useNavigate } from '@remix-run/react';
+import Index from './app._index';
+import plus from '../images/plusicon.png';
+import vecter1 from '../images/vecter1.png';
+import oplus from '../images/oplus.png';
+import rplus from '../images/rplus.png';
+import yplus from '../images/yplus.png';
+import right from '../images/right.png';
+import left from '../images/left.png';
+import search12 from '../images/search12.png'
+import copy22 from '../images/copy22.png'
+import cancle1 from '../images/cancle1.png'
+import copy12 from '../images/copy12.png'
+import cancleimg from '../images/cancleimg.png';
+
+import { format } from 'date-fns';
+import axios from 'axios';
+import { authenticate, apiVersion } from "../shopify.server";
+import { useLoaderData } from "@remix-run/react";
+
+export const loader = async ({ request }) => {
+    const { session } = await authenticate.admin(request);
+    const { shop, accessToken } = session;
+
+    const response = {
+        assets: [],
+        shop,
+        error: false,
+        accessToken,
+        errorMessage: ''
+    };
+
+    console.log(shop);
+
+    try {
+
+        const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+            method: 'GET',
+            headers: {
+                'X-Shopify-Access-Token': accessToken,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!assetResponse.ok) {
+            const errorText = await assetResponse.text();
+            throw new Error(`Failed to fetch assets: ${errorText}`);
+        }
+
+        const assetData = await assetResponse.json();
+        response.assets = assetData.assets || [];
+
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        response.error = true;
+        response.errorMessage = err.message;
+    }
+
+    return response;
+};
+
+
+const Formdata = () => {
+    const navigator = useNavigate();
+    const [showFormBuilder, setShowFormBuilder] = useState(false);
+    const [createdForms, setCreatedForms] = useState([]);
+    const [view, setView] = useState('live');
+    const [searchbar, setSearchbar] = useState('');
+    const [currentFormId, setCurrentFormId] = useState(null);
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [error, setError] = useState(null);
+    const formsPerPage = 5;
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filteredForms, setFilteredForms] = useState([]);
+    const [userPlan, setUserPlan] = useState(null);
+    const { shop, accessToken } = useLoaderData() || {};
+    const [upgradePopup, setUphradePopup] = useState(false);
+    const [deletePopup, setDeletePopup] = useState(false);
+    const [formToDelete, setFormToDelete] = useState(null);
+    const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleShowFormDetails = (formId) => {
+        setIsLoading(true);
+        setCurrentFormId(formId);
+
+        setTimeout(() => {
+            setIsLoading(false);
+            setIsPopupVisible(true);
+        }, 2000);
+    };
+
+
+    const fallbackCopyTextToClipboard = (text) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand("copy");
+            console.log(`Form ID: ${text} copied to clipboard!`);
+            setShowCopiedMessage(true);
+            setTimeout(() => setShowCopiedMessage(false), 2000);
+        } catch (err) {
+            console.error('Fallback: Failed to copy text: ', err);
+        }
+        document.body.removeChild(textArea);
+    };
+
+    const handleFormId = (formId) => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(formId)
+                .then(() => {
+                    alert(`Form ID: ${formId} copied to clipboard!`);
+                    setShowCopiedMessage(true);
+                    setTimeout(() => setShowCopiedMessage(false), 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy form ID: ', err);
+                    fallbackCopyTextToClipboard(formId);
+                });
+        } else {
+            console.error('Clipboard API not supported. Falling back to execCommand.');
+            fallbackCopyTextToClipboard(formId);
+        }
+    };
+
+
+    const handleEdit = (formId) => {
+        const form = createdForms.find(form => {
+            return form.formId === formId;
+        });
+
+        if (form) {
+            setShowFormBuilder(true);
+            navigator('/app/formGenerator/new', {
+                state: {
+                    formTitle: form.title,
+                    fields: form.fields,
+                    formId: form.formId,
+                    styles: form.styles,
+                    isEditing: true,
+                },
+            });
+
+            setEditingFormId(formId);
+            setFormWidth(form.styles.width);
+            setBackgroundImage(form.styles.backgroundImage);
+            setBorderColor(form.styles.borderColor);
+            setPadding(form.styles.padding);
+            setBorderRadius(form.styles.borderRadius);
+        } else {
+            alert('Form not found.');
+        }
+    };
+
+    const openDeletePopup = (formId) => {
+        setFormToDelete(formId);
+        setDeletePopup(true);
+    };
+
+    const closeDeletePopup = () => {
+        setDeletePopup(false);
+        setFormToDelete(null);
+    };
+
+    const handleDeleteForm = async () => {
+        if (!formToDelete) return;
+        setIsLoading(true);
+        setTimeout(async () => {
+            try {
+
+                await fetch(`http://localhost:4001/delete-form/${formToDelete}`, {
+                    method: 'DELETE',
+                });
+
+                const updatedForms = createdForms.filter(form => form.formId !== formToDelete);
+                setCreatedForms(updatedForms);
+                localStorage.setItem('createdForms', JSON.stringify(updatedForms));
+
+
+                if (updatedForms.length === 0 && view === 'live') {
+                    setView('draft');
+                }
+
+                if (currentFormId === formToDelete) {
+                    setCurrentFormId(null);
+                }
+
+                closeDeletePopup();
+
+            } catch (error) {
+                console.error('Error deleting form:', error);
+            } finally {
+
+                setIsLoading(false);
+            }
+        }, 3000);
+    };
+
+    const handleSearch = (event) => {
+        setSearchbar(event.target.value);
+    };
+
+    useEffect(() => {
+        const filtered = createdForms.filter(form =>
+            form.title.toLowerCase().includes(searchbar.toLowerCase()) ||
+            form.formId.toLowerCase().includes(searchbar.toLowerCase())
+        );
+        setFilteredForms(filtered);
+        setCurrentPage(1);
+    }, [searchbar, createdForms]);
+
+    const filteredByView = filteredForms.filter(form => form.status === view);
+    const totalPages = Math.ceil(filteredByView.length / formsPerPage);
+    const currentForms = filteredByView.slice((currentPage - 1) * formsPerPage, currentPage * formsPerPage);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    // useEffect(() => {
+    //     const fetchPaymentPlan = async () => {
+
+    //         try {
+    //             const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+    //             setUserPlan(response.data);
+
+    //             await fetchForms(response.data);
+    //         } catch (error) {
+    //             setError('Error fetching payment plan');
+    //             console.error('Error fetching payment plan:', error);
+    //         }
+    //     };
+
+    //     const fetchForms = async (userPlan) => {
+    //         try {
+    //             const response = await fetch('http://localhost:4001/get-forms');
+    //             if (!response.ok) {
+    //                 throw new Error('Network response was not ok');
+    //             }
+    //             const data = await response.json();
+    //             setCreatedForms(data);
+
+    //             if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+    //                 const formsToDisable = data.slice(1);
+    //                 formsToDisable.forEach(async (form) => {
+    //                     await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
+    //                         method: 'DELETE',
+    //                     });
+    //                 });
+
+    //                 setCreatedForms(data.slice(0, 1));
+    //             }
+    //         } catch (error) {
+    //             setError(error.message);
+    //         }
+    //     };
+    //     fetchPaymentPlan();
+    // }, []);
+
+
+
+    useEffect(() => {
+        const fetchPaymentPlan = async () => {
+            try {
+
+                const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+                setUserPlan(response.data);
+
+                await fetchForms(response.data);
+            } catch (error) {
+                setError('Error fetching payment plan');
+                console.error('Error fetching payment plan:', error);
+            }
+        };
+
+        const fetchForms = async (userPlan) => {
+            try {
+
+                const response1 = await fetch('http://localhost:4001/get-forms');
+                if (!response1.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const formsData = await response1.json();
+                setCreatedForms(formsData);
+
+                const response2 = await axios.get('http://localhost:4001/api/forms');
+                const apiFormsData = response2.data;
+
+                const updatedForms = formsData.map((form1) => {
+                    const matchingForm = apiFormsData.find((form2) => form2.id === form1.formId);
+                    return {
+                        ...form1,
+                        totalSubmissions: matchingForm
+                            ? matchingForm.submissionCount || matchingForm.submissions?.length || 0
+                            : 0,
+                    };
+                });
+
+                setCreatedForms(updatedForms);
+
+                if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+                    const formsToDisable = updatedForms.slice(1);
+                    for (const form of formsToDisable) {
+                        await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
+                            method: 'DELETE',
+                        });
+                    }
+                    setCreatedForms(updatedForms.slice(0, 1));
+                }
+            } catch (error) {
+                setError('Error fetching forms');
+                console.error('Error fetching forms:', error);
+            }
+        };
+
+        fetchPaymentPlan();
+    }, [shop]);
+
+    const handleCreateForm = () => {
+        if (userPlan?.plan === 'free' && userPlan.status === 'active' && createdForms.length >= 1) {
+            setUphradePopup(true);
+            return;
+        }
+
+        setShowFormBuilder(true);
+        navigator('/app/formGenerator/new');
+    };
+
+    const handleCancle = () => {
+        setUphradePopup(false);
+    }
+
+    const handleUpgrade = () => {
+        navigator('/app/pricing');
+    }
+
+    const handleCopyForm = async (formId) => {
+        if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+            setUphradePopup(true);
+            return;
+        }
+
+        const formToCopy = createdForms.find((form) => form.formId === formId);
+        const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
+        if (!formToCopy) {
+            console.error("Form not found!");
+            return;
+        }
+
+        setIsLoading(true);
+
+        const copiedForm = {
+            ...formToCopy,
+            formId: generateUniqueFormId(),
+            title: `Copy of ${formToCopy.title}`,
+            createdAt: timestamp,
+            fields: formToCopy.fields.map((field) => ({
+                ...field,
+                id: generateUniqueFormId(),
+            })),
+            status: 'live',
+        };
+
+        delete copiedForm._id;
+
+        try {
+
+            setTimeout(async () => {
+                const response = await fetch('http://localhost:4001/copy-form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(copiedForm),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to copy form');
+                }
+
+                const result = await response.json();
+                console.log('Form copied successfully:', result);
+
+                setCreatedForms((prevForms) => [...prevForms, result]);
+
+                setIsLoading(false);
+
+            }, 3000);
+        } catch (error) {
+            console.error('Error copying form:', error);
+            setIsLoading(false);
+        }
+    };
+    const generateUniqueFormId = () => {
+        return 'Form' + Math.random().toString(36).substring(2, 15);
+    };
+
+
+    return (
+        <>
+
+            {!showFormBuilder ? (
+                <div>
+                    <div className='builder-forms'>
+                        <div className='container'>
+                            <h3>Forms</h3>
+                            <div className="builder-sections">
+                                <div className="builder-sections-forms">
+                                    <div
+                                        className={`builder-sections-liveform ${view === 'live' ? 'active' : ''}`}
+                                        onClick={() => setView('live')}
+                                        style={{ backgroundColor: view === 'live' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'live' ? 'white' : '', border: view === 'live' ? '1px solid #45A7F6' : '' }}
+                                    >
+                                        <p>Live Forms</p>
+                                    </div>
+                                    <div
+                                        className={`builder-sections-draftform ${view === 'draft' ? 'active' : ''}`}
+                                        onClick={() => setView('draft')}
+                                        style={{ backgroundColor: view === 'draft' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'draft' ? 'white' : '', border: view === 'draft' ? '1px solid #45A7F6' : '' }}
+                                    >
+                                        <p>Draft Forms</p>
+                                    </div>
+                                </div>
+                                <div className='builder-sections-new-list'>
+
+                                    <div className="builder-sections-newforms">
+                                        <button
+                                            className="builder-sections-btn action_btn"
+                                            onClick={handleCreateForm}
+                                        >
+                                            <div className="btn-text">
+                                                <img src={plus} alt="" />  New Form
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                                <div className='form_builder_plan_upgrade_popup_wrapp'>
+                                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                                    <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
+                                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
+                                        <img src={cancleimg} alt="" />
+                                    </div>
+                                </div>
+                            </div>}
+
+                            {view === 'draft' && createdForms.filter(form => form.status === 'draft').length === 0 ? (
+                                <div className='form-builder-live-wrap'>
+                                    <div className='builder-live-form'>
+                                        <div className='builder-live-p'>
+                                            <h2>Draft Forms</h2>
+                                        </div>
+                                        <div className='form-builder-search-bar'>
+                                            <input
+                                                type="search"
+                                                placeholder='search'
+                                                value={searchbar}
+                                                onChange={handleSearch}
+                                            />
+                                            <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
+                                        </div>
+                                    </div>
+                                    <div className="builder-block">
+                                        <div className="builder-block-img">
+                                            <img src={vecter1} alt="" />
+                                        </div>
+                                        <div className="builder-block-test">
+                                            <p>No draft forms created!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : view === 'live' && createdForms.filter(form => form.status === 'live').length === 0 ? (
+                                <div className='form-builder-live-wrap'>
+                                    <div className='builder-live-form'>
+                                        <div className='builder-live-p'>
+                                            <h2>Live Forms</h2>
+                                        </div>
+                                        <div className='form-builder-search-bar'>
+                                            <input
+                                                type="search"
+                                                placeholder='search'
+                                                value={searchbar}
+                                                onChange={handleSearch}
+                                            />
+                                            <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
+                                        </div>
+                                    </div>
+                                    <div className="builder-block">
+                                        <div className="builder-block-img">
+                                            <img src={vecter1} alt="" />
+                                        </div>
+                                        <div className="builder-block-test">
+                                            <p>No forms created!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="form-builder-show">
+                                    <div className="form-builder-wrrp">
+                                        <div className='form-builder-search'>
+                                            <div className='form_build_list'><h2>Forms list</h2> </div>
+                                            <div className='form-builder-search-bar'>
+                                                <input
+                                                    type="search"
+                                                    placeholder='search'
+                                                    value={searchbar}
+                                                    onChange={handleSearch}
+                                                />
+                                                <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
+                                            </div>
+
+                                        </div>
+
+                                        {createdForms.length > 0 ? (
+                                            <div className="form-main-wrp">
+                                                <div className='form-builder-table'>
+                                                    <table>
+                                                        <thead className="custom-thead">
+                                                            <tr>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header">Form name</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header">
+                                                                    Form ID
+                                                                </th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Responses</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header">Date and time</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {currentForms.filter(form => form.status === view).map(form => (
+                                                                <tr key={form.formId}>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" >
+                                                                        <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} >{form.title}
+                                                                            <div class="noUi-tooltip">Edit</div>
+                                                                        </div>
+                                                                    </th>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col">
+                                                                        <div className="form-builder-wrpp-show-Polaris">{form.formId}
+                                                                            <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
+                                                                                <img src={copy22} alt="" />
+                                                                            </div>
+                                                                            {showCopiedMessage && (
+                                                                                <div className="copied-message" style={{ color: 'green' }}>
+                                                                                    Copied to clipboard!
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </th>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
+                                                                        {form.totalSubmissions || 0}
+                                                                    </th>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col">{form.createdAt}</th>
+                                                                    <td style={{ textAlign: "center" }}>
+                                                                        <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
+                                                                            <div className='form-builder-table-flex-btn'>
+                                                                                <div className='form-builder-green-btn' style={{ cursor: "pointer" }} onClick={() => handleCopyForm(form.formId)} ><img src={copy12} alt="" /></div>
+                                                                                <div className='form-builder-edit' onClick={() => handleEdit(form.formId)}>
+                                                                                    <img src={oplus} alt="" />
+                                                                                    <div className="noUi-tooltip-id">Edit</div>
+                                                                                </div>
+                                                                                <div className='form-delete-icon' onClick={() => openDeletePopup(form.formId)} style={{ cursor: 'pointer', color: 'red' }}>
+                                                                                    <img src={rplus} alt="" />
+                                                                                    <div className="noUi-tooltip-id">Delete</div>
+                                                                                </div>
+                                                                                <div className='form-show-icon' onClick={() => handleShowFormDetails(form.formId)}>
+                                                                                    <img src={yplus} alt="" />
+                                                                                    <div className="noUi-tooltip-id">Form Preview</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </th>
+
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="form-builder-no-forms">
+                                                <p>No forms created yet</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                </div>
+                            )}
+                            <div className='form_build_last_pages'>
+                                <div className='form-builder-show-totle-form'>
+                                    Showing data {currentForms.length} entries
+                                </div>
+                                <div className="pagination">
+                                    <nav>
+                                        <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    disabled={currentPage === 1}
+                                                    onClick={() => handlePageChange(currentPage - 1)}
+                                                >
+                                                    <img src={left} alt="Previous" />
+                                                </button>
+                                            </li>
+                                            {Array.from({ length: totalPages }, (_, index) => (
+                                                <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handlePageChange(index + 1)}
+                                                        className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
+                                                    >
+                                                        {index + 1}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    disabled={currentPage === totalPages}
+                                                    onClick={() => handlePageChange(currentPage + 1)}
+                                                >
+                                                    <img src={right} alt="Next" />
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='popup'>
+                        {isLoading && (
+                            <div className="modal">
+                                <div className="loader">
+
+                                </div>
+                            </div>
+                        )}
+                        {deletePopup && (
+                            <div className="form-builder-delete-popup">
+                                <div className="form-builder-create section-wrp">
+                                    <div className="form-builder-create-wrped popup">
+                                        <div className="form-builder-delete-popup-pop">
+                                            <div className="form_builder_delete_text_flex">
+                                                <div className="form_builder_delete_text">
+                                                    <p>Are you sure you want to delete?</p>
+                                                </div>
+                                                <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
+                                                    <img src={cancle1} alt="Cancel" />
+                                                </div>
+                                            </div>
+                                            <div className="form_delete_btn">
+                                                <div className="form_delete first" onClick={handleDeleteForm}>
+                                                    Delete
+                                                </div>
+                                                <div className="form_delete second" onClick={closeDeletePopup}>
+                                                    Cancel
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {isPopupVisible && currentFormId && (
+                            <div className="form-builder-create section-wrp">
+                                <div className='form-builder-create-wrped'>
+                                    {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
+                                        form.formId === currentFormId && (
+                                            <div key={form.formId} style={{ ...form.styles, backgroundSize: 'cover', }} className="form-details">
+                                                {form.fields.map(field => (
+                                                    <div key={field.id} style={{ width: field.width }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
+                                                        {field.type !== 'button' && field.type !== 'heading' && <label>{field.label}</label>}
+                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: field.inputBorderRadious }}></textarea>}
+                                                        {field.type === 'description' && <p>{field.text}</p>}
+                                                        {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize }}>{field.text}</h1>}
+                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'link' && <input type="link" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'slider' && <input type="range" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'button' && <div><button style={{
+                                                            backgroundColor: field.backgroundColor || '#45a7f6',
+                                                            fontSize: `${field.fontSize || '16'}px`, height: field.buttonHeight || 'auto', width: field.buttonWidth || 'auto', padding: field.padding || '10px',
+                                                            color: field.btncolor,
+                                                            borderWidth: `${field.buttonBorderWidth}px`,
+                                                            borderStyle: field.buttonBorderStyle,
+                                                            borderColor: field.buttonBorderColor,
+                                                        }}> <label>{field.label}</label> </button></div>}
+                                                        {field.type === 'divider' && (
+                                                            <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
+                                                        )}
+                                                        {field.type === 'radio' && (
+                                                            <div>
+                                                                <label>{field.label || "Radio Button"} </label>
+                                                                {field.options.map(option => (
+                                                                    <div key={option.id} className='form_radio_flex'>
+                                                                        <input
+                                                                            type="radio"
+                                                                            name={field.name}
+                                                                            value={option.value}
+                                                                        />
+                                                                        <label>{option.label}</label>
+                                                                    </div>
+                                                                ))}
+                                                                <div className='description'>{field.description}</div>
+                                                            </div>
+                                                        )}
+                                                        {field.type === 'checkbox' && (
+                                                            <div>
+                                                                {field.options.map(option => (
+                                                                    <div key={option.id} className='form_checkbox_flex'>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            name={field.name}
+                                                                            value={option.value}
+                                                                            required={field.required}
+                                                                            readOnly={field.readonly}
+                                                                        />
+                                                                        <label>{option.label}</label>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                        {field.type === 'select' && (
+                                                            <div>
+                                                                <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious }}>
+                                                                    {field.options.map(option => (
+                                                                        <option key={option.id} value={option.value}>
+                                                                            {option.label}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                                <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
+                                                    <img src={cancle1} alt="" />
+                                                </div>
+                                            </div>
+
+                                        )
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                </div >
+            ) : (
+                <div>
+                    <Formgenerated />
+
+                </div>
+            )}
+        </>
+    );
+};
+
+export default Formdata;
