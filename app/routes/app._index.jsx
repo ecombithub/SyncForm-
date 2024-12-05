@@ -89,7 +89,7 @@ function Index() {
     const saveShopDetails = async () => {
       if (shop && accessToken && !dataSent) {
         try {
-          const response = await fetch("http://localhost:4001/api/save-shop", {
+          const response = await fetch("https://hubsyntax.online/api/save-shop", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -115,7 +115,7 @@ function Index() {
   
     const checkFreePlanStatusAndSendData = async () => {
       try {
-        const planResponse = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+        const planResponse = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
   
         if (planResponse.data.status === 'active') {
           console.log("Free plan already active for this shop.");
@@ -130,7 +130,7 @@ function Index() {
             billingOn: new Date().toISOString(),
           };
   
-          const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
+          const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
           console.log("Payment data saved response:", response.data);
           setResponseData(response.data);
         }
@@ -146,7 +146,7 @@ function Index() {
             billingOn: new Date().toISOString(),
           };
   
-          const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
+          const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
           console.log("Payment data saved response (new free plan):", response.data);
           setResponseData(response.data);
         } else {
@@ -168,7 +168,7 @@ function Index() {
   useEffect(() => {
     const fetchPaymentPlan = async () => {
       try {
-        const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+        const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
         setUserPlan(response.data);
         await fetchForms(response.data);
       } catch (error) {
@@ -179,7 +179,7 @@ function Index() {
 
     const fetchForms = async (userPlan) => {
       try {
-        const response = await fetch('http://localhost:4001/get-forms');
+        const response = await fetch('https://hubsyntax.online/get-forms');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -191,7 +191,7 @@ function Index() {
 
           const formsToDisable = data.slice(1);
           await Promise.all(formsToDisable.map(async (form) => {
-            const deleteResponse = await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
+            const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
               method: 'DELETE',
             });
             if (!deleteResponse.ok) {

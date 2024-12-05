@@ -80,7 +80,7 @@ export default function EmailTemplate() {
    
      const fetchForms = async () => {
         try {
-            const response = await axios.get('http://localhost:4001/get/data');
+            const response = await axios.get('https://hubsyntax.online/get/data');
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
             
@@ -94,7 +94,7 @@ export default function EmailTemplate() {
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
         try {
-            const response = await axios.delete(`http://localhost:4001/delete/${formToDelete}`);
+            const response = await axios.delete(`https://hubsyntax.online/delete/${formToDelete}`);
             console.log(response.data.message);
 
             setFormsData((prevForms) =>
@@ -136,7 +136,7 @@ export default function EmailTemplate() {
         delete copiedForm._id;
 
         try {
-            const response = await axios.post('http://localhost:4001/copy-email', copiedForm);
+            const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
             console.log('Response from server:', response);
             if (response.status === 201) {
                 setFormsData((prevForms) => [...prevForms, response.data]);
