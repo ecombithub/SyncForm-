@@ -12,7 +12,49 @@ import cancleimg from '../images/cancleimg.png';
 import { format } from 'date-fns';
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { authenticate, apiVersion } from "../shopify.server";
+import { useLoaderData } from "@remix-run/react";
 
+export const loader = async ({ request }) => {
+    const { session } = await authenticate.admin(request);
+    const { shop, accessToken } = session;
+
+    const response = {
+        assets: [],
+        shop,
+        error: false,
+        accessToken,
+        errorMessage: ''
+    };
+
+    console.log(shop);
+
+    try {
+
+        const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+            method: 'GET',
+            headers: {
+                'X-Shopify-Access-Token': accessToken,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!assetResponse.ok) {
+            const errorText = await assetResponse.text();
+            throw new Error(`Failed to fetch assets: ${errorText}`);
+        }
+
+        const assetData = await assetResponse.json();
+        response.assets = assetData.assets || [];
+
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        response.error = true;
+        response.errorMessage = err.message;
+    }
+
+    return response;
+};
 
 function Customer() {
     const [createdForms, setCreatedForms] = useState([]);
@@ -28,45 +70,59 @@ function Customer() {
     const [totalSubmissions, setTotalSubmissions] = useState(0);
     const [percentage, setPercentage] = useState(0);
     const [percentage1, setPercentage1] = useState(0);
+    const { shop } = useLoaderData() || {};
 
     useEffect(() => {
         const animatedValue = { value: 0 };
-    
+
         gsap.to(animatedValue, {
-          duration: 2,
-          value: 16,
-          onUpdate: () => {
-            setPercentage(Math.round(animatedValue.value));
-          },
-          ease: 'power1.out',
+            duration: 2,
+            value: 16,
+            onUpdate: () => {
+                setPercentage(Math.round(animatedValue.value));
+            },
+            ease: 'power1.out',
         });
-      }, []);
-      useEffect(() => {
+    }, []);
+    useEffect(() => {
         const animatedValue = { value: 0 };
-    
+
         gsap.to(animatedValue, {
-          duration: 2,
-          value: 22,
-          onUpdate: () => {
-            setPercentage1(Math.round(animatedValue.value));
-          },
-          ease: 'power1.out',
+            duration: 2,
+            value: 22,
+            onUpdate: () => {
+                setPercentage1(Math.round(animatedValue.value));
+            },
+            ease: 'power1.out',
         });
-      }, []);
+    }, []);
 
     const handleShowPop = () => {
         setShowpop(!showpop);
         setSelectedForms(new Set());
     }
-
+    
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('https://hubsyntax.online/api/customer');
-                setUpateForms(response.data);
-                console.log(response.data)
+                const response = await axios.get('http://localhost:4001/api/customer');
+
+                if (!shop) {
+                    console.log('Shop not found');
+                    return;
+                }
+                const filteredData = response.data.filter(customer => customer.shops.includes(shop));
+
+                if (filteredData.length > 0) {
+                    setUpateForms(filteredData);
+                    console.log('Filtered Data:', filteredData);
+                } else {
+                    setUpateForms([]);
+                    console.log('No data found for this shop');
+                }
+
             } catch (error) {
-                console.error('Error fetching forms:', error);
+                console.error('Error fetching data:', error);
             } finally {
                 setLoading(false);
             }
@@ -78,11 +134,19 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('https://hubsyntax.online/api/forms');
-                setCreatedForms(response.data);
-                const total = response.data.reduce((acc, form) => acc + (form.submissionCount || form.submissions.length || 0), 0);
-                setTotalSubmissions(total);
-                console.log(response.data)
+                const response = await axios.get('http://localhost:4001/api/forms');
+
+                const filteredForms = response.data.filter(form => form.shop === shop);
+
+                if (filteredForms.length > 0) {
+                    setCreatedForms(filteredForms);
+                    const total = filteredForms.reduce((acc, form) => acc + (form.submissionCount || form.submissions.length || 0), 0);
+                    setTotalSubmissions(total);
+                } else {
+                    setCreatedForms([]);
+                    setTotalSubmissions(0);
+                    console.log("No forms found for this shop");
+                }
             } catch (error) {
                 console.error('Error fetching forms:', error);
             } finally {

@@ -36,6 +36,7 @@ mongoose.connect(mongoUri)
 const formCreateSchema = new mongoose.Schema({
   formId: { type: String, required: true },
   title: { type: String, required: true },
+  shop: { type: String, required: true },
   fields: [{
     id: { type: String, required: true },
     type: {
@@ -105,6 +106,7 @@ const FormModel = mongoose.model('forms_data', formCreateSchema);
 const formSchema = new mongoose.Schema({
   title: { type: String, required: true },
   id: { type: String, required: true },
+  shop: { type: String, required: false, },
   fields: [
     {
       id: { type: String, required: true },
@@ -143,6 +145,7 @@ const ShopDetails = mongoose.model('ShopDetails', shopDetailsSchema);
 
 const EmailTemplats = new mongoose.Schema({
   templateId: { type: String, required: true },
+  shop: { type: String, required: true },
   form_ids: {
     type: [String],
     required: true,
@@ -678,12 +681,13 @@ app.put('/unlink-template/:formId', async (req, res) => {
 app.post('/send/api', upload.single('image'), async (req, res) => {
   console.log('respose-data', req.body);
   try {
-    const { templateId, title, fields, createdAt, styles, form_ids } = req.body;
+    const { templateId,shop, title, fields, createdAt, styles, form_ids } = req.body;
     console.log('Form IDs:', form_ids);
     const formIds = Array.isArray(form_ids) ? form_ids : [form_ids];
     const formIdsStr = formIds.map(id => String(id));
     const formData = new Email({
       templateId,
+      shop,
       title,
       form_ids: formIdsStr,
       fields,
@@ -733,26 +737,6 @@ app.delete('/delete/:id', async (req, res) => {
 });
 
 
-// app.post('/api/save-shop', async (req, res) => {
-//   try {
-//     const { shop, accessToken } = req.body;
-
-//     if (!shop || !accessToken) {
-//       return res.status(400).json({ error: "Shop domain and access token are required" });
-//     }
-
-//     const updatedShopDetails = await ShopDetails.findOneAndUpdate(
-//       { shop }, 
-//       { accessToken }, 
-//       { new: true, upsert: true } 
-//     );
-//     return res.json({ success: true, message: 'Shop details processed successfully.' });
-//   } catch (e) {
-//     console.error('Error occurred:', e);
-//     return res.status(500).json({ error: 'Internal server error: ' + e.message });
-//   }
-// });
-
 app.post('/api/save-shop', async (req, res) => {
   try {
     const { shop, accessToken } = req.body;
@@ -761,23 +745,18 @@ app.post('/api/save-shop', async (req, res) => {
       return res.status(400).json({ error: "Shop domain and access token are required" });
     }
 
-    const existingShop = await ShopDetails.findOne({ shop });
-
-    if (existingShop) {
-      existingShop.accessToken = accessToken;
-      await existingShop.save();
-      return res.json({ success: true, message: 'Shop token updated successfully.' });
-    } else {
-
-      const newShopDetails = new ShopDetails({ shop, accessToken });
-      await newShopDetails.save();
-      return res.json({ success: true, message: 'Shop details created successfully.' });
-    }
+    const updatedShopDetails = await ShopDetails.findOneAndUpdate(
+      { shop }, 
+      { accessToken }, 
+      { new: true, upsert: true } 
+    );
+    return res.json({ success: true, message: 'Shop details processed successfully.' });
   } catch (e) {
     console.error('Error occurred:', e);
     return res.status(500).json({ error: 'Internal server error: ' + e.message });
   }
 });
+
 
 app.get('/payment/plan', async (req, res) => {
 
@@ -812,7 +791,6 @@ app.get('/payment/plan', async (req, res) => {
 
 app.post('/payment/confirm', async (req, res) => {
   try {
-
     const { chargeId, shop, name, plan, price, status, billingOn } = req.body;
 
     if (!chargeId) {
@@ -822,14 +800,15 @@ app.post('/payment/confirm', async (req, res) => {
       return res.status(400).json({ error: "All payment details are required" });
     }
 
-    const existingPayment = await Payment.findOne({ shop, status: 'active' });
-    if (existingPayment) {
-      existingPayment.status = 'disactive';
-      await existingPayment.save();
+    const existingActivePlan = await Payment.findOne({ shop, status: 'active' });
+    if (existingActivePlan) {
+      existingActivePlan.status = 'disactive';
+      await existingActivePlan.save();
     }
-    let payment = await Payment.findOne({ chargeId });
+
+    let payment = await Payment.findOne({ chargeId, shop });
     if (payment) {
-      payment.shop = shop;
+
       payment.name = name;
       payment.plan = plan;
       payment.price = price;
@@ -837,6 +816,7 @@ app.post('/payment/confirm', async (req, res) => {
       payment.billingOn = billingOn;
       await payment.save();
     } else {
+
       payment = new Payment({
         shop,
         name,
@@ -855,8 +835,6 @@ app.post('/payment/confirm', async (req, res) => {
     res.status(500).json({ error: 'Error confirming payment' });
   }
 });
-
-
 
 
 // app.get('/api/customer', async (req, res) => {
@@ -887,18 +865,23 @@ app.post('/payment/confirm', async (req, res) => {
 
 app.get('/api/customer', async (req, res) => {
   try {
-    const forms = await Form.find({});
+    const forms = await Form.find({}); 
+    const emailMap = new Map();
 
-    const uniqueEmails = forms.reduce((acc, form) => {
+    forms.forEach(form => {
+      const shop = form.shop; 
       form.fields.forEach(field => {
         if (field.name === 'Email') {
-          acc.add(field.value);
+          const email = field.value;
+          if (!emailMap.has(email)) {
+            emailMap.set(email, []);
+          }
+
+          emailMap.get(email).push(shop);
         }
       });
-      return acc;
-    }, new Set());
-
-    const emailArray = [...uniqueEmails];
+    });
+    const emailArray = [...emailMap].map(([email, shops]) => ({ email, shops }));
 
     res.status(200).json(emailArray);
   } catch (error) {
@@ -906,7 +889,6 @@ app.get('/api/customer', async (req, res) => {
     res.status(500).send({ error: 'Failed to retrieve emails' });
   }
 });
-
 
 app.get('/api/forms', async (req, res) => {
   try {
@@ -921,8 +903,11 @@ app.get('/api/forms', async (req, res) => {
 app.post('/api/forms', async (req, res) => {
   try {
     const formsData = req.body;
-    const { title, id, fields, timestamp } = formsData;
-    console.log("data", req.body)
+    const { title, id, fields, timestamp, shop } = formsData;
+    console.log("data", req.body);
+    if (!shop) {
+      return res.status(400).send({ error: 'Shop field is missing from the form submission.' });
+    }
     if (!title || !id || !fields || !Array.isArray(fields) || fields.length === 0) {
       return res.status(400).send({ error: 'Missing required fields: title, id, and fields are required.' });
     }
@@ -939,6 +924,7 @@ app.post('/api/forms', async (req, res) => {
       form = new Form({
         title,
         id,
+        shop,
         fields,
         timestamp: timestamp || new Date().toISOString(),
         submissionCount: 0,
@@ -1031,9 +1017,10 @@ app.post('/form-data', async (req, res) => {
       counter++;
     }
 
-    const { formId, fields, createdAt, styles, submissionOption, thankYouTimer, editorValue, url, status } = req.body;
+    const { formId,shop, fields, createdAt, styles, submissionOption, thankYouTimer, editorValue, url, status } = req.body;
     const newFormEntry = new FormModel({
       formId,
+      shop,
       title: newTitle,
       fields,
       createdAt,

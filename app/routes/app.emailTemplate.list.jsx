@@ -16,8 +16,54 @@ import facebook from '../images/facebook.png';
 import instagram from '../images/instagram.png';
 import twitter from '../images/twitter.png';
 import plusicon from '../images/plusicon.png';
+import { authenticate, apiVersion } from "../shopify.server";
+import { useLoaderData } from "@remix-run/react";
+
+export const loader = async ({ request }) => {
+    const { session } = await authenticate.admin(request);
+    const { shop, accessToken } = session;
+
+    const response = {
+        assets: [],
+        shop,
+        error: false,
+        accessToken,
+        errorMessage: ''
+    };
+
+    console.log(shop);
+
+    try {
+
+        const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+            method: 'GET',
+            headers: {
+                'X-Shopify-Access-Token': accessToken,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!assetResponse.ok) {
+            const errorText = await assetResponse.text();
+            throw new Error(`Failed to fetch assets: ${errorText}`);
+        }
+
+        const assetData = await assetResponse.json();
+        response.assets = assetData.assets || [];
+
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        response.error = true;
+        response.errorMessage = err.message;
+    }
+
+    return response;
+};
 
 export default function EmailTemplate() {
+    const generateUniqueFormId = () => {
+        return 'Form' + Math.random().toString(36).substring(2, 15);
+    };
     const [formsData, setFormsData] = useState([]);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,16 +76,16 @@ export default function EmailTemplate() {
     const [formToDelete, setFormToDelete] = useState(null);
     const [showFormNames, setShowFormNames] = useState(false);
     const [selectedFormName, setSelectedFormName] = useState('');
-
-    const generateUniqueFormId = () => {
-        return 'Form' + Math.random().toString(36).substring(2, 15);
-    };
-
-    const fetchForms = async () => {
+    const { shop } = useLoaderData() || {};
+   
+     const fetchForms = async () => {
         try {
-            const response = await axios.get('https://hubsyntax.online/get/data');
-            setFormsData(response.data.data || []);
-            console.log("data", response.data);
+            const response = await axios.get('http://localhost:4001/get/data');
+            const fetchedData = response.data.data || [];
+            const filteredData = fetchedData.filter(form => form.shop === shop);
+            
+            setFormsData(filteredData); 
+            console.log("Filtered data", filteredData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
         }
@@ -48,7 +94,7 @@ export default function EmailTemplate() {
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
         try {
-            const response = await axios.delete(`https://hubsyntax.online/delete/${formToDelete}`);
+            const response = await axios.delete(`http://localhost:4001/delete/${formToDelete}`);
             console.log(response.data.message);
 
             setFormsData((prevForms) =>
@@ -90,7 +136,7 @@ export default function EmailTemplate() {
         delete copiedForm._id;
 
         try {
-            const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
+            const response = await axios.post('http://localhost:4001/copy-email', copiedForm);
             console.log('Response from server:', response);
             if (response.status === 201) {
                 setFormsData((prevForms) => [...prevForms, response.data]);

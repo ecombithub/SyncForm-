@@ -36,6 +36,49 @@ import maximizesize from '../images/maximize-size.png';
 import vecter1 from '../images/vecter1.png';
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
+import { authenticate, apiVersion } from "../shopify.server";
+import { useLoaderData } from "@remix-run/react";
+
+export const loader = async ({ request }) => {
+    const { session } = await authenticate.admin(request);
+    const { shop, accessToken } = session;
+
+    const response = {
+        assets: [],
+        shop,
+        error: false,
+        accessToken,
+        errorMessage: ''
+    };
+
+    console.log(shop);
+
+    try {
+
+        const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+            method: 'GET',
+            headers: {
+                'X-Shopify-Access-Token': accessToken,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!assetResponse.ok) {
+            const errorText = await assetResponse.text();
+            throw new Error(`Failed to fetch assets: ${errorText}`);
+        }
+
+        const assetData = await assetResponse.json();
+        response.assets = assetData.assets || [];
+
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        response.error = true;
+        response.errorMessage = err.message;
+    }
+
+    return response;
+};
 
 const toolbarOptions = [
     [{ header: '1' }, { header: '2' }, { header: '3' }, { header: '4' }, { header: '5' }, { header: '6' }],
@@ -165,6 +208,7 @@ const Formgenerated = () => {
     const [url, setUrl] = useState('');
     const [ReactQuill, setReactQuill] = useState(null);
     const [isDropdownVisible, setDropdownVisible] = useState(false);
+    const { shop } = useLoaderData() || {};
 
     useEffect(() => {
 
@@ -702,6 +746,7 @@ const Formgenerated = () => {
         const newForm = {
             formId: isEditing ? editingFormId : formId,
             title: formTitle,
+            shop,
             fields: fields.map(field => {
                 if (field.type === 'checkbox') {
                     return {
@@ -784,10 +829,10 @@ const Formgenerated = () => {
         console.log('New form object:', JSON.stringify(newForm, null, 2));
 
         const request = isEditing
-            ? axios.put(`https://hubsyntax.online/update-form/${editingFormId}`, newForm, {
+            ? axios.put(`http://localhost:4001/update-form/${editingFormId}`, newForm, {
                 headers: { 'Content-Type': 'application/json' }
             })
-            : axios.post('https://hubsyntax.online/form-data', newForm, {
+            : axios.post('http://localhost:4001/form-data', newForm, {
                 headers: { 'Content-Type': 'application/json' }
             });
 

@@ -85,6 +85,7 @@ export const loader = async ({ request }) => {
 };
 
 const EmailTemplateCreate = () => {
+
     const navigate = useNavigate();
     const [fields, setFields] = useState([]);
     const [emailTemplateId, setEmailTemplateId] = useState(null);
@@ -545,10 +546,14 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('https://hubsyntax.online/get-forms')
-            .then((res) => setFormDataAdd(res.data))
-            .catch((error) => console.error(error));
-    }, []);
+            .get('http://localhost:4001/get-forms')
+            .then((res) => {
+                console.log('API Response:', res.data);
+                const filteredData = res.data.filter((form) => form.shop === shop);
+                setFormDataAdd(filteredData);
+            })
+            .catch((error) => console.error('API Error:', error));
+    }, [shop]);
 
     useEffect(() => {
         if (formDataAdd.length > 0) {
@@ -563,7 +568,7 @@ const EmailTemplateCreate = () => {
 
         if (selectedForm) {
             try {
-                const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
 
                 if (data.isConnected) {
@@ -575,7 +580,7 @@ const EmailTemplateCreate = () => {
 
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
-                            `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
 
@@ -583,7 +588,7 @@ const EmailTemplateCreate = () => {
                             alert('Template unlinked from form.');
 
                             const updatedCheckResponse = await fetch(
-                                `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
+                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
 
@@ -624,7 +629,6 @@ const EmailTemplateCreate = () => {
         console.log('Selected form IDs:', selectedFormIds);
     }, [selectedFormIds]);
 
-
     const createOrUpdateForm = async () => {
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
         const trimmedTitle = formTitle.trim();
@@ -635,7 +639,7 @@ const EmailTemplateCreate = () => {
 
         if (!id) {
             try {
-                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
+                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
                     alert('A template with this title already exists. Please choose a different title.');
                     return;
@@ -850,6 +854,7 @@ const EmailTemplateCreate = () => {
 
         const formData = {
             templateId,
+            shop,
             form_ids: selectedFormIds.map(id => String(id)),
             title: trimmedTitle,
             fields: updatedFields,
@@ -868,8 +873,8 @@ const EmailTemplateCreate = () => {
 
         try {
             const response = id
-                ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
-                : await axios.post('https://hubsyntax.online/send/api', formData);
+                ? await axios.put(`http://localhost:4001/update/${id}`, formData)
+                : await axios.post('http://localhost:4001/send/api', formData);
 
             const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
             console.log(successMessage, response.data);

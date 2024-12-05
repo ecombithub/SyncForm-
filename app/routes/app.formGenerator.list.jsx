@@ -172,7 +172,7 @@ const Formdata = () => {
         setTimeout(async () => {
             try {
 
-                await fetch(`https://hubsyntax.online/delete-form/${formToDelete}`, {
+                await fetch(`http://localhost:4001/delete-form/${formToDelete}`, {
                     method: 'DELETE',
                 });
 
@@ -221,53 +221,11 @@ const Formdata = () => {
         setCurrentPage(page);
     };
 
-    // useEffect(() => {
-    //     const fetchPaymentPlan = async () => {
-
-    //         try {
-    //             const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
-    //             setUserPlan(response.data);
-
-    //             await fetchForms(response.data);
-    //         } catch (error) {
-    //             setError('Error fetching payment plan');
-    //             console.error('Error fetching payment plan:', error);
-    //         }
-    //     };
-
-    //     const fetchForms = async (userPlan) => {
-    //         try {
-    //             const response = await fetch('https://hubsyntax.online/get-forms');
-    //             if (!response.ok) {
-    //                 throw new Error('Network response was not ok');
-    //             }
-    //             const data = await response.json();
-    //             setCreatedForms(data);
-
-    //             if (userPlan?.plan === 'free' && userPlan.status === 'active') {
-    //                 const formsToDisable = data.slice(1);
-    //                 formsToDisable.forEach(async (form) => {
-    //                     await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
-    //                         method: 'DELETE',
-    //                     });
-    //                 });
-
-    //                 setCreatedForms(data.slice(0, 1));
-    //             }
-    //         } catch (error) {
-    //             setError(error.message);
-    //         }
-    //     };
-    //     fetchPaymentPlan();
-    // }, []);
-
-
-
     useEffect(() => {
         const fetchPaymentPlan = async () => {
             try {
 
-                const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
+                const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
                 setUserPlan(response.data);
 
                 await fetchForms(response.data);
@@ -279,18 +237,20 @@ const Formdata = () => {
 
         const fetchForms = async (userPlan) => {
             try {
-
-                const response1 = await fetch('https://hubsyntax.online/get-forms');
+                const response1 = await fetch('http://localhost:4001/get-forms');
                 if (!response1.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const formsData = await response1.json();
-                setCreatedForms(formsData);
 
-                const response2 = await axios.get('https://hubsyntax.online/api/forms');
+                const filteredForms = formsData.filter((form) => form.shop === shop);
+        
+                setCreatedForms(filteredForms);
+        
+                const response2 = await axios.get('http://localhost:4001/api/forms');
                 const apiFormsData = response2.data;
-
-                const updatedForms = formsData.map((form1) => {
+        
+                const updatedForms = filteredForms.map((form1) => {
                     const matchingForm = apiFormsData.find((form2) => form2.id === form1.formId);
                     return {
                         ...form1,
@@ -299,13 +259,13 @@ const Formdata = () => {
                             : 0,
                     };
                 });
-
+        
                 setCreatedForms(updatedForms);
-
+        
                 if (userPlan?.plan === 'free' && userPlan.status === 'active') {
                     const formsToDisable = updatedForms.slice(1);
                     for (const form of formsToDisable) {
-                        await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+                        await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
                             method: 'DELETE',
                         });
                     }
@@ -370,7 +330,7 @@ const Formdata = () => {
         try {
 
             setTimeout(async () => {
-                const response = await fetch('https://hubsyntax.online/copy-form', {
+                const response = await fetch('http://localhost:4001/copy-form', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

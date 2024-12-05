@@ -89,19 +89,19 @@ function Index() {
     const saveShopDetails = async () => {
       if (shop && accessToken && !dataSent) {
         try {
-          const response = await fetch("https://hubsyntax.online/api/save-shop", {
+          const response = await fetch("http://localhost:4001/api/save-shop", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ shop, accessToken }),
           });
-
+  
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Failed to save shop details');
           }
-
+  
           const data = await response.json();
           if (data.success) {
             console.log("Shop details sent to the server.");
@@ -112,51 +112,43 @@ function Index() {
         }
       }
     };
-
+  
     const checkFreePlanStatusAndSendData = async () => {
       try {
-        const planResponse = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
-
-
+        const planResponse = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
+  
         if (planResponse.data.status === 'active') {
+          console.log("Free plan already active for this shop.");
+        } else {
           const paymentData = {
-            chargeId: "1234",
-            shop: shop,
+            chargeId: `free-plan-${shop}`, 
+            shop,
             name: "lifeTime",
             plan: "free",
             price: 0,
             status: "active",
             billingOn: new Date().toISOString(),
           };
-
-
-          const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+  
+          const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
           console.log("Payment data saved response:", response.data);
           setResponseData(response.data);
-        } else {
-          console.log("Free plan is not active, skipping the payment confirmation.");
         }
       } catch (error) {
-        if (error.response) {
-          console.error('Error response status:', error.response.status);
-          console.error('Error response data:', error.response.data);
-
-          if (error.response.status === 404 && error.response.data.error === 'Payment plan not found') {
-
-            const paymentData = {
-              chargeId: "1234",
-              shop: shop,
-              name: "lifeTime",
-              plan: "free",
-              price: 0,
-              status: "active",
-              billingOn: new Date().toISOString(),
-            };
-
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
-            console.log("Payment data saved response (new free plan):", response.data);
-            setResponseData(response.data);
-          }
+        if (error.response && error.response.status === 404 && error.response.data.error === 'Payment plan not found') {
+          const paymentData = {
+            chargeId: `free-plan-${shop}`,
+            shop,
+            name: "lifeTime",
+            plan: "free",
+            price: 0,
+            status: "active",
+            billingOn: new Date().toISOString(),
+          };
+  
+          const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
+          console.log("Payment data saved response (new free plan):", response.data);
+          setResponseData(response.data);
         } else {
           console.error('Error:', error.message);
         }
@@ -164,19 +156,19 @@ function Index() {
         setIsSubmitting(false);
       }
     };
-
+  
     if (shop && accessToken && !dataSent) {
       saveShopDetails();
       checkFreePlanStatusAndSendData();
     }
   }, [shop, accessToken, dataSent]);
-
+  
 
 
   useEffect(() => {
     const fetchPaymentPlan = async () => {
       try {
-        const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
+        const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
         setUserPlan(response.data);
         await fetchForms(response.data);
       } catch (error) {
@@ -187,7 +179,7 @@ function Index() {
 
     const fetchForms = async (userPlan) => {
       try {
-        const response = await fetch('https://hubsyntax.online/get-forms');
+        const response = await fetch('http://localhost:4001/get-forms');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -199,7 +191,7 @@ function Index() {
 
           const formsToDisable = data.slice(1);
           await Promise.all(formsToDisable.map(async (form) => {
-            const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+            const deleteResponse = await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
               method: 'DELETE',
             });
             if (!deleteResponse.ok) {

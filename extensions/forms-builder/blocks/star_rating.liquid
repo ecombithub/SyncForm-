@@ -17,7 +17,7 @@
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `https://hubsyntax.online/get-form/${id}`,
+        url: `http://localhost:4001/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -34,7 +34,8 @@
       const container = $('#formData-{{ block.id }}');
       const formTitle = formData.title || 'Form Data';
       const formID = formData.formId || 'Unknown ID';
-
+      const formshop = formData.shop || 'Form shop';
+      console.log('Formshop:', formshop);
       container.empty();
 
       if (formData.styles) {
@@ -54,6 +55,7 @@
           borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
         });     
       }
+      container.append(`<h2 style="display:none">${formshop}</h2>`);
       container.append(`<h2 style="display:none">${formTitle}</h2>`);
       container.append(`<p style="display:none"><strong>Form ID:</strong> ${formID}</p>`);
 
@@ -74,7 +76,8 @@
                        formData.url,
                        formData.submissionOption,
                        formData.thankYouTimer,
-                       formData.editorValue
+                       formData.editorValue,
+                       formshop
                      )}
                   </div>
                   `;
@@ -87,7 +90,7 @@
       container.append('<div class="clear-float"></div>');
     }
 
-    function getFieldInput(field, formUrl, submissionOption, thankYouTimer, editorValue) {
+    function getFieldInput(field, formUrl, submissionOption, thankYouTimer, editorValue,formshop) {
       const uniqueId = field.id || generateUniqueId();
 
       switch (field.type) {
@@ -224,7 +227,7 @@
                     data-url="${formUrl}"
                     onclick="submitFormData('{{ block.id }}', this, '${
                       editorValue || ''
-                    }', '${submissionOption || ''}', '${thankYouTimer || ''}')">
+                    }', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}')">
                   ${field.label || 'Submit'}
                 </button>
               </div>
@@ -240,17 +243,19 @@
 
     const currentTimestamp = new Date().toISOString();
 
-    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer) {
+    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer,formshop) {
       const container = $('#formData-' + blockId);
       const formID = container.find('p').first().text().split(': ')[1];
       console.log('Editor Value:', editorValue);
       console.log('Submission Option:', submissionOption);
       console.log('Thank You Timer:', thankYouTimer);
       console.log('form_id:', formID);
-
+      console.log('formshop:', formshop);
+        
       const formData = {
         id: formID,
-        title: $('#formData-' + blockId + ' h2').text(),
+        shop: formshop || 'defaultShopName',
+        title: $('#formData-' + blockId + ' h2').text().replace(formshop, '').trim(), 
         fields: [],
         send: currentTimestamp,
         url: $(button).data('url') || '',
@@ -263,7 +268,7 @@
       console.log('Email:', formData.email);
 
       $.ajax({
-        url: 'https://hubsyntax.online/get/data',
+        url: 'http://localhost:4001/get/data',
         method: 'GET',
         data: { formId: formData.id },
         success: function (response) {
@@ -323,7 +328,7 @@
           console.log('Form Data:', JSON.stringify(formData));
 
           $.ajax({
-            url: 'https://hubsyntax.online/api/forms',
+            url: 'http://localhost:4001/api/forms',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
@@ -345,7 +350,7 @@
               }, 2000);
 
               $.ajax({
-                url: 'https://hubsyntax.online/api/template',
+                url: 'http://localhost:4001/api/template',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({

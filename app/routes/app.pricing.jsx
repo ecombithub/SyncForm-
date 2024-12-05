@@ -14,7 +14,8 @@ import { useLoaderData } from "@remix-run/react";
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;
-
+    console.log('Access Token:', accessToken);
+    console.log('Shop:', shop);
     try {
         const response = await axios.get(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`, {
             headers: {
@@ -22,6 +23,7 @@ export const loader = async ({ request }) => {
                 'Content-Type': 'application/json',
             },
         });
+        
         return { charges: response.data.recurring_application_charges || [], shop };
     } catch (error) {
         console.error('Error fetching current charges:', error.response ? error.response.data : error.message);
@@ -128,7 +130,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
             console.log("Payment data saved response:", response.data);
 
         } catch (error) {
@@ -145,23 +147,27 @@ export default function Pricing() {
 
     const handleChoosePlan = async (plan) => {
         if (isSubmitting || (activePlan && activePlan.name.includes(plan))) return;
+    
         setIsSubmitting(true);
         setTransactionStatus(null);
         setSelectedPlan(plan);
+    
         const formData = new FormData();
         formData.append('plan', plan);
-
+    
         if (plan === 'free' && hasActiveCharge) {
             alert('You are already on a Free plan. You cannot switch to Free again.');
             setIsSubmitting(false);
             return;
         }
-
-        submit(formData, { method: 'post' }).finally(() => {
-            setIsSubmitting(false);
-        });
+    
+        try {
+            submit(formData, { method: 'post' }); 
+        } finally {
+            setIsSubmitting(false); 
+        }
     };
-
+    
     const handleDelete = async (chargeId) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
@@ -176,7 +182,7 @@ export default function Pricing() {
         }
 
         const paymentData = {
-            chargeId: "1234",
+           chargeId: `free-plan-${shop}`,
             shop: shop,
             name: "lifeTime",
             plan: "free",
@@ -186,7 +192,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
             console.log("Payment data saved response:", response.data);
         } catch (error) {
             if (error.response) {
