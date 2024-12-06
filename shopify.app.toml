@@ -3,7 +3,7 @@
 client_id = "9a390d651825c642518ca581ba64c579"
 name = "Form Builder HUB"
 handle = "form-builder-hub"
-application_url = "https://handle-came-organic-creative.trycloudflare.com"
+application_url = "https://manchester-pm-compared-matched.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_customers,read_orders,read_products,read_themes,write_customers,w
 
 [auth]
 redirect_urls = [
-  "https://handle-came-organic-creative.trycloudflare.com/auth/callback",
-  "https://handle-came-organic-creative.trycloudflare.com/auth/shopify/callback",
-  "https://handle-came-organic-creative.trycloudflare.com/api/auth/callback"
+  "https://manchester-pm-compared-matched.trycloudflare.com/auth/callback",
+  "https://manchester-pm-compared-matched.trycloudflare.com/auth/shopify/callback",
+  "https://manchester-pm-compared-matched.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

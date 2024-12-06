@@ -790,6 +790,7 @@ app.get('/payment/plan', async (req, res) => {
 });
 
 app.post('/payment/confirm', async (req, res) => {
+  
   try {
     const { chargeId, shop, name, plan, price, status, billingOn } = req.body;
 

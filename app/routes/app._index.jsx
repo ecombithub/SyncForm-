@@ -96,12 +96,12 @@ function Index() {
             },
             body: JSON.stringify({ shop, accessToken }),
           });
-  
+
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Failed to save shop details');
           }
-  
+
           const data = await response.json();
           if (data.success) {
             console.log("Shop details sent to the server.");
@@ -112,43 +112,51 @@ function Index() {
         }
       }
     };
-  
+
     const checkFreePlanStatusAndSendData = async () => {
       try {
         const planResponse = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
-  
+
+
         if (planResponse.data.status === 'active') {
-          console.log("Free plan already active for this shop.");
-        } else {
           const paymentData = {
-            chargeId: `free-plan-${shop}`, 
-            shop,
+            chargeId: `free-plan-${shop}`,
+            shop: shop,
             name: "lifeTime",
             plan: "free",
             price: 0,
             status: "active",
             billingOn: new Date().toISOString(),
           };
-  
+
+
           const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
           console.log("Payment data saved response:", response.data);
           setResponseData(response.data);
+        } else {
+          console.log("Free plan is not active, skipping the payment confirmation.");
         }
       } catch (error) {
-        if (error.response && error.response.status === 404 && error.response.data.error === 'Payment plan not found') {
-          const paymentData = {
-            chargeId: `free-plan-${shop}`,
-            shop,
-            name: "lifeTime",
-            plan: "free",
-            price: 0,
-            status: "active",
-            billingOn: new Date().toISOString(),
-          };
-  
-          const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
-          console.log("Payment data saved response (new free plan):", response.data);
-          setResponseData(response.data);
+        if (error.response) {
+          console.error('Error response status:', error.response.status);
+          console.error('Error response data:', error.response.data);
+
+          if (error.response.status === 404 && error.response.data.error === 'Payment plan not found') {
+
+            const paymentData = {
+              chargeId: `free-plan-${shop}`,
+              shop: shop,
+              name: "lifeTime",
+              plan: "free",
+              price: 0,
+              status: "active",
+              billingOn: new Date().toISOString(),
+            };
+
+            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            console.log("Payment data saved response (new free plan):", response.data);
+            setResponseData(response.data);
+          }
         } else {
           console.error('Error:', error.message);
         }
@@ -156,14 +164,12 @@ function Index() {
         setIsSubmitting(false);
       }
     };
-  
+
     if (shop && accessToken && !dataSent) {
       saveShopDetails();
       checkFreePlanStatusAndSendData();
     }
   }, [shop, accessToken, dataSent]);
-  
-
 
   useEffect(() => {
     const fetchPaymentPlan = async () => {
@@ -179,34 +185,48 @@ function Index() {
 
     const fetchForms = async (userPlan) => {
       try {
-        const response = await fetch('https://hubsyntax.online/get-forms');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setCreatedForms(data);
-
-
-        if (userPlan?.plan === 'free' && userPlan.status === 'active') {
-
-          const formsToDisable = data.slice(1);
-          await Promise.all(formsToDisable.map(async (form) => {
-            const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
-              method: 'DELETE',
-            });
-            if (!deleteResponse.ok) {
-              throw new Error(`Failed to delete form with ID ${form.formId}`);
-            }
-          }));
-
-          setCreatedForms(data.slice(0, 1));
-        }
+          const response = await fetch('https://hubsyntax.online/get-forms');
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+  
+          const data = await response.json();
+          const filteredForms = data.filter((form) => form.shop === shop);
+          setCreatedForms(filteredForms);
+          console.log('Filtered Forms:', filteredForms);
+  
+          if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+  
+              const formsToKeep = filteredForms.slice(0, 1); 
+  
+              const formsToDisable = filteredForms.slice(1);
+  
+              await Promise.all(
+                  formsToDisable.map(async (form) => {
+                      if (form.shop === shop) { 
+                          console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
+                          try {
+                              const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+                                  method: 'DELETE',
+                              });
+                              if (!deleteResponse.ok) {
+                                  throw new Error(`Failed to delete form with ID ${form.formId}`);
+                              }
+                          } catch (error) {
+                              console.error(`Error deleting form with ID ${form.formId}:`, error);
+                          }
+                      }
+                  })
+              );
+  
+              setCreatedForms(formsToKeep);
+          }
       } catch (error) {
-        setError(error.message);
-        console.error('Error fetching forms:', error);
+          setError(error.message);
+          console.error('Error fetching forms:', error);
       }
-    };
-
+  };
+  
     fetchPaymentPlan();
   }, [shop]);
 

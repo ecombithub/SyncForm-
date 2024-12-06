@@ -44,7 +44,7 @@ export const action = async ({ request }) => {
             recurring_application_charge: {
                 name: selectedPlan === 'pro' ? 'Form Builder Pro Plan' : selectedPlan === 'pro_plus' ? 'Form Builder Pro Plus Plan' : 'Form Builder Pro Yearly Plan',
                 price: selectedPlan === 'pro' ? 4.99 : selectedPlan === 'pro_plus' ? 19.90 : 99.90,
-                return_url: 'https://admin.shopify.com/store/sahil-app-testing/apps/form-builder-hub/app/pricing',
+                return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
                 trial_days: 7,
                 test: true,
             }
