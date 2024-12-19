@@ -77,14 +77,14 @@ export default function EmailTemplate() {
     const [showFormNames, setShowFormNames] = useState(false);
     const [selectedFormName, setSelectedFormName] = useState('');
     const { shop } = useLoaderData() || {};
-   
-     const fetchForms = async () => {
+
+    const fetchForms = async () => {
         try {
             const response = await axios.get('https://hubsyntax.online/get/data');
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
-            
-            setFormsData(filteredData); 
+
+            setFormsData(filteredData);
             console.log("Filtered data", filteredData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
@@ -181,30 +181,77 @@ export default function EmailTemplate() {
         const { viewMode = 'desktop' } = field;
         switch (field.type) {
             case 'heading':
-                return <h1 style={{
-                    fontSize: `${field.headingFontSize}px`,
-                    color: field.headingColor, backgroundColor: field.headingbg, padding: `${field.headingPadding}px`,
-                    letterSpacing: `${field.headingLetterSpacing}px`,
-                    textAlign: field.headingTextAlign ? field.headingTextAlign : '',
-                    fontWeight: field.headingFontWeight,
+                return <div style={{
+                    backgroundImage: field.headingbgImage ? `url(${field.headingbgImage})` : 'none',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
                     borderWidth: `${field.headingBorderWidth}px`,
                     borderStyle: field.headingBorderStyle,
-                    borderColor: field.headingBorderColor
+                    borderColor: field.headingBorderColor,
+                    width: `${field.bannerImageWidth}%`,
+                    height: field.bannerImageHeight || '400px',
+                    position: 'relative'
                 }}>
-                    {field.value}</h1>;
+                    <div style={{
+                        position: 'absolute', top: '40%',
+                        width: '100%',
+                        textAlign: field.headingTextAlign || '',
+                        padding: `${field.headingPadding}px`,
+                    }}>
+                        <h1 style={{
+                            fontSize: `${field.headingFontSize}px`,
+                            color: field.headingColor, backgroundColor: field.headingbg,
+                            letterSpacing: `${field.headingLetterSpacing}px`,
+                            textAlign: field.headingTextAlign ? field.headingTextAlign : '',
+                            fontWeight: field.headingFontWeight,
+                        }}>
+                            {field.headingText}</h1>
+
+                        {(field.editorContent) && (
+                            <div style={{ fontSize: '20px', margin: '20px 0' }}
+                                className="heading-editor-content"
+                                dangerouslySetInnerHTML={{
+                                    __html: field.editorContent
+                                }}
+                            />
+                        )}
+                        {field.headingUrl && (
+                            <a href={field.headingUrl} target="_blank" rel="noopener noreferrer">
+                                <button
+                                    style={{
+                                        background: field.headerbtnbg,
+                                        color: field.headerbtncolor,
+                                        height: `${field.headingbtnheight}px`,
+                                        width: `${field.headingbtnwidth}px`,
+                                        fontSize: `${field.headingbtnFontSize}px`,
+                                        borderRadius: `${field.headingbtnradious}px`,
+                                        padding: `${field.headingbtnPadding}px`,
+                                        borderWidth: `${field.headingbtnBorderWidth}px`,
+                                        borderStyle: field.headingbtnBorderStyle,
+                                        borderColor: field.headingbtnBorderColor,
+                                    }}
+                                >{field.headerbtn}</button>
+                            </a>
+                        )}
+                    </div>
+                </div>
+
             case 'description':
-                return <p style={{
-                    fontSize: `${field.descritionFontSize}px`,
-                    backgroundColor: field.descriptionbg,
-                    padding: `${field.descriptionPadding}px`,
-                    letterSpacing: `${field.descriptionLetterSpacing}px`,
-                    textAlign: field.descriptionTextAlign ? field.descriptionTextAlign : '',
-                    borderWidth: `${field.descriptionBorderWidth}px`,
-                    borderStyle: field.descriptionBorderStyle,
-                    borderColor: field.descriptionBorderColor,
-                    fontWeight: field.descritionFontWeight,
-                    color: field.descritionColor
-                }}>{field.value}</p>;
+                return <div>
+                    <p style={{
+                        fontSize: `${field.descritionFontSize}px`,
+                        backgroundColor: field.descriptionbg,
+                        padding: `${field.descriptionPadding}px`,
+                        letterSpacing: `${field.descriptionLetterSpacing}px`,
+                        textAlign: field.descriptionTextAlign ? field.descriptionTextAlign : '',
+                        borderWidth: `${field.descriptionBorderWidth}px`,
+                        borderStyle: field.descriptionBorderStyle,
+                        borderColor: field.descriptionBorderColor,
+                        fontWeight: field.descritionFontWeight,
+                        color: field.descritionColor
+                    }}>{field.value}</p>
+
+                </div>;
             case 'divider':
                 return <hr style={{ borderColor: field.dividerColor || '', width: `${field.dividerWidth || 100}%`, height: `${field.dividerheight || 1}px` }} />;
             case 'button':
@@ -225,7 +272,7 @@ export default function EmailTemplate() {
                                 borderRadius: `${field.buttonradious}px`
                             }}
                         >
-                            {field.label || 'Submit'}
+                            {field.buttonLabel || ''}
                         </button>
                     </a>
                 );
@@ -301,16 +348,49 @@ export default function EmailTemplate() {
                 );
             case 'images':
                 return <div style={{
-                    width: `${field.imgWidth}%`,
                     textAlign: field.imgTextAlign ? field.imgTextAlign : '',
                     backgroundColor: field.imgbg,
-                    padding: `${field.imgPadding}px`,
                     borderWidth: `${field.imgBorderWidth}px`,
                     borderStyle: field.imgBorderStyle,
                     borderColor: field.imgBorderColor,
                 }}>
-                    <img src={field.value} alt={field.label} style={{ width: '30%' }} />
+                    <img src={field.value} alt={field.label} style={{
+                        width: `${field.imgWidth}%`,
+                        padding: `${field.imgPadding}px`,
+                    }} />
                 </div>;
+            case 'richtext':
+                return <div>
+                    <div style={{ textAlign: field.richTextAlign }} dangerouslySetInnerHTML={{ __html: field.content }} />
+                </div>;
+            case 'Multicolumn':
+                const columns = parseInt(field.columnCount) || 6;
+                return (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(3, 1fr)`,
+                        gap: '10px',
+                    }}>
+                        {field.columnData.map((column, index) => (
+                            <div
+                                key={column._id}
+                                style={{
+                                    padding: '10px',
+                                    boxSizing: 'border-box',
+                                    border: '1px solid #ccc',
+                                }}
+                            >
+
+                                {column.image && (
+                                    <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
+                                )}
+
+                                <div dangerouslySetInnerHTML={{ __html: column.content }} />
+                            </div>
+                        ))}
+                    </div>
+                );
+
             case 'html convert':
                 return <div style={{ padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
             // case 'video':
@@ -342,27 +422,32 @@ export default function EmailTemplate() {
                 return (
                     <div
                         style={{
-                            backgroundColor: field.splitbg || '#ffffff',
-                            padding: `${field.splitPadding || 0}px`,
                             width: field.width,
-                            float: "inline-start"
+                            backgroundColor: field.splitbg,
+                            padding: `${field.splitPadding}px`,
+                            border: '1px solid #B5B7C0',
+                            height: '300px',
+                            display: 'flex',
+                            position: 'relative',
+                            textAlign: field.splitTextAlin,
+                            float: 'inline-start'
                         }}
                     >
-                        <div>
+                   
                             {field.value.startsWith("data:image/") ? (
                                 <img
                                     src={field.value}
                                     alt="Uploaded Preview"
-                                    width={100}
-
+                                    style={{ width: '100%', height: 'auto' }}
                                 />
                             ) : (
-                                <p style={{ color: field.descritionColor, fontSize: `${field.descritionFontSize}px` }}>
-                                    {field.value}
-                                </p>
+                                <p
+                                  style={{ position: 'absolute', top: '40%' }}
+                                    dangerouslySetInnerHTML={{ __html: field.value || 'Add text...' }}
+                                />
 
                             )}
-                        </div>
+                        
                     </div>
                 );
             case 'socalicon':
@@ -436,191 +521,233 @@ export default function EmailTemplate() {
     return (
         <>
             <div className="email-template-section">
-                <div className="email-tempalte-your">
-                    <div className="email-tempalte-wrap">
-                        <div className="email-template-h2">
-                            <h2>Your Email template</h2>
-                        </div>
-                        <div className="email-templete-search-bar">
-                            <div className='create-email-templates' onClick={handleCreateTemplate}>
-                                <img src={plusicon} alt="" />
-                                <p>Create blank email</p>
+                <div className='container'>
+                    <div className="email-tempalte-your">
+                        <div className="email-tempalte-wrap">
+                            <div className="email-template-h2">
+                                <h2>Your Email template</h2>
                             </div>
-                            <div className="form-builder-search-bar">
-                                <input id="search" type="search" placeholder="Search" value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)} />
-                                <div className="form_build_icon_search">
-                                    <img src={search12} alt="" />
+                            <div className="email-templete-search-bar">
+                                <div className='create-email-templates' onClick={handleCreateTemplate}>
+                                    <img src={plusicon} alt="" />
+                                    <p>Create blank email</p>
                                 </div>
-                            </div>
-                            <div className="show_forms_all">
-                                <span className="name_build">
-                                    Short by :
-                                    <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleFormNames}>
-                                        Email name <span className="form-short">
-                                            <img src={down} alt="" />
+                                <div className="form-builder-search-bar">
+                                    <input id="search" type="search" placeholder="Search" value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)} />
+                                    <div className="form_build_icon_search">
+                                        <img src={search12} alt="" />
+                                    </div>
+                                </div>
+                                <div className="show_forms_all">
+                                    <span className="name_build">
+                                        Short by :
+                                        <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleFormNames}>
+                                            Email name <span className="form-short">
+                                                <img src={down} alt="" />
+                                            </span>
                                         </span>
                                     </span>
-                                </span>
-                                <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
-                                    <div onClick={handleSelectAllForms}>All Forms</div>
-                                    {currentForms.map(form => (
-                                        <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
-                                            {form.title}
-                                        </div>
-                                    ))}
+                                    <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
+                                        <div onClick={handleSelectAllForms}>All Forms</div>
+                                        {currentForms.map(form => (
+                                            <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
+                                                {form.title}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="email-template-show">
-                        <div className="email-template-show-wreped">
-                            {filteredForms.length === 0 ? (
-                                <p>No forms available.</p>
-                            ) : (
-                                currentForms.filter(form => selectedFormName ? form.title === selectedFormName : true).map((form) => (
-                                    <div key={form.createdAt} className="email-templates">
-                                        <div className='email-tempalte-text'
-                                            style={{
-                                                width: form.styles?.width || '100%',
-                                                borderRadius: `${form.styles?.borderRadious}px` || 5,
-                                                backgroundColor: form.styles?.backgroundColor || '#fff',
-                                                padding: `${form.styles?.templatePadding}px`,
-                                                textAlign: form.styles?.textAlign || 'left',
-                                                backgroundImage: form.styles?.backgroundImage
-                                                    ? `url(${form.styles.backgroundImage})`
-                                                    : '',
-                                                backgroundRepeat: 'no-repeat',
-                                                backgroundSize: 'cover',
-                                                fontFamily:form.styles?.fontFamily || ''
-                                            }}
-                                        >
-                                            <div>
+                        <div className="email-template-show">
+                            <div className="email-template-show-wreped">
+                                {filteredForms.length === 0 ? (
+                                    <p>No forms available.</p>
+                                ) : (
+                                    currentForms.filter(form => selectedFormName ? form.title === selectedFormName : true).map((form) => (
+                                        <div key={form.createdAt} className="email-templates">
+                                            <div className='email-tempalte-text'
+                                                style={{
+                                                    width: form.styles?.width || '100%',
+                                                    borderRadius: `${form.styles?.borderRadious}px` || 5,
+                                                    backgroundColor: form.styles?.backgroundColor || '#fff',
+                                                    padding: `${form.styles?.templatePadding}px`,
+                                                    textAlign: form.styles?.textAlign || 'left',
+                                                    backgroundImage: form.styles?.backgroundImage
+                                                        ? `url(${form.styles.backgroundImage})`
+                                                        : '',
+                                                    backgroundRepeat: 'no-repeat',
+                                                    backgroundSize: 'cover',
+                                                    fontFamily: form.styles?.fontFamily || ''
+                                                }}
+                                            >
+                                                <div>
 
-                                                {form.fields.map((field) => (
-                                                    <div className='form-builder-template-email ' style={{ overflow: "hidden" }} key={field.name}>{renderField(field)}</div>
-                                                ))}
-                                            </div>
-                                            <div className='email-title-t'>
-                                                <h3>{form.title}</h3>
-                                                <p> {form.createdAt}</p>
-                                            </div>
-                                            <div className='email-templete-icon-wrp'>
-                                                <div className="email-template-icons-all" >
-                                                    <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
-                                                        <img src={copy12} alt="" />
-                                                    </div>
-                                                    <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleEditClick(form)}>
-                                                        <img src={oplus} alt="" />
-                                                    </div>
-                                                    <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => openDeletePopup(form.templateId)}>
-                                                        <img src={rplus} alt="" />
-                                                    </div>
-                                                    <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw(form)}>
-                                                        <img src={yplus} alt="" />
+                                                    {form.fields.map((field) => (
+                                                        <div className='form-builder-template-email ' key={field.name}>{renderField(field)}</div>
+                                                    ))}
+                                                </div>
+                                                <div className='email-title-t'>
+                                                    <h3>{form.title}</h3>
+                                                    <p> {form.createdAt}</p>
+                                                </div>
+                                                <div className='email-templete-icon-wrp'>
+                                                    <div className="email-template-icons-all" >
+                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
+                                                            <img src={copy12} alt="" />
+                                                        </div>
+                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleEditClick(form)}>
+                                                            <img src={oplus} alt="" />
+                                                        </div>
+                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => openDeletePopup(form.templateId)}>
+                                                            <img src={rplus} alt="" />
+                                                        </div>
+                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw(form)}>
+                                                            <img src={yplus} alt="" />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
+                                            </div>
+                                      
                                         </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-
-                    </div>
-                    {deletePopup && (
-                        <div className="form-builder-delete-popup">
-                            <div className="form-builder-create section-wrp">
-                                <div className="form-builder-create-wrped popup">
-                                    <div className="form-builder-delete-popup-pop">
-                                        <div className="form_builder_delete_text_flex">
-                                            <div className="form_builder_delete_text">
-                                                <p>Are you sure you want to delete?</p>
-                                            </div>
-                                            <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
-                                                <img src={cancle1} alt="Cancel" />
-                                            </div>
-                                        </div>
-                                        <div className="form_delete_btn">
-                                            <div className="form_delete first" onClick={handleDeleteForm}>
-                                                Delete
-                                            </div>
-                                            <div className="form_delete second" onClick={closeDeletePopup}>
-                                                Cancel
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                       
+                                    ))
+                                )}
                             </div>
                         </div>
-                    )}
 
-                    {previwPopup && selectedForm && (
-                        <div className='email-template-reviw-popup'>
-                            <div className='email-tempalte-textt'
-                                style={{
-                                    width: selectedForm.styles?.width || '100%',
-                                    backgroundColor: selectedForm.styles?.backgroundColor || '#fff',
-                                    borderRadius: `${selectedForm.styles?.borderRadious}px` || 5,
-                                    padding: `${selectedForm.styles?.templatePadding}px`,
-                                    textAlign: selectedForm.styles?.textAlign || 'left',
-                                    backgroundImage: selectedForm.styles?.backgroundImage
-                                        ? `url(${selectedForm.styles.backgroundImage})`
-                                        : '',
-                                    backgroundRepeat: 'no-repeat',
-                                    backgroundSize: 'cover',
-                                    fontFamily:selectedForm.styles?.fontFamily || ''
-                                }}
-                            >
-                                <div className='form-builder-icon-deleted' onClick={() => setPreviwPopup(false)}>
-                                    <img src={cancle1} alt="" />
-                                </div>
-                                <div>
-                                    {selectedForm.fields.map((field) => (
-                                        <div className='form-builder-template-email' key={field.name}>{renderField(field)}</div>
-                                    ))}
-                                </div>
-                            </div>
-
-                        </div>
-                    )}
-                    <div className="pagination">
-                        <nav>
-                            <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
-                                <li>
-                                    <button
-                                        type="button"
-                                        disabled={currentPage === 1}
-                                        onClick={() => handlePageChange(currentPage - 1)}
-                                    >
-                                        <img src={left} alt="Previous" />
-                                    </button>
-                                </li>
-                                {Array.from({ length: totalPages }, (_, index) => (
-                                    <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
+                        <div className="pagination">
+                            <nav>
+                                <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
+                                    <li>
                                         <button
                                             type="button"
-                                            onClick={() => handlePageChange(index + 1)}
-                                            className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
+                                            disabled={currentPage === 1}
+                                            onClick={() => handlePageChange(currentPage - 1)}
                                         >
-                                            {index + 1}
+                                            <img src={left} alt="Previous" />
                                         </button>
                                     </li>
-                                ))}
-                                <li>
-                                    <button
-                                        type="button"
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                    >
-                                        <img src={right} alt="Next" />
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
+                                    {Array.from({ length: totalPages }, (_, index) => (
+                                        <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
+                                            <button
+                                                type="button"
+                                                onClick={() => handlePageChange(index + 1)}
+                                                className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        </li>
+                                    ))}
+                                    <li>
+                                        <button
+                                            type="button"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                        >
+                                            <img src={right} alt="Next" />
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
+                    {/* <div className='email-templete-use-add'>
+                        <div className="email-tempalte-your">
+                            <div className="email-tempalte-wrap">
+                                <div className="email-template-h2">
+                                    <h2>Saved templates</h2>
+                                </div>
+                                <div className="email-templete-search-bar">
+
+                                    <div className="form-builder-search-bar">
+                                        <input id="search" type="search" placeholder="Search" />
+                                        <div className="form_build_icon_search">
+                                            <img src={search12} alt="" />
+                                        </div>
+                                    </div>
+                                    <div className="show_forms_all">
+                                        <span className="name_build">
+                                            Short by :
+                                            <span style={{ fontWeight: 700, cursor: 'pointer' }}>
+                                                Email name <span className="form-short">
+                                                    <img src={down} alt="" />
+                                                </span>
+                                            </span>
+                                        </span>
+                                        <div className='form-names-list'>
+                                            <div >All Forms</div>
+
+                                        </div>
+                                    </div>
+                                    <div className='create-email-templates'>
+                                        <img src={plusicon} alt="" />
+                                        <p>Create blank email</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="email-template-show">
+                            </div>
+                        </div>
+                    </div> */}
                 </div>
+                {deletePopup && (
+                    <div className="form-builder-delete-popup">
+                        <div className="form-builder-create section-wrp">
+                            <div className="form-builder-create-wrped popup">
+                                <div className="form-builder-delete-popup-pop">
+                                    <div className="form_builder_delete_text_flex">
+                                        <div className="form_builder_delete_text">
+                                            <p>Are you sure you want to delete?</p>
+                                        </div>
+                                        <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
+                                            <img src={cancle1} alt="Cancel" />
+                                        </div>
+                                    </div>
+                                    <div className="form_delete_btn">
+                                        <div className="form_delete first" onClick={handleDeleteForm}>
+                                            Delete
+                                        </div>
+                                        <div className="form_delete second" onClick={closeDeletePopup}>
+                                            Cancel
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {previwPopup && selectedForm && (
+                    <div className='email-template-reviw-popup'>
+                        <div className='email-tempalte-textt'
+                            style={{
+                                width: selectedForm.styles?.width || '100%',
+                                backgroundColor: selectedForm.styles?.backgroundColor || '#fff',
+                                borderRadius: `${selectedForm.styles?.borderRadious}px` || 5,
+                                padding: `${selectedForm.styles?.templatePadding}px`,
+                                textAlign: selectedForm.styles?.textAlign || 'left',
+                                backgroundImage: selectedForm.styles?.backgroundImage
+                                    ? `url(${selectedForm.styles.backgroundImage})`
+                                    : '',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundSize: 'cover',
+                                fontFamily: selectedForm.styles?.fontFamily || ''
+                            }}
+                        >
+                            <div className='form-builder-icon-deleted' onClick={() => setPreviwPopup(false)}>
+                                <img src={cancle1} alt="" />
+                            </div>
+                            <div>
+                                {selectedForm.fields.map((field) => (
+                                    <div className='form-builder-template-email' key={field.name}>{renderField(field)}</div>
+                                ))}
+                            </div>
+                        </div>
+
+                    </div>
+                )}
             </div>
         </>
     );

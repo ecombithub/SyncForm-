@@ -482,12 +482,12 @@ const Formdata = () => {
                                                     <table>
                                                         <thead className="custom-thead">
                                                             <tr>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header">Form name</th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header">
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">Form name</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">
                                                                     Form ID
                                                                 </th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Responses</th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header">Date and time</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" style={{ textAlign: "center" }}>Responses</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide">Date and time</th>
                                                                 <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Actions</th>
                                                             </tr>
                                                         </thead>
@@ -517,10 +517,10 @@ const Formdata = () => {
                                                                         </div>
                                                                     </th>
 
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
                                                                         {form.totalSubmissions || 0}
                                                                     </th>
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col">{form.createdAt}</th>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col">{form.createdAt}</th>
                                                                     <td style={{ textAlign: "center" }}>
                                                                         <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
                                                                             <div className='form-builder-table-flex-btn'>
@@ -641,7 +641,7 @@ const Formdata = () => {
                                             <div key={form.formId} style={{ ...form.styles, backgroundSize: 'cover', }} className="form-details">
                                                 {form.fields.map(field => (
                                                     <div key={field.id} style={{ width: field.width }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
-                                                        {field.type !== 'button' && field.type !== 'heading' && <label>{field.label}</label>}
+                                                        {field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' &&<label>{field.label}</label>}
                                                         {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
                                                         {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
                                                         {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: field.inputBorderRadious }}></textarea>}

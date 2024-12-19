@@ -8,6 +8,7 @@ import search12 from '../images/search12.png';
 import down from '../images/down.png';
 import left from '../images/left.png';
 import right from '../images/right.png';
+import dropicon from '../images/dropicon.png';
 import cancleimg from '../images/cancleimg.png';
 import { format } from 'date-fns';
 import React, { useEffect, useRef, useState } from 'react';
@@ -101,7 +102,7 @@ function Customer() {
         setShowpop(!showpop);
         setSelectedForms(new Set());
     }
-    
+
     useEffect(() => {
         const fetchForms = async () => {
             try {
@@ -158,7 +159,7 @@ function Customer() {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div></div>;
     }
 
     const handleToggleFormNames = () => {
@@ -304,8 +305,6 @@ function Customer() {
         document.body.removeChild(a);
     };
 
-
-
     return (
         <div className='form_builder_customer'>
             <div className='container'>
@@ -375,6 +374,9 @@ function Customer() {
                             <div className="form_builder_download" onClick={handleShowPop}>
                                 <p>Download all CSV</p>
                             </div>
+                            <div className="form_builder_download icon" onClick={handleShowPop}>
+                                <img src={dropicon} alt="" />
+                            </div>
                             <div className='show_forms_all'>
                                 <span className='name_build'>
                                     Short by :
@@ -416,6 +418,9 @@ function Customer() {
                                         <div className="form_builder_download" onClick={downloadAllCSV}>
                                             <p>Download all CSV</p>
                                         </div>
+                                        <div className="form_builder_download icon" onClick={handleShowPop}>
+                                            <img src={dropicon} alt="" />
+                                        </div>
                                         <div className='show_forms_all'>
                                             <span className='name_build'>
                                                 Sort by:
@@ -449,7 +454,7 @@ function Customer() {
                                             <div></div>
                                             <div> Form Name</div>
                                             <div> id</div>
-                                            <div>Response</div>
+                                            <div className='phone-forms'>Response</div>
                                             <div> Date and time</div>
 
                                         </div>
@@ -473,7 +478,7 @@ function Customer() {
                                                             <div className="data_forms">
                                                                 {form.id}
                                                             </div>
-                                                            <div className="data_forms">
+                                                            <div className="data_forms phone-forms">
                                                                 {form.submissionCount || form.submissions.length || 0}
                                                             </div>
                                                             <div className="data_forms">
@@ -500,10 +505,10 @@ function Customer() {
                             <div className="table-header">
                                 <div> From Name</div>
                                 <div>Customer Email</div>
-                                <div>Phone</div>
+                                <div className='phone-forms'>Phone</div>
                                 <div> Name</div>
-                                <div>Country</div>
-                                <div>Status</div>
+                                <div className='phone-forms'>Country</div>
+                                <div className='phone-forms'>Status</div>
                             </div>
                             <div className="table-row">
                                 {currentForms.length > 0 ? (
@@ -515,15 +520,15 @@ function Customer() {
                                                 <div className="data_forms">
                                                     {getFieldValue(form.fields, ['Email'])}
                                                 </div>
-                                                <div className="data_forms">
+                                                <div className="data_forms phone-forms">
                                                     {getFieldValue(form.fields, ['Phone', 'Number'])}
                                                 </div>
 
                                                 <div className="data_forms">
                                                     {getFieldValue(form.fields, ['First name', 'Last name', 'Full name'])}
                                                 </div>
-                                                <div className="data_forms">N/A</div>
-                                                <div className="data_forms">
+                                                <div className="data_forms phone-forms">N/A</div>
+                                                <div className="data_forms phone-forms">
                                                     <div className='form-detail-status'>
                                                         <span>Active</span>
                                                     </div>

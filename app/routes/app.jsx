@@ -5,36 +5,51 @@ import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
+import { useState } from "react";
+
+const Loader = () => (
+  <div className="modal-costomer">
+    <div className="loader">
+
+    </div>
+  </div>
+);
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
-
   return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
 };
 
 export default function App() {
   const { apiKey } = useLoaderData();
+  const [loading, setLoading] = useState(false);
+
+  const handleLinkClick = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  };
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>
-        <Link to="/app" rel="home">
-          Home
-        </Link>
-        <Link to="/app/customer">Customers</Link>
+        <Link to="/app" rel="home">Home</Link>
+        <Link to="/app/customer" onClick={handleLinkClick}>Customers</Link>
         <Link to="/app/formGenerator/list">Forms</Link>
         <Link to="/app/setting">Settings</Link>
         <Link to="/app/pricing">Pricing</Link>
         <Link to="/app/support">Support</Link>
         <Link to="/app/emailTemplate/list">EmailTemplate</Link>
         <ul>
-          <li> <Link to="/app/formGenerator/new">Create</Link></li>
-          <li> <Link to="/app/emailTemplate/new">EmailTemplate</Link></li>
+          <li><Link to="/app/formGenerator/new">Create</Link></li>
+          <li><Link to="/app/emailTemplate/new">EmailTemplate</Link></li>
         </ul>
       </NavMenu>
-      <Outlet />
+
+      {loading ? <Loader /> : <Outlet />}
     </AppProvider>
   );
 }

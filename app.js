@@ -142,7 +142,11 @@ const shopDetailsSchema = new mongoose.Schema({
 });
 
 const ShopDetails = mongoose.model('ShopDetails', shopDetailsSchema);
-
+const columnSchema = new mongoose.Schema({
+  columnIndex: { type: Number, required: false },
+  image: { type: String, required: false },
+  content: { type: String, required: false }
+});
 const EmailTemplats = new mongoose.Schema({
   templateId: { type: String, required: true },
   shop: { type: String, required: true },
@@ -163,10 +167,28 @@ const EmailTemplats = new mongoose.Schema({
   },
   fields: [
     {
+
       name: { type: String, required: true },
       label: { type: String, required: true },
       type: { type: String, required: true },
+      headerbtnbg: { type: String, required: false },
+      headerbtncolor: { type: String, required: false },
+      headingbtnPadding: { type: String, required: false },
+      headingbtnradious: { type: String, required: false },
+      headingbtnFontSize: { type: String, required: false },
+      headingbtnwidth: { type: String, required: false },
+      headingbtnheight: { type: String, required: false },
+      headerbtn: { type: String, required: false },
+      columnCount: { type: Number, required: false },
+      columnData: { type: [columnSchema], required: false },
       value: { type: Object, required: false, default: { typeValue: 'No Value Provided', customIcons: [] } },
+      bannerImageWidth: { type: String, required: false },
+      bannerImageHeight: { type: String, required: false },
+      bannerImageTextAlign: { type: String, required: false },
+      editorContent: { type: String, required: false },
+      headingUrl: { type: String, required: false },
+      richTextAlign: { type: String, required: false },
+      imageUrl: { type: String, required: false },
       headingFontSize: { type: String, required: false },
       headingLevel: { type: String, required: false },
       headingFontWeight: { type: String, required: false },
@@ -174,11 +196,17 @@ const EmailTemplats = new mongoose.Schema({
       headingbg: { type: String, required: false },
       headingBorderColor: { type: String, required: false },
       headingBorderWidth: { type: String, required: false },
+      headingbtnBorderWidth: { type: String, required: false },
+      headingbtnBorderStyle: { type: String, required: false },
+      headingbtnBorderColor: { type: String, required: false },
       headingBorderStyle: { type: String, required: false },
       headingLetterSpacing: { type: String, required: false },
       headingPadding: { type: String, required: false },
       headingTextAlign: { type: String, required: false },
+      headingText: { type: String, required: false },
+      headingbgImage: { type: String, required: false },
       descriptionText: { type: String, required: false },
+      texteditorValue: { type: String, required: false },
       descritionFontSize: { type: String, required: false },
       descritionFontWeight: { type: String, required: false },
       descritionColor: { type: String, required: false },
@@ -189,6 +217,7 @@ const EmailTemplats = new mongoose.Schema({
       descriptionBorderColor: { type: String, required: false },
       descriptionBorderWidth: { type: String, required: false },
       descriptionBorderStyle: { type: String, required: false },
+      content: { type: String, required: false },
       platform: { type: String, required: false },
       image: { type: String, required: false },
       url: { type: String, required: false },
@@ -207,7 +236,7 @@ const EmailTemplats = new mongoose.Schema({
       buttonradious: { type: String, required: false },
       buttonColor: { type: String, required: false },
       buttonUrll: { type: String, default: '' },
-      buttonTextColor:{ type: String, default: false },
+      buttonTextColor: { type: String, default: false },
       buttonPadding: { type: String, required: false },
       htmlContent: { type: String, required: false, default: "" },
       socalIconWidth: { type: String, required: false },
@@ -218,11 +247,13 @@ const EmailTemplats = new mongoose.Schema({
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
       splitbg: { type: String, required: false },
+      add: { type: String, required: false },
       width: { type: String, required: false },
       spacerHeight: { type: String, required: false },
       spacerbg: { type: String, required: false },
       videoPadding: { type: String, required: false },
       splitPadding: { type: String, required: false },
+      splitTextAlin: { type: String, required: false },
       videoBorderWidth: { type: String, required: false },
       videoBorderStyle: { type: String, required: false },
       videoBorderColor: { type: String, required: false },
@@ -330,7 +361,7 @@ import { Buffer } from 'buffer';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
+import fetch from 'node-fetch';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -346,6 +377,7 @@ const saveBase64Image = (base64Str, fileName) => {
   fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
   return filePath;
 };
+
 
 const sendEmail = async (email, TemplateAll) => {
   try {
@@ -383,7 +415,103 @@ const sendEmail = async (email, TemplateAll) => {
         .map((field) => {
           switch (field.type) {
             case 'heading':
-              return `<h1 style="font-size: ${field.headingFontSize || 30}px; color: ${field.headingColor || '#000'}; font-weight: ${field.headingFontWeight || 'bold'}; line-height: 1;">${field.value}</h1>`;
+              const headingbgImage = field.headingbgImage || '';
+              const updatedimageUrl = headingbgImage.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                if (match.startsWith('data:image/png;base64,')) {
+                  const uniqueId = `image-${Date.now()}`;
+                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                  attachments.push({
+                    filename: `${uniqueId}.png`,
+                    path: imagePath,
+                    cid: uniqueId,
+                  });
+
+                  return `cid:${uniqueId}`;
+                }
+                return match;
+              });
+              const editorContent = field.editorContent || '';
+              const updateeditorContent = editorContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                if (match.startsWith('data:image/png;base64,')) {
+                  const uniqueId = `image-${Date.now()}`;
+                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                  attachments.push({
+                    filename: `${uniqueId}.png`,
+                    path: imagePath,
+                    cid: uniqueId,
+                  });
+
+                  return `cid:${uniqueId}`;
+                }
+                return match;
+              });
+
+              return `
+               <div style="background-image: url('${updatedimageUrl}');
+                background-size: cover; background-position: center;
+                border-width: ${field.headingBorderWidth || 1}px;
+                border-style: ${field.headingBorderStyle || 'solid'};
+                border-color: ${field.headingBorderColor || '#000'};
+                width: ${field.bannerImageWidth || 100}%;
+                height: ${field.bannerImageHeight || '400px'};
+                position: relative;">
+              <div style="position: absolute; top: 40%; width: 100%; text-align: ${field.headingTextAlign || 'center'}; padding: ${field.headingPadding || '20px'}px;">
+              <h1 style="font-size: ${field.headingFontSize || 30}px; 
+                   color: ${field.headingColor || '#000'}; 
+                   font-weight: ${field.headingFontWeight || 'bold'}; 
+                   line-height: 1; 
+                   letter-spacing: ${field.headingLetterSpacing || 0}px; 
+                   text-align: ${field.headingTextAlign || 'center'};">
+                   ${field.headingText || 'Heading'}
+                    </h1>
+              <div style="font-size: 20px; margin: 20px 0;">
+                 ${updateeditorContent || ''}</div>
+              ${field.headingUrl ? `
+                <a href="${field.headingUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                  <button
+                    style="
+                      font-size: ${field.headingbtnFontSize || 16}px;
+                      width: ${field.headingbtnwidth || 'auto'}px;
+                      height: ${field.headingbtnheight || 'auto'}px;
+                      background-color: ${field.headerbtnbg || '#007bff'};
+                      border-width: ${field.headingbtnBorderWidth || 1}px;
+                      border-style: ${field.headingbtnBorderStyle || 'solid'};
+                      border-color: ${field.headingbtnBorderColor || '#007bff'};
+                      color: ${field.headerbtncolor || '#fff'};
+                      border-radius: ${field.headingbtnradious || 4}px;
+                      padding: ${field.headingbtnPadding || '10px 20px'}px;
+                      cursor: pointer;
+                    "
+                    class="show-bnt-product"
+                  >
+                    ${field.headerbtn || 'Buy Now'}
+                  </button>
+                </a>
+              ` : ''}
+              </div>
+              </div>
+            `;
+            case 'richtext':
+              const content = field.content || '';
+              const updatedContent = content.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                if (match.startsWith('data:image/png;base64,')) {
+                  const uniqueId = `image-${Date.now()}`;
+                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                  attachments.push({
+                    filename: `${uniqueId}.png`,
+                    path: imagePath,
+                    cid: uniqueId,
+                  });
+
+                  return `cid:${uniqueId}`;
+                }
+                return match;
+              });
+              return `
+                    <div>
+                      <div style = "text-align: ${field.richTextAlign || 'left'}" >${updatedContent}</div>
+                    </div>
+                  `;
             case 'description':
               return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
             case 'button':
@@ -391,9 +519,63 @@ const sendEmail = async (email, TemplateAll) => {
                 <a href="${field.buttonUrll || '#'}" target="_blank">
                   <button style="background-color: ${field.buttonColor || '#008CBA'}; padding: ${field.buttonPadding || '10px 20px'}; height: ${field.buttonHeight || '40px'}px; width: ${field.buttonWidth || 'auto'}px; font-size: ${field.buttonFontSize || '16px'}px; border: ${field.buttonBorderWidth || '0'}px ${field.buttonBorderStyle || 'none'} ${field.buttonBorderColor || '#000'};
                    color:${field.buttonTextColor}; cursor: pointer;">
-                    ${field.label || 'Click Here'}
+                    ${field.buttonLabel || 'Click Here'}
                   </button>
                 </a>`;
+            case 'Multicolumn':
+              const columns = parseInt(field.columnCount) || 6;
+              const columnHtml = field.columnData.map((column, index) => {
+                let updatedContent = column.content || '';
+
+                if (column.image) {
+                  if (column.image.startsWith('data:image/png;base64,')) {
+                    const uniqueId = `image-${Date.now()}-${index}`;
+                    const imagePath = saveBase64Image(column.image, `${uniqueId}.png`);
+                    attachments.push({
+                      filename: `${uniqueId}.png`,
+                      path: imagePath,
+                      cid: uniqueId,
+                    });
+                    updatedContent = updatedContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                      if (match.startsWith('data:image/png;base64,')) {
+                        return `cid:${uniqueId}`;
+                      }
+                      return match;
+                    });
+                    return `
+                          <div class="column" style="padding: 10px;  width:33.3%; box-sizing: border-box; border: 1px solid black;">
+                            <img src="cid:${uniqueId}" alt="Image ${index + 1}" style="width: 100%;" />
+                            <div>${updatedContent}</div>
+                          </div>`;
+                  }
+                  return `
+                        <div class="column" style="padding: 10px;  width:33.3%; box-sizing: border-box; border: 1px solid black;">
+                          <img src="${column.image}" alt="Image ${index + 1}" style="width: 100%;" />
+                          <div>${updatedContent}</div>
+                        </div>`;
+                }
+
+                updatedContent = updatedContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                  const uniqueId = `image-${Date.now()}`;
+                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                  attachments.push({
+                    filename: `${uniqueId}.png`,
+                    path: imagePath,
+                    cid: uniqueId,
+                  });
+                  return `cid:${uniqueId}`;
+                });
+                return `
+                      <div class="column" style="padding: 10px; width:33.3%; box-sizing: border-box; border: 1px solid black;">
+                        <div>${updatedContent}</div>
+                      </div>`;
+              }).join('');
+
+              return `
+                    <div class="multicolumn-container" style="display: flex;flex-wrap: wrap; gap: 10px; border: 1px solid #ddd; box-sizing: border-box;">
+                      ${columnHtml}
+                    </div>`;
+
             case 'images':
               if (field.value.startsWith('data:image/png;base64,')) {
                 const uniqueId = `image-${Date.now()}`;
@@ -407,8 +589,28 @@ const sendEmail = async (email, TemplateAll) => {
               }
               return `<img src="${field.value}" alt="${field.label || 'Image'}" style="width: 100%;" />`;
             case 'split':
+              const value = field.value || '';
+              const updatedvalue = value.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                if (match.startsWith('data:image/png;base64,')) {
+                  const uniqueId = `image-${Date.now()}`;
+                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                  attachments.push({
+                    filename: `${uniqueId}.png`,
+                    path: imagePath,
+                    cid: uniqueId,
+                  });
+
+                  return `cid:${uniqueId}`;
+                }
+                return match;
+              });
               return (
-                `<div style="background-color: ${field.splitbg || '#ffffff'}; width: ${field.width}; float: inline-start;">
+                `<div style="background-color: ${field.splitbg || '#ffffff'}; 
+                   width: ${field.width}; 
+                   float: inline-start;
+                   height: 300px;
+                   text-align:${field.splitTextAlin};
+                   ">
                 <div>
                    ${field.value.startsWith("data:image/")
                   ? (() => {
@@ -420,9 +622,9 @@ const sendEmail = async (email, TemplateAll) => {
                       cid: uniqueId,
                     });
 
-                    return `<img src="cid:${uniqueId}" style="padding: ${field.splitPadding || 0}px;" alt="Uploaded Preview" width="100%" />`;
+                    return `<img src="cid:${uniqueId}" style="width:100%" alt="Uploaded Preview"/>`;
                   })()
-                  : `<p style="color: ${field.descritionColor || '#000'}; padding: ${field.splitPadding || 0}px; font-size: ${field.descritionFontSize || '16px'};">${field.value}</p>`
+                  : `<div>${updatedvalue}</div>`
                 }
                 </div>
               </div>
@@ -547,7 +749,7 @@ const sendEmail = async (email, TemplateAll) => {
 
     const userHtmlContent = `
     <html>
-      <body style="background-color: ${TemplateAll.styles.backgroundColor || 'white'}; width: ${TemplateAll.styles.width || '100%'}; border-radius: ${TemplateAll.styles.borderRadious || '0'}px; text-align: ${TemplateAll.styles.textAlign || 'left'}; padding: ${TemplateAll.styles.templatePadding || '0'}; font-family: ${TemplateAll.styles.fontFamily || 'Arial'}; margin:auto">
+      <body style="background-color: ${TemplateAll.styles.backgroundColor || 'white'}; width: ${TemplateAll.styles.width || '100%'}; border-radius: ${TemplateAll.styles.borderRadious || '0'}px; text-align: ${TemplateAll.styles.textAlign || 'left'}; padding: ${TemplateAll.styles.templatePadding || '0'}px; font-family: ${TemplateAll.styles.fontFamily || 'Arial'}; margin:auto">
         <div>
           ${fieldsHTML}
         </div>
@@ -681,7 +883,7 @@ app.put('/unlink-template/:formId', async (req, res) => {
 app.post('/send/api', upload.single('image'), async (req, res) => {
   console.log('respose-data', req.body);
   try {
-    const { templateId,shop, title, fields, createdAt, styles, form_ids } = req.body;
+    const { templateId, shop, title, fields, createdAt, styles, form_ids } = req.body;
     console.log('Form IDs:', form_ids);
     const formIds = Array.isArray(form_ids) ? form_ids : [form_ids];
     const formIdsStr = formIds.map(id => String(id));
@@ -746,9 +948,9 @@ app.post('/api/save-shop', async (req, res) => {
     }
 
     const updatedShopDetails = await ShopDetails.findOneAndUpdate(
-      { shop }, 
-      { accessToken }, 
-      { new: true, upsert: true } 
+      { shop },
+      { accessToken },
+      { new: true, upsert: true }
     );
     return res.json({ success: true, message: 'Shop details processed successfully.' });
   } catch (e) {
@@ -790,7 +992,7 @@ app.get('/payment/plan', async (req, res) => {
 });
 
 app.post('/payment/confirm', async (req, res) => {
-  
+
   try {
     const { chargeId, shop, name, plan, price, status, billingOn } = req.body;
 
@@ -866,11 +1068,11 @@ app.post('/payment/confirm', async (req, res) => {
 
 app.get('/api/customer', async (req, res) => {
   try {
-    const forms = await Form.find({}); 
+    const forms = await Form.find({});
     const emailMap = new Map();
 
     forms.forEach(form => {
-      const shop = form.shop; 
+      const shop = form.shop;
       form.fields.forEach(field => {
         if (field.name === 'Email') {
           const email = field.value;
@@ -1018,7 +1220,7 @@ app.post('/form-data', async (req, res) => {
       counter++;
     }
 
-    const { formId,shop, fields, createdAt, styles, submissionOption, thankYouTimer, editorValue, url, status } = req.body;
+    const { formId, shop, fields, createdAt, styles, submissionOption, thankYouTimer, editorValue, url, status } = req.body;
     const newFormEntry = new FormModel({
       formId,
       shop,

@@ -4,6 +4,11 @@ import pricing3 from '../images/pricing3.png';
 import pricing4 from '../images/pricing4.png';
 import pricing5 from '../images/pricing5.png';
 import pricing6 from '../images/pricing6.png';
+import freeplan from '../images/freeplan.png';
+import proplan from '../images/proplan.png';
+import icondata from '../images/icondata.png';
+import downimg from '../images/downimg.png';
+
 import '../index.css';
 import { authenticate, apiVersion } from "../shopify.server";
 import axios from 'axios';
@@ -23,7 +28,7 @@ export const loader = async ({ request }) => {
                 'Content-Type': 'application/json',
             },
         });
-        
+
         return { charges: response.data.recurring_application_charges || [], shop };
     } catch (error) {
         console.error('Error fetching current charges:', error.response ? error.response.data : error.message);
@@ -43,7 +48,7 @@ export const action = async ({ request }) => {
         const chargeData = selectedPlan === 'free' ? null : {
             recurring_application_charge: {
                 name: selectedPlan === 'pro' ? 'Form Builder Pro Plan' : selectedPlan === 'pro_plus' ? 'Form Builder Pro Plus Plan' : 'Form Builder Pro Yearly Plan',
-                price: selectedPlan === 'pro' ? 4.99 : selectedPlan === 'pro_plus' ? 19.90 : 99.90,
+                price: selectedPlan === 'pro' ? 10.00 : selectedPlan === 'pro_plus' ? 20.00 : 99.90,
                 return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
                 trial_days: 7,
                 test: true,
@@ -104,6 +109,32 @@ export default function Pricing() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [lastChargeId, setLastChargeId] = useState(null);
     const activePlan = charges.find(charge => charge.status === 'active');
+    const [isViewMore, setIsViewMore] = useState(false);
+    const [firstViewMore, setFirstViewMore] = useState(false);
+    const [secondViewMore, setSecondViewMore] = useState(false);
+    const [thirdViewMore, setThirdViewMore] = useState(false);
+    const [fourViewMore, setFourViewMore] = useState(false);
+
+    const toggleViewMore = () => {
+        setIsViewMore(!isViewMore);
+    };
+
+    const toggleViewMore1 = () => {
+        setFirstViewMore(!firstViewMore);
+    };
+
+    const toggleViewMore3 = () => {
+        setThirdViewMore(!thirdViewMore);
+    };
+
+    const toggleViewMore4 = () => {
+        setFourViewMore(!fourViewMore);
+    };
+
+
+    const toggleViewMore2 = () => {
+        setSecondViewMore(!secondViewMore);
+    };
 
     const handleTogglePlans = (planType) => {
         setSelectedPlanadd(planType);
@@ -147,27 +178,27 @@ export default function Pricing() {
 
     const handleChoosePlan = async (plan) => {
         if (isSubmitting || (activePlan && activePlan.name.includes(plan))) return;
-    
+
         setIsSubmitting(true);
         setTransactionStatus(null);
         setSelectedPlan(plan);
-    
+
         const formData = new FormData();
         formData.append('plan', plan);
-    
+
         if (plan === 'free' && hasActiveCharge) {
             alert('You are already on a Free plan. You cannot switch to Free again.');
             setIsSubmitting(false);
             return;
         }
-    
+
         try {
-            submit(formData, { method: 'post' }); 
+            submit(formData, { method: 'post' });
         } finally {
-            setIsSubmitting(false); 
+            setIsSubmitting(false);
         }
     };
-    
+
     const handleDelete = async (chargeId) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
@@ -182,7 +213,7 @@ export default function Pricing() {
         }
 
         const paymentData = {
-           chargeId: `free-plan-${shop}`,
+            chargeId: `free-plan-${shop}`,
             shop: shop,
             name: "lifeTime",
             plan: "free",
@@ -209,6 +240,7 @@ export default function Pricing() {
     const hasActiveCharge = charges.some(charge => charge.status === 'active');
 
 
+
     return (
         <div className='from_builder_pricing'>
             <div className="container">
@@ -218,7 +250,8 @@ export default function Pricing() {
                 <div className="form_builder_plan_add">
                     <div className="form_builders_plan">
                         <div className="form_builders_plan_p">
-                            <p>Plans</p>
+                            <p className='currentplan-show'>Plans</p>
+                            <p className='choose-your-plan'>Choose Your Plan</p>
                         </div>
                         <div className="form_builders_plan_btn">
                             <div
@@ -249,43 +282,151 @@ export default function Pricing() {
                                 <div className="form_builder_plan_table heading">
                                     <h2>Choose your plan</h2>
                                 </div>
-                                <div className="form_builder_plan_table bg first">
-                                    {!hasActiveCharge && (
-                                        <>
-                                            <p>Free</p>
-                                            <h2>$0.00<span> lifetime</span></h2>
-                                            <p className='form_builder_plan_btn'>Current Plan</p>
-                                        </>
-                                    )}
-                                    {charges.map(charge => (
-                                        <div key={charge.id} className="charge-item">
-                                            {charge.status === 'active' && (
-                                                <>
-                                                    <p>Free</p>
-                                                    <h2>$0.00<span> lifetime</span></h2>
-                                                    <p className='form_builder_plan_btn' onClick={() => handleDelete(charge.id)}>Choose this plan</p>
-                                                </>
-                                            )}
-                                        </div>
-                                    ))}
+                                <div className="form_builder_plan_table activee bg first">
+                                    <div>
+                                        {!hasActiveCharge && (
+                                            <>
+                                                <img src={freeplan} />
+                                                <p>Free</p>
+                                                <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
+                                                <p className='form_builder_plan_btn'>Current Plan</p>
+                                                <div className='monthly-wrap'>
+                                                    lifetime
+                                                </div>
+                                            </>
+                                        )}
+                                        {charges.map(charge => (
+                                            <div key={charge.id} className="charge-item">
+                                                {charge.status === 'active' && (
+                                                    <>
+                                                        <p>Free</p>
+                                                        <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
+                                                        <p className='form_builder_plan_btn' onClick={() => handleDelete(charge.id)}>Choose this plan</p>
+                                                        <div className='monthly-wrap'>
+                                                            lifetime
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button className="show-data-icon" onClick={toggleViewMore}>
+                                        {isViewMore ? (
+                                            <img
+                                                className="show-img1"
+                                                src={icondata}
+                                                alt="Collapse Icon"
+
+                                            />
+                                        ) : (
+                                            <img
+                                                className="show-img1"
+                                                src={downimg}
+                                                alt="Expand Icon"
+
+                                            />
+                                        )}
+                                    </button>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${isViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${isViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${isViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
                                 </div>
-                                <div className="form_builder_plan_table bg second">
+                                <div className="form_builder_plan_table activee bg second">
+
                                     <p>Pro</p>
-                                    <h2>$4.99<span>/mo</span></h2>
+                                    <div className='before-adding'>
+                                        <h2>$10.00<span className='monthly-number'>/mo</span></h2>
+                                        <p className='form_build_h2_four'>
+                                            <span className='strikethrough'>$20.00</span><span className='monthly-number'>/mo</span>
+
+                                        </p>
+                                    </div>
+
                                     {activePlan && activePlan.name === 'Form Builder Pro Plan' ? (
-                                        <p className='form_builder_plan_btn' style={{ backgroundColor: '#33AADE', color:'white', border:'1px solid #FFFFFF' }}>Current Plan</p>
+                                        <div>
+                                            <img src={proplan} />
+                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#33AADE', color: 'white', border:'1px solid white' }}>Current Plan</p>
+                                        </div>
                                     ) : (
                                         <p className='form_builder_plan_btn' onClick={() => handleChoosePlan('pro')}>
                                             Choose this plan
                                         </p>
                                     )}
+                                    <div className='monthly-wrap'>
+                                        Monthly
+                                    </div>
+                                    <button className="show-data-icon" onClick={toggleViewMore1}>
+                                        {firstViewMore ? (
+                                            <img
+                                                className="show-img1"
+                                                src={icondata}
+                                                alt="Collapse Icon"
+
+                                            />
+                                        ) : (
+                                            <img
+                                                className="show-img1"
+                                                src={downimg}
+                                                alt="Expand Icon"
+
+                                            />
+                                        )}
+                                    </button>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${firstViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing2} alt="Unlimited Forms" />
+                                    </div>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${firstViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing2} alt="Unlimited Forms" />
+                                    </div>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${firstViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing2} alt="Unlimited Forms" />
+                                    </div>
+
                                 </div>
 
-                                <div className="form_builder_plan_table bg third">
+                                <div className="form_builder_plan_table activee bg third">
+
                                     <p>Pro +</p>
-                                    <h2>$19.90<span>/mo</span></h2>
+                                    <div className='before-adding'>
+                                        <h2>$20.00<span className='monthly-number'>/mo</span></h2>
+                                        <p className='form_build_h2_four'>
+                                            <span className='strikethrough'>$30.00</span><span className='monthly-number'>/mo</span>
+                                        </p>
+                                    </div>
+
                                     {activePlan && activePlan.name === 'Form Builder Pro Plus Plan' ? (
-                                        <p className='form_builder_plan_btn' style={{ backgroundColor: '#EE8208', color:'white', border:'1px solid #FFFFFF' }}>Current Plan</p>
+                                        <div>
+                                            <img src={proplan} />
+                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#EE8208', color: 'white',border:'1px solid white' }}>Current Plan</p>
+                                        </div>
                                     ) : (
                                         <p className='form_builder_plan_btn'
                                             onClick={() => handleChoosePlan('pro_plus')}
@@ -293,14 +434,60 @@ export default function Pricing() {
                                             Choose this plan
                                         </p>
                                     )}
+                                    <div className='monthly-wrap'>
+                                        Monthly
+                                    </div>
+                                    <button className="show-data-icon" onClick={toggleViewMore2}>
+                                        {secondViewMore ? (
+                                            <img
+                                                className="show-img1"
+                                                src={icondata}
+                                                alt="Collapse Icon"
+
+                                            />
+                                        ) : (
+                                            <img
+                                                className="show-img1"
+                                                src={downimg}
+                                                alt="Expand Icon"
+
+                                            />
+                                        )}
+                                    </button>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${secondViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing3} alt="Unlimited Forms" />
+                                    </div>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${secondViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing3} alt="Unlimited Forms" />
+                                    </div>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${secondViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing3} alt="Unlimited Forms" />
+                                    </div>
                                 </div>
-                                <div className="form_builder_plan_table bg four">
+                                <div className="form_builder_plan_table activee bg four">
                                     <p>New Global Plan</p>
-                                    <h2>$229.90<span>/mo</span></h2>
-                                    <p className='form_build_h2_four'>
-                                        <span className='strikethrough'>$1050.00</span><span>/mo</span>
-                                    </p>
+                                    <div className='before-adding'>
+                                        <h2>$525.00<span className='monthly-number'>/mo</span></h2>
+                                        <p className='form_build_h2_four'>
+                                            <span className='strikethrough'>$1050.00</span><span className='monthly-number'>/mo</span>
+                                        </p>
+                                    </div>
+
                                     <p className='form_builder_plan_btn'>Choose this plan</p>
+                                    <div className='monthly-wrap'>
+                                        Monthly
+                                    </div>
+
                                 </div>
                             </div>
                             <div className='form_table_pricing'>
@@ -332,12 +519,16 @@ export default function Pricing() {
                                 <div className="form_builder_plan_table heading">
                                     <h2>Choose your plan</h2>
                                 </div>
-                                <div className="form_builder_plan_table bg first">
+                                <div className="form_builder_plan_table activee bg first">
                                     {!hasActiveCharge && (
                                         <>
+                                            <img src={freeplan} />
                                             <p>Free</p>
-                                            <h2>$0.00<span> lifetime</span></h2>
+                                            <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
                                             <p className='form_builder_plan_btn'>Current Plan</p>
+                                            <div className='monthly-wrap'>
+                                                lifetime
+                                            </div>
                                         </>
                                     )}
                                     {charges.map(charge => (
@@ -345,18 +536,68 @@ export default function Pricing() {
                                             {charge.status === 'active' && (
                                                 <>
                                                     <p>Free</p>
-                                                    <h2>$0.00<span> lifetime</span></h2>
+                                                    <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
                                                     <p className='form_builder_plan_btn' onClick={() => handleDelete(charge.id)}>Choose this plan</p>
+                                                    <div className='monthly-wrap'>
+                                                        lifetime
+                                                    </div>
                                                 </>
                                             )}
                                         </div>
                                     ))}
+
+                                    <button className="show-data-icon" onClick={toggleViewMore3}>
+                                        {thirdViewMore ? (
+                                            <img
+                                                className="show-img1"
+                                                src={icondata}
+                                                alt="Collapse Icon"
+
+                                            />
+                                        ) : (
+                                            <img
+                                                className="show-img1"
+                                                src={downimg}
+                                                alt="Expand Icon"
+
+                                            />
+                                        )}
+                                    </button>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${thirdViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${thirdViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${thirdViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+
                                 </div>
-                                <div className="form_builder_plan_table bg second">
+                                <div className="form_builder_plan_table activee bg second">
                                     <p>Pro (Yearly)</p>
-                                    <h2>$99.90<span>/year</span></h2>
+                                    <div className='before-adding'>
+                                        <h2>$99.90<span className='monthly-number'>/year</span></h2>
+                                        <p className='form_build_h2_four'>
+                                            <span className='strikethrough'>$1050.00</span><span className='monthly-number'>/year</span>
+                                        </p>
+                                    </div>
+
                                     {activePlan && activePlan.name === 'Form Builder Pro Yearly Plan' ? (
-                                        <p className='form_builder_plan_btn' style={{ backgroundColor: '#9929AB', color:'white', border:'1px solid #FFFFFF' }}>Current Plan</p>
+                                        <div>
+                                            <img src={proplan} />
+                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#9929AB', color: 'white',border:'1px solid white' }}>Current Plan</p>
+                                        </div>
                                     ) : (
                                         <p className='form_builder_plan_btn'
                                             onClick={() => handleChoosePlan('pro_yearly')}
@@ -365,11 +606,63 @@ export default function Pricing() {
                                             Choose this plan
                                         </p>
                                     )}
+                                    <div className='monthly-wrap'>
+                                        Yearly
+                                    </div>
+                                      <button className="show-data-icon" onClick={toggleViewMore4}>
+                                        {fourViewMore ? (
+                                            <img
+                                                className="show-img1"
+                                                src={icondata}
+                                                alt="Collapse Icon"
+
+                                            />
+                                        ) : (
+                                            <img
+                                                className="show-img1"
+                                                src={downimg}
+                                                alt="Expand Icon"
+
+                                            />
+                                        )}
+                                    </button>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${fourViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+                                    <div
+                                        className={`shwo-unlimited-form-data ${fourViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+
+                                    <div
+                                        className={`shwo-unlimited-form-data ${fourViewMore ? 'visible' : 'hidden'}`}
+                                    >
+                                        Unlimited forms
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                    </div>
+
+
                                 </div>
-                                <div className="form_builder_plan_table bg third">
+                                <div className="form_builder_plan_table activee bg third">
                                     <p>Pro +</p>
-                                    <h2>$199.90<span>/year</span></h2>
+                                    <div className='before-adding'>
+                                        <h2>$199.90<span className='monthly-number'>/year</span></h2>
+                                        <p className='form_build_h2_four'>
+                                            <span className='strikethrough'>$1050.00</span><span className='monthly-number'>/year</span>
+                                        </p>
+                                    </div>
+
                                     <p className='form_builder_plan_btn'>Choose this plan</p>
+                                    <div className='monthly-wrap'>
+                                        Yearly
+                                    </div>
+
                                 </div>
                             </div>
                             <div className='form_table_pricing'>

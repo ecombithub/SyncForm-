@@ -65,6 +65,10 @@
     "vite-tsconfig-paths": "^4.3.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/node": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
     "@remix-run/eslint-config": "^2.7.1",
     "@shopify/api-codegen-preset": "^1.0.1",
     "@types/eslint": "^8.40.0",
