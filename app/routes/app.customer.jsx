@@ -106,7 +106,7 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('http://localhost:4001/api/customer');
+                const response = await axios.get('https://hubsyntax.online/api/customer');
 
                 if (!shop) {
                     console.log('Shop not found');
@@ -135,7 +135,7 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('http://localhost:4001/api/forms');
+                const response = await axios.get('https://hubsyntax.online/api/forms');
 
                 const filteredForms = response.data.filter(form => form.shop === shop);
 
