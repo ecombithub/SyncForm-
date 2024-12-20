@@ -4174,6 +4174,80 @@ button.show-data-icon {
     display: none;
 }
 
+.save-email-templates-add .popup-content.save {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.save-email-template-popup p.save-btn {
+    border: 1px solid #43AB00;
+    background: #43AB00;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    width: 100px;
+    margin: auto;
+    cursor: pointer;
+}
+
+.save-email-template-popup p {
+    margin: 20px;
+}
+
+.save-email-template-popup h2 {
+    font-weight: 500;
+    font-size: 18px;
+    margin-top: 15px;
+}
+
+.save-email-templates-add .popup-content.save {
+    position: relative;
+}
+
+.cancle-save-email {
+    position: absolute;
+    right: -20px;
+    top: -15px;
+    cursor: pointer;
+}
+.cancle-save-email img {
+    width: 60%;
+}
+
+.rm-btn{
+    background-color: red !important;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+}
+
+
+.form-builder-chaneging-wrap.column-settings-show-apps {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-builder-chaneging-wrap.images-upload {
+    border: 1px solid #B5B7C0;
+    padding: 10px;
+  
+}
+
+.column-settings .quill .ql-container.ql-snow {
+    border-radius: 0 0 7px 7px;
+    height: 70px;
+}
+
+.column-settings .quill .ql-toolbar.ql-snow {
+    border-radius: 7px 7px 0 0;
+}
+
 @media screen and (max-width: 1440px) {
 
     .container {

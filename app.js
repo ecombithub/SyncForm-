@@ -630,70 +630,65 @@ const sendEmail = async (email, TemplateAll) => {
               </div>
                 `
               );
-            case 'product':
-              return `
-               <div class="product-grid" style="
-                  display: flex;
-                  grid-template-columns: repeat(${field.productsPerRow}, 1fr);
-                  gap: 20px;
-                  padding: ${field.productPadding}px;
-                  background-color: ${field.productbg};
-                  border-width: ${field.productBorderWidth}px;
-                  border-style: ${field.productBorderStyle};
-                  border-color: ${field.productBorderColor};
-                  font-size: ${field.productFontSize}px;
-                  color: ${field.productTextColor};
-                   ">
-                 ${field.products && field.products.length > 0
-                  ? field.products.map(product => `
-                  <div key="${product.id}" class="product-item">
-                  ${product.images && product.images.length > 0 ? `
-                 <img
-                src="${product.images[0].src}"
-                alt="${product.images[0].alt}"
-                width="150"
-                height="150"
-              />
-              ` : ''}
-              <div>
-              <h4 style="font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                ${product.title}
-              </h4>
-              ${field.price && product.variants && product.variants.length > 0 ? `
-                <p style="font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                  Price: $${product.variants[0].price}
-                </p>
-                     
-              ` : ''}
-              ${field.showbtnn ? `
-            <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-             <button
-                 style="
-                 font-size: ${field.productfontSize}px;
-                 width: ${field.productwidth}px;
-                 height: ${field.productheight}px;
-                 background-color: ${field.productbackgroundColor};
-                 border-width: ${field.productbtnBorderWidth}px;
-                 border-style: ${field.productbtnBorderStyle};
-                 border-color: ${field.productbtnBorderColor};
-                 color: ${field.productbtnbg};
-                 border-radius: ${field.productradious}px;
-                 cursor: pointer;
-                 "
-                 class="show-bnt-product"
-                 >
-                   ${field.productLabel || 'Buy Now'}
-                 </button>
-                </a>
-                ` : ''}
-
-             </div>
-               </div>
-              `).join('')
-                  : '<p>No products available</p>'
-                }
-              </div>
-             `;
+              case 'product':
+                return `
+                  <div class="product-grid" style="
+                    display: flex;
+                    grid-template-columns: repeat(${field.productsPerRow}, 1fr);
+                    gap: 20px;
+                    padding: ${field.productPadding}px;
+                    background-color: ${field.productbg};
+                    border-width: ${field.productBorderWidth}px;
+                    border-style: ${field.productBorderStyle};
+                    border-color: ${field.productBorderColor};
+                    font-size: ${field.productFontSize}px;
+                    color: ${field.productTextColor};
+                  ">
+                    ${product.image ? `
+                      <div class="images-gallery">
+                        <img
+                          src="${product.image}"
+                          alt="${product.images || 'Product Image'}"
+                          style="width: 150px; height: 150px; object-fit: cover;"
+                        />
+                      </div>
+                    ` : '<p>No image available</p>'}
+              
+                    <div>
+                      <h4 style="font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                        ${product.title}
+                      </h4>
+              
+                      ${field.price && product.price ? `
+                        <p style="font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                          Price: $${product.price}
+                        </p>
+                      ` : ''}
+              
+                      ${field.showbtnn ? `
+                        <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                          <button
+                            style="
+                              font-size: ${field.productfontSize}px;
+                              width: ${field.productwidth}px;
+                              height: ${field.productheight}px;
+                              background-color: ${field.productbackgroundColor};
+                              border-width: ${field.productbtnBorderWidth}px;
+                              border-style: ${field.productbtnBorderStyle};
+                              border-color: ${field.productbtnBorderColor};
+                              color: ${field.productbtnbg};
+                              border-radius: ${field.productradious}px;
+                              cursor: pointer;
+                            "
+                            class="show-bnt-product"
+                          >
+                            ${field.productLabel || 'Buy Now'}
+                          </button>
+                        </a>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
             case 'divider':
               return `<hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'}; height: ${field.dividerHeight || '1px'}; margin: ${field.dividerMargin || '20px 0'};" />`;
             case 'html convert':

@@ -27,6 +27,7 @@ import imghd from '../images/imghd.jpeg';
 import imghd1 from '../images/imghd1.png';
 import itext from '../images/itext.png';
 import editicon from '../images/editicon.png';
+import savemail from '../images/savemail.png';
 import multimedia from '../images/multimedia.png';
 import rich from '../images/rich.png';
 import cancleimg from '../images/cancleimg.png';
@@ -69,43 +70,76 @@ export const loader = async ({ request }) => {
     try {
         const { session } = await authenticate.admin(request);
         const { shop, accessToken } = session;
+        console.log('Shop:', shop);
+        console.log('Access Token:', accessToken);
 
-        const response = await fetch(
-            `https://${shop}/admin/api/${apiVersion}/products.json`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Shopify-Access-Token": accessToken,
+        const graphqlQuery = {
+            query: `
+                query {
+                    products(first: 50) {
+                        edges {
+                            node {
+                                id
+                                title
+                                featuredImage {
+                                    src
+                                }
+                                variants(first: 10) {
+                                    edges {
+                                        node {
+                                            id
+                                            title
+                                            price
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-        );
+            `
+        };
+
+        const response = await fetch(`https://${shop}/admin/api/${apiVersion}/graphql.json`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Shopify-Access-Token": accessToken,
+            },
+            body: JSON.stringify(graphqlQuery),
+        });
 
         if (!response.ok) {
             throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
 
         const responseData = await response.json();
-        const products = responseData?.products || [];
+        console.log('Response Data:', responseData);
+
+        const products = responseData?.data?.products?.edges || [];
 
         const productsWithData = products.map(product => {
-            const { variants } = product;
+            const variants = product.node.variants.edges.map(variant => variant.node);
             const uniqueColors = Array.from(new Set(variants.map(variant => variant.option1))).join(' | ');
             const uniquePrices = Array.from(new Set(variants.map(variant => variant.price))).join(' | ');
             const uniqueSizes = Array.from(new Set(variants.map(variant => variant.option2))).join(' | ');
 
             return {
-                ...product,
+                id: product.node.id,
+                title: product.node.title,
                 color: uniqueColors,
                 price: uniquePrices,
-                size: uniqueSizes
+                size: uniqueSizes,
+                image: product.node.featuredImage ? product.node.featuredImage.src : null,
             };
         });
 
-        return { products: productsWithData, shop, apiVersion };
+        console.log('Processed Products:', productsWithData);
+
+        return { products: productsWithData, shop: shop };
     } catch (err) {
         console.error("Error fetching products:", err.message);
-        return { products: [] };
+        return { products: [], shop: null };
     }
 };
 
@@ -191,6 +225,7 @@ const EmailTemplateCreate = () => {
     const [isFileInputVisible, setFileInputVisible] = useState(false);
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
+    const [saveEmail, setSaveEmail] = useState(false);
 
     const handleFontChange = (event) => {
         setFontFamily(event.target.value);
@@ -449,9 +484,13 @@ const EmailTemplateCreate = () => {
             setIsPopupOpen(true);
         } else if (type === 'Multicolumn') {
             const id = generateUniqueId();
-            newField = { id, type: 'Multicolumn', columnCount: 6 };
+            const newField = {
+                id,
+                type: 'Multicolumn',
+                columnCount: 6,
+                columnData: Array(6).fill({ content: '', image: null })
+            };
             setFields((prevFields) => [...prevFields, newField]);
-            setColumnCount(6);
         } else if (type === 'richtext') {
             newField = createInputField('richtext');
             setFields((prevFields) => [...prevFields, newField]);
@@ -684,7 +723,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('https://hubsyntax.online/get-forms')
+            .get('http://localhost:4001/get-forms')
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -706,7 +745,7 @@ const EmailTemplateCreate = () => {
 
         if (selectedForm) {
             try {
-                const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
 
                 if (data.isConnected) {
@@ -718,7 +757,7 @@ const EmailTemplateCreate = () => {
 
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
-                            `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
 
@@ -726,7 +765,7 @@ const EmailTemplateCreate = () => {
                             alert('Template unlinked from form.');
 
                             const updatedCheckResponse = await fetch(
-                                `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
+                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
 
@@ -777,7 +816,7 @@ const EmailTemplateCreate = () => {
 
         if (!id) {
             try {
-                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
+                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
 
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
@@ -826,7 +865,7 @@ const EmailTemplateCreate = () => {
                     value = field.value || 'No Value Provided';
                     field.add = field.add;
                     field.splitbg = field.splitbg || '';
-                    field.width = field.width || '100%';
+                    field.width = field.width || '50%';
                     field.splitPadding = field.splitPadding || 0
                     field.splitTextAlin = field.splitTextAlin || 'left'
                     break;
@@ -863,7 +902,6 @@ const EmailTemplateCreate = () => {
                         }
                     }
                     field.columnCount = columnCount;
-
                     break;
                 case 'product':
                     return {
@@ -1050,18 +1088,17 @@ const EmailTemplateCreate = () => {
         };
 
         try {
+            setSaveEmail(!saveEmail);
             const response = id
-                ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
-                : await axios.post('https://hubsyntax.online/send/api', formData);
+                ? await axios.put(`http://localhost:4001/update/${id}`, formData)
+                : await axios.post('http://localhost:4001/send/api', formData);
             console.log('Form saved successfully with title:', trimmedTitle);
             const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
             console.log(successMessage, response.data);
-            navigate('/app/emailTemplate/list')
 
             if (!id) {
                 resetFormState();
             }
-
             setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
         } catch (error) {
             console.error('Error saving form:', error);
@@ -1082,6 +1119,12 @@ const EmailTemplateCreate = () => {
         setBorderRadious(5)
         setId(null);
     };
+
+    const handleContinue = () => {
+        navigate('/app/emailTemplate/list');
+        setSaveEmail(false);
+    };
+
 
     const handleBackgroundImageUpload = (e) => {
         const file = e.target.files[0];
@@ -1331,7 +1374,7 @@ const EmailTemplateCreate = () => {
 
         setProductTitles(productTitles);
 
-        const productImages = products.map(product => product.images.length > 0 ? product.images[0].src : null);
+        const productImages = products.map(product => product.image);
         console.log("Product images:", productImages);
         setProductImage(productImages);
     };
@@ -1436,45 +1479,6 @@ const EmailTemplateCreate = () => {
         );
     };
 
-    const handleColumnSelection = (columnSelection) => {
-        const newColumnCount = Number(columnSelection);
-        setColumnCount(newColumnCount);
-        setFields((prevFields) =>
-            prevFields.map((field) =>
-                field.id === popupFieldId
-                    ? { ...field, columnCount: newColumnCount }
-                    : field
-            )
-        );
-    };
-
-    const handleImageUploaded = (e, fieldId, columnIndex) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setColumnImages((prevImages) => ({
-                ...prevImages,
-                [`${fieldId}-${columnIndex}`]: reader.result,
-            }));
-        };
-        if (file) reader.readAsDataURL(file);
-    };
-
-    const handleRemoveImage = (fieldId, columnIndex) => {
-        setColumnImages((prevImages) => {
-            const updatedImages = { ...prevImages };
-            delete updatedImages[`${fieldId}-${columnIndex}`];
-            return updatedImages;
-        });
-    };
-
-    const handleEditorChangeed = (value, fieldId, columnIndex) => {
-        setEditorValues((prevValues) => ({
-            ...prevValues,
-            [`${fieldId}-${columnIndex}`]: value,
-        }));
-    };
-
     const handleEditorChangeee = (value) => {
         setEditorValueed(value);
     };
@@ -1487,18 +1491,19 @@ const EmailTemplateCreate = () => {
         setPopupVisibleed(false);
     };
 
-    const handleRemoveImage1 = (popupFieldId, selectedColumn) => {
-        setFields((prevFields) => {
-            const updatedFields = prevFields.map((field) => {
-                if (field.id === popupFieldId) {
-                    const updatedColumnData = [...field.columnData];
-                    updatedColumnData[selectedColumn].image = null;
-                    return { ...field, columnData: updatedColumnData };
-                }
-                return field;
-            });
-            return updatedFields;
-        });
+    const handleRemoveImage = (fieldId, index) => {
+        setFields((prevFields) =>
+            prevFields.map((field) =>
+                field.id === fieldId
+                    ? {
+                        ...field,
+                        columnData: field.columnData.map((col, i) =>
+                            i === index ? { ...col, image: null } : col
+                        ),
+                    }
+                    : field
+            )
+        );
     };
 
     const handleImageUpload1 = (e, popupFieldId, selectedColumn) => {
@@ -1607,6 +1612,72 @@ const EmailTemplateCreate = () => {
     const hanldeCanclepro = () => {
         setShowFieldPro(false);
     }
+
+    const addColumn = (fieldId) => {
+        const updatedFields = fields.map(f => {
+            if (f.id === fieldId) {
+                if (f.columnCount < 6) {
+
+                    return {
+                        ...f,
+                        columnCount: f.columnCount + 1,
+                        columnData: [...f.columnData, { content: '', image: null }]
+                    };
+                } else {
+
+                    alert('You cannot add more than 6 columns');
+                    return f;
+                }
+            }
+            return f;
+        });
+        setFields(updatedFields);
+    };
+
+    const removeColumn = (fieldId, index) => {
+        console.log(`Attempting to remove column at index: ${index}`);
+    
+        const updatedFields = fields.map(f =>
+            f.id === fieldId
+                ? {
+                    ...f,
+                    columnCount: f.columnCount - 1,
+                    columnData: f.columnData.filter((_, i) => i !== index)
+                }
+                : f
+        );
+
+        console.log(`Updated columns for field ${fieldId}:`, updatedFields);
+        setFields(updatedFields);
+    };
+
+
+    const handleCustomIconRemove = (index) => {
+        setCustomIcons((prevIcons) => prevIcons.filter((_, i) => i !== index));
+    };
+
+    const handleImageChange1 = (e, fieldId, columnIndex) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const updatedFields = fields.map(f =>
+                f.id === fieldId
+                    ? {
+                        ...f,
+                        columnData: f.columnData.map((col, i) =>
+                            i === columnIndex ? { ...col, image: reader.result } : col
+                        ),
+                    }
+                    : f
+            );
+            setFields(updatedFields);
+        };
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    };
+
+
 
     return (
         <div>
@@ -1776,18 +1847,13 @@ const EmailTemplateCreate = () => {
                                                                             onChange={handleBackgroundImageUpload}
                                                                         />
                                                                         {backgroundImage && (
-                                                                            <button
+                                                                            <button className='rm-btn'
                                                                                 type="button"
                                                                                 onClick={handleRemoveBackgroundImage}
                                                                                 style={{
                                                                                     margin: '10px 0',
-                                                                                    padding: '5px 10px',
-                                                                                    cursor: 'pointer',
-                                                                                    background: 'white',
-                                                                                    color: 'black',
-                                                                                    border: 'none',
-                                                                                    borderRadius: '5px',
-                                                                                    border: '1px solid rgb(221, 221, 221)'
+                                                                                    width: '150px',
+                                                                                    textAlign: 'center'
                                                                                 }}
                                                                             >
 
@@ -1876,9 +1942,11 @@ const EmailTemplateCreate = () => {
                                                                         key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                     >
                                                                         <div className='email-input-field'
                                                                             style={{
+
                                                                                 backgroundColor: field.headingbg,
                                                                                 borderWidth: `${field.headingBorderWidth}px`,
                                                                                 borderStyle: field.headingBorderStyle,
@@ -1960,7 +2028,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
-
+                                                                        style={{ display: 'flex' }}
                                                                     >
                                                                         <div style={{
                                                                             backgroundColor: field.descriptionbg,
@@ -2034,6 +2102,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
                                                                         <hr style={{
@@ -2060,16 +2129,17 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field split-width ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        ref={emailFieldRef}
+
                                                                         style={{
                                                                             width: field.width,
                                                                             backgroundColor: field.splitbg,
                                                                             padding: `${field.splitPadding}px`,
-                                                                            border: '1px solid #B5B7C0',
+                                                                            // border: '1px solid #B5B7C0',
                                                                             height: '300px',
-                                                                            display: 'flex',
+                                                                            textAlign: field.splitTextAlin,
                                                                             position: 'relative',
-                                                                            textAlign: field.splitTextAlin
+                                                                            display: 'flex'
+
                                                                         }}
                                                                     >
                                                                         {field.add === 'image' ? (
@@ -2103,18 +2173,21 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                     >
-                                                                        <div style={{ textAlign: field.richTextAlign }} dangerouslySetInnerHTML={{ __html: field.content || 'Captivate customers with' }} />
-                                                                        <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
-                                                                                <img src={editicon} alt="copy" />
-                                                                            </button>
-                                                                            <button className='remove-btn' onClick={() => removeField(field.id)}>
-                                                                                <img src={delete1} alt="delete" />
-                                                                            </button>
-                                                                            <button className="copy-btn" onClick={() => addInputField(field.type)}>
-                                                                                <img src={maximizesize} alt="copy" />
-                                                                            </button>
+                                                                        <div style={{ width: '100%' }}>
+                                                                            <div style={{ textAlign: field.richTextAlign || '' }} dangerouslySetInnerHTML={{ __html: field.content || 'Captivate customers with' }} />
+                                                                            <div className='form-builder-radio-btn email'>
+                                                                                <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                                    <img src={editicon} alt="copy" />
+                                                                                </button>
+                                                                                <button className='remove-btn' onClick={() => removeField(field.id)}>
+                                                                                    <img src={delete1} alt="delete" />
+                                                                                </button>
+                                                                                <button className="copy-btn" onClick={() => addInputField(field.type)}>
+                                                                                    <img src={maximizesize} alt="copy" />
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 );
@@ -2123,6 +2196,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
                                                                         <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
@@ -2146,6 +2220,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
                                                                         <div className='email-tempalte-video-show' style={{ padding: `${field.videoPadding}px`, borderWidth: `${field.videoBorderWidth}px`, borderStyle: field.videoBorderStyle, borderColor: field.videoBorderColor }}>
@@ -2184,33 +2259,36 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field leftbtn ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
-                                                                        <a href={field.buttonUrll}
-                                                                            onClick={(event) => {
-                                                                                event.preventDefault();
-                                                                                console.log("Button clicked!");
-                                                                            }}
-                                                                        >
-                                                                            <button
-                                                                                type="button"
-                                                                                style={{
-                                                                                    fontSize: `${field.buttonFontSize}px`,
-                                                                                    color: field.buttonTextColor,
-                                                                                    backgroundColor: field.buttonColor,
-                                                                                    width: `${field.buttonWidth}px`,
-                                                                                    height: `${field.buttonHeight}px`,
-                                                                                    padding: `${field.buttonPadding}px`,
-                                                                                    borderWidth: `${field.buttonBorderWidth}px`,
-                                                                                    borderStyle: field.buttonBorderStyle,
-                                                                                    borderColor: field.buttonBorderColor,
-                                                                                    letterSpacing: `${field.buttonLetterSpacing}px`,
-                                                                                    borderRadius: `${field.buttonradious}px`
+                                                                        <div style={{ width: '100%' }}>
+                                                                            <a href={field.buttonUrll}
+                                                                                onClick={(event) => {
+                                                                                    event.preventDefault();
+                                                                                    console.log("Button clicked!");
                                                                                 }}
                                                                             >
-                                                                                {field.buttonLabel}
-                                                                            </button>
-                                                                        </a>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    style={{
+                                                                                        fontSize: `${field.buttonFontSize}px`,
+                                                                                        color: field.buttonTextColor,
+                                                                                        backgroundColor: field.buttonColor,
+                                                                                        width: `${field.buttonWidth}px`,
+                                                                                        height: `${field.buttonHeight}px`,
+                                                                                        padding: `${field.buttonPadding}px`,
+                                                                                        borderWidth: `${field.buttonBorderWidth}px`,
+                                                                                        borderStyle: field.buttonBorderStyle,
+                                                                                        borderColor: field.buttonBorderColor,
+                                                                                        letterSpacing: `${field.buttonLetterSpacing}px`,
+                                                                                        borderRadius: `${field.buttonradious}px`
+                                                                                    }}
+                                                                                >
+                                                                                    {field.buttonLabel}
+                                                                                </button>
+                                                                            </a>
+                                                                        </div>
 
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
@@ -2232,9 +2310,10 @@ const EmailTemplateCreate = () => {
                                                                     <div className="form-builder-and-preview">
                                                                         <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                             className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                            style={{ display: 'flex' }}
                                                                             ref={emailFieldRef}
                                                                         >
-                                                                            <div>
+                                                                            <div style={{ width: '100%' }}>
                                                                                 <div style={{ color: field.htmlColor, fontSize: `${field.htmlFontSize}px`, padding: `${field.htmlPadding}px` }}
                                                                                     className="preview-content"
                                                                                     dangerouslySetInnerHTML={{ __html: field.value || field.htmltext }}
@@ -2256,76 +2335,42 @@ const EmailTemplateCreate = () => {
                                                                 );
                                                             }
                                                             if (field.type === 'Multicolumn') {
-                                                                console.log("Field Data:", field)
-                                                                console.log("Column Datas:", field.columnData);
-
                                                                 return (
                                                                     <div key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field columns-container ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        data-columns={field.columnCount}
-                                                                    >
+                                                                        data-columns={field.columnCount}>
 
-                                                                        {Array.from({ length: field.columnCount || 6 }, (_, index) => (
+                                                                        {Array.from({ length: field.columnCount }, (_, index) => (
                                                                             <div
                                                                                 key={index}
                                                                                 className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
                                                                                 onClick={(e) => handleColumnClick(field.id, index)}
-                                                                                style={{
-                                                                                    border: field.selectedColumn === index ? '2px solid red' : '1px solid gray',
-                                                                                    cursor: 'pointer',
-                                                                                }}
+
                                                                             >
-                                                                                {field.columnData && field.columnData[index] ? (
-                                                                                    <>
-                                                                                        {console.log("valuess", field.columnData[index])}
-                                                                                        {field.columnData[index].image && (
-                                                                                            <img
-                                                                                                src={field.columnData[index].image}
-                                                                                                alt={`Uploaded for Column ${index + 1}`}
-                                                                                                style={{ width: '100px', height: '100px', marginTop: '10px' }}
-                                                                                            />
-                                                                                        )}
-
-                                                                                        {field.columnData[index].content && (
-                                                                                            <div
-                                                                                                dangerouslySetInnerHTML={{
-                                                                                                    __html: field.columnData[index].content,
-                                                                                                }}
-                                                                                            />
-                                                                                        )}
-                                                                                    </>
-                                                                                ) : (
-
-                                                                                    columnImages[`${field.id}-${index}`] || editorValues[`${field.id}-${index}`] ? (
-                                                                                        <>
-
-                                                                                            {columnImages[`${field.id}-${index}`] && (
-                                                                                                <img
-                                                                                                    src={columnImages[`${field.id}-${index}`]}
-                                                                                                    alt={`Uploaded for Column ${index + 1}`}
-                                                                                                    style={{ width: '100px', height: '100px', marginTop: '10px' }}
-                                                                                                />
-                                                                                            )}
-
-                                                                                            {editorValues[`${field.id}-${index}`] && (
-                                                                                                <div
-                                                                                                    dangerouslySetInnerHTML={{
-                                                                                                        __html: editorValues[`${field.id}-${index}`],
-                                                                                                    }}
-                                                                                                />
-                                                                                            )}
-                                                                                        </>
-                                                                                    ) : (
-
-                                                                                        <div style={{ color: 'gray' }}>
-                                                                                            <h2>Column {index + 1}</h2>
-                                                                                            Elevate your online store with our easy-to-use Text Box feature.
-                                                                                            It's a game-changer for personalization, allowing customers to add their
-                                                                                            special touch directly from a user-friendly drop-down menu.
-                                                                                        </div>
-                                                                                    )
+                                                                                {field.columnData[index].image && (
+                                                                                    <img
+                                                                                        src={field.columnData[index].image}
+                                                                                        alt={`Uploaded for Column ${index + 1}`}
+                                                                                        style={{ width: '100px', height: '100px', marginTop: '10px' }}
+                                                                                    />
                                                                                 )}
+                                                                                
+                                                                                {field.columnData[index].content ? (
+                                                                                    <div
+                                                                                        dangerouslySetInnerHTML={{
+                                                                                            __html: field.columnData[index].content,
+                                                                                        }}
+                                                                                    />
+                                                                                ) : (
+                                                                                    <div style={{ color: 'gray' }}>
+                                                                                        <h2>Column</h2>
+                                                                                        Elevate your online store with our easy-to-use Text Box feature.
+                                                                                        It's a game-changer for personalization, allowing customers to add their
+                                                                                        special touch directly from a user-friendly drop-down menu.
+                                                                                    </div>
+                                                                                )}
+
                                                                             </div>
                                                                         ))}
                                                                         <div className='form-builder-radio-btn email'>
@@ -2339,6 +2384,7 @@ const EmailTemplateCreate = () => {
                                                                                 <img src={maximizesize} alt="copy" />
                                                                             </button>
                                                                         </div>
+
                                                                     </div>
                                                                 );
                                                             }
@@ -2348,6 +2394,7 @@ const EmailTemplateCreate = () => {
                                                                     <div onClick={() => handleAddProductToSelected(field.id, field.title, field.image, field.products)}>
                                                                         <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                             className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                            style={{ display: 'flex' }}
                                                                             ref={emailFieldRef}
                                                                         >
                                                                             <div className={`template-products ${productsPerRow ? `row-${productsPerRow}` : 'row-3'} ${viewMode === 'mobile' ? 'mobile' : ''}`}
@@ -2359,25 +2406,29 @@ const EmailTemplateCreate = () => {
                                                                                     borderColor: field.productBorderColor,
                                                                                     fontSize: `${field.productFontSize}px`,
                                                                                     color: field.productTextColor,
-
+                                                                                    width: '100%'
                                                                                 }}
                                                                             >
                                                                                 {field.products.map((product) => (
                                                                                     <div className='product-show' key={product.id}>
 
-                                                                                        {product.images && product.images.length > 0 && (
+                                                                                        {product.image ? (
                                                                                             <div className="images-gallery">
                                                                                                 <img
-                                                                                                    src={product.images[0].src}
-                                                                                                    alt={product.images[0].alt || 'Product Image'}
+                                                                                                    src={product.image}
+                                                                                                    alt={product.images || 'Product Image'}
                                                                                                     style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                                                                                                 />
                                                                                             </div>
+                                                                                        ) : (
+                                                                                            <p>No image available</p>
                                                                                         )}
                                                                                         <div>
                                                                                             <h4 style={{ letterSpacing: `${field.productLetterSpacing}px`, fontWeight: field.productWeight, }}>{product.title}</h4>
-                                                                                            {showPrice && product.variants && product.variants.length > 0 && (
-                                                                                                <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}> ${product.variants[0].price}</p>
+                                                                                            {showPrice && product.price && (
+                                                                                                <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
+                                                                                                    ${product.price}
+                                                                                                </p>
                                                                                             )}
                                                                                         </div>
 
@@ -2422,10 +2473,11 @@ const EmailTemplateCreate = () => {
                                                                     <div onClick={() => handleEdit(field)}>
                                                                         <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                             className={`email_field  ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                            style={{ display: 'flex', width: '100%' }}
                                                                             ref={emailFieldRef}
 
                                                                         >
-                                                                            <div style={{ textAlign: field.socaliconTextAlign || '', padding: `${field.socalIconPadding}px` }} >
+                                                                            <div style={{ textAlign: field.socaliconTextAlign || '', padding: `${field.socalIconPadding}px`, width: '100%' }} >
                                                                                 <div className="social-icons" >
                                                                                     {field.icons.facebook && field.icons.facebook.url && !field.icons.facebook.isHidden && (
                                                                                         <a href={field.icons.facebook.url} onClick={(e) => e.preventDefault()}>
@@ -2487,196 +2539,64 @@ const EmailTemplateCreate = () => {
                                                                 if (field.id === selectedFieldId && field.type === 'Multicolumn') {
                                                                     return (
                                                                         <div>
-                                                                            <div className="form-builder-chaneging-wrap">
-                                                                                <div className="form-builder-chaneging-wrap select">
-                                                                                    <label>Select Columns</label>
-                                                                                    <div className="column-options">
-                                                                                        <select
-                                                                                            value={columnCount}
-                                                                                            onChange={(e) => handleColumnSelection(e.target.value)}
-                                                                                        >
-                                                                                            {[1, 2, 3, 4, 5, 6].map((column) => (
-                                                                                                <option key={column} value={column}>
-                                                                                                    {column} Columns
-                                                                                                </option>
-                                                                                            ))}
-                                                                                        </select>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="form-builder-chaneging-wrap updatemulti">
-                                                                                {field.columnData && field.selectedColumn !== undefined && field.columnData[field.selectedColumn] ? (
-                                                                                    <>
-                                                                                        <div className="form-builder-chaneging-wrap updatemulti">
-                                                                                            {field.columnData && field.selectedColumn !== undefined && field.columnData[field.selectedColumn] ? (
-                                                                                                <>
+                                                                            <div key={field.id} className='column-settings'>
 
-                                                                                                    {field.columnData[field.selectedColumn].image ? (
-                                                                                                        <div>
-                                                                                                            <img
-                                                                                                                src={field.columnData[field.selectedColumn].image}
-                                                                                                                alt="Selected Column Image"
-                                                                                                                style={{ width: '150px', height: '150px', marginBottom: '10px' }}
-                                                                                                            />
-                                                                                                            <button
-                                                                                                                onClick={() =>
-                                                                                                                    handleRemoveImage1(
-                                                                                                                        popupFieldId,
-                                                                                                                        fields.find((f) => f.id === popupFieldId)?.selectedColumn
-                                                                                                                    )
-                                                                                                                }
-                                                                                                                style={{
-                                                                                                                    display: 'block',
-                                                                                                                    marginTop: '10px',
-                                                                                                                    padding: '5px 10px',
-                                                                                                                    cursor: 'pointer',
-                                                                                                                }}
-                                                                                                            >
-                                                                                                                Remove Image
-                                                                                                            </button>
-                                                                                                            <button
-                                                                                                                onClick={() => setFileInputVisible(true)}
-                                                                                                                style={{
-                                                                                                                    display: 'block',
-                                                                                                                    marginTop: '10px',
-                                                                                                                    padding: '5px 10px',
-                                                                                                                    cursor: 'pointer',
-                                                                                                                }}
-                                                                                                            >
-                                                                                                                Update Image
-                                                                                                            </button>
-                                                                                                            {isFileInputVisible && (
-                                                                                                                <div className="form-builder-chaneging-wrap file">
-                                                                                                                    <label>Upload Image</label>
-                                                                                                                    <input
-                                                                                                                        type="file"
-                                                                                                                        accept="image/*"
-                                                                                                                        onChange={(e) =>
-                                                                                                                            handleImageUpload1(e, popupFieldId, fields.find((f) => f.id === popupFieldId)?.selectedColumn)
-                                                                                                                        }
-                                                                                                                        style={{ marginTop: '10px' }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                            )}
-                                                                                                        </div>
-                                                                                                    ) : (
-
-                                                                                                        <div className="form-builder-chaneging-wrap file">
-                                                                                                            <label>Upload Image</label>
-                                                                                                            <input
-                                                                                                                type="file"
-                                                                                                                accept="image/*"
-                                                                                                                onChange={(e) =>
-                                                                                                                    handleImageUpload1(
-                                                                                                                        e,
-                                                                                                                        popupFieldId,
-                                                                                                                        fields.find((f) => f.id === popupFieldId)?.selectedColumn
-                                                                                                                    )
-                                                                                                                }
-                                                                                                                style={{ marginTop: '10px' }}
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                    )}
-                                                                                                </>
-                                                                                            ) : (
-                                                                                                <p></p>
-                                                                                            )}
+                                                                                {Array.from({ length: field.columnCount }, (_, index) => (
+                                                                                    <div key={index} className="column-setting">
+                                                                                        <div className=' form-builder-chaneging-wrap column-settings-show-apps'>
+                                                                                            <label>Column {index + 1}</label>
+                                                                                            <button className='rm-btn'
+                                                                                                onClick={() => removeColumn(field.id, index)}
+                                                                                                
+                                                                                            >
+                                                                                                Remove Column
+                                                                                            </button>
                                                                                         </div>
+                                                                                        <ReactQuill
+                                                                                            value={field.columnData[index].content || ''}
+                                                                                            onChange={(value) => {
+                                                                                                const updatedFields = fields.map(f =>
+                                                                                                    f.id === field.id
+                                                                                                        ? {
+                                                                                                            ...f,
+                                                                                                            columnData: f.columnData.map((col, i) =>
+                                                                                                                i === index ? { ...col, content: value } : col
+                                                                                                            ),
+                                                                                                        }
+                                                                                                        : f
+                                                                                                );
+                                                                                                setFields(updatedFields);
+                                                                                            }}
+                                                                                            modules={{ toolbar: toolbarOptions }}
+                                                                                        />
 
-                                                                                        <div>
-                                                                                            <ReactQuill
-                                                                                                value={field.columnData[field.selectedColumn].content}
-                                                                                                modules={{ toolbar: toolbarOptions }}
-                                                                                                onChange={(value) =>
-                                                                                                    handleContentChange(
-                                                                                                        value,
-                                                                                                        popupFieldId,
-                                                                                                        fields.find((f) => f.id === popupFieldId)?.selectedColumn
-                                                                                                    )
-                                                                                                }
+                                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                                            <input
+                                                                                                type="file"
+                                                                                                accept="image/*"
+                                                                                                onChange={(e) => handleImageChange1(e, field.id, index)}
                                                                                             />
                                                                                         </div>
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <p>No column selected or column data is missing.</p>
-                                                                                )}
-                                                                            </div>
+                                                                                        {field.columnData[index].image && (
+                                                                                            <div className='form-builder-chaneging-wrap images-upload'>
 
-                                                                            <div className="form-builder-chaneging-wrap">
-                                                                                <div className="form-builder-chaneging-wrap file">
-                                                                                    <label>
-                                                                                        Column{' '}
-                                                                                        {fields.find((f) => f.id === popupFieldId)?.selectedColumn + 1}{' '}
-                                                                                        Selected
-                                                                                    </label>
-                                                                                    <input
-                                                                                        type="file"
-                                                                                        accept="image/*"
-                                                                                        onChange={(e) =>
-                                                                                            handleImageUploaded(
-                                                                                                e,
-                                                                                                popupFieldId,
-                                                                                                fields.find((f) => f.id === popupFieldId)?.selectedColumn
-                                                                                            )
-                                                                                        }
-                                                                                    />
-                                                                                    {columnImages[
-                                                                                        `${popupFieldId}-${fields.find((f) => f.id === popupFieldId)?.selectedColumn}`
-                                                                                    ] && (
-                                                                                            <div>
                                                                                                 <img
-                                                                                                    src={
-                                                                                                        columnImages[
-                                                                                                        `${popupFieldId}-${fields.find((f) => f.id === popupFieldId)?.selectedColumn}`
-                                                                                                        ]
-                                                                                                    }
-                                                                                                    alt="Image Preview"
-                                                                                                    style={{
-                                                                                                        maxWidth: '100%',
-                                                                                                        maxHeight: '200px',
-                                                                                                        marginTop: '10px',
-                                                                                                    }}
+                                                                                                    src={field.columnData[index].image}
+                                                                                                    alt={`Preview for Column ${index + 1}`}
+                                                                                                    style={{ width: '100%' }}
                                                                                                 />
-                                                                                                <button
-                                                                                                    onClick={() =>
-                                                                                                        handleRemoveImage(
-                                                                                                            popupFieldId,
-                                                                                                            fields.find((f) => f.id === popupFieldId)?.selectedColumn
-                                                                                                        )
-                                                                                                    }
-                                                                                                    style={{
-                                                                                                        display: 'block',
-                                                                                                        marginTop: '10px',
-                                                                                                        padding: '5px 10px',
-                                                                                                        cursor: 'pointer',
-                                                                                                    }}
-                                                                                                >
-                                                                                                    Remove Image
-                                                                                                </button>
                                                                                             </div>
                                                                                         )}
-                                                                                </div>
 
-                                                                                <ReactQuill
-                                                                                    value={
-                                                                                        editorValues[
-                                                                                        `${popupFieldId}-${fields.find((f) => f.id === popupFieldId)?.selectedColumn}`
-                                                                                        ] || ''
-                                                                                    }
-                                                                                    onChange={(value) =>
-                                                                                        handleEditorChangeed(
-                                                                                            value,
-                                                                                            popupFieldId,
-                                                                                            fields.find((f) => f.id === popupFieldId)?.selectedColumn
-                                                                                        )
-                                                                                    }
-                                                                                    modules={{ toolbar: toolbarOptions }}
-                                                                                />
+                                                                                    </div>
+                                                                                ))}
+                                                                                <button className='rm-btn' onClick={() => addColumn(field.id)}
+                                                                                >Add Column</button>
                                                                             </div>
+
                                                                         </div>
                                                                     );
                                                                 }
-
                                                                 if (field.id === selectedFieldId && field.type === 'richtext') {
                                                                     return (
                                                                         <div>
@@ -2727,7 +2647,6 @@ const EmailTemplateCreate = () => {
                                                                                                             style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '10px' }}
                                                                                                         />
                                                                                                     )}
-
                                                                                                     <h4>{title.length > 35 ? title.slice(0, 35) + '...' : title}</h4>
                                                                                                 </div>
                                                                                                 <div style={{ cursor: "pointer" }} onClick={() => handleRemoveProductFromForm(index)}>
@@ -3691,8 +3610,8 @@ const EmailTemplateCreate = () => {
                                                                                     <div>
 
                                                                                         <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%', height: 'auto' }} />
-                                                                                        <button className='update-image' onClick={() => setImageFieldId(field.id)}>Update Image</button>
-                                                                                        <button className='update-image' onClick={() => removeField(field.id)}>Remove Image</button>
+                                                                                        <button className='update-image rm-btn' onClick={() => setImageFieldId(field.id)}>Update Image</button>
+                                                                                        <button className='update-image rm-btn' onClick={() => removeField(field.id)}>Remove Image</button>
                                                                                     </div>
                                                                                 ) : (
                                                                                     <div>
@@ -3976,7 +3895,8 @@ const EmailTemplateCreate = () => {
                                                                                             )}
                                                                                         </div>
                                                                                     ) : (
-                                                                                        <div>
+                                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                                            <label htmlFor="add">Upload Image </label>
                                                                                             <input
                                                                                                 type="file"
                                                                                                 accept="image/*"
@@ -4005,29 +3925,29 @@ const EmailTemplateCreate = () => {
                                                                                                         alt="Uploaded Preview"
                                                                                                         style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ccc', padding: '5px' }}
                                                                                                     />
+                                                                                                    <div style={{ marginTop: '10px' }}>
+                                                                                                        <button className='rm-btn'
+                                                                                                            onClick={() => {
+                                                                                                                document.querySelector('input[type="file"]').click();
+                                                                                                            }}
+                                                                                                            style={{ marginRight: '10px' }}
+                                                                                                        >
+                                                                                                            Update Image
+                                                                                                        </button>
+                                                                                                        <button className='rm-btn'
+                                                                                                            onClick={() => {
+                                                                                                                setFields((prevFields) =>
+                                                                                                                    prevFields.map((f) =>
+                                                                                                                        f.id === selectedFieldId ? { ...f, value: '' } : f
+                                                                                                                    )
+                                                                                                                );
+                                                                                                            }}
+                                                                                                        >
+                                                                                                            Remove Image
+                                                                                                        </button>
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             )}
-                                                                                            <div style={{ marginTop: '10px' }}>
-                                                                                                <button
-                                                                                                    onClick={() => {
-                                                                                                        document.querySelector('input[type="file"]').click();
-                                                                                                    }}
-                                                                                                    style={{ marginRight: '10px' }}
-                                                                                                >
-                                                                                                    Update Image
-                                                                                                </button>
-                                                                                                <button
-                                                                                                    onClick={() => {
-                                                                                                        setFields((prevFields) =>
-                                                                                                            prevFields.map((f) =>
-                                                                                                                f.id === selectedFieldId ? { ...f, value: '' } : f
-                                                                                                            )
-                                                                                                        );
-                                                                                                    }}
-                                                                                                >
-                                                                                                    Remove Image
-                                                                                                </button>
-                                                                                            </div>
                                                                                         </div>
                                                                                     )}
                                                                                 </div>
@@ -4475,6 +4395,7 @@ const EmailTemplateCreate = () => {
                                                                                     <button onClick={() => setShowFileUpload((prev) => !prev)}> + </button>
                                                                                     {showFileUpload && (
                                                                                         <div className='form-builder-chaneging-wrap file'>
+                                                                                            <label>Uplaod Image</label>
                                                                                             <input
                                                                                                 type="file"
                                                                                                 accept="image/*"
@@ -4507,8 +4428,15 @@ const EmailTemplateCreate = () => {
                                                                                                         onChange={(e) => handleCustomIconUrlChange(e, index)}
                                                                                                         placeholder="Custom URL"
                                                                                                     />
-
+                                                                                                    <div style={{ marginTop: '10px' }}>
+                                                                                                        <button className='rm-btn'
+                                                                                                            onClick={() => handleCustomIconRemove(index)}
+                                                                                                        >
+                                                                                                            Remove Icon
+                                                                                                        </button>
+                                                                                                    </div>
                                                                                                 </div>
+
                                                                                             ))}
                                                                                         </div>
                                                                                     )}
@@ -4592,6 +4520,22 @@ const EmailTemplateCreate = () => {
 
             </div>
             <div className='form-builder-wrap-popup-inputs'>
+                <div className='save-email-templates-add'>
+                    {saveEmail && (<div className="popup ">
+                        <div className="popup-content save">
+                            <div className="save-email-template-popup">
+                                <div className='cancle-save-email' onClick={() => setSaveEmail(false)}>
+                                    <img src={cancleimg} alt="" />
+                                </div>
+                                <img src={savemail} alt="" />
+                                <h2>Success</h2>
+                                <p>Your Email has been save successfully!</p>
+                                <p className="save-btn" onClick={handleContinue}>Continue</p>
+                            </div>
+                        </div>
+                    </div>
+                    )}
+                </div>
                 <div className="form-builder-prodcut-all">
                     {isPopupOpen && (
                         <div className="popup ">
@@ -4612,19 +4556,19 @@ const EmailTemplateCreate = () => {
                                                         />
                                                     </div>
                                                     <div className='product-itm-all-inline'>
-                                                        {product.images && product.images.length > 0 && (
+                                                        {product.image ? (
                                                             <div className="images-galley">
                                                                 <img
-                                                                    src={product.images[0].src}
-                                                                    alt={product.images[0].alt || 'Product Image'}
-
+                                                                    src={product.image}
+                                                                    alt={product.title}
                                                                 />
                                                             </div>
+                                                        ) : (
+                                                            <p>No image available</p>
                                                         )}
                                                         <div className='product-itm-all-prices'>
                                                             <h3>{product.title}</h3>
-                                                            {product.variants && product.variants.length > 0 &&
-                                                                (<p className='price-product-all'>Price: ${product.variants[0].price}</p>)}
+                                                            <p className='price-product-all'>Price: ${product.price}</p>
                                                         </div>
                                                     </div>
 

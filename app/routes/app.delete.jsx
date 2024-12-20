@@ -123,6 +123,91 @@
 
 // export default Delete;
 
+
+// export const loader = async ({ request }) => {
+//     const { session } = await authenticate.admin(request);
+//     const { shop, accessToken } = session;
+//     console.log('Access Token:', accessToken);
+//     console.log('Shop:', shop);
+//     try {
+//         const response = await axios.get(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`, {
+//             headers: {
+//                 'X-Shopify-Access-Token': accessToken,
+//                 'Content-Type': 'application/json',
+//             },
+//         });
+
+//         return { charges: response.data.recurring_application_charges || [], shop };
+//     } catch (error) {
+//         console.error('Error fetching current charges:', error.response ? error.response.data : error.message);
+//         return { charges: [], error: error.response ? error.response.data : error.message };
+//     }
+// };
+
+// export const action = async ({ request }) => {
+//     const { session } = await authenticate.admin(request);
+//     const { shop, accessToken } = session;
+
+//     const method = request.method.toLowerCase();
+//     const formData = await request.formData();
+
+//     if (method === 'post') {
+//         const selectedPlan = formData.get('plan');
+//         const chargeData = selectedPlan === 'free' ? null : {
+//             recurring_application_charge: {
+//                 name: selectedPlan === 'pro' ? 'Form Builder Pro Plan' : selectedPlan === 'pro_plus' ? 'Form Builder Pro Plus Plan' : 'Form Builder Pro Yearly Plan',
+//                 price: selectedPlan === 'pro' ? 10.00 : selectedPlan === 'pro_plus' ? 20.00 : 99.90,
+//                 return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
+//                 trial_days: 7,
+//                 test: true,
+//             }
+//         };
+
+//         console.log('Charge data being sent:', JSON.stringify(chargeData, null, 2));
+
+//         try {
+//             const response = await axios.post(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`, chargeData, {
+//                 headers: {
+//                     'X-Shopify-Access-Token': accessToken,
+//                     'Content-Type': 'application/json',
+//                 },
+//             });
+
+//             console.log('Recurring Application Charge created:', response.data);
+//             const confirmationUrl = response.data.recurring_application_charge.confirmation_url;
+//             return { success: true, confirmationUrl };
+//         } catch (error) {
+//             console.error('Error creating charge:', error.response ? error.response.data : error.message);
+//             return { success: false, message: error.response ? error.response.data : error.message };
+//         }
+//     }
+
+//     if (method === 'delete') {
+//         const chargeId = formData.get('charge_id');
+//         console.log("Charge ID received:", chargeId);
+
+//         try {
+//             const response = await axios.delete(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges/${chargeId}.json`, {
+//                 headers: {
+//                     'X-Shopify-Access-Token': accessToken,
+//                     'Content-Type': 'application/json',
+//                 },
+//             });
+
+//             if (response.status !== 200) {
+//                 throw new Error('Failed to delete charge');
+//             }
+
+//             console.log("Charge deleted successfully!");
+//             return { success: true, chargeId };
+//         } catch (error) {
+//             console.error('Error deleting charge:', error);
+//             return { success: false, message: error.message || 'Error deleting charge' };
+//         }
+//     }
+// };
+
+
 import React, { useState } from 'react';
 import { useSubmit, useActionData, useLoaderData } from "@remix-run/react";
 import axios from 'axios';

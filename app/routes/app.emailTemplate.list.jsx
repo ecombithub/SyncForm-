@@ -80,7 +80,7 @@ export default function EmailTemplate() {
 
     const fetchForms = async () => {
         try {
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get('http://localhost:5001/get/data');
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
 
@@ -94,7 +94,7 @@ export default function EmailTemplate() {
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
         try {
-            const response = await axios.delete(`https://hubsyntax.online/delete/${formToDelete}`);
+            const response = await axios.delete(`http://localhost:5001/delete/${formToDelete}`);
             console.log(response.data.message);
 
             setFormsData((prevForms) =>
@@ -136,7 +136,7 @@ export default function EmailTemplate() {
         delete copiedForm._id;
 
         try {
-            const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
+            const response = await axios.post('http://localhost:5001/copy-email', copiedForm);
             console.log('Response from server:', response);
             if (response.status === 201) {
                 setFormsData((prevForms) => [...prevForms, response.data]);
@@ -298,18 +298,21 @@ export default function EmailTemplate() {
                                 {field.products.map((product, index) => (
                                     <div key={index} className="product-item">
 
-                                        {product.images && product.images.length > 0 && (
-                                            <img
-                                                src={product.images[0].src}
-                                                alt={product.images[0].alt}
-                                                width={150}
-                                                height={150}
-                                            />
+                                        {product.image ? (
+                                            <div className="images-gallery">
+                                                <img
+                                                    src={product.image}
+                                                    alt={product.images || 'Product Image'}
+                                                    style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p>No image available</p>
                                         )}
                                         <div>
                                             <h4 style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</h4>
-                                            {field.price && product.variants && product.variants.length > 0 && (
-                                                <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.variants[0].price}</p>
+                                            {field.price &&  (
+                                                <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.price}</p>
                                             )}
                                         </div>
                                         {field.showbtnn && (
@@ -364,7 +367,7 @@ export default function EmailTemplate() {
                     <div style={{ textAlign: field.richTextAlign }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
             case 'Multicolumn':
-                const columns = parseInt(field.columnCount) || 6;
+                const columns = parseInt(field.columnCount) ;
                 return (
                     <div style={{
                         display: 'grid',
@@ -425,7 +428,6 @@ export default function EmailTemplate() {
                             width: field.width,
                             backgroundColor: field.splitbg,
                             padding: `${field.splitPadding}px`,
-                            border: '1px solid #B5B7C0',
                             height: '300px',
                             display: 'flex',
                             position: 'relative',
@@ -433,21 +435,21 @@ export default function EmailTemplate() {
                             float: 'inline-start'
                         }}
                     >
-                   
-                            {field.value.startsWith("data:image/") ? (
-                                <img
-                                    src={field.value}
-                                    alt="Uploaded Preview"
-                                    style={{ width: '100%', height: 'auto' }}
-                                />
-                            ) : (
-                                <p
-                                  style={{ position: 'absolute', top: '40%' }}
-                                    dangerouslySetInnerHTML={{ __html: field.value || 'Add text...' }}
-                                />
 
-                            )}
-                        
+                        {field.value.startsWith("data:image/") ? (
+                            <img
+                                src={field.value}
+                                alt="Uploaded Preview"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        ) : (
+                            <p
+                                style={{ position: 'absolute', top: '40%' }}
+                                dangerouslySetInnerHTML={{ __html: field.value || 'Add text...' }}
+                            />
+
+                        )}
+
                     </div>
                 );
             case 'socalicon':
@@ -609,9 +611,9 @@ export default function EmailTemplate() {
                                                 </div>
 
                                             </div>
-                                      
+
                                         </div>
-                                       
+
                                     ))
                                 )}
                             </div>
