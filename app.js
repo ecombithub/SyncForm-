@@ -174,6 +174,7 @@ const EmailTemplats = new mongoose.Schema({
       headerbtnbg: { type: String, required: false },
       headerbtncolor: { type: String, required: false },
       headingbtnPadding: { type: String, required: false },
+      headingbtntopPadding : { type: String, required: false },
       headingbtnradious: { type: String, required: false },
       headingbtnFontSize: { type: String, required: false },
       headingbtnwidth: { type: String, required: false },
@@ -266,6 +267,7 @@ const EmailTemplats = new mongoose.Schema({
       imgBorderStyle: { type: String, required: false },
       products: { type: [Object], required: false },
       productsPerRow: { type: Number, default: 3 },
+      columnsPerRow: { type: Number, default: 3 },
       viewMode: { type: String, enum: ['desktop', 'mobile'], default: 'desktop' },
       price: { type: Boolean, default: false },
       productPadding: { type: String, required: false },
@@ -289,6 +291,11 @@ const EmailTemplats = new mongoose.Schema({
       productheight: { type: String, required: false },
       buttonUrl: { type: String, required: false },
       showbtnn: { type: Boolean, default: false },
+      fontsizeMulticolumn:{ type: String, required: false },
+      MulticolumnbtnBorderWidth:{ type: String, required: false },
+      MulticolumnbtnBorderColor:{ type: String, required: false },
+      MulticolumnbtnBorderStyle:{ type: String, required: false },
+      MulticolumnPadding:{ type: String, required: false },
       icons: {
         facebook: {
           url: { type: String, required: false },

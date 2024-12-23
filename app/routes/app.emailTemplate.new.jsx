@@ -27,10 +27,14 @@ import imghd from '../images/imghd.jpeg';
 import imghd1 from '../images/imghd1.png';
 import itext from '../images/itext.png';
 import editicon from '../images/editicon.png';
-import savemail from '../images/savemail.png';
+import savemail from '../images/savemail1.png';
+import canclemail from '../images/canclemail1.png';
 import multimedia from '../images/multimedia.png';
 import rich from '../images/rich.png';
 import cancleimg from '../images/cancleimg.png';
+import bk from '../images/bk.png';
+import dlrm from '../images/dlrm.png';
+import search12 from '../images/search12.png';
 import productcancle from '../images/productcancle.png';
 import { format } from 'date-fns';
 
@@ -222,10 +226,12 @@ const EmailTemplateCreate = () => {
     const [currentFieldId, setCurrentFieldId] = useState(null);
     const [isPopupVisibleed, setPopupVisibleed] = useState(false);
     const [popupFieldId, setPopupFieldId] = useState(null);
-    const [isFileInputVisible, setFileInputVisible] = useState(false);
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
     const [saveEmail, setSaveEmail] = useState(false);
+    const [cancelEmail, setCancelEmail] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [columnsPerRow, setColumnsPerRow] = useState(3);
 
     const handleFontChange = (event) => {
         setFontFamily(event.target.value);
@@ -282,6 +288,8 @@ const EmailTemplateCreate = () => {
             setSelectedFormIds(formData.form_ids || []);
             const productsPerRow = formData.fields[0]?.productsPerRow || 3;
             setProductsPerRow(productsPerRow);
+            const coloumPerRow = formData.fields[0]?.columnsPerRow || 3;
+            setColumnsPerRow(coloumPerRow);
             console.log('Products per row:', formData.fields[0]?.productsPerRow);
             const columnCount = parseInt(formData.styles.columnCount) || '';
             setColumnCount(columnCount);
@@ -302,6 +310,7 @@ const EmailTemplateCreate = () => {
             headerbtnbg: type === 'heading' ? '#FFFFFF' : undefined,
             headerbtncolor: type === 'heading' ? '#000' : undefined,
             headingbtnPadding: type === 'heading' ? 5 : undefined,
+            headingbtntopPadding: type === 'heading' ? 5 : undefined,
             headingbtnradious: type === 'heading' ? 4 : undefined,
             headingbtnFontSize: type === 'heading' ? 14 : undefined,
             headingbtnwidth: type === 'heading' ? '100' : undefined,
@@ -413,6 +422,11 @@ const EmailTemplateCreate = () => {
             displayStyle: 'flex',
             richTextAlign: type === 'heading' ? "" : undefined,
             htmltext: type === 'html convert' ? '<h1>Your HTML Here</h1>' : undefined,
+            fontsizeMulticolumn: type === 'Multicolumn' ? 14 : undefined,
+            MulticolumnbtnBorderColor: type === 'Multicolumn' ? '#000000' : undefined,
+            MulticolumnbtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
+            MulticolumnbtnBorderStyle: type === 'Multicolumn' ? 'solid' : undefined,
+            MulticolumnPadding: type === 'Multicolumn' ? 10 : undefined,
         };
     };
 
@@ -482,6 +496,7 @@ const EmailTemplateCreate = () => {
             setFields((prevFields) => [...prevFields, newField]);
             setLastProductFieldId(newField.id);
             setIsPopupOpen(true);
+            setSearchTerm('');
         } else if (type === 'Multicolumn') {
             const id = generateUniqueId();
             const newField = {
@@ -731,44 +746,44 @@ const EmailTemplateCreate = () => {
             })
             .catch((error) => console.error('API Error:', error));
     }, [shop]);
-
+    
     useEffect(() => {
         if (formDataAdd.length > 0) {
             const formIds = formDataAdd.map((form) => form.formId);
             console.log('All form IDs:', formIds);
         }
     }, [formDataAdd]);
-
+    
     const handleFormSelect = async (e) => {
         const title = e.target.value.trim();
         const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
-
+    
         if (selectedForm) {
             try {
                 const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
-
+    
                 if (data.isConnected) {
                     alert('This form is already connected to a template.');
-
+    
                     const confirmUnlink = window.confirm(
                         'Do you want to unlink it?'
                     );
-
+    
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
                             `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
-
+    
                         if (unlinkResponse.ok) {
                             alert('Template unlinked from form.');
-
+    
                             const updatedCheckResponse = await fetch(
                                 `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
-
+    
                             if (!updatedCheckData.isConnected) {
                                 console.log('Form is no longer connected to a template.');
                             }
@@ -779,7 +794,7 @@ const EmailTemplateCreate = () => {
                         return;
                     }
                 }
-
+    
                 setSelectedFormIds((prevFormIds) => {
                     if (prevFormIds.includes(selectedForm.formId)) {
                         return prevFormIds.filter((id) => id !== selectedForm.formId);
@@ -787,7 +802,7 @@ const EmailTemplateCreate = () => {
                         return [...prevFormIds, selectedForm.formId];
                     }
                 });
-
+    
                 setSelectedTitles((prevSelectedTitles) => {
                     if (prevSelectedTitles.includes(title)) {
                         return prevSelectedTitles.filter((t) => t !== title);
@@ -801,7 +816,7 @@ const EmailTemplateCreate = () => {
             }
         }
     };
-
+    
     useEffect(() => {
         console.log('Selected form IDs:', selectedFormIds);
     }, [selectedFormIds]);
@@ -813,12 +828,12 @@ const EmailTemplateCreate = () => {
             alert('Please provide a title for the template.');
             return;
         }
-
+    
         if (!id) {
             try {
                 const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
-
+    
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
                 }
             } catch (error) {
@@ -826,20 +841,20 @@ const EmailTemplateCreate = () => {
                 return;
             }
         }
-
+    
         const templateId = emailTemplateId || generateUniqueId();
         setEmailTemplateId(templateId);
-
+    
         if (fields.length === 0) {
             console.warn('No fields to create the form.');
             return;
         }
-
+    
         const validFields = fields.filter(field => field && field.type);
-
+    
         const updatedFields = validFields.map(field => {
             let value = '';
-
+    
             switch (field.type) {
                 case 'images':
                     value = field.value || 'No Image Provided';
@@ -887,21 +902,27 @@ const EmailTemplateCreate = () => {
                     break;
                 case 'Multicolumn':
                     value = field.value;
+    
                     if (!field.columnData) {
                         field.columnData = Array.from({ length: columnCount }, (_, i) => ({
                             image: columnImages[`${field.id}-${i}`] || '',
                             content: editorValues[`${field.id}-${i}`] || '',
                         }));
                     } else {
-
-                        for (let i = 1; i < columnCount; i++) {
+    
+                        for (let i = 0; i < columnCount; i++) {
                             field.columnData[i] = {
                                 image: columnImages[`${field.id}-${i}`] || field.columnData[i]?.image,
                                 content: editorValues[`${field.id}-${i}`] || field.columnData[i]?.content,
                             };
                         }
                     }
-                    field.columnCount = columnCount;
+    
+                    const validColumns = field.columnData.filter(column => column.image || column.content);
+    
+                    field.columnData = validColumns;
+                    field.columnsPerRow = columnsPerRow || 1;
+                    field.columnCount = validColumns.length;
                     break;
                 case 'product':
                     return {
@@ -912,23 +933,23 @@ const EmailTemplateCreate = () => {
                         price: showPrice,
                         buttonUrl: field.productUrl || `https://${shop}/admin/products?selectedView=all`,
                         showbtnn: showbtnn
-
+    
                     };
-
+    
                 default:
                     value = '';
             }
-
+    
             if (field.type === 'html convert') {
                 return {
                     ...field,
                     value: field.value || '',
                 };
             }
-
+    
             if (field.type === 'button') {
             }
-
+    
             if (field.type === 'socalicon') {
                 field.socalIconHeight = socalIconHeight;
                 field.socalIconWidth = socalIconWidth;
@@ -954,12 +975,12 @@ const EmailTemplateCreate = () => {
                         value: selectedIcons.send?.value || 'Send',
                     },
                 };
-
+    
                 field.customIcons = field.customIcons || [];
             } else {
                 field.icons = {};
             }
-
+    
             return {
                 ...field,
                 label: field.label || (field.type === 'button' ? 'Button' : `Default Label for ${field.type}`),
@@ -970,6 +991,7 @@ const EmailTemplateCreate = () => {
                 headerbtn: field.headerbtn || null,
                 headingLevel: field.headingLevel || null,
                 headingbtnPadding: field.headingbtnPadding || 10,
+                headingbtntopPadding: field.headingbtntopPadding || 10,
                 headingbtnradious: field.headingbtnradious || 4,
                 headingbtnwidth: field.headingbtnwidth || 100,
                 headingbtnFontSize: field.headingbtnFontSize || 16,
@@ -1062,12 +1084,16 @@ const EmailTemplateCreate = () => {
                 productheight: field.productheight || 30,
                 productbackgroundColor: field.productbackgroundColor || '#007BFF',
                 buttonLabel: field.buttonLabel || '',
-
+                fontsizeMulticolumn: field.fontsizeMulticolumn || 14,
+                MulticolumntnBorderColor: field.MulticolumntnBorderColor || '',
+                MulticolumnbtnBorderWidth: field.MulticolumnbtnBorderWidth || '',
+                MulticolumnbtnBorderStyle: field.MulticolumnbtnBorderStyle || '',
+                MulticolumnPadding: field.MulticolumnPadding || ''
             };
         });
-
+    
         console.log('Updated fields:', updatedFields);
-
+    
         const formData = {
             templateId,
             shop,
@@ -1086,7 +1112,7 @@ const EmailTemplateCreate = () => {
                 dividerColor,
             },
         };
-
+    
         try {
             setSaveEmail(!saveEmail);
             const response = id
@@ -1095,7 +1121,7 @@ const EmailTemplateCreate = () => {
             console.log('Form saved successfully with title:', trimmedTitle);
             const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
             console.log(successMessage, response.data);
-
+    
             if (!id) {
                 resetFormState();
             }
@@ -1123,6 +1149,7 @@ const EmailTemplateCreate = () => {
     const handleContinue = () => {
         navigate('/app/emailTemplate/list');
         setSaveEmail(false);
+        setCancelEmail(false)
     };
 
 
@@ -1162,8 +1189,10 @@ const EmailTemplateCreate = () => {
         setEmailWidth(mode === 'desktop' ? '800px' : '400px');
         if (mode === 'mobile') {
             setProductsPerRow(1);
+            setColumnsPerRow(1);
         } else {
             setProductsPerRow(3);
+            setColumnsPerRow(3);
         }
     };
 
@@ -1506,38 +1535,9 @@ const EmailTemplateCreate = () => {
         );
     };
 
-    const handleImageUpload1 = (e, popupFieldId, selectedColumn) => {
-        const file = e.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-
-            setFields((prevFields) => {
-                const updatedFields = prevFields.map((field) => {
-                    if (field.id === popupFieldId) {
-                        const updatedColumnData = [...field.columnData];
-                        updatedColumnData[selectedColumn].image = imageUrl;
-                        return { ...field, columnData: updatedColumnData };
-                    }
-                    return field;
-                });
-                return updatedFields;
-            });
-        }
-    };
-
-    const handleContentChange = (value, popupFieldId, selectedColumn) => {
-        setFields((prevFields) => {
-            const updatedFields = prevFields.map((field) => {
-                if (field.id === popupFieldId) {
-                    const updatedColumnData = [...field.columnData];
-                    updatedColumnData[selectedColumn].content = value;
-                    return { ...field, columnData: updatedColumnData };
-                }
-                return field;
-            });
-            return updatedFields;
-        });
-    };
+    const filteredProducts = currentProducts.filter((product) =>
+        product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const handleEditChange = (value) => {
         console.log("Editor value changed:", value);
@@ -1636,7 +1636,7 @@ const EmailTemplateCreate = () => {
 
     const removeColumn = (fieldId, index) => {
         console.log(`Attempting to remove column at index: ${index}`);
-    
+
         const updatedFields = fields.map(f =>
             f.id === fieldId
                 ? {
@@ -1656,27 +1656,47 @@ const EmailTemplateCreate = () => {
         setCustomIcons((prevIcons) => prevIcons.filter((_, i) => i !== index));
     };
 
-    const handleImageChange1 = (e, fieldId, columnIndex) => {
+    const handleImageChange1 = (e, fieldId, index) => {
         const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const updatedFields = fields.map(f =>
-                f.id === fieldId
-                    ? {
-                        ...f,
-                        columnData: f.columnData.map((col, i) =>
-                            i === columnIndex ? { ...col, image: reader.result } : col
-                        ),
-                    }
-                    : f
-            );
-            setFields(updatedFields);
-        };
         if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const updatedFields = fields.map(f =>
+                    f.id === fieldId
+                        ? {
+                            ...f,
+                            columnData: f.columnData.map((col, i) =>
+                                i === index ? { ...col, image: reader.result } : col
+                            ),
+                        }
+                        : f
+                );
+                setFields(updatedFields);
+            };
             reader.readAsDataURL(file);
         }
     };
+    const handleCancle = () => {
+        setCancelEmail(true);
+    }
 
+    const removeImage = (fieldId, index) => {
+        const updatedFields = fields.map(f =>
+            f.id === fieldId
+                ? {
+                    ...f,
+                    columnData: f.columnData.map((col, i) =>
+                        i === index ? { ...col, image: null } : col
+                    ),
+                }
+                : f
+        );
+        setFields(updatedFields);
+    };
+
+    const handleColoumPerRowChange = (e) => {
+        setColumnsPerRow(Number(e.target.value));
+    };
 
 
     return (
@@ -1962,10 +1982,12 @@ const EmailTemplateCreate = () => {
                                                                             }}
                                                                         >
                                                                             <div className='email-input-field-h1' style={{
-                                                                                position: 'absolute', top: '40%',
+                                                                                position: 'absolute', top: '35%',
                                                                                 width: '100%',
                                                                                 textAlign: field.headingTextAlign || '',
                                                                                 padding: `${field.headingPadding}px`,
+
+
                                                                             }}>
                                                                                 {React.createElement(HeadingTag, {
                                                                                     style: {
@@ -1973,6 +1995,7 @@ const EmailTemplateCreate = () => {
                                                                                         fontSize: `${field.headingFontSize || 40}px`,
                                                                                         color: field.headingColor,
                                                                                         letterSpacing: `${field.headingLetterSpacing}px`,
+                                                                                        lineHeight: '48px'
                                                                                     }
                                                                                 }, field.headingText || field.value)}
 
@@ -1998,7 +2021,10 @@ const EmailTemplateCreate = () => {
                                                                                             width: `${field.headingbtnwidth}px`,
                                                                                             fontSize: `${field.headingbtnFontSize}px`,
                                                                                             borderRadius: `${field.headingbtnradious}px`,
-                                                                                            padding: `${field.headingbtnPadding}px`,
+                                                                                            paddingLeft: `${field.headingbtnPadding}px`,
+                                                                                            paddingRight: `${field.headingbtnPadding}px`,
+                                                                                            paddingTop: `${field.headingbtntopPadding}px`,
+                                                                                            paddingBottom: `${field.headingbtntopPadding}px`,
                                                                                             borderWidth: `${field.headingbtnBorderWidth}px`,
                                                                                             borderStyle: field.headingbtnBorderStyle,
                                                                                             borderColor: field.headingbtnBorderColor,
@@ -2339,40 +2365,48 @@ const EmailTemplateCreate = () => {
                                                                     <div key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field columns-container ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        data-columns={field.columnCount}>
+                                                                    >
+                                                                        <div className="columns-wrapper" style={{ display: 'grid', gap: '10px', gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)` }}>
+                                                                            {Array.from({ length: field.columnCount }, (_, index) => (
+                                                                                <div
+                                                                                    key={index}
+                                                                                    style={{
+                                                                                        fontSize: `${field.fontsizeMulticolumn}px`,
+                                                                                        borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
+                                                                                        borderStyle: field.MulticolumnbtnBorderStyle,
+                                                                                        borderColor: field.MulticolumnbtnBorderColor,
+                                                                                        padding: `${field.MulticolumnPadding}px`
+                                                                                    }}
+                                                                                    className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
+                                                                                    onClick={(e) => handleColumnClick(field.id, index)}
 
-                                                                        {Array.from({ length: field.columnCount }, (_, index) => (
-                                                                            <div
-                                                                                key={index}
-                                                                                className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
-                                                                                onClick={(e) => handleColumnClick(field.id, index)}
+                                                                                >
+                                                                                    {field.columnData[index].image && (
+                                                                                        <img
+                                                                                            src={field.columnData[index].image}
+                                                                                            alt={`Uploaded for Column ${index + 1}`}
+                                                                                            style={{ width: '100px', height: '100px', marginTop: '10px' }}
+                                                                                        />
+                                                                                    )}
 
-                                                                            >
-                                                                                {field.columnData[index].image && (
-                                                                                    <img
-                                                                                        src={field.columnData[index].image}
-                                                                                        alt={`Uploaded for Column ${index + 1}`}
-                                                                                        style={{ width: '100px', height: '100px', marginTop: '10px' }}
-                                                                                    />
-                                                                                )}
-                                                                                
-                                                                                {field.columnData[index].content ? (
-                                                                                    <div
-                                                                                        dangerouslySetInnerHTML={{
-                                                                                            __html: field.columnData[index].content,
-                                                                                        }}
-                                                                                    />
-                                                                                ) : (
-                                                                                    <div style={{ color: 'gray' }}>
-                                                                                        <h2>Column</h2>
-                                                                                        Elevate your online store with our easy-to-use Text Box feature.
-                                                                                        It's a game-changer for personalization, allowing customers to add their
-                                                                                        special touch directly from a user-friendly drop-down menu.
-                                                                                    </div>
-                                                                                )}
+                                                                                    {field.columnData[index].content ? (
+                                                                                        <div
+                                                                                            dangerouslySetInnerHTML={{
+                                                                                                __html: field.columnData[index].content,
+                                                                                            }}
+                                                                                        />
+                                                                                    ) : (
+                                                                                        <div style={{ color: 'gray' }}>
+                                                                                            <h2>Column</h2>
+                                                                                            Elevate your online store with our easy-to-use Text Box feature.
+                                                                                            It's a game-changer for personalization, allowing customers to add their
+                                                                                            special touch directly from a user-friendly drop-down menu.
+                                                                                        </div>
+                                                                                    )}
 
-                                                                            </div>
-                                                                        ))}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
@@ -2545,11 +2579,11 @@ const EmailTemplateCreate = () => {
                                                                                     <div key={index} className="column-setting">
                                                                                         <div className=' form-builder-chaneging-wrap column-settings-show-apps'>
                                                                                             <label>Column {index + 1}</label>
-                                                                                            <button className='rm-btn'
+                                                                                            <button className='rm-btn dl'
                                                                                                 onClick={() => removeColumn(field.id, index)}
-                                                                                                
+
                                                                                             >
-                                                                                                Remove Column
+                                                                                                <img src={dlrm} alt="" />
                                                                                             </button>
                                                                                         </div>
                                                                                         <ReactQuill
@@ -2577,23 +2611,115 @@ const EmailTemplateCreate = () => {
                                                                                                 onChange={(e) => handleImageChange1(e, field.id, index)}
                                                                                             />
                                                                                         </div>
-                                                                                        {field.columnData[index].image && (
+                                                                                        {field.columnData[index].image ? (
                                                                                             <div className='form-builder-chaneging-wrap images-upload'>
-
                                                                                                 <img
                                                                                                     src={field.columnData[index].image}
                                                                                                     alt={`Preview for Column ${index + 1}`}
                                                                                                     style={{ width: '100%' }}
                                                                                                 />
+                                                                                                <button
+                                                                                                    className='rm-btn remove-coloum'
+                                                                                                    onClick={() => removeImage(field.id, index)}
+                                                                                                >
+                                                                                                      <img src={bk}alt="" />
+                                                                                                </button>
+
                                                                                             </div>
-                                                                                        )}
+                                                                                        ) : null}
 
                                                                                     </div>
                                                                                 ))}
                                                                                 <button className='rm-btn' onClick={() => addColumn(field.id)}
                                                                                 >Add Column</button>
                                                                             </div>
+                                                                            <div className="product-detalis-all">
+                                                                                <h3>Coloum layout</h3>
+                                                                                <div className="form-builder-chaneging-wrap select">
+                                                                                    <select onChange={handleColoumPerRowChange} value={columnsPerRow}>
+                                                                                        {[...Array(6).keys()].map((i) => (
+                                                                                            <option key={i + 1} value={i + 1}>
+                                                                                                {i + 1} per row
+                                                                                            </option>
+                                                                                        ))}
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label>Padding (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.MulticolumnPadding}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, MulticolumnPadding: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Font-Size</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.fontsizeMulticolumn}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, fontsizeMulticolumn: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Font-Size"
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <label>Border Color</label>
+                                                                                <input
+                                                                                    type="color"
+                                                                                    value={field.MulticolumnbtnBorderColor}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, MulticolumnbtnBorderColor: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
 
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label>Border Width (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.MulticolumnbtnBorderWidth}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, MulticolumnbtnBorderWidth: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Border Style</label>
+                                                                                <select
+                                                                                    value={field.MulticolumnbtnBorderStyle}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, MulticolumnbtnBorderStyle: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="solid">Solid</option>
+                                                                                    <option value="dashed">Dashed</option>
+                                                                                    <option value="dotted">Dotted</option>
+                                                                                </select>
+                                                                            </div>
                                                                         </div>
                                                                     );
                                                                 }
@@ -3155,19 +3281,37 @@ const EmailTemplateCreate = () => {
                                                                                         />
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
-                                                                                        <label>Button Padding</label>
-                                                                                        <input
-                                                                                            type="number"
-                                                                                            value={field.headingbtnPadding}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, headingbtnPadding: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                            placeholder="Padding"
-                                                                                        />
+                                                                                        <label>Button Padding (px)</label>
+                                                                                        <div className='form-builder-chanege-top-bottom'>
+                                                                                            <label> Top & Bottom </label>
+                                                                                            <input
+                                                                                                type="number"
+                                                                                                value={field.headingbtnPadding}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, headingbtnPadding: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                                placeholder="Padding"
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className='form-builder-chanege-top-bottom'>
+                                                                                            <label> Left & Right</label>
+                                                                                            <input
+                                                                                                type="number"
+                                                                                                value={field.headingbtntopPadding}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, headingbtntopPadding: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                                placeholder="Padding"
+                                                                                            />
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Button Radious</label>
@@ -3607,9 +3751,9 @@ const EmailTemplateCreate = () => {
                                                                             <div>
 
                                                                                 {field.value ? (
-                                                                                    <div>
+                                                                                    <div className='form-builder-img-wrap'>
 
-                                                                                        <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%', height: 'auto' }} />
+                                                                                        <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%', height: '170px' }} />
                                                                                         <button className='update-image rm-btn' onClick={() => setImageFieldId(field.id)}>Update Image</button>
                                                                                         <button className='update-image rm-btn' onClick={() => removeField(field.id)}>Remove Image</button>
                                                                                     </div>
@@ -4510,7 +4654,7 @@ const EmailTemplateCreate = () => {
                     </div>
                     <div className='btn_form_bulider'>
                         <div className="form-submission-wrp">
-                            <button className="cancle-form-btn" >Cancle</button>
+                            <button className="cancle-form-btn" onClick={handleCancle} >Cancle</button>
                         </div>
                         <div className="form-submission-wrp">
                             <button className="create-form-btn action_btn" onClick={createOrUpdateForm} >Save</button>
@@ -4536,6 +4680,22 @@ const EmailTemplateCreate = () => {
                     </div>
                     )}
                 </div>
+                <div className='save-email-templates-add'>
+                    {cancelEmail && (<div className="popup ">
+                        <div className="popup-content save">
+                            <div className="save-email-template-popup">
+                                <div className='cancle-save-email' onClick={() => setCancelEmail(false)}>
+                                    <img src={cancleimg} alt="" />
+                                </div>
+                                <img src={canclemail} alt="" />
+                                <h2>Warning</h2>
+                                <p>Are you sure you want to cansel this email?</p>
+                                <p className="save-btn cancel" onClick={handleContinue}>Cancel</p>
+                            </div>
+                        </div>
+                    </div>
+                    )}
+                </div>
                 <div className="form-builder-prodcut-all">
                     {isPopupOpen && (
                         <div className="popup ">
@@ -4543,9 +4703,18 @@ const EmailTemplateCreate = () => {
                                 <button className="procduct-canclebtn" onClick={handleClosePopup}>
                                     <img src={productcancle} />
                                 </button>
+
+                                <div className="form-builder-search-bar search-bar">
+                                    <input id="search" type="search" placeholder="Search" value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)} />
+                                    <div className="form_build_icon_search">
+                                        <img src={search12} alt="" />
+                                    </div>
+                                </div>
+
                                 <div className="product-list">
-                                    {currentProducts.length > 0 ? (
-                                        currentProducts.map((product) => (
+                                    {filteredProducts.length > 0 ? (
+                                        filteredProducts.map((product) => (
                                             <div key={product.id} className="product-item">
                                                 <div className='product-item-flex'>
                                                     <div className='custom-checkbox'>
@@ -4585,8 +4754,9 @@ const EmailTemplateCreate = () => {
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <div className='show-all enteries'>
-                                            Showing data {currentProducts.length} of {products.length} products
+                                            Showing data {filteredProducts.length} of {products.length} products
                                         </div>
+
                                         <nav>
                                             <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
                                                 <li>

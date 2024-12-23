@@ -153,7 +153,7 @@ function Index() {
               billingOn: new Date().toISOString(),
             };
 
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            const response = await axios.post('https://hubsyntax.online/ayment/confirm', paymentData);
             console.log("Payment data saved response (new free plan):", response.data);
             setResponseData(response.data);
           }
@@ -185,7 +185,7 @@ function Index() {
 
     const fetchForms = async (userPlan) => {
       try {
-          const response = await fetch('https://hubsyntax.online/get-forms');
+        const response = await fetch('https://hubsyntax.online/get-forms');
           if (!response.ok) {
               throw new Error('Network response was not ok');
           }
@@ -206,7 +206,7 @@ function Index() {
                       if (form.shop === shop) { 
                           console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
                           try {
-                              const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+                            const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
                                   method: 'DELETE',
                               });
                               if (!deleteResponse.ok) {
@@ -247,6 +247,9 @@ function Index() {
     navigator('/app/pricing');
   }
 
+ 
+
+
   return (
     <>
       <div className="form_builder_dashboard">
@@ -258,7 +261,7 @@ function Index() {
             <div className="form_build_count">
               <p style={{ fontWeight: 800 }}>Contact with us</p>
               <p>for fast installation</p>
-              <button>Contact us today</button>
+            <button >Contact us today</button>
             </div>
             <div className="contact_img">
               <img src={user} alt="" />

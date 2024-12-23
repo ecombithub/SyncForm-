@@ -17,7 +17,7 @@
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `http://localhost:4001/get-form/${id}`,
+        url: `https://hubsyntax.online/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -53,6 +53,7 @@
           borderWidth: formData.styles.borderWidth || '',
           borderStyle: formData.styles.borderStyle || '',
           borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
+          margin:'auto'
         });     
       }
       container.append(`<h2 style="display:none">${formshop}</h2>`);
@@ -61,14 +62,17 @@
 
       if (formData.fields && formData.fields.length > 0) {
         formData.fields.forEach((field) => {
-          const floatStyle = field.type === 'text' || field.type === 'name' ? 'float: inline-start;' : '';
+          const floatStyle = (field.type === 'text' || field.type === 'name') && parseFloat(field.width) <= 50
+            ? 'float: inline-start;' 
+            : '';
+      
           const fieldHtml = `
                   <div key="${field.id}" style="width: ${
             field.width
           }; ${floatStyle}"  class="${`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`}">
-                    ${
-                      field.type !== 'heading' && field.type !== 'description' && field.type !== 'button'
-                        ? `<label>${field.label}</label>`
+                      ${
+                      field.type !== 'heading' && field.type !== 'description' && field.type !== 'button' && field.type !== 'toggle' && field.type !== 'divider'
+                        ? `<label>${field.label}</label>` 
                         : ''
                     }
                      ${getFieldInput(
@@ -102,7 +106,42 @@
           return `<input type="text" placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'};padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Text Input'}" />`;
-        case 'textarea':
+          case 'toggle':
+          return `
+            <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
+              <input 
+                type="checkbox" 
+                style="display: none;" 
+                aria-label="${field.label || 'Toggle'}" 
+                 onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#white'; 
+                          this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';" 
+              />
+              <span style="
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #cccccc;
+                transition: 0.4s;
+                border-radius: 24px;
+              "></span>
+              <span style="
+                position: absolute;
+                content: '';
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: 0.4s;
+                border-radius: 50%;
+                transform: translateX(0);
+              "></span>
+            </label>`;
+        
+          case 'textarea':
           return `<textarea placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Textarea'}"></textarea>`;
@@ -218,7 +257,7 @@
                   style="background-color: ${
                     field.backgroundColor || '#007bff'
                   }; height: ${field.buttonHeight || '40px'}; width: ${field.buttonWidth || '150px'};
-                   font-size: ${field.fontSize}px;
+                   font-size: ${field.fontSize};
                     padding: ${field.padding || '10px'};
                     border-width: ${field.buttonBorderWidth}px;
                     border-style: ${field.buttonBorderStyle || 'solid'};
@@ -268,7 +307,7 @@
       console.log('Email:', formData.email);
 
       $.ajax({
-        url: 'http://localhost:4001/get/data',
+        url: 'https://hubsyntax.online/get/data',
         method: 'GET',
         data: { formId: formData.id },
         success: function (response) {
@@ -328,7 +367,7 @@
           console.log('Form Data:', JSON.stringify(formData));
 
           $.ajax({
-            url: 'http://localhost:4001/api/forms',
+            url: 'https://hubsyntax.online/api/forms',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
@@ -350,7 +389,7 @@
               }, 2000);
 
               $.ajax({
-                url: 'http://localhost:4001/api/template',
+                url: 'https://hubsyntax.online/api/template',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({

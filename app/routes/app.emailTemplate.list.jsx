@@ -225,7 +225,10 @@ export default function EmailTemplate() {
                                         width: `${field.headingbtnwidth}px`,
                                         fontSize: `${field.headingbtnFontSize}px`,
                                         borderRadius: `${field.headingbtnradious}px`,
-                                        padding: `${field.headingbtnPadding}px`,
+                                        paddingLeft:`${field.headingbtnPadding}px`,
+                                        paddingRight:`${field.headingbtnPadding}px`,
+                                        paddingTop:`${field.headingbtntopPadding}px`,
+                                        paddingBottom:`${field.headingbtntopPadding}px`,
                                         borderWidth: `${field.headingbtnBorderWidth}px`,
                                         borderStyle: field.headingbtnBorderStyle,
                                         borderColor: field.headingbtnBorderColor,
@@ -366,33 +369,37 @@ export default function EmailTemplate() {
                 return <div>
                     <div style={{ textAlign: field.richTextAlign }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
-            case 'Multicolumn':
-                const columns = parseInt(field.columnCount) ;
-                return (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(3, 1fr)`,
-                        gap: '10px',
-                    }}>
-                        {field.columnData.map((column, index) => (
-                            <div
-                                key={column._id}
-                                style={{
-                                    padding: '10px',
-                                    boxSizing: 'border-box',
-                                    border: '1px solid #ccc',
-                                }}
-                            >
-
-                                {column.image && (
-                                    <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
-                                )}
-
-                                <div dangerouslySetInnerHTML={{ __html: column.content }} />
-                            </div>
-                        ))}
-                    </div>
-                );
+          case 'Multicolumn':
+            const columns = parseInt(field.columnCount);
+            const columnsPerRow = field.columnsPerRow || 1;
+            return (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
+                    gap: '10px',
+                }}>
+                    {field.columnData.map((column, index) => (
+                        <div
+                            key={column._id}
+                            style={{
+                                display:'flex',
+                                justifyContent:'center',
+                                fontSize: `${field.fontsizeMulticolumn}px`,
+                                borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
+                                borderStyle: field.MulticolumnbtnBorderStyle,
+                                borderColor: field.MulticolumnbtnBorderColor,
+                                 padding: `${field.MulticolumnPadding}px`
+                            }}
+                        >
+                            {column.image && (
+                                <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
+                            )}
+        
+                            <div dangerouslySetInnerHTML={{ __html: column.content }} />
+                        </div>
+                    ))}
+                </div>
+            );
 
             case 'html convert':
                 return <div style={{ padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;

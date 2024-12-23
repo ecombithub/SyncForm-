@@ -3,7 +3,7 @@
 client_id = "9a390d651825c642518ca581ba64c579"
 name = "Form Builder HUB"
 handle = "form-builder-hub"
-application_url = "https://jewelry-min-disposal-tenant.trycloudflare.com"
+application_url = "https://barnes-lion-adsl-pays.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_customers,read_orders,read_products,read_themes,write_customers,w
 
 [auth]
 redirect_urls = [
-  "https://jewelry-min-disposal-tenant.trycloudflare.com/auth/callback",
-  "https://jewelry-min-disposal-tenant.trycloudflare.com/auth/shopify/callback",
-  "https://jewelry-min-disposal-tenant.trycloudflare.com/api/auth/callback"
+  "https://barnes-lion-adsl-pays.trycloudflare.com/auth/callback",
+  "https://barnes-lion-adsl-pays.trycloudflare.com/auth/shopify/callback",
+  "https://barnes-lion-adsl-pays.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

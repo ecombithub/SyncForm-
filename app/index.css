@@ -14,6 +14,14 @@ button.action_btn {
     cursor: pointer;
 
 }
+.modal-costomer .loaddr img {
+    width: 10%;
+}
+
+.modal-costomer .loaddr {
+    display: flex;
+    justify-content: center;
+}
 
 .builder-sections-newforms img {
     width: 13%;
@@ -97,7 +105,7 @@ button.action_btn {
     float: left;
     padding: 10px 6px;
     border-radius: 5px;
-    height: 100vh;
+    height: 96vh;
     overflow: hidden;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -118,9 +126,6 @@ button.action_btn {
 .controls-main-wrp .form-builder-wrp::-webkit-scrollbar-track {
     background: transparent;
 }
-
-
-
 
 .builder_block_blank {
     position: absolute;
@@ -568,12 +573,20 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
     border-radius: 10px;
 }
 
+button.procduct-canclebtn img {
+    width: 60%;
+}
+
 .form-builder-create.section-wrp .form-details {
     width: 40%;
     border: 1px solid rgb(203, 203, 203);
-    padding: 25px;
     border-radius: 8px;
     position: relative;
+    overflow: hidden;
+    overflow-y: auto;
+    height: 60vh;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
 
 }
 
@@ -737,8 +750,8 @@ th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--verticalAlignTop.Polaris-Dat
     position: relative;
     display: inline-block;
     width: 60px;
-    height: 27px;
-    padding-left: 50px;
+    height: 22px;
+    padding-left: 45px;
 }
 
 .toggle-switch .slider {
@@ -756,11 +769,11 @@ th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--verticalAlignTop.Polaris-Dat
 .toggle-switch .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
+    height: 14px;
+    width: 14px;
     border-radius: 50%;
-    left: 8px;
-    bottom: 6px;
+    left: 3px;
+    bottom: 4px;
     background-color: white;
     transition: .4s;
 }
@@ -1602,7 +1615,7 @@ button.cancel {
 .form_builder_build {
     width: 100%;
     max-width: 48%;
-    margin: 40px 0px 0px 0px;
+    margin: 40px 0px 40px 0px;
     border-radius: 20px;
     /* padding: 20px; */
     display: flex;
@@ -1610,6 +1623,9 @@ button.cancel {
     align-items: center;
 }
 
+.form_builder_build.email {
+    margin-bottom: 0;
+}
 
 .btn_form_builder {
     position: absolute;
@@ -4053,20 +4069,36 @@ button.remove-options img {
     color: #180000;
 }
 
-.columns-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 20px 0;
-    grid-template-rows: auto;
-}
-
 .column {
     border: 1px solid black;
-    padding: 10px;
     box-sizing: border-box;
     text-align: center;
     min-width: 100px;
+    padding: 10px;
+}
+
+iframe#tidio-chat-iframe {
+    bottom: 70px !important;
+}
+
+.column-setting {
+    border: 1px solid #404B52;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+button.rm-btn.dl img {
+    width: 100%;
+}
+
+button.rm-btn.dl {
+    width: 12%;
+    padding: 0 8px;
+}
+
+button.rm-btn.remove-coloum img {
+    width: 100%;
 }
 
 .form-builder-wrap-popup-inputs .popup-content .options {
@@ -4083,10 +4115,51 @@ button.remove-options img {
     position: relative;
 }
 
+.form-builder-search-bar.search-bar {
+    width: 40%;
+    margin-bottom: 20px;
+    border: 1px solid #B5B7C0;
+   
+}
+
+.form-builder-chanege-top-bottom label {
+    width: 60%;
+}
+
+.form-builder-chanege-top-bottom {
+    display: flex;
+    gap: 10px;
+}
+.form-builder-chaneging-wrap.images-upload{
+    position: relative;
+}
+
+button.rm-btn.remove-coloum {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    padding: 4px;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    background: none !important;
+    border: none;
+    width: 15%;
+}
+
+.controls-main-wrp.email-tempalte div#bg_change {
+    height: 100vh !important;
+}
+
+.save-email-template-popup p.save-btn.cancel {
+    background: red;
+    border: 1px solid red;
+}
+
 button.procduct-canclebtn {
     position: absolute;
-    right: -24px;
-    top: -24px;
+    right: -22px;
+    top: -16px;
     background: transparent !important;
     border: none !important;
     padding: 0 !important;
@@ -4225,6 +4298,10 @@ button.show-data-icon {
     cursor: pointer;
 }
 
+
+.form-build-checkbox-wrp-options.select select {
+    margin-bottom: 0 !important;
+}
 
 .form-builder-chaneging-wrap.column-settings-show-apps {
     margin-top: 20px;
@@ -5286,3 +5363,66 @@ button.show-data-icon {
         width: 100% !important;
     }
 }
+
+.custom-toggle {
+    display: inline-block;
+    position: relative;
+    width: 50px;
+    height: 24px;
+    margin-top: 5px;
+  }
+  
+  .custom-toggle input {
+    display: none;
+  }
+  
+  .custom-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+  }
+  
+  .custom-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+  
+  .custom-toggle input:checked + .slider {
+    background-color: #45A7F6; 
+  }
+  
+  .custom-toggle input:checked + .slider:before {
+    transform: translateX(26px); 
+  }
+  
+  .custom-toggle input:focus + .slider {
+    box-shadow: 0 0 1px #45A7F6;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  

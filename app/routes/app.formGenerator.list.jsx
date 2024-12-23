@@ -156,6 +156,8 @@ const Formdata = () => {
         }
     };
 
+
+
     const openDeletePopup = (formId) => {
         setFormToDelete(formId);
         setDeletePopup(true);
@@ -244,12 +246,12 @@ const Formdata = () => {
                 const formsData = await response1.json();
 
                 const filteredForms = formsData.filter((form) => form.shop === shop);
-        
+
                 setCreatedForms(filteredForms);
-        
+                console.log(filteredForms)
                 const response2 = await axios.get('https://hubsyntax.online/api/forms');
                 const apiFormsData = response2.data;
-        
+
                 const updatedForms = filteredForms.map((form1) => {
                     const matchingForm = apiFormsData.find((form2) => form2.id === form1.formId);
                     return {
@@ -259,9 +261,9 @@ const Formdata = () => {
                             : 0,
                     };
                 });
-        
+
                 setCreatedForms(updatedForms);
-        
+
                 if (userPlan?.plan === 'free' && userPlan.status === 'active') {
                     const formsToDisable = updatedForms.slice(1);
                     for (const form of formsToDisable) {
@@ -638,14 +640,20 @@ const Formdata = () => {
                                 <div className='form-builder-create-wrped'>
                                     {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
                                         form.formId === currentFormId && (
-                                            <div key={form.formId} style={{ ...form.styles, backgroundSize: 'cover', }} className="form-details">
+                                            <div key={form.formId} style={{ ...form.styles, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
                                                 {form.fields.map(field => (
                                                     <div key={field.id} style={{ width: field.width }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
-                                                        {field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' &&<label>{field.label}</label>}
+                                                      {field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label>{field.label}</label>}
                                                         {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
                                                         {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
                                                         {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: field.inputBorderRadious }}></textarea>}
                                                         {field.type === 'description' && <p>{field.text}</p>}
+                                                        {field.type === 'toggle' && (
+                                                            <label className="custom-toggle">
+                                                                <input type="checkbox" aria-label={field.label} />
+                                                                <span className="slider"></span>
+                                                            </label>
+                                                        )}
                                                         {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize }}>{field.text}</h1>}
                                                         {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
                                                         {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
@@ -673,7 +681,7 @@ const Formdata = () => {
                                                         )}
                                                         {field.type === 'radio' && (
                                                             <div>
-                                                                <label>{field.label || "Radio Button"} </label>
+
                                                                 {field.options.map(option => (
                                                                     <div key={option.id} className='form_radio_flex'>
                                                                         <input

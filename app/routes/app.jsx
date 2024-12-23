@@ -6,11 +6,12 @@ import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import { useState } from "react";
+import spinner from '../images/spinner.gif';
 
 const Loader = () => (
   <div className="modal-costomer">
-    <div className="loader">
-
+    <div className="loaddr">
+       <img src={spinner}/>
     </div>
   </div>
 );
