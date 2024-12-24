@@ -153,7 +153,7 @@ function Index() {
               billingOn: new Date().toISOString(),
             };
 
-            const response = await axios.post('https://hubsyntax.online/ayment/confirm', paymentData);
+            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
             console.log("Payment data saved response (new free plan):", response.data);
             setResponseData(response.data);
           }
@@ -186,47 +186,47 @@ function Index() {
     const fetchForms = async (userPlan) => {
       try {
         const response = await fetch('https://hubsyntax.online/get-forms');
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-  
-          const data = await response.json();
-          const filteredForms = data.filter((form) => form.shop === shop);
-          setCreatedForms(filteredForms);
-          console.log('Filtered Forms:', filteredForms);
-  
-          if (userPlan?.plan === 'free' && userPlan.status === 'active') {
-  
-              const formsToKeep = filteredForms.slice(0, 1); 
-  
-              const formsToDisable = filteredForms.slice(1);
-  
-              await Promise.all(
-                  formsToDisable.map(async (form) => {
-                      if (form.shop === shop) { 
-                          console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
-                          try {
-                            const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
-                                  method: 'DELETE',
-                              });
-                              if (!deleteResponse.ok) {
-                                  throw new Error(`Failed to delete form with ID ${form.formId}`);
-                              }
-                          } catch (error) {
-                              console.error(`Error deleting form with ID ${form.formId}:`, error);
-                          }
-                      }
-                  })
-              );
-  
-              setCreatedForms(formsToKeep);
-          }
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        const filteredForms = data.filter((form) => form.shop === shop);
+        setCreatedForms(filteredForms);
+        console.log('Filtered Forms:', filteredForms);
+
+        if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+
+          const formsToKeep = filteredForms.slice(0, 1);
+
+          const formsToDisable = filteredForms.slice(1);
+
+          await Promise.all(
+            formsToDisable.map(async (form) => {
+              if (form.shop === shop) {
+                console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
+                try {
+                  const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+                    method: 'DELETE',
+                  });
+                  if (!deleteResponse.ok) {
+                    throw new Error(`Failed to delete form with ID ${form.formId}`);
+                  }
+                } catch (error) {
+                  console.error(`Error deleting form with ID ${form.formId}:`, error);
+                }
+              }
+            })
+          );
+
+          setCreatedForms(formsToKeep);
+        }
       } catch (error) {
-          setError(error.message);
-          console.error('Error fetching forms:', error);
+        setError(error.message);
+        console.error('Error fetching forms:', error);
       }
-  };
-  
+    };
+
     fetchPaymentPlan();
   }, [shop]);
 
@@ -247,7 +247,7 @@ function Index() {
     navigator('/app/pricing');
   }
 
- 
+
 
 
   return (
@@ -261,7 +261,13 @@ function Index() {
             <div className="form_build_count">
               <p style={{ fontWeight: 800 }}>Contact with us</p>
               <p>for fast installation</p>
-            <button >Contact us today</button>
+              <button style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  window.tidioChatApi?.open();
+                }}
+              >
+                Contact us today
+              </button>
             </div>
             <div className="contact_img">
               <img src={user} alt="" />

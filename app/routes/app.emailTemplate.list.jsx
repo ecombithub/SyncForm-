@@ -190,7 +190,8 @@ export default function EmailTemplate() {
                     borderColor: field.headingBorderColor,
                     width: `${field.bannerImageWidth}%`,
                     height: field.bannerImageHeight || '400px',
-                    position: 'relative'
+                    position: 'relative',
+                    opacity: field.headeropacity || '',
                 }}>
                     <div style={{
                         position: 'absolute', top: '40%',
@@ -558,7 +559,7 @@ export default function EmailTemplate() {
                                         </span>
                                     </span>
                                     <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
-                                        <div onClick={handleSelectAllForms}>All Forms</div>
+                                        <div onClick={handleSelectAllForms}>All Templates</div>
                                         {currentForms.map(form => (
                                             <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
                                                 {form.title}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Sortable from 'sortablejs';
 import { format } from 'date-fns';
@@ -171,6 +172,7 @@ const Formgenerated = () => {
     const [padding, setPadding] = useState('20');
     const [borderRadius, setBorderRadius] = useState('0');
     const [borderColor, setBorderColor] = useState('#ffffff');
+    const [borderColorcode, setBorderColorcode] = useState('#ffffff');
     const formRef = useRef(null);
     const [isFieldEnabled, setIsFieldEnabled] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -213,8 +215,16 @@ const Formgenerated = () => {
     const { shop } = useLoaderData() || {};
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
-    const [formCreated, setFormCreated] = useState(false);  
-    
+    const [inputRadious, setInputRadious] = useState('4');
+    const [inputwidth, setInputWidth] = useState('1');
+    const [inputborderColor, setInputBorderColor] = useState('#B5B7C0');
+    const [inputColorcode, setInputColorcode] = useState('#B5B7C0');
+    const [inputstyle, setInputStyle] = useState('solid');
+    const [labelColor, setLableColor] = useState('#000');
+    const [lableCode, setLableCode] = useState('#ffffff');
+    const [inputGap, setInputGap] = useState('10')
+    const [colorCode, setColorCode] = useState('#ffffff');
+
     useEffect(() => {
 
         const loadReactQuill = async () => {
@@ -277,6 +287,12 @@ const Formgenerated = () => {
             setBorderWidth(styles.borderWidth || '1px');
             setBorderStyle(styles.borderStyle || 'solid');
             setBorderColor(styles.borderColor || '#ffffff');
+            setInputRadious(styles.inputRadious);
+            setInputStyle(styles.inputstyle);
+            setInputWidth(styles.inputwidth);
+            setInputBorderColor(styles.inputborderColor);
+            setLableColor(styles.labelColor);
+            setInputGap(styles.inputGap);
             console.log(styles.backgroundImage);
         }
     }, [location.state]);
@@ -311,13 +327,14 @@ const Formgenerated = () => {
             buttonWidth: existingField?.buttonWidth || '130px',
             buttonheight: existingField?.buttonheight || '40px',
             inputPadding: "10px",
-            inputBorderRadious: "4px",
+            inputBorderRadious: "4",
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
             btncolor: type === 'button' ? '#fff' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
             headingText: type === 'heading' ? 'Add Heading' : undefined,
+
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
@@ -811,6 +828,12 @@ const Formgenerated = () => {
                 boxShadow,
                 width: formWidth,
                 padding,
+                inputRadious,
+                inputstyle,
+                labelColor,
+                inputGap,
+                inputwidth,
+                inputborderColor,
                 borderColor,
                 borderRadius,
                 borderColor: borderColor,
@@ -827,12 +850,12 @@ const Formgenerated = () => {
         console.log('New form object:', JSON.stringify(newForm, null, 2));
 
         const request = isEditing
-        ? axios.put(`https://hubsyntax.online/update-form/${editingFormId}`, newForm, {
-            headers: { 'Content-Type': 'application/json' }
-        })
-        : axios.post('https://hubsyntax.online/form-data', newForm, {
-            headers: { 'Content-Type': 'application/json' }
-        });
+            ? axios.put(`https://hubsyntax.online/update-form/${editingFormId}`, newForm, {
+                headers: { 'Content-Type': 'application/json' }
+            })
+            : axios.post('https://hubsyntax.online/form-data', newForm, {
+                headers: { 'Content-Type': 'application/json' }
+            });
 
         request
             .then(response => {
@@ -972,9 +995,11 @@ const Formgenerated = () => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (propertiesPanelRef.current && !propertiesPanelRef.current.contains(event.target)) {
+            if (window.innerWidth > 1024 &&
+                propertiesPanelRef.current &&
+                !propertiesPanelRef.current.contains(event.target)) {
                 setSelectedField(null);
-                setIsOptionsVisible(null)
+                setIsOptionsVisible(null);
             }
         };
 
@@ -983,6 +1008,7 @@ const Formgenerated = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
 
     useEffect(() => {
         const formBuilder = document.getElementById('formBuilder');
@@ -1061,7 +1087,9 @@ const Formgenerated = () => {
     }
 
     const handleBorderColorChange = (e) => {
-        setBorderColor(e.target.value);
+        const newColor = e.target.value;
+        setBorderColor(newColor);
+        setBorderColorcode(newColor)
     };
 
     const handleBorderWidthChange = (e) => {
@@ -1209,6 +1237,24 @@ const Formgenerated = () => {
 
     const hanldeCanclepro = () => {
         setShowFieldPro(false);
+    }
+
+    const handleColorChange = (e) => {
+        const newColor = e.target.value;
+        setBackgroundColor(newColor);
+        setColorCode(newColor);
+    };
+
+    const handleLableColor = (e)=>{
+        const newColor = e.target.value;
+        setLableColor(newColor);
+        setLableCode(newColor);
+    }
+
+    const handleborderColor = (e)=>{
+        const newColor = e.target.value;
+        setInputBorderColor(newColor);
+        setInputColorcode(newColor);
     }
 
     return (
@@ -1371,17 +1417,20 @@ const Formgenerated = () => {
                                                                 <label>
                                                                     Background Color:
                                                                 </label>
-                                                                <div className='edit_setting_bg--form bgcolor'
-                                                                    style={{
-                                                                        height: "40px",
-                                                                        width: "115px",
-                                                                        borderRadius: "4px",
-                                                                        backgroundColor: backgroundColor,
-                                                                        border: "1px solid #ccc",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => document.getElementById('colorInput').click()}
-                                                                >
+                                                                <div className='edit_setting_bg_cls'>
+                                                                    <p>{colorCode}</p>
+                                                                    <div className='edit_setting_bg--form bgcolor'
+                                                                        style={{
+                                                                            height: "40px",
+                                                                            width: "40px",
+                                                                            borderRadius: "4px",
+                                                                            backgroundColor: backgroundColor,
+                                                                            border: "1px solid #ccc",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                        onClick={() => document.getElementById('colorInput').click()}
+                                                                    >
+                                                                    </div>
                                                                 </div>
                                                                 <input
                                                                     id="colorInput"
@@ -1390,8 +1439,9 @@ const Formgenerated = () => {
                                                                         display: "none"
                                                                     }}
                                                                     value={backgroundColor}
-                                                                    onChange={(e) => setBackgroundColor(e.target.value)}
+                                                                    onChange={handleColorChange}
                                                                 />
+
                                                             </div>
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Upload Background Image:</label>
@@ -1501,6 +1551,99 @@ const Formgenerated = () => {
                                                                     onChange={(e) => updatePadding(e.target.value)}
                                                                 />
                                                             </div>
+                                                            <div className='edit_setting_bg form'>
+                                                                <label>Gap</label>
+                                                                <input
+                                                                    type='text'
+                                                                    value={inputGap}
+                                                                    onChange={(e) => setInputGap(e.target.value)}
+                                                                />
+                                                            </div>
+                                                            
+                                                            <div className='edit_setting_bg form bgcolor'>
+                                                                <label>Lable Color:</label>
+                                                                <div className='edit_setting_bg_cls'>
+                                                                <p>{lableCode}</p>
+                                                                <div className='edit_setting_bg--form bgcolor'
+                                                                    style={{
+                                                                        height: "40px",
+                                                                        width: "40px",
+                                                                        borderRadius: "4px",
+                                                                        backgroundColor: labelColor,
+                                                                        border: "1px solid #ccc",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                    onClick={() => document.getElementById('labelColorInput').click()}
+                                                                >
+                                                                </div>
+                                                                </div>
+                                                                <input
+                                                                    id="labelColorInput"
+                                                                    type="color"
+                                                                    style={{
+                                                                        display: "none"
+                                                                    }}
+                                                                    value={labelColor}
+                                                                    onChange={handleLableColor}
+                                                                />
+                                                            </div>
+                                                            <div className='edit_setting_bg form'>
+                                                                <label>Input Border:</label>
+                                                                <input
+                                                                    type='text'
+                                                                    value={inputwidth}
+                                                                    onChange={(e) => setInputWidth(e.target.value)}
+                                                                />
+                                                            </div>
+                                                            <div className='edit_setting_bg form bgcolor'>
+                                                                <label>Input Border Color:</label>
+                                                                <div className='edit_setting_bg_cls'>
+                                                                <p>{inputColorcode}</p>
+                                                                <div className='edit_setting_bg--form bgcolor'
+                                                                    style={{
+                                                                        height: "40px",
+                                                                        width: "40px",
+                                                                        borderRadius: "4px",
+                                                                        backgroundColor: inputborderColor,
+                                                                        border: "1px solid #ccc",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                    onClick={() => document.getElementById('inputborderColorInput').click()}
+                                                                >
+                                                                </div>
+                                                                </div>
+                                                                <input
+                                                                    id="inputborderColorInput"
+                                                                    type="color"
+                                                                    style={{
+                                                                        display: "none"
+                                                                    }}
+                                                                    value={inputborderColor}
+                                                                    onChange={handleborderColor}
+                                                                />
+                                                            </div>
+                                                            <div className="edit_setting_bg form">
+                                                                <label>Input Border Style:</label>
+                                                                <select
+                                                                    value={inputstyle}
+                                                                    onChange={(e) => setInputStyle(e.target.value)}
+                                                                >
+                                                                    <option value="solid">Solid</option>
+                                                                    <option value="dotted">Dotted</option>
+                                                                    <option value="dashed">Dashed</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div className='edit_setting_bg form'>
+                                                                <label>Input Border Radious:</label>
+                                                                <input
+                                                                    type='text'
+                                                                    value={inputRadious}
+                                                                    onChange={(e) => setInputRadious(e.target.value)}
+                                                                />
+                                                            </div>
+
+
                                                             {/* <div className='edit_setting_bg form padding'>
                                                                 <label>Padding:</label>
                                                                 <input
@@ -1536,10 +1679,12 @@ const Formgenerated = () => {
                                                             </div>
                                                             <div className='edit_setting_bg form bgcolor'>
                                                                 <label>Border-Color:</label>
+                                                                <div className='edit_setting_bg_cls'>
+                                                                <p>{borderColorcode}</p>
                                                                 <div className='edit_setting_bg--form bgcolor'
                                                                     style={{
                                                                         height: "40px",
-                                                                        width: "115px",
+                                                                        width: "40px",
                                                                         borderRadius: "4px",
                                                                         backgroundColor: borderColor,
                                                                         border: "1px solid #ccc",
@@ -1547,6 +1692,7 @@ const Formgenerated = () => {
                                                                     }}
                                                                     onClick={() => document.getElementById('borderColorInput').click()}
                                                                 >
+                                                                </div>
                                                                 </div>
                                                                 <input
                                                                     id="borderColorInput"
@@ -1558,7 +1704,6 @@ const Formgenerated = () => {
                                                                     onChange={handleBorderColorChange}
                                                                 />
                                                             </div>
-
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Border-Radius:</label>
                                                                 <input
@@ -1590,16 +1735,40 @@ const Formgenerated = () => {
                                                 <div
                                                     key={field.id}
                                                     className={`input-field input-gap ${parseFloat(field.width || '100') <= 50 ? 'small-width' : ''}`}
-                                                    style={{ width: field.width || '100%', opacity: field.opacity || 1 }}
+                                                    style={{ width: field.width || '100%', opacity: field.opacity || 1, marginBottom: `${inputGap}px` }}
                                                     onClick={() => handleFieldClick(field, index)}
                                                 >
                                                     {field.type === 'name' && (
-                                                        <div className={`input-field`} style={{ width: "100%" }} >
+                                                        <div className={`input-field`} style={{
+                                                            width: "100%",
+                                                            border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }} >
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
                                                                     {field.label || "Name"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            width: '100%',
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${inputRadious}px`,
+                                                                            borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor,
+                                                                            opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -1625,17 +1794,31 @@ const Formgenerated = () => {
                                                     )}
 
                                                     {field.type === 'text' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }} >
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%",
+                                                            border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }} >
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
                                                                     {field.label || "Text Input"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         type="text"
                                                                         className="name"
@@ -1656,16 +1839,29 @@ const Formgenerated = () => {
                                                     )}
 
                                                     {field.type === 'heading' && (
-                                                        <div className={`input-field ${field.customClass || ''}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass || ''}`} style={{
+                                                            width: "100%",
+                                                            border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+
+                                                            }}>
                                                             <div className='form_builder_heading_hover'>
                                                                 <label>
-                                                                    <div style={{ fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '', }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
-                                                                        }}>
+                                                                    <div style={{
+                                                                        fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1,
+                                                                    }}>
                                                                         {React.createElement(
                                                                             field.level || 'h1',
                                                                             null,
@@ -1677,17 +1873,26 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'description' && (
-                                                        <div className={`input-field ${field.customClass || ''}`} style={{ width: field.width || '100%' }}>
+                                                        <div className={`input-field ${field.customClass || ''}`} style={{
+                                                            width: field.width || '100%', border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }}>
                                                             <div className='form_builder_heading_hover'>
                                                                 <label>
-
-                                                                    <div className="description-field" style={{ fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '', }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
-                                                                        }}>
+                                                                    <div className="description-field" style={{ fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1 }}
+                                                                    >
                                                                         <p>{field.text}</p>
                                                                     </div>
                                                                 </label>
@@ -1698,19 +1903,27 @@ const Formgenerated = () => {
                                                         {field.type === 'radio' && (
                                                             <div
                                                                 className={`input-field ${field.customClass}`}
-                                                                style={{ width: "100%" }}
+                                                                style={{
+                                                                    width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                }}
+
                                                             >
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
                                                                     {field.label || "Radio Button"}
                                                                 </label>
-                                                                <div className='form-build-box' style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
-                                                                    onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                    onMouseLeave={() => {
-                                                                        if (!(selectedField && selectedField.id === field.id)) {
-                                                                            setHoveredFieldId(null);
-                                                                        }
-                                                                    }}>
-
+                                                                <div className='form-build-box' style={{
+                                                                    width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                    borderStyle: inputstyle,
+                                                                    borderColor: inputborderColor, opacity: field.opacity || 1
+                                                                }}
+                                                                >
                                                                     {field.options.length > 0 ? (
                                                                         field.options.map((option, index) => (
                                                                             <div key={option.id || index} className='form_radio_flex'>
@@ -1740,16 +1953,20 @@ const Formgenerated = () => {
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'checkbox' && (
 
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%", }}>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
+                                                                <label style={{ color: labelColor }}>
                                                                     {field.label || "Checkbox Group"}</label>
-                                                                <div className='form-build-box' style={{ opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
-                                                                    onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                    onMouseLeave={() => {
-                                                                        if (!(selectedField && selectedField.id === field.id)) {
-                                                                            setHoveredFieldId(null);
-                                                                        }
-                                                                    }}>
+                                                                <div className='form-build-box' style={{ opacity: field.opacity || 1, }}
+                                                                >
                                                                     {field.options.length > 0 ? (
                                                                         field.options.map(option => (
                                                                             <div key={option.id}>
@@ -1775,19 +1992,27 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options select'>
                                                         {field.type === 'select' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Select Option"}</label>
                                                                     <select
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
                                                                         }}
+
                                                                         name={field.name}
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
@@ -1809,40 +2034,66 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'textarea' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
-                                                                <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
-                                                                        {field.label || "Enter text:"}
-                                                                        <textarea
-                                                                            style={{ width: '100%', borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
-                                                                            }}
-                                                                            placeholder={field.placeholder}
-                                                                            name={field.name}
-                                                                            disabled={field.disabled}
-                                                                            readOnly={field.readonly}
-                                                                        />
-                                                                    </label>
-                                                                    <div className='description'>
-                                                                        {field.description}
-                                                                    </div>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
+
+                                                                <label style={{ color: labelColor }}>
+                                                                    {field.label || "Enter text:"}
+                                                                    <textarea
+                                                                        style={{
+                                                                            width: '100%', borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => {
+                                                                            if (!(selectedField && selectedField.id === field.id)) {
+                                                                                setHoveredFieldId(null);
+                                                                            }
+                                                                        }}
+                                                                        placeholder={field.placeholder}
+                                                                        name={field.name}
+                                                                        disabled={field.disabled}
+                                                                        readOnly={field.readonly}
+                                                                    />
+                                                                </label>
+                                                                <div className='description'>
+                                                                    {field.description}
                                                                 </div>
+
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'file' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Upload file:"}
                                                                         <input
-                                                                            style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                            style={{
+                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                borderStyle: inputstyle,
+                                                                                borderColor: inputborderColor, opacity: field.opacity || 1
+                                                                            }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
                                                                                 if (!(selectedField && selectedField.id === field.id)) {
@@ -1863,12 +2114,25 @@ const Formgenerated = () => {
                                                         )}
                                                     </div>
                                                     {field.type === 'number' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
                                                                     {field.label || "Number"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -1892,13 +2156,26 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'email' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
 
                                                                     {field.label || "Email"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -1922,13 +2199,26 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'phone' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
 
                                                                     {field.label || "Phone Number"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -1953,13 +2243,26 @@ const Formgenerated = () => {
                                                     )}
 
                                                     {field.type === 'password' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
 
                                                                     {field.label || "Password"}
                                                                     <input
-                                                                        style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -1983,13 +2286,25 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'url' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
-
+                                                                <label style={{ color: labelColor }}>
                                                                     {field.label || "Url"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -2013,13 +2328,26 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'location' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
                                                             <div>
-                                                                <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label style={{ color: labelColor }}>
 
                                                                     {field.label || "Location"}
                                                                     <input
-                                                                        style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        style={{
+                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                        }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
                                                                             if (!(selectedField && selectedField.id === field.id)) {
@@ -2043,15 +2371,24 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'toggle' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
-                                                            <div style={{ width: '100%', opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
+                                                            <div style={{ width: '100%', opacity: field.opacity || 1, }}
                                                                 onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                 onMouseLeave={() => {
                                                                     if (!(selectedField && selectedField.id === field.id)) {
                                                                         setHoveredFieldId(null);
                                                                     }
                                                                 }}>
-                                                                <label className="toggle-switch" style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                <label className="toggle-switch" style={{ color: labelColor }}>
                                                                     {field.label || "Toggle"}
                                                                     <input
 
@@ -2070,13 +2407,26 @@ const Formgenerated = () => {
                                                     )}
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'date' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Date"}
                                                                         <input
-                                                                            style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                            style={{
+                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                borderStyle: inputstyle,
+                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
                                                                                 if (!(selectedField && selectedField.id === field.id)) {
@@ -2102,13 +2452,26 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'datetime' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Datetime"}
                                                                         <input
-                                                                            style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                            style={{
+                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                borderStyle: inputstyle,
+                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
                                                                                 if (!(selectedField && selectedField.id === field.id)) {
@@ -2134,13 +2497,26 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'time' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Time"}
                                                                         <input
-                                                                            style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                            style={{
+                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                borderStyle: inputstyle,
+                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
                                                                                 if (!(selectedField && selectedField.id === field.id)) {
@@ -2166,11 +2542,24 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'slider' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
                                                                         {field.label || "Slider"}
-                                                                        <div style={{ width: '100%', opacity: field.opacity || 1, borderRadius: field.inputBorderRadious, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                        <div style={{
+                                                                            width: '100%', opacity: field.opacity || 1, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            borderStyle: inputstyle,
+                                                                            borderColor: inputborderColor,
+                                                                        }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
                                                                                 if (!(selectedField && selectedField.id === field.id)) {
@@ -2200,13 +2589,26 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'images' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}>
                                                                 <div>
-                                                                    <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                                    <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Images"}
                                                                         <input
-                                                                            style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                            style={{
+                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                borderStyle: inputstyle,
+                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
                                                                                 if (!(selectedField && selectedField.id === field.id)) {
@@ -2230,7 +2632,16 @@ const Formgenerated = () => {
                                                         {field.type === 'button' && (
                                                             <div
                                                                 className={`input-field btn ${field.customClass}`}
-                                                                style={{ width: '100%', opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '', }}
+                                                                style={{
+                                                                    width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                }}
                                                                 onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                 onMouseLeave={() => {
                                                                     if (!(selectedField && selectedField.id === field.id)) {
@@ -2264,7 +2675,16 @@ const Formgenerated = () => {
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'divider' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{ width: '100%', opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '', }}
+                                                            <div className={`input-field ${field.customClass}`} style={{
+                                                                width: '100%', opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
                                                                 onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                 onMouseLeave={() => {
                                                                     if (!(selectedField && selectedField.id === field.id)) {
@@ -2278,11 +2698,24 @@ const Formgenerated = () => {
                                                     </div>
 
                                                     {field.type === 'link' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{ width: "100%" }}>
-                                                            <label style={{ color: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? ' #DF0404' : ' #404B52', }}>
+                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                ? '1px solid #33cba2'
+                                                                : '1px solid transparent',
+                                                            backgroundColor: selectedField && selectedField.id === field.id
+                                                                ? '#e7f9f4'
+                                                                : hoveredFieldId === field.id
+                                                                    ? '#e7f9f4'
+                                                                    : 'transparent',
+                                                        }}>
+                                                            <label style={{ color: labelColor }}>
                                                                 {field.label}
                                                                 <input
-                                                                    style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious, opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id) ? '1px solid #DF0404' : '1px solid #B5B7C0', }}
+                                                                    style={{
+                                                                        width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                        borderStyle: inputstyle,
+                                                                        borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                    }}
                                                                     onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                     onMouseLeave={() => {
                                                                         if (!(selectedField && selectedField.id === field.id)) {
@@ -2339,7 +2772,7 @@ const Formgenerated = () => {
                                 </div>
                             </div>
                             {showFieldPro && (
-                                <div className='form-builder-change-pro'>
+                                <div className='form-builder-change-pro form'>
                                     <div className='controls-wrpping cancleimg pro' onClick={hanldeCanclepro}><img src={cancleimg} alt="" /></div>
                                     <div className="form-builder-change-propertites" ref={propertiesPanelRef} style={{ display: isPropertiesVisible ? 'block' : 'none' }}>
                                         {selectedField && (
@@ -2858,4 +3291,3 @@ const Formgenerated = () => {
 };
 
 export default Formgenerated;
-

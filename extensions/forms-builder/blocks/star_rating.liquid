@@ -53,8 +53,8 @@
           borderWidth: formData.styles.borderWidth || '',
           borderStyle: formData.styles.borderStyle || '',
           borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
-          margin:'auto'
-        });     
+          margin: 'auto',
+        });
       }
       container.append(`<h2 style="display:none">${formshop}</h2>`);
       container.append(`<h2 style="display:none">${formTitle}</h2>`);
@@ -62,26 +62,43 @@
 
       if (formData.fields && formData.fields.length > 0) {
         formData.fields.forEach((field) => {
-          const floatStyle = (field.type === 'text' || field.type === 'name') && parseFloat(field.width) <= 50
-            ? 'float: inline-start;' 
-            : '';
-      
+          const floatStyle =
+            (field.type === 'text' || field.type === 'name') && parseFloat(field.width) <= 50
+              ? 'float: inline-start;'
+              : '';
+          const inputGap = formData.styles.inputGap || '0px';
+          const labelColor = formData.styles.labelColor || '#000';
+          const inputRadius = formData.styles.inputRadious;
+          const inputBorderColor = formData.styles.inputborderColor;
+          const inputStyle = formData.styles.inputstyle;
+          const inputWidth = formData.styles.inputwidth;
+          
           const fieldHtml = `
-                  <div key="${field.id}" style="width: ${
+                  <div key="${field.id}" style= "width: ${
             field.width
-          }; ${floatStyle}"  class="${`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`}">
+          }; ${floatStyle} margin-bottom: ${inputGap}px;"class="${`input-field input-gap ${
+            parseFloat(field.width) <= 50 ? 'small-width' : ''
+          }`}">
                       ${
-                      field.type !== 'heading' && field.type !== 'description' && field.type !== 'button' && field.type !== 'toggle' && field.type !== 'divider'
-                        ? `<label>${field.label}</label>` 
-                        : ''
-                    }
+                        field.type !== 'heading' &&
+                        field.type !== 'description' &&
+                        field.type !== 'button' &&
+                        field.type !== 'toggle' &&
+                        field.type !== 'divider'
+                          ? `<label style="color: ${labelColor};">${field.label}</label>`
+                          : ''
+                      }
                      ${getFieldInput(
                        field,
                        formData.url,
                        formData.submissionOption,
                        formData.thankYouTimer,
                        formData.editorValue,
-                       formshop
+                       formshop,
+                       inputRadius,
+                       inputBorderColor,
+                       inputStyle,
+                       inputWidth
                      )}
                   </div>
                   `;
@@ -94,19 +111,20 @@
       container.append('<div class="clear-float"></div>');
     }
 
-    function getFieldInput(field, formUrl, submissionOption, thankYouTimer, editorValue,formshop) {
+    function getFieldInput(field, url, submissionOption, thankYouTimer, editorValue, formshop, inputRadius, inputBorderColor, inputStyle, inputWidth) {
+
       const uniqueId = field.id || generateUniqueId();
 
       switch (field.type) {
         case 'name':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Name'}" />`;
+          }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" />`;
         case 'text':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Text Input'}" />`;
-          case 'toggle':
+          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" />`;
+        case 'toggle':
           return `
             <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
               <input 
@@ -140,11 +158,11 @@
                 transform: translateX(0);
               "></span>
             </label>`;
-        
-          case 'textarea':
+
+        case 'textarea':
           return `<textarea placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Textarea'}"></textarea>`;
+          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}"></textarea>`;
         case 'checkbox':
           return `
                 <div>
@@ -187,7 +205,7 @@
                 <div>
                   <select name="${
                     field.name
-                  }" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Select Input'}">
+                  }" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Select Input'}">
                     ${options}
                   </select>
                 </div>
@@ -201,51 +219,51 @@
         case 'number':
           return `<input type="number" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'file':
           return `<input type="file" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'email':
           return `<input type="email" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'phone':
           return `<input type="tel" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'password':
           return `<input type="password" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'url':
           return `<input type="url" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'location':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'date':
           return `<input type="date" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'datetime':
           return `<input type="datetime-local" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'time':
           return `<input type="time" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'link':
           return `<input type="url" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'images':
           return `<input type="file" multiple placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'slider':
           return `<input type="range" placeholder="${
             field.placeholder || ''
@@ -282,7 +300,7 @@
 
     const currentTimestamp = new Date().toISOString();
 
-    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer,formshop) {
+    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer, formshop) {
       const container = $('#formData-' + blockId);
       const formID = container.find('p').first().text().split(': ')[1];
       console.log('Editor Value:', editorValue);
@@ -290,11 +308,14 @@
       console.log('Thank You Timer:', thankYouTimer);
       console.log('form_id:', formID);
       console.log('formshop:', formshop);
-        
+
       const formData = {
         id: formID,
         shop: formshop || 'defaultShopName',
-        title: $('#formData-' + blockId + ' h2').text().replace(formshop, '').trim(), 
+        title: $('#formData-' + blockId + ' h2')
+          .text()
+          .replace(formshop, '')
+          .trim(),
         fields: [],
         send: currentTimestamp,
         url: $(button).data('url') || '',
@@ -551,9 +572,9 @@
 
         switch (field.type) {
           case 'name':
-            return `<input type="text" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Name'}" />`;
+            return `<input type="text" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Name'}" />`;
           case 'email':
-            return `<input type="email" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="email" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'button':
             return `
               <div>
@@ -815,11 +836,11 @@
 
         switch (field.type) {
           case 'name':
-          return `<input type="text" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Name'}" />`;
+          return `<input type="text" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Name'}" />`;
           case 'text':
-            return `<input type="text" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'};padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Text Input'}" />`;
+            return `<input type="text" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Text Input'}" />`;
           case 'textarea':
-            return `<textarea placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Textarea'}"></textarea>`;
+            return `<textarea placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; " aria-label="${field.label || 'Textarea'}"></textarea>`;
           case 'checkbox':
             return `
                 <div>
@@ -846,7 +867,7 @@
             const options = field.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('');
             return `
                 <div>
-                  <select name="${field.name}" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" aria-label="${field.label || 'Select Input'}">
+                  <select name="${field.name}" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Select Input'}">
                     ${options}
                   </select>
                 </div>
@@ -858,29 +879,29 @@
           case 'heading':
             return `<h1 style="font-size: ${field.fontSize || '16px'};">${field.text}</h1>`;
           case 'number':
-            return `<input type="number" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="number" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'file':
-            return `<input type="file" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="file" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'email':
-            return `<input type="email" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="email" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'phone':
-            return `<input type="tel" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="tel" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'password':
-            return `<input type="password" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="password" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'url':
-            return `<input type="url" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="url" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'location':
-            return `<input type="text" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="text" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'date':
-            return `<input type="date" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="date" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'datetime':
-            return `<input type="datetime-local" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="datetime-local" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'time':
-            return `<input type="time" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="time" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'link':
-            return `<input type="url" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="url" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'images':
-            return `<input type="file" multiple placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${field.inputBorderRadious || '4px'};" />`;
+            return `<input type="file" multiple placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
           case 'slider':
             return `<input type="range" placeholder="${field.placeholder || ''}" style="width: ${field.width || '100%'};" />`;
           case 'button':

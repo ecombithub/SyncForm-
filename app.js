@@ -87,8 +87,13 @@ const formCreateSchema = new mongoose.Schema({
     borderColor: { type: String, default: '' },
     borderRadius: { type: String, default: '0' },
     borderWidth: { type: String, default: '1px' },
-    borderStyle: { type: String, default: 'solid' }
-
+    borderStyle: { type: String, default: 'solid' },
+    inputRadious: { type: String, default: '4' },
+    inputstyle: { type: String, default: 'solid' },
+    inputwidth: { type: String, default: '1' },
+    inputborderColor: { type: String, default: 'blue' },
+    labelColor: { type: String, default: 'blue' },
+    inputGap:{ type: String, default: '10' },
   },
   submissionOption: { type: String, required: true },
   thankYouTimer: { type: Number },
@@ -192,6 +197,7 @@ const EmailTemplats = new mongoose.Schema({
       imageUrl: { type: String, required: false },
       headingFontSize: { type: String, required: false },
       headingLevel: { type: String, required: false },
+      headeropacity: { type: String, required: false },
       headingFontWeight: { type: String, required: false },
       headingColor: { type: String, required: false },
       headingbg: { type: String, required: false },
@@ -295,6 +301,7 @@ const EmailTemplats = new mongoose.Schema({
       MulticolumnbtnBorderWidth:{ type: String, required: false },
       MulticolumnbtnBorderColor:{ type: String, required: false },
       MulticolumnbtnBorderStyle:{ type: String, required: false },
+      richFontsize:{ type: String, required: false },
       MulticolumnPadding:{ type: String, required: false },
       icons: {
         facebook: {

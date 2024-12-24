@@ -239,8 +239,6 @@ export default function Pricing() {
 
     const hasActiveCharge = charges.some(charge => charge.status === 'active');
 
-
-
     return (
         <div className='from_builder_pricing'>
             <div className="container">

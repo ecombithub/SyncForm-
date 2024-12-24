@@ -316,6 +316,7 @@ const EmailTemplateCreate = () => {
             headingbtnwidth: type === 'heading' ? '100' : undefined,
             headingbtnheight: type === 'heading' ? '35' : undefined,
             headerbtn: type === 'heading' ? 'Click Now' : undefined,
+            headeropacity: type === 'heading' ? '1' : undefined,
             headingbtnBorderColor: type === 'heading' ? '#000000' : undefined,
             headingbtnBorderWidth: type === 'heading' ? '1' : undefined,
             headingbtnBorderStyle: type === 'heading' ? 'solid' : undefined,
@@ -420,13 +421,15 @@ const EmailTemplateCreate = () => {
             productbackgroundColor: type === 'product' ? '#007BFF' : undefined,
             additionalButtons: [],
             displayStyle: 'flex',
-            richTextAlign: type === 'heading' ? "" : undefined,
+            richFontsize: type === 'richtext' ? "14" : undefined,
+            richTextAlign: type === 'richtext' ? "" : undefined,
             htmltext: type === 'html convert' ? '<h1>Your HTML Here</h1>' : undefined,
             fontsizeMulticolumn: type === 'Multicolumn' ? 14 : undefined,
             MulticolumnbtnBorderColor: type === 'Multicolumn' ? '#000000' : undefined,
             MulticolumnbtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
             MulticolumnbtnBorderStyle: type === 'Multicolumn' ? 'solid' : undefined,
             MulticolumnPadding: type === 'Multicolumn' ? 10 : undefined,
+
         };
     };
 
@@ -496,6 +499,7 @@ const EmailTemplateCreate = () => {
             setFields((prevFields) => [...prevFields, newField]);
             setLastProductFieldId(newField.id);
             setIsPopupOpen(true);
+            setSelectedProducts([])
             setSearchTerm('');
         } else if (type === 'Multicolumn') {
             const id = generateUniqueId();
@@ -738,7 +742,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('https://hubsyntax.online/get-forms')
+            .get('http://localhost:4001/get-forms')
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -746,44 +750,44 @@ const EmailTemplateCreate = () => {
             })
             .catch((error) => console.error('API Error:', error));
     }, [shop]);
-    
+
     useEffect(() => {
         if (formDataAdd.length > 0) {
             const formIds = formDataAdd.map((form) => form.formId);
             console.log('All form IDs:', formIds);
         }
     }, [formDataAdd]);
-    
+
     const handleFormSelect = async (e) => {
         const title = e.target.value.trim();
         const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
-    
+
         if (selectedForm) {
             try {
-                const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
-    
+
                 if (data.isConnected) {
                     alert('This form is already connected to a template.');
-    
+
                     const confirmUnlink = window.confirm(
                         'Do you want to unlink it?'
                     );
-    
+
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
-                            `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
-    
+
                         if (unlinkResponse.ok) {
                             alert('Template unlinked from form.');
-    
+
                             const updatedCheckResponse = await fetch(
-                                `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
+                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
-    
+
                             if (!updatedCheckData.isConnected) {
                                 console.log('Form is no longer connected to a template.');
                             }
@@ -794,7 +798,7 @@ const EmailTemplateCreate = () => {
                         return;
                     }
                 }
-    
+
                 setSelectedFormIds((prevFormIds) => {
                     if (prevFormIds.includes(selectedForm.formId)) {
                         return prevFormIds.filter((id) => id !== selectedForm.formId);
@@ -802,7 +806,7 @@ const EmailTemplateCreate = () => {
                         return [...prevFormIds, selectedForm.formId];
                     }
                 });
-    
+
                 setSelectedTitles((prevSelectedTitles) => {
                     if (prevSelectedTitles.includes(title)) {
                         return prevSelectedTitles.filter((t) => t !== title);
@@ -816,7 +820,7 @@ const EmailTemplateCreate = () => {
             }
         }
     };
-    
+
     useEffect(() => {
         console.log('Selected form IDs:', selectedFormIds);
     }, [selectedFormIds]);
@@ -828,12 +832,12 @@ const EmailTemplateCreate = () => {
             alert('Please provide a title for the template.');
             return;
         }
-    
+
         if (!id) {
             try {
-                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
+                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
-    
+
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
                 }
             } catch (error) {
@@ -841,20 +845,20 @@ const EmailTemplateCreate = () => {
                 return;
             }
         }
-    
+
         const templateId = emailTemplateId || generateUniqueId();
         setEmailTemplateId(templateId);
-    
+
         if (fields.length === 0) {
             console.warn('No fields to create the form.');
             return;
         }
-    
+
         const validFields = fields.filter(field => field && field.type);
-    
+
         const updatedFields = validFields.map(field => {
             let value = '';
-    
+
             switch (field.type) {
                 case 'images':
                     value = field.value || 'No Image Provided';
@@ -902,14 +906,14 @@ const EmailTemplateCreate = () => {
                     break;
                 case 'Multicolumn':
                     value = field.value;
-    
+
                     if (!field.columnData) {
                         field.columnData = Array.from({ length: columnCount }, (_, i) => ({
                             image: columnImages[`${field.id}-${i}`] || '',
                             content: editorValues[`${field.id}-${i}`] || '',
                         }));
                     } else {
-    
+
                         for (let i = 0; i < columnCount; i++) {
                             field.columnData[i] = {
                                 image: columnImages[`${field.id}-${i}`] || field.columnData[i]?.image,
@@ -917,9 +921,9 @@ const EmailTemplateCreate = () => {
                             };
                         }
                     }
-    
+
                     const validColumns = field.columnData.filter(column => column.image || column.content);
-    
+
                     field.columnData = validColumns;
                     field.columnsPerRow = columnsPerRow || 1;
                     field.columnCount = validColumns.length;
@@ -933,23 +937,23 @@ const EmailTemplateCreate = () => {
                         price: showPrice,
                         buttonUrl: field.productUrl || `https://${shop}/admin/products?selectedView=all`,
                         showbtnn: showbtnn
-    
+
                     };
-    
+
                 default:
                     value = '';
             }
-    
+
             if (field.type === 'html convert') {
                 return {
                     ...field,
                     value: field.value || '',
                 };
             }
-    
+
             if (field.type === 'button') {
             }
-    
+
             if (field.type === 'socalicon') {
                 field.socalIconHeight = socalIconHeight;
                 field.socalIconWidth = socalIconWidth;
@@ -975,18 +979,19 @@ const EmailTemplateCreate = () => {
                         value: selectedIcons.send?.value || 'Send',
                     },
                 };
-    
+
                 field.customIcons = field.customIcons || [];
             } else {
                 field.icons = {};
             }
-    
+
             return {
                 ...field,
                 label: field.label || (field.type === 'button' ? 'Button' : `Default Label for ${field.type}`),
                 name: field.name || `Field_${field.id}`,
                 value: field.type === 'product' ? undefined : value,
                 headerbtnbg: field.headerbtnbg || null,
+                headeropacity: field.headeropacity || '',
                 headerbtncolor: field.headerbtncolor || null,
                 headerbtn: field.headerbtn || null,
                 headingLevel: field.headingLevel || null,
@@ -1003,6 +1008,7 @@ const EmailTemplateCreate = () => {
                 bannerImageHeight: field.bannerImageHeight || '',
                 bannerImageTextAlign: field.bannerImageTextAlign || '',
                 richTextAlign: field.richTextAlign || '',
+                richFontsize: field.richFontsize || '',
                 headingFontWeight: field.headingFontWeight || 600,
                 headingColor: field.headingColor || '#000',
                 headingbg: field.headingbg || '#ffff',
@@ -1091,9 +1097,9 @@ const EmailTemplateCreate = () => {
                 MulticolumnPadding: field.MulticolumnPadding || ''
             };
         });
-    
+
         console.log('Updated fields:', updatedFields);
-    
+
         const formData = {
             templateId,
             shop,
@@ -1112,7 +1118,7 @@ const EmailTemplateCreate = () => {
                 dividerColor,
             },
         };
-    
+
         try {
             setSaveEmail(!saveEmail);
             const response = id
@@ -1121,7 +1127,7 @@ const EmailTemplateCreate = () => {
             console.log('Form saved successfully with title:', trimmedTitle);
             const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
             console.log(successMessage, response.data);
-    
+
             if (!id) {
                 resetFormState();
             }
@@ -1241,7 +1247,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (popupRef.current && !popupRef.current.contains(event.target)) {
+            if (window.innerWidth > 1400 && popupRef.current && !popupRef.current.contains(event.target)) {
                 setEmailFieldPopup(false);
             }
         };
@@ -1252,6 +1258,7 @@ const EmailTemplateCreate = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -1744,7 +1751,7 @@ const EmailTemplateCreate = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className='controls-wrpping cancleimg pro email' onClick={hanldeCancleBtn}><img src={cancleimg} alt="" /></div>
+                                        <div className='controls-wrpping cancleimg pro email field' onClick={hanldeCancleBtn}><img src={cancleimg} alt="" /></div>
                                         <div className='builder_fieldes'>
                                             <div className='builder_form_select_control'>
                                                 <div
@@ -1978,6 +1985,7 @@ const EmailTemplateCreate = () => {
                                                                                 backgroundSize: 'cover',
                                                                                 width: `${field.bannerImageWidth}%`,
                                                                                 height: field.bannerImageHeight || '400px',
+                                                                                opacity: field.headeropacity || '',
                                                                                 position: 'relative'
                                                                             }}
                                                                         >
@@ -2036,7 +2044,7 @@ const EmailTemplateCreate = () => {
 
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2073,7 +2081,7 @@ const EmailTemplateCreate = () => {
 
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2111,7 +2119,7 @@ const EmailTemplateCreate = () => {
                                                                         </div>
 
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2136,7 +2144,7 @@ const EmailTemplateCreate = () => {
                                                                             height: `${field.dividerheight}px`
                                                                         }} />
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2181,7 +2189,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                         )}
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2202,9 +2210,9 @@ const EmailTemplateCreate = () => {
                                                                         style={{ display: 'flex' }}
                                                                     >
                                                                         <div style={{ width: '100%' }}>
-                                                                            <div style={{ textAlign: field.richTextAlign || '' }} dangerouslySetInnerHTML={{ __html: field.content || 'Captivate customers with' }} />
+                                                                            <div style={{ textAlign: field.richTextAlign || '', fontSize: `${field.richFontsize}px` }} dangerouslySetInnerHTML={{ __html: field.content || 'Captivate customers with' }} />
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2225,9 +2233,11 @@ const EmailTemplateCreate = () => {
                                                                         style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
-                                                                        <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
+                                                                       <div style={{width:'100%'}}>
+                                                                       <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
+                                                                       </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2266,7 +2276,7 @@ const EmailTemplateCreate = () => {
                                                                             )}
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2317,7 +2327,7 @@ const EmailTemplateCreate = () => {
                                                                         </div>
 
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2345,7 +2355,7 @@ const EmailTemplateCreate = () => {
                                                                                     dangerouslySetInnerHTML={{ __html: field.value || field.htmltext }}
                                                                                 />
                                                                                 <div className='form-builder-radio-btn email'>
-                                                                                    <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                                    <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                         <img src={editicon} alt="copy" />
                                                                                     </button>
                                                                                     <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2408,7 +2418,7 @@ const EmailTemplateCreate = () => {
                                                                             ))}
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2487,7 +2497,7 @@ const EmailTemplateCreate = () => {
                                                                                 ))}
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn email" onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2538,6 +2548,9 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
+                                                                                <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                                    <img src={editicon} alt="copy" />
+                                                                                </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
                                                                                     <img src={delete1} alt="delete" />
                                                                                 </button>
@@ -2558,9 +2571,11 @@ const EmailTemplateCreate = () => {
                                     </div>
                                 </div>
                                 {showFieldPro && (<div className='form-builder-change-pro email'>
-                                    <div className='controls-wrpping cancleimg pro email' onClick={hanldeCanclepro}><img src={cancleimg} alt="" /></div>
+
                                     <div className='email-template-input-setting'>
-                                        {emailFieldPopup && (<div className='form-builder-change-propertites email' ref={popupRef}>
+
+                                        {emailFieldPopup && (<div className='form-builder-change-propertites email camp' ref={popupRef}>
+                                            <div className='controls-wrpping cancleimg pro email' onClick={hanldeCanclepro}><img src={cancleimg} alt="" /></div>
                                             <div className='form-builder-change_show_all'>
                                                 <div className='form_qucik'>
                                                     <p>Quick setup Settings</p>
@@ -2622,7 +2637,7 @@ const EmailTemplateCreate = () => {
                                                                                                     className='rm-btn remove-coloum'
                                                                                                     onClick={() => removeImage(field.id, index)}
                                                                                                 >
-                                                                                                      <img src={bk}alt="" />
+                                                                                                    <img src={bk} alt="" />
                                                                                                 </button>
 
                                                                                             </div>
@@ -2733,6 +2748,20 @@ const EmailTemplateCreate = () => {
                                                                                     modules={{ toolbar: toolbarOptions }}
                                                                                 />
 
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Font Size (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.richFontsize}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, richFontsize: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Align </label>
@@ -3452,6 +3481,21 @@ const EmailTemplateCreate = () => {
                                                                                         />
                                                                                     </div>
                                                                                 )}
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label> Opacity </label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.headeropacity}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, headeropacity: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Padding"
+                                                                                />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <label> Background Color</label>
@@ -4654,7 +4698,7 @@ const EmailTemplateCreate = () => {
                     </div>
                     <div className='btn_form_bulider'>
                         <div className="form-submission-wrp">
-                            <button className="cancle-form-btn" onClick={handleCancle} >Cancle</button>
+                            <button className="cancle-form-btn" onClick={handleCancle} >Cancel</button>
                         </div>
                         <div className="form-submission-wrp">
                             <button className="create-form-btn action_btn" onClick={createOrUpdateForm} >Save</button>

@@ -10,7 +10,7 @@ import yplus from '../images/yplus.png';
 import right from '../images/right.png';
 import left from '../images/left.png';
 import search12 from '../images/search12.png'
-import copy22 from '../images/copy22.png'
+import copy22 from '../images/copy222.png'
 import cancle1 from '../images/cancle1.png'
 import copy12 from '../images/copy12.png'
 import cancleimg from '../images/cancleimg.png';
@@ -507,10 +507,11 @@ const Formdata = () => {
                                                                         scope="col"
                                                                     >
                                                                         <div className="form-builder-wrpp-show-Polaris">
-                                                                            {form.formId}
+                                                                         <div className='form-builder-form-id'>{form.formId}</div>
                                                                             <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
                                                                                 <img src={copy22} alt="" />
                                                                             </div>
+                                                                            
                                                                             {copiedFormId === form.formId && (
                                                                                 <div className="copied-message" style={{ color: 'green' }}>
                                                                                     Copied to clipboard!
@@ -518,7 +519,7 @@ const Formdata = () => {
                                                                             )}
                                                                         </div>
                                                                     </th>
-
+                                                                
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
                                                                         {form.totalSubmissions || 0}
                                                                     </th>
@@ -642,11 +643,11 @@ const Formdata = () => {
                                         form.formId === currentFormId && (
                                             <div key={form.formId} style={{ ...form.styles, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
                                                 {form.fields.map(field => (
-                                                    <div key={field.id} style={{ width: field.width }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
-                                                      {field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label>{field.label}</label>}
-                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: field.inputBorderRadious }}></textarea>}
+                                                    <div key={field.id} style={{ width: field.width, marginBottom:`${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
+                                                        {field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{color:form.styles.labelColor}}>{field.label}</label>}
+                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}`, }} />}
+                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }}></textarea>}
                                                         {field.type === 'description' && <p>{field.text}</p>}
                                                         {field.type === 'toggle' && (
                                                             <label className="custom-toggle">
@@ -655,24 +656,24 @@ const Formdata = () => {
                                                             </label>
                                                         )}
                                                         {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize }}>{field.text}</h1>}
-                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'link' && <input type="link" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
-                                                        {field.type === 'slider' && <input type="range" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: field.inputBorderRadious }} />}
+                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'link' && <input type="link" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'slider' && <input type="range" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
                                                         {field.type === 'button' && <div><button style={{
                                                             backgroundColor: field.backgroundColor || '#45a7f6',
                                                             fontSize: `${field.fontSize || '16'}px`, height: field.buttonHeight || 'auto', width: field.buttonWidth || 'auto', padding: field.padding || '10px',
                                                             color: field.btncolor,
-                                                            borderWidth: `${field.buttonBorderWidth}px`,
+                                                           borderRadius:`${form.styles.inputRadious}px`,  borderWidth: `${field.buttonBorderWidth}px`,
                                                             borderStyle: field.buttonBorderStyle,
                                                             borderColor: field.buttonBorderColor,
                                                         }}> <label>{field.label}</label> </button></div>}
@@ -713,7 +714,7 @@ const Formdata = () => {
                                                         )}
                                                         {field.type === 'select' && (
                                                             <div>
-                                                                <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius: field.inputBorderRadious }}>
+                                                                <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }}>
                                                                     {field.options.map(option => (
                                                                         <option key={option.id} value={option.value}>
                                                                             {option.label}
