@@ -143,6 +143,8 @@ function Customer() {
                     setCreatedForms(filteredForms);
                     const total = filteredForms.reduce((acc, form) => acc + (form.submissionCount || form.submissions.length || 0), 0);
                     setTotalSubmissions(total);
+                    console.log('Form Data:', createdForms);
+
                 } else {
                     setCreatedForms([]);
                     setTotalSubmissions(0);
@@ -334,8 +336,7 @@ function Customer() {
                         </div>
                         <div className="form-tota-customer-element">
                             <p>Total forms</p>
-                            <h3>5,000</h3>
-
+                            <h3>{createdForms.length}</h3>
                         </div>
                     </div>
                     <div className="form-tota-customer">
@@ -452,7 +453,7 @@ function Customer() {
                                     <div className="table-container">
                                         <div className="table-header">
                                             <div></div>
-                                            <div> Form Name</div>
+                                            <div> Form Name </div>
                                             <div> id</div>
                                             <div className='phone-forms'>Response</div>
                                             <div> Date and time</div>
@@ -514,6 +515,7 @@ function Customer() {
                                 {currentForms.length > 0 ? (
                                     currentForms
                                         .filter(form => selectedFormName ? form.title === selectedFormName : true)
+                                        
                                         .map(form => (
                                             <div key={form.id} className="table-row-data">
                                                 <div className="data_forms">{form.title}</div>

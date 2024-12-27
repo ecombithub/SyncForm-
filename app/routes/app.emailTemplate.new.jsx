@@ -742,7 +742,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('http://localhost:4001/get-forms')
+            .get('https://hubsyntax.online/get-forms')
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -764,7 +764,7 @@ const EmailTemplateCreate = () => {
 
         if (selectedForm) {
             try {
-                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
+                const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
 
                 if (data.isConnected) {
@@ -776,7 +776,7 @@ const EmailTemplateCreate = () => {
 
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
-                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
+                            `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
 
@@ -784,7 +784,7 @@ const EmailTemplateCreate = () => {
                             alert('Template unlinked from form.');
 
                             const updatedCheckResponse = await fetch(
-                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
+                                `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
 
@@ -835,7 +835,7 @@ const EmailTemplateCreate = () => {
 
         if (!id) {
             try {
-                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
+                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
 
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;

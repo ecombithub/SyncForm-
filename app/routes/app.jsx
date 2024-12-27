@@ -6,12 +6,33 @@ import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import { useState } from "react";
-import spinner from '../images/spinner.gif';
 
 const Loader = () => (
-  <div className="modal-costomer">
-    <div className="loaddr">
-       <img src={spinner}/>
+  <div className="skeleton-wrapper fade-in">
+    <div className="container skeleton-wred">
+      <div className="skeleton-wrp">
+      <div className="skeleton-wrp-left">
+          <div className="skeleton skeleton-header"></div>
+          <div className="skeleton-wrp-left-para">
+          <div className="skeleton skeleton-paragraph"></div>
+          <div className="skeleton skeleton-paragraph"></div>
+          </div>
+          <div className="skeleton-wrp-left-para">
+          <div className="skeleton skeleton-paragraph"></div>
+          <div className="skeleton skeleton-paragraph "></div>
+          </div>
+        </div>
+        <div className="skeleton-wrp-right">
+        <div className="skeleton-wrp-left-para right">
+        <div className="skeleton skeleton-paragraph"></div>
+        <div className="skeleton skeleton-paragraph two"></div>
+        </div>
+        <div className="skeleton-wrp-left-para right">
+        <div className="skeleton skeleton-paragraph"></div>
+        <div className="skeleton skeleton-paragraph two"></div>
+        </div>
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -31,19 +52,19 @@ export default function App() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 2000);
   };
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>
-        <Link to="/app" rel="home">Home</Link>
+        <Link to="/app" rel="home" onClick={handleLinkClick}>Home</Link>
         <Link to="/app/customer" onClick={handleLinkClick}>Customers</Link>
-        <Link to="/app/formGenerator/list">Forms</Link>
-        <Link to="/app/setting">Settings</Link>
-        <Link to="/app/pricing">Pricing</Link>
-        <Link to="/app/support">Support</Link>
-        <Link to="/app/emailTemplate/list">EmailTemplate</Link>
+        <Link to="/app/formGenerator/list" onClick={handleLinkClick}>Forms</Link>
+        <Link to="/app/setting" onClick={handleLinkClick}>Settings</Link>
+        <Link to="/app/pricing" onClick={handleLinkClick}>Pricing</Link>
+        <Link to="/app/support" onClick={handleLinkClick}>Support</Link>
+        <Link to="/app/emailTemplate/list" onClick={handleLinkClick}>EmailTemplate</Link>
         <ul>
           <li><Link to="/app/formGenerator/new">Create</Link></li>
           <li><Link to="/app/emailTemplate/new">EmailTemplate</Link></li>

@@ -142,9 +142,16 @@ const Formdata = () => {
                     formId: form.formId,
                     styles: form.styles,
                     isEditing: true,
+                    toggleStatus: form.toggleStatus,
+                    url: form.url,
+                    editorValue: form.editorValue,
+                    thankYouTimer: form.thankYouTimer
                 },
             });
-
+            setThankYouTimer(thankYouTimer);
+            setEditorValue(editorValue);
+            setUrl(url);
+            setIsActive(isActive);
             setEditingFormId(formId);
             setFormWidth(form.styles.width);
             setBackgroundImage(form.styles.backgroundImage);
@@ -155,9 +162,7 @@ const Formdata = () => {
             alert('Form not found.');
         }
     };
-
-
-
+    
     const openDeletePopup = (formId) => {
         setFormToDelete(formId);
         setDeletePopup(true);
@@ -287,10 +292,16 @@ const Formdata = () => {
             setUphradePopup(true);
             return;
         }
-
-        setShowFormBuilder(true);
-        navigator('/app/formGenerator/new');
+    
+        setIsLoading(true);
+    
+        setTimeout(() => {
+            setShowFormBuilder(true);
+            navigator('/app/formGenerator/new');
+            setIsLoading(false); 
+        }, 1000); 
     };
+    
 
     const handleCancle = () => {
         setUphradePopup(false);
@@ -367,7 +378,7 @@ const Formdata = () => {
 
             {!showFormBuilder ? (
                 <div>
-                    <div className='builder-forms'>
+                    <div className='builder-forms content-wrapper'>
                         <div className='container'>
                             <h3>Forms</h3>
                             <div className="builder-sections">
@@ -507,11 +518,11 @@ const Formdata = () => {
                                                                         scope="col"
                                                                     >
                                                                         <div className="form-builder-wrpp-show-Polaris">
-                                                                         <div className='form-builder-form-id'>{form.formId}</div>
+                                                                            <div className='form-builder-form-id'>{form.formId}</div>
                                                                             <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
                                                                                 <img src={copy22} alt="" />
                                                                             </div>
-                                                                            
+
                                                                             {copiedFormId === form.formId && (
                                                                                 <div className="copied-message" style={{ color: 'green' }}>
                                                                                     Copied to clipboard!
@@ -519,7 +530,7 @@ const Formdata = () => {
                                                                             )}
                                                                         </div>
                                                                     </th>
-                                                                
+
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
                                                                         {form.totalSubmissions || 0}
                                                                     </th>
@@ -604,11 +615,33 @@ const Formdata = () => {
                     </div>
                     <div className='popup'>
                         {isLoading && (
-                            <div className="modal">
-                                <div className="loader">
-
-                                </div>
-                            </div>
+                             <div className="skeleton-wrapper forms fade-in">
+                             <div className="container skeleton-wred">
+                               <div className="skeleton-wrp">
+                               <div className="skeleton-wrp-left">
+                                   <div className="skeleton skeleton-header"></div>
+                                   <div className="skeleton-wrp-left-para">
+                                   <div className="skeleton skeleton-paragraph"></div>
+                                   <div className="skeleton skeleton-paragraph"></div>
+                                   </div>
+                                   <div className="skeleton-wrp-left-para">
+                                   <div className="skeleton skeleton-paragraph"></div>
+                                   <div className="skeleton skeleton-paragraph "></div>
+                                   </div>
+                                 </div>
+                                 <div className="skeleton-wrp-right">
+                                 <div className="skeleton-wrp-left-para right">
+                                 <div className="skeleton skeleton-paragraph"></div>
+                                 <div className="skeleton skeleton-paragraph two"></div>
+                                 </div>
+                                 <div className="skeleton-wrp-left-para right">
+                                 <div className="skeleton skeleton-paragraph"></div>
+                                 <div className="skeleton skeleton-paragraph two"></div>
+                                 </div>
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
                         )}
                         {deletePopup && (
                             <div className="form-builder-delete-popup">
@@ -641,13 +674,14 @@ const Formdata = () => {
                                 <div className='form-builder-create-wrped'>
                                     {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
                                         form.formId === currentFormId && (
-                                            <div key={form.formId} style={{ ...form.styles, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
+                                            <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
                                                 {form.fields.map(field => (
-                                                    <div key={field.id} style={{ width: field.width, marginBottom:`${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
-                                                        {field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{color:form.styles.labelColor}}>{field.label}</label>}
-                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}`, }} />}
-                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }}></textarea>}
+                                                    <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
+
+                                                        {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
+                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, }} />}
+                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }}></textarea>}
                                                         {field.type === 'description' && <p>{field.text}</p>}
                                                         {field.type === 'toggle' && (
                                                             <label className="custom-toggle">
@@ -655,28 +689,57 @@ const Formdata = () => {
                                                                 <span className="slider"></span>
                                                             </label>
                                                         )}
-                                                        {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize }}>{field.text}</h1>}
-                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'link' && <input type="link" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'slider' && <input type="range" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</h1>}
+                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'link' && (
+                                                            <a
+                                                                href={field.linkUrl}
+                                                                target={field.linkTarget}
+                                                                style={{
+
+                                                                    textDecoration: 'none',
+                                                                    textAlign: field.linkaline,
+                                                                    padding: field.padding,
+                                                                }}
+                                                                dangerouslySetInnerHTML={{ __html: field.linktext }}
+                                                            />
+                                                        )}
+                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
+                                                        {field.type === 'slider' && (
+                                                            <input
+                                                                type="range"
+                                                                placeholder={field.placeholder}
+                                                                min={field.min}
+                                                                max={field.max}
+                                                                step={field.step}
+                                                                style={{
+                                                                    padding: field.inputPadding,
+                                                                    borderRadius: `${form.styles.inputRadious}px`,
+                                                                    borderWidth: `${form.styles.inputwidth}px`,
+                                                                    borderStyle: `${form.styles.inputstyle}`,
+                                                                    borderColor: `${form.styles.inputborderColor}`,
+                                                                }}
+                                                            />
+                                                        )}
                                                         {field.type === 'button' && <div><button style={{
                                                             backgroundColor: field.backgroundColor || '#45a7f6',
                                                             fontSize: `${field.fontSize || '16'}px`, height: field.buttonHeight || 'auto', width: field.buttonWidth || 'auto', padding: field.padding || '10px',
                                                             color: field.btncolor,
-                                                           borderRadius:`${form.styles.inputRadious}px`,  borderWidth: `${field.buttonBorderWidth}px`,
+                                                            borderWidth: `${field.buttonBorderWidth}px`,
+                                                            borderRadius:`${field.btnradious}px`,
                                                             borderStyle: field.buttonBorderStyle,
                                                             borderColor: field.buttonBorderColor,
                                                         }}> <label>{field.label}</label> </button></div>}
+
                                                         {field.type === 'divider' && (
                                                             <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
                                                         )}
@@ -714,7 +777,7 @@ const Formdata = () => {
                                                         )}
                                                         {field.type === 'select' && (
                                                             <div>
-                                                                <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius:`${form.styles.inputRadious}px`,  borderWidth:`${form.styles.inputwidth}px`,borderStyle:`${form.styles.inputstyle}`,borderColor:`${form.styles.inputborderColor}` }}>
+                                                                <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }}>
                                                                     {field.options.map(option => (
                                                                         <option key={option.id} value={option.value}>
                                                                             {option.label}
@@ -723,6 +786,7 @@ const Formdata = () => {
                                                                 </select>
                                                             </div>
                                                         )}
+                                                        {field.description}
                                                     </div>
                                                 ))}
                                                 <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>

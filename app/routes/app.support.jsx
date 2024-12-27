@@ -2,12 +2,46 @@ import React from 'react'
 import blog1 from '../images/blog1.png';
 import cancle1 from '../images/cancle1.png'
 import { useState } from 'react';
+import axios from 'axios';
 import '../index.css';
 
 export default function Support() {
     const [showPopup, setShowPopup] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [category, setCategory] = useState('');
+    const [theme, setTheme] = useState('');
+    const [shop, setShop] = useState('');
+    const [describe, setDescribe] = useState('');
 
-
+    const handleSubmit = async () => {
+        try {
+            const response = await axios.post('http://localhost:4001/email-submit', {
+                name,
+                email,
+                category,
+                theme,
+                shop,
+                describe
+            });
+            console.log('Response status:', response.status);
+            if (response.status === 200) {
+                alert('Form submitted successfully!');
+                setName('');
+                setEmail('');
+                setCategory('');
+                setTheme('');
+                setShop('');
+                setDescribe('');
+            } else {
+                alert('Failed to submit the form. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting the form:', error);
+            alert('An error occurred while submitting the form. Please try again.');
+        }
+    };
+    
     const handleShow = () => {
         setShowPopup(!showPopup);
     }
@@ -39,34 +73,38 @@ export default function Support() {
                             <div className="popup">
                                 <div className="popup-content">
                                     <div className="it-services">
-                                        <h2>IT Service Ticket</h2>
+                                        <h2>Support ticket</h2>
                                         <p>Please provide the details of the problem</p>
                                         <div className="service-form-input">
                                             <div className="servies-input">
                                                 <label htmlFor="name">Name</label>
-                                                <input type="name" />
+                                                <input type="name" value={name} onChange={(e)=>setName(e.target.value)} />
                                             </div>
                                             <div className="servies-input">
                                                 <label htmlFor="email">E-mail</label>
-                                                <input type="email" />
+                                                <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
                                             </div>
                                             <div className="servies-input">
-                                                <label htmlFor="Department">Department</label>
-                                                <input type="test" />
+                                                <label htmlFor="Department">Category</label>
+                                                <input type="test"  value={category} onChange={(e)=>setCategory(e.target.value)}/>
                                             </div>
                                             <div className="servies-input">
-                                                <label htmlFor="Computer ID">Computer ID</label>
-                                                <input type="test" />
+                                                <label htmlFor="Computer ID">Theme ID or Collaborator Code</label>
+                                                <input type="test" value={theme} onChange={(e)=>setTheme(e.target.value)} />
+                                            </div>
+                                            <div className="servies-input shop">
+                                                <label htmlFor="Shop">Shop</label>
+                                                <input type="test" value={shop} onChange={(e)=>setShop(e.target.value)}/>
                                             </div>
                                             <div className="servies-input textarea">
                                                 <label htmlFor="Describe the Problem">Describe the Problem</label>
-                                                <textarea id="w3review" name="w3review" rows="4" cols="50"></textarea>
+                                                <textarea id="w3review" name="w3review" rows="4" cols="50" value={describe} onChange={(e)=>setDescribe(e.target.value)}></textarea>
                                             </div>
                                         </div>
                                         <div className="it-service-icon" onClick={handleHide}>
                                             <img src={cancle1} alt="" />
                                         </div>
-                                        <button className='btn'>Submit</button>
+                                        <button className='btn' onClick={handleSubmit}>Submit</button>
                                     </div>
                                 </div>
                             </div>

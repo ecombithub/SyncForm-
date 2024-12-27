@@ -35,6 +35,8 @@
       const formTitle = formData.title || 'Form Data';
       const formID = formData.formId || 'Unknown ID';
       const formshop = formData.shop || 'Form shop';
+      const toggleStatus = formData.toggleStatus || 'toggleStatus';
+
       console.log('Formshop:', formshop);
       container.empty();
 
@@ -52,12 +54,14 @@
           borderColor: formData.styles.borderColor || '',
           borderWidth: formData.styles.borderWidth || '',
           borderStyle: formData.styles.borderStyle || '',
+          opacity: formData.styles.opacityForm || '',
           borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
           margin: 'auto',
         });
       }
       container.append(`<h2 style="display:none">${formshop}</h2>`);
       container.append(`<h2 style="display:none">${formTitle}</h2>`);
+      container.append(`<h2 style="display:none">${toggleStatus}</h2>`);
       container.append(`<p style="display:none"><strong>Form ID:</strong> ${formID}</p>`);
 
       if (formData.fields && formData.fields.length > 0) {
@@ -72,7 +76,9 @@
           const inputBorderColor = formData.styles.inputborderColor;
           const inputStyle = formData.styles.inputstyle;
           const inputWidth = formData.styles.inputwidth;
-          
+          const headingcolor = formData.styles.colorHeading;
+          const headingaline = formData.styles.textHeading;
+         
           const fieldHtml = `
                   <div key="${field.id}" style= "width: ${
             field.width
@@ -84,10 +90,12 @@
                         field.type !== 'description' &&
                         field.type !== 'button' &&
                         field.type !== 'toggle' &&
+                        field.type !== 'link' &&
                         field.type !== 'divider'
                           ? `<label style="color: ${labelColor};">${field.label}</label>`
                           : ''
                       }
+                      
                      ${getFieldInput(
                        field,
                        formData.url,
@@ -95,10 +103,13 @@
                        formData.thankYouTimer,
                        formData.editorValue,
                        formshop,
+                       toggleStatus,
                        inputRadius,
                        inputBorderColor,
                        inputStyle,
-                       inputWidth
+                       inputWidth,
+                       headingcolor,
+                       headingaline
                      )}
                   </div>
                   `;
@@ -111,8 +122,21 @@
       container.append('<div class="clear-float"></div>');
     }
 
-    function getFieldInput(field, url, submissionOption, thankYouTimer, editorValue, formshop, inputRadius, inputBorderColor, inputStyle, inputWidth) {
-
+    function getFieldInput(
+      field,
+      formUrl,
+      submissionOption,
+      thankYouTimer,
+      editorValue,
+      formshop,
+      toggleStatus,
+      inputRadius,
+      inputBorderColor,
+      inputStyle,
+      inputWidth,
+      headingcolor,
+      headingaline
+    ) {
       const uniqueId = field.id || generateUniqueId();
 
       switch (field.type) {
@@ -158,7 +182,6 @@
                 transform: translateX(0);
               "></span>
             </label>`;
-
         case 'textarea':
           return `<textarea placeholder="${
             field.placeholder || ''
@@ -214,8 +237,13 @@
           return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" />`;
         case 'description':
           return `<p>${field.text}</p>`;
-        case 'heading':
-          return `<h1 style="font-size: ${field.fontSize || '16px'};">${field.text}</h1>`;
+          case 'heading':
+          return `<h1 style="font-size: ${field.fontSize || '16px'}; 
+                  color: ${headingcolor || '#000'}; 
+                  text-align: ${headingaline || 'center'};">
+                  ${field.text || 'Default Heading'}
+                  </h1>`;
+        
         case 'number':
           return `<input type="number" placeholder="${
             field.placeholder || ''
@@ -257,17 +285,32 @@
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'link':
-          return `<input type="url" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          return `
+        <a
+        href="${field.linkUrl || '#'}"
+        target="${field.linkTarget || '_blank'}"
+         style="
+          width: ${field.width || '100%'};
+          text-decoration: none;
+          text-align: ${field.linkaline || 'left'};
+          padding: ${field.padding || '0'};
+          "
+             >${field.linktext || 'Default Link Text'}</a>
+      `;
+
         case 'images':
           return `<input type="file" multiple placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
         case 'slider':
-          return `<input type="range" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'};" />`;
+          return `<input 
+                    type="range" 
+                    placeholder="${field.placeholder || ''}" 
+                    style="width: ${field.width || '100%'};" 
+                    min="${field.min}" 
+                    max="${field.max}" 
+                    step="${field.step}" 
+                    />`;
         case 'button':
           return `
               <div>
@@ -280,11 +323,10 @@
                     border-width: ${field.buttonBorderWidth}px;
                     border-style: ${field.buttonBorderStyle || 'solid'};
                     border-color: ${field.buttonBorderColor || '#000'};
-                     color:${field.btncolor}"
+                    border-radius: ${field.btnradious}px;
+                    color:${field.btncolor}"
                     data-url="${formUrl}"
-                    onclick="submitFormData('{{ block.id }}', this, '${
-                      editorValue || ''
-                    }', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}')">
+                    onclick="submitFormData('{{ block.id }}', this, '${editorValue || ''}', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}', '${toggleStatus}')">
                   ${field.label || 'Submit'}
                 </button>
               </div>
@@ -300,7 +342,7 @@
 
     const currentTimestamp = new Date().toISOString();
 
-    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer, formshop) {
+    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer, formshop, toggleStatus) {
       const container = $('#formData-' + blockId);
       const formID = container.find('p').first().text().split(': ')[1];
       console.log('Editor Value:', editorValue);
@@ -308,6 +350,7 @@
       console.log('Thank You Timer:', thankYouTimer);
       console.log('form_id:', formID);
       console.log('formshop:', formshop);
+      console.log('toggleStatus:', toggleStatus);
 
       const formData = {
         id: formID,
@@ -315,6 +358,7 @@
         title: $('#formData-' + blockId + ' h2')
           .text()
           .replace(formshop, '')
+          .replace(/Enabled|Disabled/, '') 
           .trim(),
         fields: [],
         send: currentTimestamp,
@@ -322,6 +366,13 @@
         editorValue: editorValue,
         thankYouTimer: thankYouTimer,
       };
+
+      if (toggleStatus === 'Enabled') {
+        console.log('Window URL:', window.location.href);
+        formData.currentUrl = window.location.href; 
+      } else if (toggleStatus === 'Disabled') {
+        console.log('Form submission is disabled'); 
+      }
 
       const emailField = $('#formData-' + blockId + ' input[type="email"]');
       formData.email = emailField.val();
@@ -475,7 +526,14 @@
                 errorThrown: errorThrown,
                 responseText: jqXHR.responseText,
               });
-              $('#formData-' + blockId).append('<p>Error submitting form. Please try again.</p>');
+              const errorMessage = '<p>Error submitting form. Please try again.</p>';
+              const errorContainer = $('#formData-' + blockId);
+              errorContainer.append(errorMessage);
+              setTimeout(function() {
+                errorContainer.find('p').fadeOut('slow', function() {
+                    $(this).remove(); 
+                });
+            }, 2000); 
             },
           });
         },
@@ -520,7 +578,7 @@
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `http://localhost:4001/get-form/${id}`,
+          url: `https://hubsyntax.online/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -619,7 +677,7 @@
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: `http://localhost:4001/get/data`,
+          url: `https://hubsyntax.online/get/data`,
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -682,7 +740,7 @@
               console.log('Form Data:', JSON.stringify(formData));
 
               $.ajax({
-                url: 'http://localhost:4001/api/forms',
+                url: 'https://hubsyntax.online/api/forms',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
@@ -700,7 +758,7 @@
                   });
 
                   $.ajax({
-                    url: 'http://localhost:4001/api/template',
+                    url: 'https://hubsyntax.online/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -788,7 +846,7 @@
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `http://localhost:4001/get-form/${id}`,
+          url: `https://hubsyntax.online/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -973,7 +1031,7 @@
         console.log('Form Data:', JSON.stringify(formData));
 
         $.ajax({
-          url: 'http://localhost:4001/api/forms',
+          url: 'https://hubsyntax.online/api/forms',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify(formData),

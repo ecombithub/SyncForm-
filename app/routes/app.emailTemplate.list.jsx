@@ -77,6 +77,7 @@ export default function EmailTemplate() {
     const [showFormNames, setShowFormNames] = useState(false);
     const [selectedFormName, setSelectedFormName] = useState('');
     const { shop } = useLoaderData() || {};
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchForms = async () => {
         try {
@@ -226,10 +227,10 @@ export default function EmailTemplate() {
                                         width: `${field.headingbtnwidth}px`,
                                         fontSize: `${field.headingbtnFontSize}px`,
                                         borderRadius: `${field.headingbtnradious}px`,
-                                        paddingLeft:`${field.headingbtnPadding}px`,
-                                        paddingRight:`${field.headingbtnPadding}px`,
-                                        paddingTop:`${field.headingbtntopPadding}px`,
-                                        paddingBottom:`${field.headingbtntopPadding}px`,
+                                        paddingLeft: `${field.headingbtnPadding}px`,
+                                        paddingRight: `${field.headingbtnPadding}px`,
+                                        paddingTop: `${field.headingbtntopPadding}px`,
+                                        paddingBottom: `${field.headingbtntopPadding}px`,
                                         borderWidth: `${field.headingbtnBorderWidth}px`,
                                         borderStyle: field.headingbtnBorderStyle,
                                         borderColor: field.headingbtnBorderColor,
@@ -315,7 +316,7 @@ export default function EmailTemplate() {
                                         )}
                                         <div>
                                             <h4 style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</h4>
-                                            {field.price &&  (
+                                            {field.price && (
                                                 <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.price}</p>
                                             )}
                                         </div>
@@ -370,37 +371,37 @@ export default function EmailTemplate() {
                 return <div>
                     <div style={{ textAlign: field.richTextAlign }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
-          case 'Multicolumn':
-            const columns = parseInt(field.columnCount);
-            const columnsPerRow = field.columnsPerRow || 1;
-            return (
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
-                    gap: '10px',
-                }}>
-                    {field.columnData.map((column, index) => (
-                        <div
-                            key={column._id}
-                            style={{
-                                display:'flex',
-                                justifyContent:'center',
-                                fontSize: `${field.fontsizeMulticolumn}px`,
-                                borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
-                                borderStyle: field.MulticolumnbtnBorderStyle,
-                                borderColor: field.MulticolumnbtnBorderColor,
-                                 padding: `${field.MulticolumnPadding}px`
-                            }}
-                        >
-                            {column.image && (
-                                <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
-                            )}
-        
-                            <div dangerouslySetInnerHTML={{ __html: column.content }} />
-                        </div>
-                    ))}
-                </div>
-            );
+            case 'Multicolumn':
+                const columns = parseInt(field.columnCount);
+                const columnsPerRow = field.columnsPerRow || 1;
+                return (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
+                        gap: '10px',
+                    }}>
+                        {field.columnData.map((column, index) => (
+                            <div
+                                key={column._id}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    fontSize: `${field.fontsizeMulticolumn}px`,
+                                    borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
+                                    borderStyle: field.MulticolumnbtnBorderStyle,
+                                    borderColor: field.MulticolumnbtnBorderColor,
+                                    padding: `${field.MulticolumnPadding}px`
+                                }}
+                            >
+                                {column.image && (
+                                    <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
+                                )}
+
+                                <div dangerouslySetInnerHTML={{ __html: column.content }} />
+                            </div>
+                        ))}
+                    </div>
+                );
 
             case 'html convert':
                 return <div style={{ padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
@@ -525,12 +526,46 @@ export default function EmailTemplate() {
     };
 
     const handleCreateTemplate = () => {
-        navigate('/app/emailTemplate/new');
-    }
+        setIsLoading(true);
+        setTimeout(() => {
+            navigate('/app/emailTemplate/new');
+        }, 1000);
+    };
+
 
     return (
         <>
+            {isLoading && (
+                <div className="skeleton-wrapper forms create fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
+                                </div>
+                            </div>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="email-template-section">
+
                 <div className='container'>
                     <div className="email-tempalte-your">
                         <div className="email-tempalte-wrap">

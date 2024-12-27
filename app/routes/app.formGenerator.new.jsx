@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import Sortable from 'sortablejs';
 import { format } from 'date-fns';
@@ -36,6 +35,7 @@ import delete1 from '../images/delete.png';
 import maximizesize from '../images/maximize-size.png';
 import vecter1 from '../images/vecter1.png';
 import cancleimg from '../images/cancleimg.png';
+import bk from '../images/bk.png';
 import editicon from '../images/editicon.png';
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
@@ -168,7 +168,7 @@ const Formgenerated = () => {
     const [backgroundImage, setBackgroundImage] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [boxShadow, setBoxShadow] = useState('');
-    const [formWidth, setFormWidth] = useState('100%');
+    const [formWidth, setFormWidth] = useState('1200px');
     const [padding, setPadding] = useState('20');
     const [borderRadius, setBorderRadius] = useState('0');
     const [borderColor, setBorderColor] = useState('#ffffff');
@@ -224,6 +224,14 @@ const Formgenerated = () => {
     const [lableCode, setLableCode] = useState('#ffffff');
     const [inputGap, setInputGap] = useState('10')
     const [colorCode, setColorCode] = useState('#ffffff');
+    const [opacityForm, setOpacityForm] = useState('1');
+    const [textHeading, setTextHeading] = useState('left');
+    const [colorHeading, setColorHeading] = useState('#000');
+    const [colorHeadingcode, setColorHeadingcode] = useState('#000');
+    const [linkaline, setLinkaline] = useState('left');
+    const [linkTarget, setLinkTarget] = useState('_self');
+    const [isActive, setIsActive] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
 
@@ -246,6 +254,7 @@ const Formgenerated = () => {
             formBuilder.style.width = formWidth;
             formBuilder.style.padding = `${padding}px`;
             formBuilder.style.borderRadius = `${borderRadius}px`;
+            formBuilder.style.opacity = opacityForm;
 
             if (/^\d+px$/.test(borderWidth)) {
                 formBuilder.style.border = `${borderWidth} ${borderStyle} ${borderColor}`;
@@ -255,7 +264,7 @@ const Formgenerated = () => {
 
         }
 
-    }, [backgroundColor, imageFile, backgroundImage, borderWidth, borderStyle, borderColor, formWidth, padding, borderRadius, boxShadow, fields.length]);
+    }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth, padding, borderRadius, boxShadow, fields.length]);
 
 
     useEffect(() => {
@@ -269,8 +278,9 @@ const Formgenerated = () => {
 
     useEffect(() => {
         if (location.state) {
-            const { formTitle, fields, formId, styles } = location.state;
+            const { formTitle, fields, formId, styles, toggleStatus, url, editorValue, thankYouTimer } = location.state;
             setFormTitle(formTitle);
+            setUrl(url);
             setFields(fields);
             setEditingFormId(formId);
             setIsEditing(true);
@@ -289,11 +299,27 @@ const Formgenerated = () => {
             setBorderColor(styles.borderColor || '#ffffff');
             setInputRadious(styles.inputRadious);
             setInputStyle(styles.inputstyle);
+            setColorHeading(styles.colorHeading);
+            setTextHeading(styles.textHeading);
             setInputWidth(styles.inputwidth);
             setInputBorderColor(styles.inputborderColor);
             setLableColor(styles.labelColor);
             setInputGap(styles.inputGap);
+            setOpacityForm(styles.opacityForm);
+            if (fields && fields.length > 0) {
+                const linkField = fields.find(field => field.type === 'link');
+                if (linkField) {
+                    setLinkaline(linkField.linkaline || 'left');
+                    setLinkTarget(linkField.linkTarget || '_self');
+                }
+            }
             console.log(styles.backgroundImage);
+            setThankYouTimer(thankYouTimer);
+            console.log('Updated Thank You Timer:', thankYouTimer);
+            setIsActive(toggleStatus);
+            setEditorValue(editorValue);
+            console.log('Location State:', location.state);
+
         }
     }, [location.state]);
 
@@ -332,12 +358,31 @@ const Formgenerated = () => {
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
             btncolor: type === 'button' ? '#fff' : undefined,
+            btnradious: type === 'button' ? '4' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
             headingText: type === 'heading' ? 'Add Heading' : undefined,
+            linktext: type === 'link' ? 'Link' : undefined,
+            linkUrl: type === 'link' ? '' : undefined,
+            min: type === 'slider' ? 1 : undefined,
+            max: type === 'slider' ? 100 : undefined,
+            step: type === 'slider' ? 10 : undefined,
+            value: type === 'slider' ? (existingField ? existingField.value : 0) : undefined,
 
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
+    };
+
+    const handleAlignChange = (e) => {
+        setLinkaline(e.target.value);
+    };
+
+    const handleTargetChange = (e) => {
+        setLinkTarget(e.target.value);
+    };
+
+    const handleToggleChange = () => {
+        setIsActive(prevState => !prevState);
     };
 
     const addInputField = (type) => {
@@ -430,7 +475,6 @@ const Formgenerated = () => {
             console.warn('No selectedField found, skipping field update');
         }
     };
-
 
     const removeRadioOption = (id) => {
         setRadioOptions((prevOptions) => {
@@ -721,15 +765,15 @@ const Formgenerated = () => {
 
     const handleCreate = () => {
         setShowConfirmationPopup(true);
-
     };
-
     const handleStatusChange = (status) => {
+        setIsLoading(true);
         setConfirmationPopupType(status);
         setShowConfirmationPopup(false);
+  
         createOrUpdateForm(status);
     };
-
+    
     const createOrUpdateForm = async (status = 'draft') => {
         const formId = generateUniqueId();
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
@@ -763,6 +807,24 @@ const Formgenerated = () => {
             title: formTitle,
             shop,
             fields: fields.map(field => {
+                if (field.type === 'slider') {
+                    return {
+                        ...field,
+                        min: field.min,
+                        max: field.max,
+                        step: field.step
+                    };
+                }
+                if (field.type === 'link') {
+                    return {
+                        ...field,
+                        linktext: field.linktext || '',
+                        linkUrl: field.linkUrl || '',
+                        linkTarget: linkTarget || '_self',
+                        linkaline: linkaline || ''
+
+                    };
+                }
                 if (field.type === 'checkbox') {
                     return {
                         ...field,
@@ -813,12 +875,14 @@ const Formgenerated = () => {
                         buttonBorderStyle: field.buttonBorderStyle || 'solid',
                         buttonBorderColor: field.buttonBorderColor || '#000',
                         btncolor: field.btncolor || '#ffff',
+                        btnradious: field.btnradious
                     };
                 }
                 return field;
             }),
             createdAt: timestamp,
             hidden: false,
+            toggleStatus: isActive ? "Enabled" : "Disabled",
             status: status,
             styles: {
                 backgroundColor: backgroundColor,
@@ -833,13 +897,16 @@ const Formgenerated = () => {
                 labelColor,
                 inputGap,
                 inputwidth,
+                opacityForm,
                 inputborderColor,
                 borderColor,
                 borderRadius,
                 borderColor: borderColor,
                 borderRadius: borderRadius,
                 borderWidth: borderWidth,
-                borderStyle: borderStyle
+                borderStyle: borderStyle,
+                textHeading,
+                colorHeading,
             },
             submissionOption: submissionOption || "defaultOption",
             thankYouTimer: thankYouTimer || 0,
@@ -876,7 +943,7 @@ const Formgenerated = () => {
                 }
             });
 
-        setFields([]);
+       setFields([]);
         setShowFormBuilder(false);
         setView('live');
         setIsEditing(false);
@@ -1077,6 +1144,13 @@ const Formgenerated = () => {
         }
     };
 
+    const updateOpacity = (opacityForm) => {
+        setOpacityForm(opacityForm);
+        const formBuilder = document.getElementById('bg_change');
+        if (formBuilder) {
+            formBuilder.style.opacityForm = opacityForm;
+        }
+    }
 
     const updatePadding = (padding) => {
         setPadding(padding);
@@ -1090,6 +1164,11 @@ const Formgenerated = () => {
         const newColor = e.target.value;
         setBorderColor(newColor);
         setBorderColorcode(newColor)
+    };
+    const handleheadingColorChange = (e) => {
+        const newColor = e.target.value;
+        setColorHeading(newColor);
+        setColorHeadingcode(newColor)
     };
 
     const handleBorderWidthChange = (e) => {
@@ -1245,20 +1324,76 @@ const Formgenerated = () => {
         setColorCode(newColor);
     };
 
-    const handleLableColor = (e)=>{
+    const handleLableColor = (e) => {
         const newColor = e.target.value;
         setLableColor(newColor);
         setLableCode(newColor);
     }
 
-    const handleborderColor = (e)=>{
+    const handleborderColor = (e) => {
         const newColor = e.target.value;
         setInputBorderColor(newColor);
         setInputColorcode(newColor);
     }
 
+    const min = 360;
+    const max = 1200;
+    const sliderRef = useRef(null);
+    const handleMouseMove = (e) => {
+        if (!sliderRef.current) return;
+
+        const rect = sliderRef.current.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const width = rect.width;
+        const value = Math.min(Math.max(offsetX, 0), width) / width * (max - min) + min;
+
+        setFormWidth(`${Math.round(value)}px`);
+        sliderRef.current.style.setProperty('--thumb-position', `${(value - min) / (max - min) * 100}%`);
+    };
+
+    const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleMouseDown = (e) => {
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        handleMouseMove(e);
+    };
+
     return (
         <div>
+            {isLoading && (
+                <div className="skeleton-wrapper forms create fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
+                                </div>
+                            </div>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="builder-container">
                 <h3>Forms</h3>
                 <div className='builder_form_name'>
@@ -1411,37 +1546,34 @@ const Formgenerated = () => {
                                                                 )}
                                                             </div>
                                                         </div>
+                                                        <div className="edit_setting_bg current-url">
+                                                            <label htmlFor="boxShadowSelect">Current url:</label>
+                                                            <div className="toggle-container">
+                                                                <label htmlFor="toggleSwitch" className="switch">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id="toggleSwitch"
+                                                                        checked={isActive}
+                                                                        onChange={handleToggleChange}
+                                                                    />
+                                                                    <span className="slider"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
 
                                                         <div className='edit-form-options form'>
-                                                            <div className='edit_setting_bg form bgcolor'>
-                                                                <label>
-                                                                    Background Color:
-                                                                </label>
-                                                                <div className='edit_setting_bg_cls'>
-                                                                    <p>{colorCode}</p>
-                                                                    <div className='edit_setting_bg--form bgcolor'
-                                                                        style={{
-                                                                            height: "40px",
-                                                                            width: "40px",
-                                                                            borderRadius: "4px",
-                                                                            backgroundColor: backgroundColor,
-                                                                            border: "1px solid #ccc",
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                        onClick={() => document.getElementById('colorInput').click()}
-                                                                    >
+                                                            <div className='edit_setting_bg form'>
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label>  Background Color:</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{backgroundColor}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={backgroundColor}
+                                                                            onChange={(e) => setBackgroundColor(e.target.value)}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <input
-                                                                    id="colorInput"
-                                                                    type="color"
-                                                                    style={{
-                                                                        display: "none"
-                                                                    }}
-                                                                    value={backgroundColor}
-                                                                    onChange={handleColorChange}
-                                                                />
-
                                                             </div>
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Upload Background Image:</label>
@@ -1454,40 +1586,20 @@ const Formgenerated = () => {
                                                             </div>
                                                             {imageFile && (
                                                                 <button
+                                                                    className='rm-btn'
                                                                     type="button"
                                                                     onClick={handleRemoveBackgroundImage}
-                                                                    style={{
-                                                                        margin: '10px 0',
-                                                                        padding: '5px 10px',
-                                                                        cursor: 'pointer',
-                                                                        background: 'white',
-                                                                        color: 'black',
-                                                                        border: 'none',
-                                                                        borderRadius: '5px',
-                                                                        border: '1px solid rgb(221, 221, 221)'
-                                                                    }}
                                                                 >
-
-                                                                    Remove Background
+                                                                    <img src={bk} alt="" />
                                                                 </button>
                                                             )}
                                                             {backgroundImage && (
                                                                 <button
+                                                                    className='rm-btn'
                                                                     type="button"
                                                                     onClick={handleRemoveBackgroundImage}
-                                                                    style={{
-                                                                        margin: '10px 0',
-                                                                        padding: '5px 10px',
-                                                                        cursor: 'pointer',
-                                                                        background: 'white',
-                                                                        color: 'black',
-                                                                        border: 'none',
-                                                                        borderRadius: '5px',
-                                                                        border: '1px solid rgb(221, 221, 221)'
-                                                                    }}
                                                                 >
-
-                                                                    Remove Background
+                                                                    <img src={bk} alt="" />
                                                                 </button>
                                                             )}
                                                             <div
@@ -1515,6 +1627,14 @@ const Formgenerated = () => {
                                                                     />
                                                                 )}
                                                             </div>
+                                                            <div className='edit_setting_bg form'>
+                                                                <label>Opacity:</label>
+                                                                <input
+                                                                    type='text'
+                                                                    value={opacityForm}
+                                                                    onChange={(e) => updateOpacity(e.target.value)}
+                                                                />
+                                                            </div>
 
                                                             <div className="edit_setting_bg form">
                                                                 <label htmlFor="boxShadowSelect">Background Shadow:</label>
@@ -1527,22 +1647,37 @@ const Formgenerated = () => {
                                                                     <option value="">Select a shadow</option>
                                                                     <option value="rgba(0, 0, 0, 0.35) 0px 5px 15px">Subtle Shadow</option>
                                                                     <option value="rgba(0, 0, 0, 0.5) 0px 10px 20px">Medium Shadow</option>
-                                                                    <option value="rgba(0, 0, 0, 0.75) 0px 15px 30px">Dark Shadow</option>
+                                                                    <option value=" rgba(0, 0, 0, 0.56) 0px 22px 70px 4px">Dark Shadow</option>
                                                                     <option value="none">No Shadow</option>
                                                                 </select>
                                                             </div>
-                                                            <div className='edit_setting_bg form'>
+                                                            <div className="edit_setting_bg form">
                                                                 <label>Form Width:</label>
-                                                                <select
-                                                                    value={formWidth}
-                                                                    onChange={(e) => updateFormWidth(e.target.value)}
-                                                                >
-                                                                    <option value="25%">25%</option>
-                                                                    <option value="50%">50%</option>
-                                                                    <option value="75%">75%</option>
-                                                                    <option value="100%">100%</option>
-                                                                </select>
+                                                                <div>
+                                                                    <div
+                                                                        ref={sliderRef}
+                                                                        className="custom-range-slider"
+                                                                        onMouseDown={handleMouseDown}
+                                                                        style={{
+                                                                            width: '100%',
+                                                                            height: '33px',
+                                                                            background: `linear-gradient(to right, #404B52 0%, #404B52 ${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 100}%, #ddd ${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 100}%, #ddd 100%)`,
+                                                                        }}
+                                                                    >
+                                                                        <div
+                                                                            className="slider-thumb"
+                                                                            style={{
+                                                                                position: 'absolute',
+                                                                                left: `calc(${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 97}%)`,
+                                                                            }}
+                                                                        />
+                                                                        <span className='custom-range-text'>{formWidth}</span>
+                                                                    </div>
+
+                                                                </div>
                                                             </div>
+
+
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Padding:</label>
                                                                 <input
@@ -1559,34 +1694,20 @@ const Formgenerated = () => {
                                                                     onChange={(e) => setInputGap(e.target.value)}
                                                                 />
                                                             </div>
-                                                            
-                                                            <div className='edit_setting_bg form bgcolor'>
-                                                                <label>Lable Color:</label>
-                                                                <div className='edit_setting_bg_cls'>
-                                                                <p>{lableCode}</p>
-                                                                <div className='edit_setting_bg--form bgcolor'
-                                                                    style={{
-                                                                        height: "40px",
-                                                                        width: "40px",
-                                                                        borderRadius: "4px",
-                                                                        backgroundColor: labelColor,
-                                                                        border: "1px solid #ccc",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => document.getElementById('labelColorInput').click()}
-                                                                >
+                                                            <div className='edit_setting_bg form'>
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label>  Lable Color:</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{labelColor}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={labelColor}
+                                                                            onChange={(e) => setLableColor(e.target.value)}
+                                                                        />
+                                                                    </div>
                                                                 </div>
-                                                                </div>
-                                                                <input
-                                                                    id="labelColorInput"
-                                                                    type="color"
-                                                                    style={{
-                                                                        display: "none"
-                                                                    }}
-                                                                    value={labelColor}
-                                                                    onChange={handleLableColor}
-                                                                />
                                                             </div>
+
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Input Border:</label>
                                                                 <input
@@ -1595,32 +1716,18 @@ const Formgenerated = () => {
                                                                     onChange={(e) => setInputWidth(e.target.value)}
                                                                 />
                                                             </div>
-                                                            <div className='edit_setting_bg form bgcolor'>
-                                                                <label>Input Border Color:</label>
-                                                                <div className='edit_setting_bg_cls'>
-                                                                <p>{inputColorcode}</p>
-                                                                <div className='edit_setting_bg--form bgcolor'
-                                                                    style={{
-                                                                        height: "40px",
-                                                                        width: "40px",
-                                                                        borderRadius: "4px",
-                                                                        backgroundColor: inputborderColor,
-                                                                        border: "1px solid #ccc",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => document.getElementById('inputborderColorInput').click()}
-                                                                >
+                                                            <div className='edit_setting_bg form'>
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label>Input Border Color:</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{inputborderColor}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={inputborderColor}
+                                                                            onChange={(e) => setInputBorderColor(e.target.value)}
+                                                                        />
+                                                                    </div>
                                                                 </div>
-                                                                </div>
-                                                                <input
-                                                                    id="inputborderColorInput"
-                                                                    type="color"
-                                                                    style={{
-                                                                        display: "none"
-                                                                    }}
-                                                                    value={inputborderColor}
-                                                                    onChange={handleborderColor}
-                                                                />
                                                             </div>
                                                             <div className="edit_setting_bg form">
                                                                 <label>Input Border Style:</label>
@@ -1677,32 +1784,19 @@ const Formgenerated = () => {
 
                                                                 </select>
                                                             </div>
-                                                            <div className='edit_setting_bg form bgcolor'>
-                                                                <label>Border-Color:</label>
-                                                                <div className='edit_setting_bg_cls'>
-                                                                <p>{borderColorcode}</p>
-                                                                <div className='edit_setting_bg--form bgcolor'
-                                                                    style={{
-                                                                        height: "40px",
-                                                                        width: "40px",
-                                                                        borderRadius: "4px",
-                                                                        backgroundColor: borderColor,
-                                                                        border: "1px solid #ccc",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => document.getElementById('borderColorInput').click()}
-                                                                >
+
+                                                            <div className='edit_setting_bg form'>
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label>Border-Color:</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{borderColor}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={borderColor}
+                                                                            onChange={(e) => setBorderColor(e.target.value)}
+                                                                        />
+                                                                    </div>
                                                                 </div>
-                                                                </div>
-                                                                <input
-                                                                    id="borderColorInput"
-                                                                    type="color"
-                                                                    style={{
-                                                                        display: "none"
-                                                                    }}
-                                                                    value={borderColor}
-                                                                    onChange={handleBorderColorChange}
-                                                                />
                                                             </div>
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Border-Radius:</label>
@@ -1735,7 +1829,7 @@ const Formgenerated = () => {
                                                 <div
                                                     key={field.id}
                                                     className={`input-field input-gap ${parseFloat(field.width || '100') <= 50 ? 'small-width' : ''}`}
-                                                    style={{ width: field.width || '100%', opacity: field.opacity || 1, marginBottom: `${inputGap}px` }}
+                                                    style={{ width: field.width || '100%', marginBottom: `${inputGap}px` }}
                                                     onClick={() => handleFieldClick(field, index)}
                                                 >
                                                     {field.type === 'name' && (
@@ -1861,6 +1955,7 @@ const Formgenerated = () => {
                                                                 <label>
                                                                     <div style={{
                                                                         fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1,
+                                                                        textAlign: textHeading, color: colorHeading,
                                                                     }}>
                                                                         {React.createElement(
                                                                             field.level || 'h1',
@@ -1948,11 +2043,9 @@ const Formgenerated = () => {
                                                                 </div>
                                                             </div>
                                                         )}
-
                                                     </div>
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'checkbox' && (
-
                                                             <div className={`input-field ${field.customClass}`} style={{
                                                                 width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                     ? '1px solid #33cba2'
@@ -1965,11 +2058,15 @@ const Formgenerated = () => {
                                                             }}>
                                                                 <label style={{ color: labelColor }}>
                                                                     {field.label || "Checkbox Group"}</label>
-                                                                <div className='form-build-box' style={{ opacity: field.opacity || 1, }}
+                                                                <div className='form-build-box' style={{
+                                                                    width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                    borderStyle: inputstyle,
+                                                                    borderColor: inputborderColor, opacity: field.opacity || 1
+                                                                }}
                                                                 >
                                                                     {field.options.length > 0 ? (
                                                                         field.options.map(option => (
-                                                                            <div key={option.id}>
+                                                                            <div key={option.id} className='form_radio_flex'>
                                                                                 <input
                                                                                     type="checkbox"
                                                                                     name={field.name}
@@ -1985,7 +2082,7 @@ const Formgenerated = () => {
                                                                         </div>
                                                                     )}
 
-                                                                    {field.description && <div className='description'>{field.description}</div>}
+                                                                    <div className='description'>{field.description}</div>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -2035,7 +2132,9 @@ const Formgenerated = () => {
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'textarea' && (
                                                             <div className={`input-field ${field.customClass}`} style={{
-                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                width: "100%",
+                                                                maxWidth: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                     ? '1px solid #33cba2'
                                                                     : '1px solid transparent',
                                                                 backgroundColor: selectedField && selectedField.id === field.id
@@ -2043,13 +2142,15 @@ const Formgenerated = () => {
                                                                     : hoveredFieldId === field.id
                                                                         ? '#e7f9f4'
                                                                         : 'transparent',
+                                                                overflow: "hidden",
                                                             }}>
 
                                                                 <label style={{ color: labelColor }}>
                                                                     {field.label || "Enter text:"}
                                                                     <textarea
                                                                         style={{
-                                                                            width: '100%', borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            width: '100%',
+                                                                            maxWidth: '100%', borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor, opacity: field.opacity || 1,
                                                                         }}
@@ -2228,7 +2329,7 @@ const Formgenerated = () => {
                                                                         type="tel"
                                                                         className="name"
                                                                         name={field.name}
-                                                                        placeholder={field.placeholder}
+                                                                        placeholder={field.placeholder || 'e.g +1-416-555-112'}
                                                                         required={field.required}
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
@@ -2570,7 +2671,10 @@ const Formgenerated = () => {
                                                                             <input
                                                                                 type="range"
                                                                                 className="name"
-                                                                                min="1" max="100"
+                                                                                min={field.min}
+                                                                                max={field.max}
+                                                                                step={field.step}
+                                                                                value={field.value || 0}
                                                                                 name={field.name}
                                                                                 placeholder={field.placeholder}
                                                                                 required={field.required}
@@ -2658,6 +2762,7 @@ const Formgenerated = () => {
                                                                         fontSize: `${field.fontSize}px`,
                                                                         color: field.btncolor,
                                                                         padding: field.padding,
+                                                                        borderRadius: `${field.btnradious}px`,
                                                                         borderWidth: `${field.buttonBorderWidth}px`,
                                                                         borderStyle: field.buttonBorderStyle || 'solid',
                                                                         borderColor: field.buttonBorderColor || '#000',
@@ -2693,6 +2798,9 @@ const Formgenerated = () => {
                                                                 }}>
 
                                                                 <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: '100%' }} />
+                                                                <div className='description'>
+                                                                    {field.description}
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -2708,30 +2816,17 @@ const Formgenerated = () => {
                                                                     ? '#e7f9f4'
                                                                     : 'transparent',
                                                         }}>
-                                                            <label style={{ color: labelColor }}>
-                                                                {field.label}
-                                                                <input
-                                                                    style={{
-                                                                        width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                        borderStyle: inputstyle,
-                                                                        borderColor: inputborderColor, opacity: field.opacity || 1,
-                                                                    }}
-                                                                    onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                    onMouseLeave={() => {
-                                                                        if (!(selectedField && selectedField.id === field.id)) {
-                                                                            setHoveredFieldId(null);
-                                                                        }
-                                                                    }}
-                                                                    type="link"
-                                                                    name={field.name}
-                                                                    disabled={field.disabled}
-                                                                    readOnly={field.readonly}
-                                                                    placeholder="Enter link text"
-                                                                    onChange={(e) => updateFieldProperty('link', e.target.value, field.id)}
-                                                                />
-                                                            </label>
+                                                            <div style={{ textAlign: linkaline }}>
+                                                                <a href={field.linkUrl} target={linkTarget} rel="noopener noreferrer">
+                                                                    <div onClick={(e) => e.preventDefault()} dangerouslySetInnerHTML={{ __html: field.linktext }} />
+                                                                </a>
+                                                            </div>
+                                                            <div className='description'>
+                                                                {field.description}
+                                                            </div>
                                                         </div>
                                                     )}
+
                                                     {(hoveredFieldId === field.id || (selectedField && selectedField.id === field.id)) && (
                                                         <div>
                                                             <div className='form-builder-radio-btn'>
@@ -2776,328 +2871,467 @@ const Formgenerated = () => {
                                     <div className='controls-wrpping cancleimg pro' onClick={hanldeCanclepro}><img src={cancleimg} alt="" /></div>
                                     <div className="form-builder-change-propertites" ref={propertiesPanelRef} style={{ display: isPropertiesVisible ? 'block' : 'none' }}>
                                         {selectedField && (
-                                            <div className='form-builder-change_show_all'>
+                                            <div className='form-build-wrpped'>
+                                                <div className='form-builder-change_show_all'>
 
-                                                <div className='form_qucik'>
-                                                    <p>Qucick setup Settings</p>
-                                                </div>
-                                                <div className='form_build_propertities'>
-                                                    <div className="form-builder-chaneging-wrap">
-                                                        <label>Label</label>
-                                                        <input
-                                                            type="text"
-                                                            value={selectedField.label}
-                                                            onChange={(e) => updateFieldProperty('label', e.target.value)}
-                                                        />
+                                                    <div className='form_qucik'>
+                                                        <p>Qucick setup Settings</p>
                                                     </div>
-                                                    {selectedField.type === 'name' && (
-                                                        <div className='form_build_name_custom'>
-                                                            <select onChange={(e) => {
-                                                                const newLabel = e.target.value;
-                                                                updateFieldProperty('label', newLabel);
-                                                            }}>
-                                                                <option value="Full name">Full name</option>
-                                                                <option value="First name">First name</option>
-                                                                <option value="Last name">Last name</option>
-                                                            </select>
-                                                        </div>
-                                                    )}
-                                                    {selectedField.type === 'select' && (
-                                                        <div className="popup-content">
+                                                    <div className='form_build_propertities'>
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'link' && (
+                                                            <div className="form-builder-chaneging-wrap">
+                                                                <label>Label</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={selectedField.label}
+                                                                    onChange={(e) => updateFieldProperty('label', e.target.value)}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {selectedField.type === 'slider' && (
+                                                            <div className="slider-settings">
+                                                                <div className="form-builder-chaneging-wrap sliders">
+                                                                    <label>Min:</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={selectedField.min}
+                                                                        onChange={(e) => updateFieldProperty('min', e.target.value, selectedField.id)}
 
-                                                            {selectOptions.map((option, index) => (
-                                                                <div key={option.id} className="select-option">
-                                                                    <label style={{ display: 'flex', alignItems: 'center' }}>
-                                                                        <input
-                                                                            type="text"
-                                                                            value={option.name}
-                                                                            onChange={(e) => handleOptionNameChangees(index, e.target.value, 'select')}
-                                                                            placeholder={`Enter option name`}
-                                                                        />
-                                                                    </label>
-                                                                    <button onClick={() => removeSelectOption(option.id)} className="remove-options"> <img src={removee} alt="" /></button>
+                                                                    />
                                                                 </div>
-                                                            ))}
-                                                            <button className='btn-design' onClick={addSelectOption}>Add Select Input</button>
+                                                                <div className="form-builder-chaneging-wrap sliders">
+                                                                    <label>Max:</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={selectedField.max}
+                                                                        onChange={(e) => updateFieldProperty('max', e.target.value, selectedField.id)}
 
-                                                        </div>
-                                                    )}
-                                                    {selectedField.type === 'radio' && (
-                                                        <div>
-                                                            {radioOptions.map((option, index) => (
-                                                                <div key={option.id} className="radio-option">
-                                                                    <label>
-                                                                        <input
-                                                                            type="text"
-                                                                            value={option.label}
-                                                                            onChange={(e) => handleOptionNameChange(index, e.target.value)}
-                                                                            placeholder={`Enter option name`}
-                                                                        />
-                                                                    </label>
-                                                                    <button onClick={() => removeRadioOption(option.id)} className="remove-options"><img src={removee} alt="" /></button>
+                                                                    />
                                                                 </div>
-                                                            ))}
-                                                            <button className='btn-design' onClick={addRadioOption}>Add Radio Button</button>
+                                                                <div className="form-builder-chaneging-wrap sliders">
+                                                                    <label>Step:</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={selectedField.step}
+                                                                        onChange={(e) => updateFieldProperty('step', e.target.value, selectedField.id)}
 
-                                                        </div>
-                                                    )}
-
-                                                    {selectedField.type === 'checkbox' && (
-                                                        <div>
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {selectedField.type === 'name' && (
+                                                            <div className='form_build_name_custom'>
+                                                                <select onChange={(e) => {
+                                                                    const newLabel = e.target.value;
+                                                                    updateFieldProperty('label', newLabel);
+                                                                }}>
+                                                                    <option value="Full name">Full name</option>
+                                                                    <option value="First name">First name</option>
+                                                                    <option value="Last name">Last name</option>
+                                                                </select>
+                                                            </div>
+                                                        )}
+                                                        {selectedField.type === 'select' && (
                                                             <div className="popup-content">
-                                                                {checkboxOptions.map((option, index) => (
-                                                                    <div key={option.id} className="checkbox-option check">
+                                                                {selectOptions.map((option, index) => (
+                                                                    <div key={option.id} className="select-option">
                                                                         <label style={{ display: 'flex', alignItems: 'center' }}>
                                                                             <input
                                                                                 type="text"
                                                                                 value={option.name}
-                                                                                onChange={(e) => handleOptionNameChanges(index, e.target.value)}
+                                                                                onChange={(e) => handleOptionNameChangees(index, e.target.value, 'select')}
                                                                                 placeholder={`Enter option name`}
-
                                                                             />
-
                                                                         </label>
-                                                                        <button onClick={() => removeCheckboxOption(option.id)} className="remove-options"><img src={removee} alt="" /></button>
+                                                                        <button onClick={() => removeSelectOption(option.id)} className="remove-options"> <img src={removee} alt="" /></button>
                                                                     </div>
                                                                 ))}
-                                                                <button className='btn-design' onClick={addCheckboxOption}>Add Checkbox Button</button>
+                                                                <button className='btn-design' onClick={addSelectOption}>Add Select Input</button>
 
                                                             </div>
-                                                        </div>
-                                                    )}
-                                                    {selectedField.type === 'divider' && (
-                                                        <div className='form_builder_divider_lable'>
-                                                            <label>Divider Color</label>
-                                                            <input
-                                                                type="color"
-                                                                value={selectedField.dividerColor}
-                                                                onChange={(e) => updateFieldProperty('dividerColor', e.target.value)}
-                                                            />
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                        {selectedField.type === 'radio' && (
+                                                            <div>
+                                                                {radioOptions.map((option, index) => (
+                                                                    <div key={option.id} className="radio-option">
+                                                                        <label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={option.label}
+                                                                                onChange={(e) => handleOptionNameChange(index, e.target.value)}
+                                                                                placeholder={`Enter option name`}
+                                                                            />
+                                                                        </label>
+                                                                        <button onClick={() => removeRadioOption(option.id)} className="remove-options"><img src={removee} alt="" /></button>
+                                                                    </div>
+                                                                ))}
+                                                                <button className='btn-design' onClick={addRadioOption}>Add Radio Button</button>
 
-                                                    {selectedField.type === 'button' && (
-                                                        <>
-                                                            <div className="form-builder-changing-wrap">
-                                                                <div>
+                                                            </div>
+                                                        )}
 
-                                                                    <div className='checkbox-option'>
-                                                                        <label>Button Label</label>
-                                                                        <input
-                                                                            type="text"
-                                                                            value={selectedField.label}
-                                                                            onChange={(e) => updateFieldProperty('label', e.target.value)}
-                                                                        />
-                                                                    </div>
+                                                        {selectedField.type === 'checkbox' && (
+                                                            <div>
+                                                                <div className="popup-content">
+                                                                    {checkboxOptions.map((option, index) => (
+                                                                        <div key={option.id} className="checkbox-option check">
+                                                                            <label style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={option.name}
+                                                                                    onChange={(e) => handleOptionNameChanges(index, e.target.value)}
+                                                                                    placeholder={`Enter option name`}
 
-                                                                    <div className='checkbox-option'>
-                                                                        <label>Font Size (px)</label>
-                                                                        <input
-                                                                            type="number"
-                                                                            value={selectedField.fontSize}
-                                                                            onChange={(e) => updateFieldProperty('fontSize', e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                    <div className='form-builder-chaneging-wrap color'>
-                                                                        <label> Color</label>
-                                                                        <input
-                                                                            type="color"
-                                                                            value={selectedField.btncolor}
-                                                                            onChange={(e) => updateFieldProperty('btncolor', e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                    <div className='checkbox-option'>
-                                                                        <label>Button Padding (px)</label>
-                                                                        <input
-                                                                            type="text"
-                                                                            value={selectedField.padding}
-                                                                            onChange={(e) => updateFieldProperty('padding', e.target.value)}
-                                                                            placeholder="e.g., 10px"
-                                                                        />
-                                                                    </div>
-                                                                    <div className='checkbox-option'>
-                                                                        <label>Width (px)</label>
-                                                                        <input
-                                                                            type="number"
-                                                                            value={selectedField.buttonWidth ? selectedField.buttonWidth.replace('px', '') : '130'}
-                                                                            onChange={(e) => updateFieldProperty('buttonWidth', `${e.target.value}px`)}
-                                                                            placeholder="e.g., 150"
-                                                                        />
-                                                                    </div>
-                                                                    <div className='checkbox-option'>
-                                                                        <label>Height (px)</label>
-                                                                        <input
-                                                                            type="number"
-                                                                            value={selectedField.buttonheight ? selectedField.buttonheight.replace('px', '') : '40'}
-                                                                            onChange={(e) => updateFieldProperty('buttonheight', `${e.target.value}px`)}
-                                                                            placeholder="e.g., 40"
-                                                                        />
-                                                                    </div>
-                                                                    <div className='checkbox-option'>
-                                                                        <label>Background Color</label>
-                                                                        <input
-                                                                            type="color"
-                                                                            value={selectedField.backgroundColor}
-                                                                            onChange={(e) => updateFieldProperty('backgroundColor', e.target.value)}
-                                                                        />
-                                                                    </div>
+                                                                                />
 
-                                                                    <div className='form-builder-chaneging-wrap color'>
-                                                                        <label>Border Color</label>
-                                                                        <input
-                                                                            type="color"
-                                                                            value={selectedField.buttonBorderColor}
-                                                                            onChange={(e) => updateFieldProperty('buttonBorderColor', e.target.value)}
-                                                                        />
-                                                                    </div>
-
-                                                                    <div className='form-builder-chaneging-wrap number'>
-                                                                        <label>Border Width (px)</label>
-                                                                        <input
-                                                                            type="text"
-                                                                            value={selectedField.buttonBorderWidth}
-                                                                            onChange={(e) => {
-                                                                                updateFieldProperty('buttonBorderWidth', `${e.target.value}`);
-                                                                            }}
-                                                                        />
-                                                                    </div>
-
-                                                                    <div className='form-builder-chaneging-wrap'>
-                                                                        <label>Border Style</label>
-                                                                        <select
-                                                                            value={selectedField.buttonBorderStyle}
-                                                                            onChange={(e) => updateFieldProperty('buttonBorderStyle', e.target.value)}
-                                                                        >
-                                                                            <option value="solid">Solid</option>
-                                                                            <option value="dashed">Dashed</option>
-                                                                            <option value="dotted">Dotted</option>
-                                                                        </select>
-                                                                    </div>
+                                                                            </label>
+                                                                            <button onClick={() => removeCheckboxOption(option.id)} className="remove-options"><img src={removee} alt="" /></button>
+                                                                        </div>
+                                                                    ))}
+                                                                    <button className='btn-design' onClick={addCheckboxOption}>Add Checkbox Button</button>
 
                                                                 </div>
                                                             </div>
-                                                        </>
-                                                    )}
-
-                                                    {selectedField.type === 'heading' && (
-                                                        <>
-                                                            <div className="form-builder-chaneging-wrap">
-                                                                <label>Heading Level</label>
-                                                                <select value={headingLevel} onChange={(e) => setHeadingLevel(e.target.value)}>
-                                                                    {['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map(level => (
-                                                                        <option key={level} value={level}>{level.toUpperCase()}</option>
-                                                                    ))}
-                                                                </select>
+                                                        )}
+                                                        {selectedField.type === 'divider' && (
+                                                            <div className="checkbox-option bg-colors">
+                                                                <label>Divider Color</label>
+                                                                <div className="color-picker-container">
+                                                                    <span className="color-code">{selectedField.dividerColor}</span>
+                                                                    <input
+                                                                        type="color"
+                                                                        value={selectedField.dividerColor}
+                                                                        onChange={(e) => updateFieldProperty('dividerColor', e.target.value)}
+                                                                    />
+                                                                </div>
                                                             </div>
+                                                        )}
+
+                                                        {selectedField.type === 'button' && (
+                                                            <>
+                                                                <div className="form-builder-changing-wrap">
+                                                                    <div>
+
+                                                                        <div className='checkbox-option'>
+                                                                            <label>Button Label</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={selectedField.label}
+                                                                                onChange={(e) => updateFieldProperty('label', e.target.value)}
+                                                                            />
+                                                                        </div>
+
+                                                                        <div className='checkbox-option'>
+                                                                            <label>Font Size (px)</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                value={selectedField.fontSize}
+                                                                                onChange={(e) => updateFieldProperty('fontSize', e.target.value)}
+                                                                            />
+                                                                        </div>
+                                                                        <div className='checkbox-option bg-colors'>
+                                                                            <label> Color</label>
+                                                                            <div className="color-picker-container">
+                                                                                <span className="color-code">{selectedField.backgroundColor}</span>
+                                                                                <input
+                                                                                    type="color"
+                                                                                    value={selectedField.btncolor}
+                                                                                    onChange={(e) => updateFieldProperty('btncolor', e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className='checkbox-option'>
+                                                                            <label>Button Padding (px)</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={selectedField.padding}
+                                                                                onChange={(e) => updateFieldProperty('padding', e.target.value)}
+                                                                                placeholder="e.g., 10px"
+                                                                            />
+                                                                        </div>
+                                                                        <div className='checkbox-option'>
+                                                                            <label>Button Radious (px)</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={selectedField.btnradious}
+                                                                                onChange={(e) => updateFieldProperty('btnradious', e.target.value)}
+                                                                                placeholder="e.g., 4px"
+                                                                            />
+                                                                        </div>
+                                                                        <div className='checkbox-option'>
+                                                                            <label>Width (px)</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                value={selectedField.buttonWidth ? selectedField.buttonWidth.replace('px', '') : '130'}
+                                                                                onChange={(e) => updateFieldProperty('buttonWidth', `${e.target.value}px`)}
+                                                                                placeholder="e.g., 150"
+                                                                            />
+                                                                        </div>
+                                                                        <div className='checkbox-option'>
+                                                                            <label>Height (px)</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                value={selectedField.buttonheight ? selectedField.buttonheight.replace('px', '') : '40'}
+                                                                                onChange={(e) => updateFieldProperty('buttonheight', `${e.target.value}px`)}
+                                                                                placeholder="e.g., 40"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="checkbox-option bg-colors">
+                                                                            <label>Background Color</label>
+                                                                            <div className="color-picker-container">
+                                                                                <span className="color-code">{selectedField.backgroundColor}</span>
+                                                                                <input
+                                                                                    type="color"
+                                                                                    value={selectedField.backgroundColor}
+                                                                                    onChange={(e) => updateFieldProperty('backgroundColor', e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className="checkbox-option bg-colors">
+                                                                            <label>Border Color</label>
+                                                                            <div className="color-picker-container">
+                                                                                <span className="color-code">{selectedField.buttonBorderColor}</span>
+                                                                                <input
+                                                                                    type="color"
+                                                                                    value={selectedField.buttonBorderColor}
+                                                                                    onChange={(e) => updateFieldProperty('buttonBorderColor', e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className='form-builder-chaneging-wrap number'>
+                                                                            <label>Border Width (px)</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={selectedField.buttonBorderWidth}
+                                                                                onChange={(e) => {
+                                                                                    updateFieldProperty('buttonBorderWidth', `${e.target.value}`);
+                                                                                }}
+                                                                            />
+                                                                        </div>
+
+                                                                        <div className='form-builder-chaneging-wrap'>
+                                                                            <label>Border Style</label>
+                                                                            <select
+                                                                                value={selectedField.buttonBorderStyle}
+                                                                                onChange={(e) => updateFieldProperty('buttonBorderStyle', e.target.value)}
+                                                                            >
+                                                                                <option value="solid">Solid</option>
+                                                                                <option value="dashed">Dashed</option>
+                                                                                <option value="dotted">Dotted</option>
+                                                                            </select>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                        {selectedField.type === 'link' && (
                                                             <div className="form-builder-chaneging-wrap">
-                                                                <label>Heading Text</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={headingText}
-                                                                    onChange={(e) => setHeadingText(e.target.value)}
-                                                                />
-                                                                <label>
-                                                                    Font Size (px):
+                                                                <div className='form-builder-chaneging-wrap'>
+                                                                    <label>Link text</label>
+                                                                    <ReactQuill
+                                                                        value={selectedField.linktext}
+                                                                        onChange={(value) => updateFieldProperty('linktext', value, selectedField.id)}
+                                                                        modules={{
+                                                                            toolbar: [
+                                                                                ['bold', 'italic', 'underline'],
+                                                                                ['link'],
+                                                                            ],
+                                                                        }}
+                                                                        placeholder="Enter the URL"
+                                                                    />
+                                                                </div>
+                                                                <div className='form-builder-chaneging-wrap'>
+                                                                    <label>Link URL</label>
                                                                     <input
                                                                         type="text"
-                                                                        value={headingFontSize}
-                                                                        onChange={(e) => setHeadingFontSize(e.target.value)}
+                                                                        value={selectedField.linkUrl || ''}
+                                                                        onChange={(e) => updateFieldProperty('linkUrl', e.target.value, selectedField.id)}
+                                                                        placeholder="Enter the URL"
                                                                     />
-                                                                </label>
+                                                                </div>
+                                                                <div className='form-builder-chaneging-wrap'>
+                                                                    <label>Text Align</label>
+                                                                    <select
+                                                                        name="textAlign"
+                                                                        id="textAlign"
+                                                                        value={linkaline}
+                                                                        onChange={handleAlignChange}
+                                                                    >
+                                                                        <option value="left">Left</option>
+                                                                        <option value="center">Center</option>
+                                                                        <option value="right">Right</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='form-builder-chaneging-wrap'>
+                                                                    <label>Open in</label>
+                                                                    <select
+                                                                        name="linkTarget"
+                                                                        id="linkTarget"
+                                                                        value={linkTarget}
+                                                                        onChange={handleTargetChange}
+                                                                    >
+                                                                        <option value="_self">Same Tab</option>
+                                                                        <option value="_blank">New Tab</option>
+                                                                    </select>
+                                                                </div>
                                                             </div>
 
-                                                        </>
-                                                    )}
-                                                    {selectedField.type === 'description' && (
-                                                        <>
+                                                        )}
+
+                                                        {selectedField.type === 'heading' && (
+                                                            <>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Heading Level</label>
+                                                                    <select value={headingLevel} onChange={(e) => setHeadingLevel(e.target.value)}>
+                                                                        {['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map(level => (
+                                                                            <option key={level} value={level}>{level.toUpperCase()}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Heading Text</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={headingText}
+                                                                        onChange={(e) => setHeadingText(e.target.value)}
+                                                                    />
+                                                                    <label>
+                                                                        Font Size (px):
+                                                                        <input
+                                                                            type="text"
+                                                                            value={headingFontSize}
+                                                                            onChange={(e) => setHeadingFontSize(e.target.value)}
+                                                                        />
+                                                                    </label>
+                                                                </div>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Text Align </label>
+                                                                    <select
+                                                                        value={textHeading}
+                                                                        onChange={(e) => setTextHeading(e.target.value)}
+                                                                    >
+                                                                        <option value="left">left</option>
+                                                                        <option value="center">center</option>
+                                                                        <option value="right">right</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label> Color</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{colorHeading}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={colorHeading}
+                                                                            onChange={(e) => setColorHeading(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                            </>
+                                                        )}
+                                                        {selectedField.type === 'description' && (
+                                                            <>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Description Text</label>
+                                                                    <textarea
+                                                                        value={descriptionText}
+                                                                        onChange={(e) => setDescriptionText(e.target.value)}
+                                                                    />
+                                                                </div>
+
+                                                            </>
+                                                        )}
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                            <label>Placeholder</label>
+                                                            <input
+                                                                type="text"
+                                                                value={selectedField.placeholder}
+                                                                onChange={(e) => updateFieldProperty('placeholder', e.target.value)}
+                                                            />
+                                                        </div>
+                                                        )}
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && (
                                                             <div className="form-builder-chaneging-wrap">
-                                                                <label>Description Text</label>
-                                                                <textarea
-                                                                    value={descriptionText}
-                                                                    onChange={(e) => setDescriptionText(e.target.value)}
+                                                                <label>Description</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={selectedField.description}
+                                                                    onChange={(e) => updateFieldProperty('description', e.target.value)}
                                                                 />
                                                             </div>
-
-                                                        </>
+                                                        )}
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && (
+                                                            <div className="form-builder-chaneging-wrap">
+                                                                <label>Input Width</label>
+                                                                <select
+                                                                    value={selectedField.width}
+                                                                    onChange={(e) => updateFieldProperty('width', e.target.value)}
+                                                                >
+                                                                    <option value="25%">25%</option>
+                                                                    <option value="50%">50%</option>
+                                                                    <option value="75%">75%</option>
+                                                                    <option value="100%">100%</option>
+                                                                </select>
+                                                            </div>
+                                                        )}
+                                                        <div className="form-builder-chaneging-wrap">
+                                                            <label>Custom Class</label>
+                                                            <input
+                                                                type="text"
+                                                                value={selectedField?.customClass || ''}
+                                                                onChange={(e) => updateFieldProperty('customClass', e.target.value)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
+                                                        <div className='form_builder_option_select'>
+                                                            <h3>Options</h3>
+                                                            <div className='form-builder-options-container'>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Required</label>
+                                                                    <label className="toggle-switch">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={selectedField?.required || false}
+                                                                            onChange={(e) => updateFieldProperty('required', e.target.checked)}
+                                                                        />
+                                                                        <span className="slider"></span>
+                                                                    </label>
+                                                                </div>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Disabled</label>
+                                                                    <label className="toggle-switch">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={selectedField?.disabled || false}
+                                                                            onChange={(e) => updateFieldProperty('disabled', e.target.checked)}
+                                                                        />
+                                                                        <span className="slider"></span>
+                                                                    </label>
+                                                                </div>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Readonly</label>
+                                                                    <label className="toggle-switch">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={selectedField?.readonly || false}
+                                                                            onChange={(e) => updateFieldProperty('readonly', e.target.checked)}
+                                                                        />
+                                                                        <span className="slider"></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     )}
-                                                    <div className="form-builder-chaneging-wrap">
-                                                        <label>Placeholder</label>
-                                                        <input
-                                                            type="text"
-                                                            value={selectedField.placeholder}
-                                                            onChange={(e) => updateFieldProperty('placeholder', e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-builder-chaneging-wrap">
-                                                        <label>Description</label>
-                                                        <input
-                                                            type="text"
-                                                            value={selectedField.description}
-                                                            onChange={(e) => updateFieldProperty('description', e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-builder-chaneging-wrap">
-                                                        <label>Input Width</label>
-                                                        <select
-                                                            value={selectedField.width}
-                                                            onChange={(e) => updateFieldProperty('width', e.target.value)}
-                                                        >
-                                                            <option value="25%">25%</option>
-                                                            <option value="50%">50%</option>
-                                                            <option value="75%">75%</option>
-                                                            <option value="100%">100%</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="form-builder-chaneging-wrap">
-                                                        <label>Custom Class</label>
-                                                        <input
-                                                            type="text"
-                                                            value={selectedField?.customClass || ''}
-                                                            onChange={(e) => updateFieldProperty('customClass', e.target.value)}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className='form_builder_option_select'>
-                                                    <h3>Options</h3>
-                                                    <div className='form-builder-options-container'>
-                                                        <div className="form-builder-chaneging-wrap">
-                                                            <label>Required</label>
-                                                            <label className="toggle-switch">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={selectedField?.required || false}
-                                                                    onChange={(e) => updateFieldProperty('required', e.target.checked)}
-                                                                />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        </div>
-                                                        <div className="form-builder-chaneging-wrap">
-                                                            <label>Disabled</label>
-                                                            <label className="toggle-switch">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={selectedField?.disabled || false}
-                                                                    onChange={(e) => updateFieldProperty('disabled', e.target.checked)}
-                                                                />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        </div>
-                                                        <div className="form-builder-chaneging-wrap">
-                                                            <label>Readonly</label>
-                                                            <label className="toggle-switch">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={selectedField?.readonly || false}
-                                                                    onChange={(e) => updateFieldProperty('readonly', e.target.checked)}
-                                                                />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
+                                                </div>
                                             </div>
                                         )}
+
                                     </div>
                                 </div>)}
                         </div>
@@ -3291,3 +3525,4 @@ const Formgenerated = () => {
 };
 
 export default Formgenerated;
+

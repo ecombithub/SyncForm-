@@ -51,6 +51,7 @@ const formCreateSchema = new mongoose.Schema({
     width: { type: String, default: '100%' },
     text: { type: String, default: '' },
     description: { type: String, default: '' },
+    placeholder: { type: String, default: '' },
     level: { type: String, enum: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], required: false },
     fontSize: { type: String, default: '16px' },
     padding: { type: String, default: '10px' },
@@ -64,6 +65,14 @@ const formCreateSchema = new mongoose.Schema({
     buttonBorderColor: { type: String, required: false },
     buttonBorderWidth: { type: String, required: false },
     buttonBorderStyle: { type: String, required: false },
+    linktext: { type: String,required: false},
+    linkUrl: { type: String,required: false},
+    linkTarget: { type: String,required: false},
+    linkaline: { type: String,required: false},
+    min: { type: String,required: false},
+    max: { type: String,required: false},
+    step: { type: String,required: false},
+    btnradious: { type: String, required: false },
     btncolor: { type: String, required: false },
     styles: {
       display: { type: String, default: 'block' },
@@ -77,6 +86,7 @@ const formCreateSchema = new mongoose.Schema({
     }]
   }],
   createdAt: { type: String, required: true },
+  toggleStatus: { type: String, required: false },
   styles: {
     backgroundColor: { type: String, required: true },
     backgroundImage: { type: String, default: '' },
@@ -93,7 +103,11 @@ const formCreateSchema = new mongoose.Schema({
     inputwidth: { type: String, default: '1' },
     inputborderColor: { type: String, default: 'blue' },
     labelColor: { type: String, default: 'blue' },
-    inputGap:{ type: String, default: '10' },
+    inputGap: { type: String, default: '10' },
+    opacityForm: { type: String, default: '1' },
+    textHeading: { type: String, default: '' },
+    colorHeading: { type: String, default: '' },
+ 
   },
   submissionOption: { type: String, required: true },
   thankYouTimer: { type: Number },
@@ -112,6 +126,7 @@ const formSchema = new mongoose.Schema({
   title: { type: String, required: true },
   id: { type: String, required: true },
   shop: { type: String, required: false, },
+  currentUrl: { type: String, required: false, },
   fields: [
     {
       id: { type: String, required: true },
@@ -179,7 +194,7 @@ const EmailTemplats = new mongoose.Schema({
       headerbtnbg: { type: String, required: false },
       headerbtncolor: { type: String, required: false },
       headingbtnPadding: { type: String, required: false },
-      headingbtntopPadding : { type: String, required: false },
+      headingbtntopPadding: { type: String, required: false },
       headingbtnradious: { type: String, required: false },
       headingbtnFontSize: { type: String, required: false },
       headingbtnwidth: { type: String, required: false },
@@ -297,12 +312,12 @@ const EmailTemplats = new mongoose.Schema({
       productheight: { type: String, required: false },
       buttonUrl: { type: String, required: false },
       showbtnn: { type: Boolean, default: false },
-      fontsizeMulticolumn:{ type: String, required: false },
-      MulticolumnbtnBorderWidth:{ type: String, required: false },
-      MulticolumnbtnBorderColor:{ type: String, required: false },
-      MulticolumnbtnBorderStyle:{ type: String, required: false },
-      richFontsize:{ type: String, required: false },
-      MulticolumnPadding:{ type: String, required: false },
+      fontsizeMulticolumn: { type: String, required: false },
+      MulticolumnbtnBorderWidth: { type: String, required: false },
+      MulticolumnbtnBorderColor: { type: String, required: false },
+      MulticolumnbtnBorderStyle: { type: String, required: false },
+      richFontsize: { type: String, required: false },
+      MulticolumnPadding: { type: String, required: false },
       icons: {
         facebook: {
           url: { type: String, required: false },
@@ -352,8 +367,70 @@ const templateSchema = new mongoose.Schema({
   email: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
+
 const Template = mongoose.model('sendTemplates', templateSchema);
 
+const supportdata = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  category: { type: String, required: true },
+  theme: { type: String, required: true },
+  shop: { type: String, required: true },
+  describe: { type: String, required: true },
+  submittedAt: { type: Date, default: Date.now },
+});
+
+const Support = mongoose.model('supportEmails', supportdata); 
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'sahil@hubsyntax.com',
+    pass: 'wqnr gaom dgzq asyu', 
+  },
+});
+
+const sendEmails = (formData) => {
+  const mailOptions = {
+    from: 'sahil@hubsyntax.com',
+    to: `${formData.email}`,
+    subject: `Support Request: ${formData.name}`,
+    text: `
+      Name: ${formData.name}
+      Email: ${formData.email}
+      Category: ${formData.category}
+      Theme: ${formData.theme}
+      Shop: ${formData.shop}
+      Description: ${formData.describe}
+    `,
+  };
+
+  return transporter.sendMail(mailOptions); 
+};
+
+app.post('/email-submit', async (req, res) => {
+  const { name, email, category, theme, shop, describe } = req.body;
+
+  try {
+    const newSupportEmail = new Support({
+      name,
+      email,
+      category,
+      theme,
+      shop,
+      describe,
+    });
+
+    await newSupportEmail.save();
+
+    await sendEmails(req.body);
+
+    res.status(200).json({ message: 'Form submitted successfully' });
+  } catch (error) {
+    console.error('Error saving form data or sending email:', error);
+    res.status(500).json({ message: 'Failed to submit the form' });
+  }
+});
 
 app.post('/api/template', async (req, res) => {
   try {
@@ -375,7 +452,7 @@ import { Buffer } from 'buffer';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import fetch from 'node-fetch';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -644,8 +721,8 @@ const sendEmail = async (email, TemplateAll) => {
               </div>
                 `
               );
-              case 'product':
-                return `
+            case 'product':
+              return `
                   <div class="product-grid" style="
                     display: flex;
                     grid-template-columns: repeat(${field.productsPerRow}, 1fr);
@@ -1115,7 +1192,7 @@ app.get('/api/forms', async (req, res) => {
 app.post('/api/forms', async (req, res) => {
   try {
     const formsData = req.body;
-    const { title, id, fields, timestamp, shop } = formsData;
+    const { title, id, fields, timestamp, currentUrl, shop } = formsData;
     console.log("data", req.body);
     if (!shop) {
       return res.status(400).send({ error: 'Shop field is missing from the form submission.' });
@@ -1137,6 +1214,7 @@ app.post('/api/forms', async (req, res) => {
         title,
         id,
         shop,
+        currentUrl,
         fields,
         timestamp: timestamp || new Date().toISOString(),
         submissionCount: 0,
@@ -1229,7 +1307,7 @@ app.post('/form-data', async (req, res) => {
       counter++;
     }
 
-    const { formId, shop, fields, createdAt, styles, submissionOption, thankYouTimer, editorValue, url, status } = req.body;
+    const { formId, shop, fields, createdAt, styles, submissionOption,toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
     const newFormEntry = new FormModel({
       formId,
       shop,
@@ -1237,6 +1315,7 @@ app.post('/form-data', async (req, res) => {
       fields,
       createdAt,
       styles,
+      toggleStatus,
       submissionOption,
       thankYouTimer,
       editorValue,
