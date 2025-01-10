@@ -5,29 +5,29 @@ import axios from 'axios';
 import { useNavigate } from '@remix-run/react';
 import { Navigate, useLocation } from 'react-router-dom';
 import '../index.css';
-import text from '../images/text.png';
-import heading from '../images/heading.png';
-import font from '../images/font-size.png';
-import radio from '../images/radio-button.png';
-import checkbox from '../images/checked-box.png';
-import selection from '../images/selection.png';
-import text1 from '../images/text1.png';
-import upload from '../images/upload.png';
-import number from '../images/number-input.png';
-import phone from '../images/phone.png';
-import email from '../images/email.png';
-import location1 from '../images/location.png';
-import password1 from '../images/password1.png';
-import toggle from '../images/toggle.png';
-import url1 from '../images/url1.png';
-import date from '../images/date.png';
-import slider from '../images/slider.png';
-import image from '../images/image-.png';
-import link1 from '../images/link1.png';
-import time from '../images/time.png';
-import detetime from '../images/detetime.png';
-import divider2 from '../images/divider.png';
-import btn from '../images/btn.png';
+import text from '../images/text0.png';
+import heading from '../images/heading0.png';
+import font from '../images/font-size0.png';
+import radio from '../images/radio-button0.png';
+import checkbox from '../images/checked-box0.png';
+import selection from '../images/selection0.png';
+import text1 from '../images/text10.png';
+import upload from '../images/upload0.png';
+import number from '../images/number-input0.png';
+import phone from '../images/phone0.png';
+import email from '../images/email0.png';
+import location1 from '../images/location0.png';
+import password1 from '../images/password10.png';
+import toggle from '../images/toggle0.png';
+import url1 from '../images/url10.png';
+import date from '../images/date0.png';
+import slider from '../images/slider0.png';
+import image from '../images/image-0.png';
+import link1 from '../images/link10.png';
+import time from '../images/time0.png';
+import detetime from '../images/time0.png';
+import divider2 from '../images/divider0.png';
+import btn from '../images/btn0.png';
 import drop from '../images/drop.png';
 import bgim1 from '../images/bgim1.png';
 import removee from '../images/removee.png';
@@ -218,6 +218,7 @@ const Formgenerated = () => {
     const [inputRadious, setInputRadious] = useState('4');
     const [inputwidth, setInputWidth] = useState('1');
     const [inputborderColor, setInputBorderColor] = useState('#B5B7C0');
+    const [inputBgColor, setInputBgColor] = useState('transparent');
     const [inputColorcode, setInputColorcode] = useState('#B5B7C0');
     const [inputstyle, setInputStyle] = useState('solid');
     const [labelColor, setLableColor] = useState('#000');
@@ -303,6 +304,7 @@ const Formgenerated = () => {
             setTextHeading(styles.textHeading);
             setInputWidth(styles.inputwidth);
             setInputBorderColor(styles.inputborderColor);
+            setInputBgColor(styles.inputBgColor);
             setLableColor(styles.labelColor);
             setInputGap(styles.inputGap);
             setOpacityForm(styles.opacityForm);
@@ -770,10 +772,10 @@ const Formgenerated = () => {
         setIsLoading(true);
         setConfirmationPopupType(status);
         setShowConfirmationPopup(false);
-  
+
         createOrUpdateForm(status);
     };
-    
+
     const createOrUpdateForm = async (status = 'draft') => {
         const formId = generateUniqueId();
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
@@ -899,6 +901,7 @@ const Formgenerated = () => {
                 inputwidth,
                 opacityForm,
                 inputborderColor,
+                inputBgColor,
                 borderColor,
                 borderRadius,
                 borderColor: borderColor,
@@ -943,7 +946,7 @@ const Formgenerated = () => {
                 }
             });
 
-       setFields([]);
+        setFields([]);
         setShowFormBuilder(false);
         setView('live');
         setIsEditing(false);
@@ -1366,32 +1369,32 @@ const Formgenerated = () => {
     return (
         <div>
             {isLoading && (
-                <div className="skeleton-wrapper forms create fade-in">
-                    <div className="container skeleton-wred">
-                        <div className="skeleton-wrp">
-                            <div className="skeleton-wrp-left">
-                                <div className="skeleton skeleton-header"></div>
-                                <div className="skeleton-wrp-left-para">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                </div>
-                                <div className="skeleton-wrp-left-para">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph "></div>
-                                </div>
-                            </div>
-                            <div className="skeleton-wrp-right">
-                                <div className="skeleton-wrp-left-para right">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph two"></div>
-                                </div>
-                                <div className="skeleton-wrp-left-para right">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph two"></div>
-                                </div>
-                            </div>
+                  <div className="skeleton-wrapper fade-in">
+                  <div className="container skeleton-wred">
+                    <div className="skeleton-wrp">
+                    <div className="skeleton-wrp-left">
+                        <div className="skeleton skeleton-header"></div>
+                        <div className="skeleton-wrp-left-para">
+                        <div className="skeleton skeleton-paragraph"></div>
+                        <div className="skeleton skeleton-paragraph"></div>
                         </div>
+                        <div className="skeleton-wrp-left-para">
+                        <div className="skeleton skeleton-paragraph"></div>
+                        <div className="skeleton skeleton-paragraph "></div>
+                        </div>
+                      </div>
+                      <div className="skeleton-wrp-right">
+                      <div className="skeleton-wrp-left-para right">
+                      <div className="skeleton skeleton-paragraph"></div>
+                      <div className="skeleton skeleton-paragraph two"></div>
+                      </div>
+                      <div className="skeleton-wrp-left-para right">
+                      <div className="skeleton skeleton-paragraph"></div>
+                      <div className="skeleton skeleton-paragraph two"></div>
+                      </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
             )}
             <div className="builder-container">
@@ -1729,6 +1732,19 @@ const Formgenerated = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div className='edit_setting_bg form'>
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label>Input Background Color:</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{inputBgColor}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={inputBgColor}
+                                                                            onChange={(e) => setInputBgColor(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             <div className="edit_setting_bg form">
                                                                 <label>Input Border Style:</label>
                                                                 <select
@@ -1861,7 +1877,9 @@ const Formgenerated = () => {
                                                                             borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor,
                                                                             opacity: field.opacity || 1,
+
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -1912,7 +1930,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         type="text"
                                                                         className="name"
@@ -2016,7 +2035,8 @@ const Formgenerated = () => {
                                                                 <div className='form-build-box' style={{
                                                                     width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                     borderStyle: inputstyle,
-                                                                    borderColor: inputborderColor, opacity: field.opacity || 1
+                                                                    borderColor: inputborderColor,
+                                                                    backgroundColor: inputBgColor, opacity: field.opacity || 1
                                                                 }}
                                                                 >
                                                                     {field.options.length > 0 ? (
@@ -2061,7 +2081,8 @@ const Formgenerated = () => {
                                                                 <div className='form-build-box' style={{
                                                                     width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                     borderStyle: inputstyle,
-                                                                    borderColor: inputborderColor, opacity: field.opacity || 1
+                                                                    borderColor: inputborderColor,
+                                                                    backgroundColor: inputBgColor, opacity: field.opacity || 1
                                                                 }}
                                                                 >
                                                                     {field.options.length > 0 ? (
@@ -2107,7 +2128,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
 
                                                                         name={field.name}
@@ -2152,7 +2174,8 @@ const Formgenerated = () => {
                                                                             width: '100%',
                                                                             maxWidth: '100%', borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2193,7 +2216,8 @@ const Formgenerated = () => {
                                                                             style={{
                                                                                 width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor, opacity: field.opacity || 1
+                                                                                borderColor: inputborderColor,
+                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1
                                                                             }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
@@ -2232,7 +2256,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2275,7 +2300,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2318,7 +2344,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2362,7 +2389,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2404,7 +2432,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2447,7 +2476,8 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
-                                                                            borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                            borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2526,7 +2556,8 @@ const Formgenerated = () => {
                                                                             style={{
                                                                                 width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                                borderColor: inputborderColor,
+                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                             }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
@@ -2571,7 +2602,8 @@ const Formgenerated = () => {
                                                                             style={{
                                                                                 width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                                borderColor: inputborderColor,
+                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                             }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
@@ -2616,7 +2648,8 @@ const Formgenerated = () => {
                                                                             style={{
                                                                                 width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                                borderColor: inputborderColor,
+                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                             }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
@@ -2660,6 +2693,7 @@ const Formgenerated = () => {
                                                                             width: '100%', opacity: field.opacity || 1, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
+                                                                            backgroundColor: inputBgColor,
                                                                         }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
@@ -2711,7 +2745,8 @@ const Formgenerated = () => {
                                                                             style={{
                                                                                 width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor, opacity: field.opacity || 1,
+                                                                                borderColor: inputborderColor,
+                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
                                                                             }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => {
@@ -3032,7 +3067,7 @@ const Formgenerated = () => {
                                                                         <div className='checkbox-option bg-colors'>
                                                                             <label> Color</label>
                                                                             <div className="color-picker-container">
-                                                                                <span className="color-code">{selectedField.backgroundColor}</span>
+                                                                                <span className="color-code">{selectedField.btncolor}</span>
                                                                                 <input
                                                                                     type="color"
                                                                                     value={selectedField.btncolor}

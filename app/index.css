@@ -1,3 +1,13 @@
+.email-templates-wredd h1 {
+    font-size: 40px !important;
+    line-height: 50px;
+}
+
+.email-templates-wredd h2 {
+    font-size: 30px !important;
+    line-height: 40px;
+}
+
 .container {
     width: 100%;
     max-width: 1440px;
@@ -55,9 +65,8 @@ button.action_btn {
 
 .controls-main-wrp .controls-wrp button span.form_builder_field_img {
     font-size: 0;
+    width: 23px;
 }
-
-
 
 .input-field {
     /* display: flex; */
@@ -542,9 +551,8 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
     padding-bottom: 25px;
 }
 
-
 .form-builder-create.section-wrp {
-    position: absolute;
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1260,7 +1268,7 @@ button.cancel {
 }
 
 .builder-wrp .builder-form-element .buil_form_texttt .buil_form_texttt_p h2 {
-    font-size: 18px;
+    font-size: 18px !important;
 }
 
 .buil_form_texttt_icon img {
@@ -1332,7 +1340,7 @@ button.cancel {
 
 
 .builder_form_select_control h2 {
-    font-size: 16px;
+    font-size: 16px !important;
     font-weight: 600;
 }
 
@@ -1951,7 +1959,7 @@ button.cancle-form-btn {
 
 .formId-copy-popup-Id {
     cursor: pointer;
-    width: 15px;
+    width: 12px;
 }
 
 .form-builder-wrpp-show-Polaris {
@@ -3534,7 +3542,7 @@ button.btn-templates {
 }
 
 .email-template-section .email-template-h2 h2 {
-    font-size: 22px;
+    font-size: 22px !important;
     font-weight: 600;
 }
 
@@ -3557,12 +3565,20 @@ button.btn-templates {
     justify-content: right;
 }
 
+.product-detalis-all.btn-split label.custom-checkbox {
+    line-height: 1;
+}
+
 .email-template-section .email-templete-search-bar span.name_build {
     display: flex;
 }
 
 .email-template-section .email-templete-search-bar .form-builder-search-bar {
     width: 35%;
+}
+
+.email-templete-use-add .email-templete-search-bar .form-builder-search-bar {
+    width: 50%;
 }
 
 .create-email-templates {
@@ -3679,6 +3695,7 @@ button.btn-templates {
     position: absolute;
     right: 0px;
     top: 0px;
+    z-index: 9999;
 }
 
 .email-template-section .form-builder-create.section-wrp {
@@ -3686,11 +3703,11 @@ button.btn-templates {
 }
 
 .email_field {
-    border: 1px solid #EEEEEE;
+     border: 1px solid #EEEEEE; 
     position: relative;
     border-radius: 4px;
     transition: border-color 0.3s ease;
-    margin-bottom: 20px;
+
 }
 
 button.copy-btn {
@@ -3702,15 +3719,15 @@ button.copy-btn {
 }
 
 .email-campaing-templates .form-builder-radio-btn {
-    bottom: -19px;
+    bottom: 0px;
 }
-
 
 .email_field:hover {
     border-color: red;
 }
 
 .email_field.active {
+    border: 1px solid red;
     border-color: red;
 }
 
@@ -3763,7 +3780,6 @@ button.copy-btn {
 .social-icons {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
 }
 
 
@@ -3952,13 +3968,36 @@ button.copy-btn {
     grid-template-columns: repeat(10, 1fr);
 }
 
+.form-builder-chaneging-wrap h2 {
+    color: black;
+    font-size: 18px !important;
+}
+
+.email-template-reviw-popup.emial-wrap {
+    position: fixed;
+}
+
 .product-show {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 10px;
 }
 
+button.rm-btn-remove-icon {
+    width: 50px;
+    border: none;
+    background-color: transparent;
+}
+
+.column h2 {
+    font-size: 20px !important;
+}
+
+button.rm-btn-remove-icon img {
+    width: 100%;
+}
 
 select {
     margin-bottom: 10px;
@@ -3988,6 +4027,15 @@ button.product-btn-addproduct {
 
 .email-template-reviw-popup .email-tempalte-textt {
     position: relative;
+    overflow: hidden;
+    height: 80vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+
+.form-builder-chaneging-wrap h2 {
+    color: black;
 }
 
 .show-bnt-prodcut {
@@ -4210,8 +4258,8 @@ button.rm-btn.dl img {
 }
 
 button.rm-btn.dl {
-    width: 12%;
-    padding: 0 8px;
+    width: 27px;
+    padding: 0 4px;
 }
 
 button.rm-btn.remove-coloum img {
@@ -4290,7 +4338,11 @@ button.procduct-canclebtn {
     border: 1px solid #B5B7C0;
     padding: 5px;
     border-radius: 4px;
-    width: 12%;
+    width: 50px;
+}
+
+.popup-content.product .product-item {
+    width: 100%;
 }
 
 .product-itm-all-inline {
@@ -4417,11 +4469,12 @@ button.show-data-icon {
     cursor: pointer;
 }
 
+
 .edit_form_close button.rm-btn {
     position: absolute;
     width: 15%;
-    background: transparent !important;
-    right: 2%;
+    background: red !important;
+    right:4%;
 }
 
 .custom-range-slider {
@@ -4549,6 +4602,33 @@ span.custom-range-text {
     top: 20%;
 }
 
+.form-builder-chaneging-wrap.preview.img-heading {
+    position: relative;
+}
+
+button.rm-btn.showfirst {
+    position: absolute;
+    right: 0px;
+    top: -2px;
+    width: 55px;
+    background: none !important;
+}
+
+button.rm-btn.showfirst img {
+    width: 100%;
+}
+
+.form-builder-chaneging-wrap.color .checkbox-option.bg-colors input {
+    margin: 0;
+    border: none;
+    padding: 0;
+    border-radius: 14px;
+}
+
+.controls-wrp.email .edit_setting_bg.form label {
+    color: #180000;
+}
+
 .content-wrapper {
     position: relative;
     min-height: 100vh;
@@ -4568,7 +4648,8 @@ span.custom-range-text {
 
 .skeleton-wrapper {
     position: absolute;
-    height: 50vh;
+    height: 100vh;
+    background: #ebebeb;
     top: 0;
     width: 100%;
     border-radius: 4px;
@@ -4627,10 +4708,16 @@ span.custom-range-text {
     background: white;
 }
 
+.skeleton-wrapper.form-wrped.fade-in {
+    background: #ebebeb !important;
+    height: 100vh;
+}
+
 .skeleton-paragraph {
     width: 100%;
     height: 8px;
     margin-bottom: 10px;
+    
 }
 
 .skeleton-wrp-left-para.right {

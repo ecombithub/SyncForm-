@@ -16,7 +16,7 @@ export default function Support() {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:4001/email-submit', {
+            const response = await axios.post('https://hubsyntax.online/email-submit', {
                 name,
                 email,
                 category,

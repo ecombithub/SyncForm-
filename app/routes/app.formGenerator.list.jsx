@@ -64,7 +64,6 @@ export const loader = async ({ request }) => {
 
 const Formdata = () => {
     const navigator = useNavigate();
-    const [showFormBuilder, setShowFormBuilder] = useState(false);
     const [createdForms, setCreatedForms] = useState([]);
     const [view, setView] = useState('live');
     const [searchbar, setSearchbar] = useState('');
@@ -82,6 +81,7 @@ const Formdata = () => {
     const [showCopiedMessage, setShowCopiedMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [copiedFormId, setCopiedFormId] = React.useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleShowFormDetails = (formId) => {
         setIsLoading(true);
@@ -134,7 +134,6 @@ const Formdata = () => {
         });
 
         if (form) {
-            setShowFormBuilder(true);
             navigator('/app/formGenerator/new', {
                 state: {
                     formTitle: form.title,
@@ -162,7 +161,7 @@ const Formdata = () => {
             alert('Form not found.');
         }
     };
-    
+
     const openDeletePopup = (formId) => {
         setFormToDelete(formId);
         setDeletePopup(true);
@@ -231,7 +230,7 @@ const Formdata = () => {
     useEffect(() => {
         const fetchPaymentPlan = async () => {
             try {
-
+                setLoading(true);
                 const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
                 setUserPlan(response.data);
 
@@ -244,6 +243,8 @@ const Formdata = () => {
 
         const fetchForms = async (userPlan) => {
             try {
+                setLoading(true);
+                await new Promise((resolve) => setTimeout(resolve, 3000));
                 const response1 = await fetch('https://hubsyntax.online/get-forms');
                 if (!response1.ok) {
                     throw new Error('Network response was not ok');
@@ -282,6 +283,9 @@ const Formdata = () => {
                 setError('Error fetching forms');
                 console.error('Error fetching forms:', error);
             }
+            finally {
+                setLoading(false);
+            }
         };
 
         fetchPaymentPlan();
@@ -292,16 +296,11 @@ const Formdata = () => {
             setUphradePopup(true);
             return;
         }
-    
+
         setIsLoading(true);
-    
-        setTimeout(() => {
-            setShowFormBuilder(true);
-            navigator('/app/formGenerator/new');
-            setIsLoading(false); 
-        }, 1000); 
+        navigator('/app/formGenerator/new');
     };
-    
+
 
     const handleCancle = () => {
         setUphradePopup(false);
@@ -375,439 +374,460 @@ const Formdata = () => {
 
     return (
         <>
-
-            {!showFormBuilder ? (
-                <div>
-                    <div className='builder-forms content-wrapper'>
-                        <div className='container'>
-                            <h3>Forms</h3>
-                            <div className="builder-sections">
-                                <div className="builder-sections-forms">
-                                    <div
-                                        className={`builder-sections-liveform ${view === 'live' ? 'active' : ''}`}
-                                        onClick={() => setView('live')}
-                                        style={{ backgroundColor: view === 'live' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'live' ? 'white' : '', border: view === 'live' ? '1px solid #45A7F6' : '' }}
-                                    >
-                                        <p>Live Forms</p>
-                                    </div>
-                                    <div
-                                        className={`builder-sections-draftform ${view === 'draft' ? 'active' : ''}`}
-                                        onClick={() => setView('draft')}
-                                        style={{ backgroundColor: view === 'draft' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'draft' ? 'white' : '', border: view === 'draft' ? '1px solid #45A7F6' : '' }}
-                                    >
-                                        <p>Draft Forms</p>
-                                    </div>
+            {loading ? (
+                <div className="skeleton-wrapper fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
                                 </div>
-                                <div className='builder-sections-new-list'>
-
-                                    <div className="builder-sections-newforms">
-                                        <button
-                                            className="builder-sections-btn action_btn"
-                                            onClick={handleCreateForm}
-                                        >
-                                            <div className="btn-text">
-                                                <img src={plus} alt="" />  New Form
-                                            </div>
-                                        </button>
-                                    </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
                                 </div>
                             </div>
-                            {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
-                                <div className='form_builder_plan_upgrade_popup_wrapp'>
-                                    <p>Need to Upgrade Your Plan To Create More Form</p>
-                                    <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
-                                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
-                                        <img src={cancleimg} alt="" />
-                                    </div>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
                                 </div>
-                            </div>}
-
-                            {view === 'draft' && createdForms.filter(form => form.status === 'draft').length === 0 ? (
-                                <div className='form-builder-live-wrap'>
-                                    <div className='builder-live-form'>
-                                        <div className='builder-live-p'>
-                                            <h2>Draft Forms</h2>
-                                        </div>
-                                        <div className='form-builder-search-bar'>
-                                            <input
-                                                type="search"
-                                                placeholder='search'
-                                                value={searchbar}
-                                                onChange={handleSearch}
-                                            />
-                                            <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
-                                        </div>
-                                    </div>
-                                    <div className="builder-block">
-                                        <div className="builder-block-img">
-                                            <img src={vecter1} alt="" />
-                                        </div>
-                                        <div className="builder-block-test">
-                                            <p>No draft forms created!</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : view === 'live' && createdForms.filter(form => form.status === 'live').length === 0 ? (
-                                <div className='form-builder-live-wrap'>
-                                    <div className='builder-live-form'>
-                                        <div className='builder-live-p'>
-                                            <h2>Live Forms</h2>
-                                        </div>
-                                        <div className='form-builder-search-bar'>
-                                            <input
-                                                type="search"
-                                                placeholder='search'
-                                                value={searchbar}
-                                                onChange={handleSearch}
-                                            />
-                                            <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
-                                        </div>
-                                    </div>
-                                    <div className="builder-block">
-                                        <div className="builder-block-img">
-                                            <img src={vecter1} alt="" />
-                                        </div>
-                                        <div className="builder-block-test">
-                                            <p>No forms created!</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="form-builder-show">
-                                    <div className="form-builder-wrrp">
-                                        <div className='form-builder-search'>
-                                            <div className='form_build_list'><h2>Forms list</h2> </div>
-                                            <div className='form-builder-search-bar'>
-                                                <input
-                                                    type="search"
-                                                    placeholder='search'
-                                                    value={searchbar}
-                                                    onChange={handleSearch}
-                                                />
-                                                <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
-                                            </div>
-
-                                        </div>
-
-                                        {createdForms.length > 0 ? (
-                                            <div className="form-main-wrp">
-                                                <div className='form-builder-table'>
-                                                    <table>
-                                                        <thead className="custom-thead">
-                                                            <tr>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">Form name</th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">
-                                                                    Form ID
-                                                                </th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" style={{ textAlign: "center" }}>Responses</th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide">Date and time</th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {currentForms.filter(form => form.status === view).map(form => (
-                                                                <tr key={form.formId}>
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" >
-                                                                        <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} >{form.title}
-                                                                            <div class="noUi-tooltip">Edit</div>
-                                                                        </div>
-                                                                    </th>
-                                                                    <th
-                                                                        data-polaris-header-cell="true"
-                                                                        className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header"
-                                                                        scope="col"
-                                                                    >
-                                                                        <div className="form-builder-wrpp-show-Polaris">
-                                                                            <div className='form-builder-form-id'>{form.formId}</div>
-                                                                            <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
-                                                                                <img src={copy22} alt="" />
-                                                                            </div>
-
-                                                                            {copiedFormId === form.formId && (
-                                                                                <div className="copied-message" style={{ color: 'green' }}>
-                                                                                    Copied to clipboard!
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    </th>
-
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
-                                                                        {form.totalSubmissions || 0}
-                                                                    </th>
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col">{form.createdAt}</th>
-                                                                    <td style={{ textAlign: "center" }}>
-                                                                        <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
-                                                                            <div className='form-builder-table-flex-btn'>
-                                                                                <div className='form-builder-green-btn' style={{ cursor: "pointer" }} onClick={() => handleCopyForm(form.formId)} ><img src={copy12} alt="" /></div>
-                                                                                <div className='form-builder-edit' onClick={() => handleEdit(form.formId)}>
-                                                                                    <img src={oplus} alt="" />
-                                                                                    <div className="noUi-tooltip-id">Edit</div>
-                                                                                </div>
-                                                                                <div className='form-delete-icon' onClick={() => openDeletePopup(form.formId)} style={{ cursor: 'pointer', color: 'red' }}>
-                                                                                    <img src={rplus} alt="" />
-                                                                                    <div className="noUi-tooltip-id">Delete</div>
-                                                                                </div>
-                                                                                <div className='form-show-icon' onClick={() => handleShowFormDetails(form.formId)}>
-                                                                                    <img src={yplus} alt="" />
-                                                                                    <div className="noUi-tooltip-id">Form Preview</div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </th>
-
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="form-builder-no-forms">
-                                                <p>No forms created yet</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                </div>
-                            )}
-                            <div className='form_build_last_pages'>
-                                <div className='form-builder-show-totle-form'>
-                                    Showing data {currentForms.length} entries
-                                </div>
-                                <div className="pagination">
-                                    <nav>
-                                        <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
-                                            <li>
-                                                <button
-                                                    type="button"
-                                                    disabled={currentPage === 1}
-                                                    onClick={() => handlePageChange(currentPage - 1)}
-                                                >
-                                                    <img src={left} alt="Previous" />
-                                                </button>
-                                            </li>
-                                            {Array.from({ length: totalPages }, (_, index) => (
-                                                <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handlePageChange(index + 1)}
-                                                        className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
-                                                    >
-                                                        {index + 1}
-                                                    </button>
-                                                </li>
-                                            ))}
-                                            <li>
-                                                <button
-                                                    type="button"
-                                                    disabled={currentPage === totalPages}
-                                                    onClick={() => handlePageChange(currentPage + 1)}
-                                                >
-                                                    <img src={right} alt="Next" />
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className='popup'>
-                        {isLoading && (
-                             <div className="skeleton-wrapper forms fade-in">
-                             <div className="container skeleton-wred">
-                               <div className="skeleton-wrp">
-                               <div className="skeleton-wrp-left">
-                                   <div className="skeleton skeleton-header"></div>
-                                   <div className="skeleton-wrp-left-para">
-                                   <div className="skeleton skeleton-paragraph"></div>
-                                   <div className="skeleton skeleton-paragraph"></div>
-                                   </div>
-                                   <div className="skeleton-wrp-left-para">
-                                   <div className="skeleton skeleton-paragraph"></div>
-                                   <div className="skeleton skeleton-paragraph "></div>
-                                   </div>
-                                 </div>
-                                 <div className="skeleton-wrp-right">
-                                 <div className="skeleton-wrp-left-para right">
-                                 <div className="skeleton skeleton-paragraph"></div>
-                                 <div className="skeleton skeleton-paragraph two"></div>
-                                 </div>
-                                 <div className="skeleton-wrp-left-para right">
-                                 <div className="skeleton skeleton-paragraph"></div>
-                                 <div className="skeleton skeleton-paragraph two"></div>
-                                 </div>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-                        )}
-                        {deletePopup && (
-                            <div className="form-builder-delete-popup">
-                                <div className="form-builder-create section-wrp">
-                                    <div className="form-builder-create-wrped popup">
-                                        <div className="form-builder-delete-popup-pop">
-                                            <div className="form_builder_delete_text_flex">
-                                                <div className="form_builder_delete_text">
-                                                    <p>Are you sure you want to delete?</p>
-                                                </div>
-                                                <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
-                                                    <img src={cancle1} alt="Cancel" />
-                                                </div>
+                </div>
+            ) : (
+            <div>
+                <div className='builder-forms content-wrapper'>
+                    <div className='container'>
+                        <h3>Forms</h3>
+                        <div className="builder-sections">
+                            <div className="builder-sections-forms">
+                                <div
+                                    className={`builder-sections-liveform ${view === 'live' ? 'active' : ''}`}
+                                    onClick={() => setView('live')}
+                                    style={{ backgroundColor: view === 'live' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'live' ? 'white' : '', border: view === 'live' ? '1px solid #45A7F6' : '' }}
+                                >
+                                    <p>Live Forms</p>
+                                </div>
+                                <div
+                                    className={`builder-sections-draftform ${view === 'draft' ? 'active' : ''}`}
+                                    onClick={() => setView('draft')}
+                                    style={{ backgroundColor: view === 'draft' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'draft' ? 'white' : '', border: view === 'draft' ? '1px solid #45A7F6' : '' }}
+                                >
+                                    <p>Draft Forms</p>
+                                </div>
+                            </div>
+                            <div className='builder-sections-new-list'>
+
+                                <div className="builder-sections-newforms">
+                                    <button
+                                        className="builder-sections-btn action_btn"
+                                        onClick={handleCreateForm}
+                                    >
+                                        <div className="btn-text">
+                                            <img src={plus} alt="" />  New Form
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                            <div className='form_builder_plan_upgrade_popup_wrapp'>
+                                <p>Need to Upgrade Your Plan To Create More Form</p>
+                                <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
+                                <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
+                                    <img src={cancleimg} alt="" />
+                                </div>
+                            </div>
+                        </div>}
+
+                        {view === 'draft' && createdForms.filter(form => form.status === 'draft').length === 0 ? (
+                            <div className='form-builder-live-wrap'>
+                                <div className='builder-live-form'>
+                                    <div className='builder-live-p'>
+                                        <h2>Draft Forms</h2>
+                                    </div>
+                                    <div className='form-builder-search-bar'>
+                                        <input
+                                            type="search"
+                                            placeholder='search'
+                                            value={searchbar}
+                                            onChange={handleSearch}
+                                        />
+                                        <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
+                                    </div>
+                                </div>
+                                <div className="builder-block">
+                                    <div className="builder-block-img">
+                                        <img src={vecter1} alt="" />
+                                    </div>
+                                    <div className="builder-block-test">
+                                        <p>No draft forms created!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : view === 'live' && createdForms.filter(form => form.status === 'live').length === 0 ? (
+                            <div className='form-builder-live-wrap'>
+                                <div className='builder-live-form'>
+                                    <div className='builder-live-p'>
+                                        <h2>Live Forms</h2>
+                                    </div>
+                                    <div className='form-builder-search-bar'>
+                                        <input
+                                            type="search"
+                                            placeholder='search'
+                                            value={searchbar}
+                                            onChange={handleSearch}
+                                        />
+                                        <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
+                                    </div>
+                                </div>
+                                <div className="builder-block">
+                                    <div className="builder-block-img">
+                                        <img src={vecter1} alt="" />
+                                    </div>
+                                    <div className="builder-block-test">
+                                        <p>No forms created!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="form-builder-show">
+                                <div className="form-builder-wrrp">
+                                    <div className='form-builder-search'>
+                                        <div className='form_build_list'><h2>Forms list</h2> </div>
+                                        <div className='form-builder-search-bar'>
+                                            <input
+                                                type="search"
+                                                placeholder='search'
+                                                value={searchbar}
+                                                onChange={handleSearch}
+                                            />
+                                            <div className='form_build_icon_search'> <img src={search12} alt="" /></div>
+                                        </div>
+
+                                    </div>
+
+                                    {createdForms.length > 0 ? (
+                                        <div className="form-main-wrp">
+                                            <div className='form-builder-table'>
+                                                <table>
+                                                    <thead className="custom-thead">
+                                                        <tr>
+                                                            <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">Form name</th>
+                                                            <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">
+                                                                Form ID
+                                                            </th>
+                                                            <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" style={{ textAlign: "center" }}>Responses</th>
+                                                            <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide">Date and time</th>
+                                                            <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {currentForms.filter(form => form.status === view).map(form => (
+                                                            <tr key={form.formId}>
+                                                                <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" >
+                                                                    <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} >{form.title}
+                                                                        <div class="noUi-tooltip">Edit</div>
+                                                                    </div>
+                                                                </th>
+                                                                <th
+                                                                    data-polaris-header-cell="true"
+                                                                    className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header"
+                                                                    scope="col"
+                                                                >
+                                                                    <div className="form-builder-wrpp-show-Polaris">
+                                                                        <div className='form-builder-form-id'>{form.formId}</div>
+                                                                        <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
+                                                                            <img src={copy22} alt="" />
+                                                                        </div>
+
+                                                                        {copiedFormId === form.formId && (
+                                                                            <div className="copied-message" style={{ color: 'green' }}>
+                                                                                Copied to clipboard!
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </th>
+
+                                                                <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
+                                                                    {form.totalSubmissions || 0}
+                                                                </th>
+                                                                <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col">{form.createdAt}</th>
+                                                                <td style={{ textAlign: "center" }}>
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
+                                                                        <div className='form-builder-table-flex-btn'>
+                                                                            <div className='form-builder-green-btn' style={{ cursor: "pointer" }} onClick={() => handleCopyForm(form.formId)} ><img src={copy12} alt="" /></div>
+                                                                            <div className='form-builder-edit' onClick={() => handleEdit(form.formId)}>
+                                                                                <img src={oplus} alt="" />
+                                                                                <div className="noUi-tooltip-id">Edit</div>
+                                                                            </div>
+                                                                            <div className='form-delete-icon' onClick={() => openDeletePopup(form.formId)} style={{ cursor: 'pointer', color: 'red' }}>
+                                                                                <img src={rplus} alt="" />
+                                                                                <div className="noUi-tooltip-id">Delete</div>
+                                                                            </div>
+                                                                            <div className='form-show-icon' onClick={() => handleShowFormDetails(form.formId)}>
+                                                                                <img src={yplus} alt="" />
+                                                                                <div className="noUi-tooltip-id">Form Preview</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </th>
+
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+
                                             </div>
-                                            <div className="form_delete_btn">
-                                                <div className="form_delete first" onClick={handleDeleteForm}>
-                                                    Delete
-                                                </div>
-                                                <div className="form_delete second" onClick={closeDeletePopup}>
-                                                    Cancel
-                                                </div>
+                                        </div>
+                                    ) : (
+                                        <div className="form-builder-no-forms">
+                                            <p>No forms created yet</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                            </div>
+                        )}
+                        <div className='form_build_last_pages'>
+                            <div className='form-builder-show-totle-form'>
+                                Showing data {currentForms.length} entries
+                            </div>
+                            <div className="pagination">
+                                <nav>
+                                    <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={currentPage === 1}
+                                                onClick={() => handlePageChange(currentPage - 1)}
+                                            >
+                                                <img src={left} alt="Previous" />
+                                            </button>
+                                        </li>
+                                        {Array.from({ length: totalPages }, (_, index) => (
+                                            <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handlePageChange(index + 1)}
+                                                    className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            </li>
+                                        ))}
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={currentPage === totalPages}
+                                                onClick={() => handlePageChange(currentPage + 1)}
+                                            >
+                                                <img src={right} alt="Next" />
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className='popup'>
+                    {isLoading && (
+                        <div className="skeleton-wrapper forms fade-in">
+                            <div className="container skeleton-wred">
+                                <div className="skeleton-wrp">
+                                    <div className="skeleton-wrp-left">
+                                        <div className="skeleton skeleton-header"></div>
+                                        <div className="skeleton-wrp-left-para">
+                                            <div className="skeleton skeleton-paragraph"></div>
+                                            <div className="skeleton skeleton-paragraph"></div>
+                                        </div>
+                                        <div className="skeleton-wrp-left-para">
+                                            <div className="skeleton skeleton-paragraph"></div>
+                                            <div className="skeleton skeleton-paragraph "></div>
+                                        </div>
+                                    </div>
+                                    <div className="skeleton-wrp-right">
+                                        <div className="skeleton-wrp-left-para right">
+                                            <div className="skeleton skeleton-paragraph"></div>
+                                            <div className="skeleton skeleton-paragraph two"></div>
+                                        </div>
+                                        <div className="skeleton-wrp-left-para right">
+                                            <div className="skeleton skeleton-paragraph"></div>
+                                            <div className="skeleton skeleton-paragraph two"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {deletePopup && (
+                        <div className="form-builder-delete-popup">
+                            <div className="form-builder-create section-wrp">
+                                <div className="form-builder-create-wrped popup">
+                                    <div className="form-builder-delete-popup-pop">
+                                        <div className="form_builder_delete_text_flex">
+                                            <div className="form_builder_delete_text">
+                                                <p>Are you sure you want to delete?</p>
+                                            </div>
+                                            <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
+                                                <img src={cancle1} alt="Cancel" />
+                                            </div>
+                                        </div>
+                                        <div className="form_delete_btn">
+                                            <div className="form_delete first" onClick={handleDeleteForm}>
+                                                Delete
+                                            </div>
+                                            <div className="form_delete second" onClick={closeDeletePopup}>
+                                                Cancel
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        )}
-                        {isPopupVisible && currentFormId && (
-                            <div className="form-builder-create section-wrp">
-                                <div className='form-builder-create-wrped'>
-                                    {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
-                                        form.formId === currentFormId && (
-                                            <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
-                                                {form.fields.map(field => (
-                                                    <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
+                        </div>
+                    )}
+                    {isPopupVisible && currentFormId && (
+                        <div className="form-builder-create section-wrp">
+                            <div className='form-builder-create-wrped'>
+                                {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
+                                    form.formId === currentFormId && (
+                                        <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
+                                            {form.fields.map(field => (
+                                                <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
 
-                                                        {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
-                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, }} />}
-                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }}></textarea>}
-                                                        {field.type === 'description' && <p>{field.text}</p>}
-                                                        {field.type === 'toggle' && (
-                                                            <label className="custom-toggle">
-                                                                <input type="checkbox" aria-label={field.label} />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        )}
-                                                        {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</h1>}
-                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'link' && (
-                                                            <a
-                                                                href={field.linkUrl}
-                                                                target={field.linkTarget}
-                                                                style={{
+                                                    {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
+                                                    {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}></textarea>}
+                                                    {field.type === 'description' && <p>{field.text}</p>}
+                                                    {field.type === 'toggle' && (
+                                                        <label className="custom-toggle">
+                                                            <input type="checkbox" aria-label={field.label} />
+                                                            <span className="slider"></span>
+                                                        </label>
+                                                    )}
+                                                    {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</h1>}
+                                                    {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'phone' && <input type="phone" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'link' && (
+                                                        <a
+                                                            href={field.linkUrl}
+                                                            target={field.linkTarget}
+                                                            style={{
 
-                                                                    textDecoration: 'none',
-                                                                    textAlign: field.linkaline,
-                                                                    padding: field.padding,
-                                                                }}
-                                                                dangerouslySetInnerHTML={{ __html: field.linktext }}
-                                                            />
-                                                        )}
-                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }} />}
-                                                        {field.type === 'slider' && (
-                                                            <input
-                                                                type="range"
-                                                                placeholder={field.placeholder}
-                                                                min={field.min}
-                                                                max={field.max}
-                                                                step={field.step}
-                                                                style={{
-                                                                    padding: field.inputPadding,
-                                                                    borderRadius: `${form.styles.inputRadious}px`,
-                                                                    borderWidth: `${form.styles.inputwidth}px`,
-                                                                    borderStyle: `${form.styles.inputstyle}`,
-                                                                    borderColor: `${form.styles.inputborderColor}`,
-                                                                }}
-                                                            />
-                                                        )}
-                                                        {field.type === 'button' && <div><button style={{
-                                                            backgroundColor: field.backgroundColor || '#45a7f6',
-                                                            fontSize: `${field.fontSize || '16'}px`, height: field.buttonHeight || 'auto', width: field.buttonWidth || 'auto', padding: field.padding || '10px',
-                                                            color: field.btncolor,
-                                                            borderWidth: `${field.buttonBorderWidth}px`,
-                                                            borderRadius:`${field.btnradious}px`,
-                                                            borderStyle: field.buttonBorderStyle,
-                                                            borderColor: field.buttonBorderColor,
-                                                        }}> <label>{field.label}</label> </button></div>}
+                                                                textDecoration: 'none',
+                                                                textAlign: field.linkaline,
+                                                                padding: field.padding,
+                                                            }}
+                                                            dangerouslySetInnerHTML={{ __html: field.linktext }}
+                                                        />
+                                                    )}
+                                                    {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                    {field.type === 'slider' && (
+                                                        <input
+                                                            type="range"
+                                                            placeholder={field.placeholder}
+                                                            min={field.min}
+                                                            max={field.max}
+                                                            step={field.step}
+                                                            style={{
+                                                                padding: field.inputPadding,
+                                                                borderRadius: `${form.styles.inputRadious}px`,
+                                                                borderWidth: `${form.styles.inputwidth}px`,
+                                                                borderStyle: `${form.styles.inputstyle}`,
+                                                                borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`,
+                                                            }}
+                                                        />
+                                                    )}
+                                                    {field.type === 'button' && <div><button style={{
+                                                        backgroundColor: field.backgroundColor || '#45a7f6',
+                                                        fontSize: `${field.fontSize || '16'}px`, height: field.buttonHeight || 'auto', width: field.buttonWidth || 'auto', padding: field.padding || '10px',
+                                                        color: field.btncolor,
+                                                        borderWidth: `${field.buttonBorderWidth}px`,
+                                                        borderRadius: `${field.btnradious}px`,
+                                                        borderStyle: field.buttonBorderStyle,
+                                                        borderColor: field.buttonBorderColor,
+                                                    }}> <label>{field.label}</label> </button></div>}
 
-                                                        {field.type === 'divider' && (
-                                                            <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
-                                                        )}
-                                                        {field.type === 'radio' && (
-                                                            <div>
+                                                    {field.type === 'divider' && (
+                                                        <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
+                                                    )}
+                                                    {field.type === 'radio' && (
+                                                        <div>
 
+                                                            {field.options.map(option => (
+                                                                <div key={option.id} className='form_radio_flex'>
+                                                                    <input
+                                                                        type="radio"
+                                                                        name={field.name}
+                                                                        value={option.value}
+                                                                    />
+                                                                    <label>{option.label}</label>
+                                                                </div>
+                                                            ))}
+                                                            <div className='description'>{field.description}</div>
+                                                        </div>
+                                                    )}
+                                                    {field.type === 'checkbox' && (
+                                                        <div>
+                                                            {field.options.map(option => (
+                                                                <div key={option.id} className='form_checkbox_flex'>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        name={field.name}
+                                                                        value={option.value}
+                                                                        required={field.required}
+                                                                        readOnly={field.readonly}
+                                                                    />
+                                                                    <label>{option.label}</label>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    {field.type === 'select' && (
+                                                        <div>
+                                                            <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
                                                                 {field.options.map(option => (
-                                                                    <div key={option.id} className='form_radio_flex'>
-                                                                        <input
-                                                                            type="radio"
-                                                                            name={field.name}
-                                                                            value={option.value}
-                                                                        />
-                                                                        <label>{option.label}</label>
-                                                                    </div>
+                                                                    <option key={option.id} value={option.value}>
+                                                                        {option.label}
+                                                                    </option>
                                                                 ))}
-                                                                <div className='description'>{field.description}</div>
-                                                            </div>
-                                                        )}
-                                                        {field.type === 'checkbox' && (
-                                                            <div>
-                                                                {field.options.map(option => (
-                                                                    <div key={option.id} className='form_checkbox_flex'>
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            name={field.name}
-                                                                            value={option.value}
-                                                                            required={field.required}
-                                                                            readOnly={field.readonly}
-                                                                        />
-                                                                        <label>{option.label}</label>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        )}
-                                                        {field.type === 'select' && (
-                                                            <div>
-                                                                <select name={field.name} required={field.required} readOnly={field.readonly} style={{ width: '100%', padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}` }}>
-                                                                    {field.options.map(option => (
-                                                                        <option key={option.id} value={option.value}>
-                                                                            {option.label}
-                                                                        </option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                        )}
-                                                        {field.description}
-                                                    </div>
-                                                ))}
-                                                <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
-                                                    <img src={cancle1} alt="" />
+                                                            </select>
+                                                        </div>
+                                                    )}
+                                                    {field.description}
                                                 </div>
+                                            ))}
+                                            <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
+                                                <img src={cancle1} alt="" />
                                             </div>
+                                        </div>
 
-                                        )
-                                    ))}
-                                </div>
+                                    )
+                                ))}
                             </div>
-                        )}
-                    </div>
-
-                </div >
-            ) : (
-                <div>
-                    <Formgenerated />
-
+                        </div>
+                    )}
                 </div>
-            )}
+            </div >
+        )}
         </>
     );
 };

@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import Sortable from 'sortablejs';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-import image from '../images/image-.png';
-import divider2 from '../images/divider.png';
-import btn from '../images/btn.png';
+import image from '../images/image-0.png';
+import divider2 from '../images/divider0.png';
+import btn from '../images/btn0.png';
 import emailtemp from '../images/emailtemp.png';
 import phonem from '../images/phonem.png';
 import desk from '../images/desk.png';
-import socail from '../images/socail.png';
-import htmlicon from '../images/htmlicon.png';
+import socail from '../images/socail0.png';
+import htmlicon from '../images/htmlicon0.png';
 import maximizesize from '../images/maximize-size.png';
 import deletep from '../images/deletep.png';
 import delete1 from '../images/delete.png';
@@ -20,24 +20,25 @@ import videoplay from '../images/videoplay.png';
 import left from '../images/left.png';
 import right from '../images/right.png';
 import hdbg from '../images/hdbg.jpeg';
-import product from '../images/product.png';
-import spacer from '../images/spacer.png';
-import banner from '../images/banner.png';
-import imghd from '../images/imghd.jpeg';
+import product from '../images/product0.png';
+import spacer from '../images/space0.png';
+import banner from '../images/banner0.png';
+import imghd from '../images/bgimg.jpeg';
 import imghd1 from '../images/imghd1.png';
-import itext from '../images/itext.png';
+import itext from '../images/image-0.png';
 import editicon from '../images/editicon.png';
 import savemail from '../images/savemail1.png';
 import canclemail from '../images/canclemail1.png';
-import multimedia from '../images/multimedia.png';
-import rich from '../images/rich.png';
+import multimedia from '../images/multimedia0.png';
+import rich from '../images/rich0.png';
+import rm from '../images/rm.png';
 import cancleimg from '../images/cancleimg.png';
 import bk from '../images/bk.png';
 import dlrm from '../images/dlrm.png';
 import search12 from '../images/search12.png';
 import productcancle from '../images/productcancle.png';
 import { format } from 'date-fns';
-
+import html2canvas from 'html2canvas';
 import 'react-quill/dist/quill.snow.css';
 
 import '../index.css';
@@ -232,6 +233,8 @@ const EmailTemplateCreate = () => {
     const [cancelEmail, setCancelEmail] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [columnsPerRow, setColumnsPerRow] = useState(3);
+    const [showbtnsplit, setShowbtnsplit] = useState(false);
+    const [showbtnmulti, setShowbtnmulti] = useState(false);
 
     const handleFontChange = (event) => {
         setFontFamily(event.target.value);
@@ -269,7 +272,19 @@ const EmailTemplateCreate = () => {
                             setShowbtnn(true);
                         }
                     }
+                    if (field.type === 'split') {
+                        console.log('split for split field:', field.price);
+                        if (field.showbtnsplit === true) {
+                            setShowbtnsplit(true);
+                        }
+                    }
 
+                    if (field.type === 'Multicolumn') {
+                        console.log('split for split field:', field.price);
+                        if (field.showbtnmulti === true) {
+                            setShowbtnmulti(true);
+                        }
+                    }
                     return { ...field, id: field.id || generateUniqueId() };
                 });
 
@@ -316,7 +331,9 @@ const EmailTemplateCreate = () => {
             headingbtnwidth: type === 'heading' ? '100' : undefined,
             headingbtnheight: type === 'heading' ? '35' : undefined,
             headerbtn: type === 'heading' ? 'Click Now' : undefined,
+            headingsubheading: type === 'heading' ? '16' : undefined,
             headeropacity: type === 'heading' ? '1' : undefined,
+            subheadingColor: type === 'heading' ? '#000000' : undefined,
             headingbtnBorderColor: type === 'heading' ? '#000000' : undefined,
             headingbtnBorderWidth: type === 'heading' ? '1' : undefined,
             headingbtnBorderStyle: type === 'heading' ? 'solid' : undefined,
@@ -335,6 +352,7 @@ const EmailTemplateCreate = () => {
             headingBorderColor: type === 'heading' ? '#000000' : undefined,
             headingBorderWidth: type === 'heading' ? '0' : undefined,
             headingBorderStyle: type === 'heading' ? 'solid' : undefined,
+            headingUrl: type === 'heading' ? '#' : undefined,
             headingFontWeight: type === 'heading' ? 600 : undefined,
             descritionFontSize: type === 'description' ? '16' : undefined,
             descritionColor: type === 'description' ? '#000' : undefined,
@@ -356,16 +374,19 @@ const EmailTemplateCreate = () => {
                         `Default Label for ${type}`,
             value: initialValue || (type === 'description' ? 'No Description Provided' : ''),
             dividerColor: type === 'divider' ? '#000' : undefined,
+            dividerbgColor: type === 'divider' ? '#FFFFFF' : undefined,
             dividerWidth: type === 'divider' ? '100' : undefined,
             dividerheight: type === 'divider' ? '1' : undefined,
             buttonColor: type === 'button' ? '#007BFF' : undefined,
-            buttonTextColor: type === 'button' ? '#FFF' : undefined,
+            buttonbgColor: type === 'button' ? '#FFFFFF' : undefined,
+            buttonTextColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonFontSize: type === 'button' ? 16 : undefined,
             buttonPadding: type === 'button' ? 10 : undefined,
             buttonWidth: type === 'button' ? 100 : undefined,
             buttonHeight: type === 'button' ? 40 : undefined,
             buttonradious: type === 'button' ? 2 : undefined,
             buttonLabel: type === 'button' ? 'Submit' : undefined,
+            buttonaline: type === 'button' ? '' : undefined,
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
@@ -374,6 +395,8 @@ const EmailTemplateCreate = () => {
             socalIconWidth: type === 'socalicon' ? 30 : undefined,
             socalIconHeight: type === 'socalicon' ? 30 : undefined,
             socalIconPadding: type === 'socalicon' ? 10 : undefined,
+            socalIcongap: type === 'socalicon' ? 5 : undefined,
+            socalIconbg: type === 'socalicon' ? '#FFFFFF' : undefined,
             socaliconTextAlign: type === 'socalicon' ? "" : undefined,
             htmlColor: type === 'html convert' ? '#000' : undefined,
             htmlFontSize: type === 'html convert' ? 16 : undefined,
@@ -385,10 +408,26 @@ const EmailTemplateCreate = () => {
             },
             customIcons: [],
             spacerHeight: type === 'spacer' ? '20' : undefined,
-            spacerbg: type === 'spacer' ? '#ffffff' : undefined,
-            splitbg: type === 'split' ? '#0000' : undefined,
+            spacerbg: type === 'spacer' ? '#FFFFFF' : undefined,
+            splittext: type === 'split' ? 'left' : undefined,
+            splitbtn: type === 'split' ? 'Add Text' : undefined,
+            splitbtnbg: type === 'split' ? '#007BFF' : undefined,
+            splitbtnfont: type === 'split' ? '14' : undefined,
+            splitbtncolor: type === 'split' ? '#FFFFFF' : undefined,
+            splitbtnurl: type === 'split' ? '' : undefined,
+            splitbtnheight: type === 'split' ? '35' : undefined,
+            splitbtnwidth: type === 'split' ? '80' : undefined,
+            splitImage: type === 'split' ? '' : undefined,
+            splitTextadd: type === 'split' ? '' : undefined,
+            splitbtnradious: type === 'split' ? '2' : undefined,
+            splitBorderColor: type === 'split' ? '#000000' : undefined,
+            splitBorderWidth: type === 'split' ? '1' : undefined,
+            splitBorderStyle: type === 'split' ? 'solid' : undefined,
+            splitbg: type === 'split' ? '#FFFFFF' : undefined,
+            splitheight: type === 'split' ? '300' : undefined,
             videoPadding: type === 'video' ? '20' : undefined,
             splitPadding: type === 'split' ? '10' : undefined,
+            splitColor: type === 'split' ? '#000' : undefined,
             splitTextAlin: type === 'split' ? 'left' : undefined,
             videoBorderColor: type === 'video' ? '#000000' : undefined,
             videoBorderWidth: type === 'video' ? '0' : undefined,
@@ -397,6 +436,7 @@ const EmailTemplateCreate = () => {
             imgTextAlign: type === 'images' ? "" : undefined,
             imgPadding: type === 'images' ? 10 : undefined,
             imgbg: type === 'images' ? '#0000' : undefined,
+            imageValue: type === 'images' ? '' : undefined,
             imgBorderColor: type === 'images' ? '#000000' : undefined,
             imgBorderWidth: type === 'images' ? '0' : undefined,
             imgBorderStyle: type === 'images' ? 'solid' : undefined,
@@ -412,7 +452,7 @@ const EmailTemplateCreate = () => {
             productbtnBorderColor: type === 'product' ? '#000000' : undefined,
             productbtnBorderWidth: type === 'product' ? '1' : undefined,
             productbtnBorderStyle: type === 'product' ? 'solid' : undefined,
-            productbtnbg: type === 'product' ? '#ffff' : undefined,
+            productbtnbg: type === 'product' ? '#FFF' : undefined,
             productradious: type === 'product' ? '3' : undefined,
             productLabel: type === 'product' ? 'Shop Now' : undefined,
             productfontSize: type === 'product' ? '12' : undefined,
@@ -421,7 +461,11 @@ const EmailTemplateCreate = () => {
             productbackgroundColor: type === 'product' ? '#007BFF' : undefined,
             additionalButtons: [],
             displayStyle: 'flex',
+            richleftPadding: type === 'richtext' ? 10 : undefined,
+            richtopPadding: type === 'richtext' ? 10 : undefined,
             richFontsize: type === 'richtext' ? "14" : undefined,
+            richbgcolor: type === 'richtext' ? "#FFFFFF" : undefined,
+            richtextcolor: type === 'richtext' ? "#000" : undefined,
             richTextAlign: type === 'richtext' ? "" : undefined,
             htmltext: type === 'html convert' ? '<h1>Your HTML Here</h1>' : undefined,
             fontsizeMulticolumn: type === 'Multicolumn' ? 14 : undefined,
@@ -429,6 +473,23 @@ const EmailTemplateCreate = () => {
             MulticolumnbtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
             MulticolumnbtnBorderStyle: type === 'Multicolumn' ? 'solid' : undefined,
             MulticolumnPadding: type === 'Multicolumn' ? 10 : undefined,
+            MultiPadding: type === 'Multicolumn' ? 0 : undefined,
+            Multicolumnbgcolor: type === 'Multicolumn' ? '#FFFFFF' : undefined,
+            Multibgcolor: type === 'Multicolumn' ? '#FFFFFF' : '',
+            Multitext: type === 'Multicolumn' ? 'center' : '',
+            Multigap: type === 'Multicolumn' ? '10' : '',
+            MultiColor: type === 'Multicolumn' ? '#000000' : undefined,
+            MultibtnBorderColor: type === 'Multicolumn' ? '#000000' : undefined,
+            MultibtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
+            MultibtnBorderStyle: type === 'Multicolumn' ? 'solid' : undefined,
+            Multibtnheight: type === 'Multicolumn' ? '40' : undefined,
+            Multibtnradious: type === 'Multicolumn' ? '2' : undefined,
+            Multibtnweight: type === 'Multicolumn' ? '100' : undefined,
+            Multibtnbg: type === 'Multicolumn' ? '#007BFF' : 'undefined',
+            Multibtnlable: type === 'Multicolumn' ? 'Click' : 'undefined',
+            Multibtncolor: type === 'Multicolumn' ? '#0000' : undefined,
+            Multibtnfont: type === 'Multicolumn' ? '14' : undefined,
+            Multibtnurl: type === 'Multicolumn' ? '' : undefined,
 
         };
     };
@@ -509,11 +570,18 @@ const EmailTemplateCreate = () => {
                 columnCount: 6,
                 columnData: Array(6).fill({ content: '', image: null })
             };
-            setFields((prevFields) => [...prevFields, newField]);
+            setFields((prevFields) => {
+                const updatedFields = [...prevFields, newField];
+                if (newField.id && window.innerWidth > 1400) {
+                    handleFieldClick(newField.id);
+                }
+                return updatedFields;
+            });
         } else if (type === 'richtext') {
             newField = createInputField('richtext');
             setFields((prevFields) => [...prevFields, newField]);
             setCurrentFieldId(newField.id);
+            setEditorValueed('');
         }
 
         if (newField && newField.id && window.innerWidth > 1400) {
@@ -676,14 +744,12 @@ const EmailTemplateCreate = () => {
         setHeadingUrl('');
     };
 
-    const handleEditorChange = (value) => {
+    const handleEditorChange = (value, fieldId) => {
         console.log("Editor value changed:", value);
-        console.log("Active field ID:", activeFieldId);
-        setEditorValue(value);
-
+        console.log("Active field ID:", fieldId);
         setFields((prevFields) => {
             const updatedFields = prevFields.map((field) =>
-                field.id === activeFieldId
+                field.id === fieldId
                     ? { ...field, editorContent: value }
                     : field
             );
@@ -691,6 +757,7 @@ const EmailTemplateCreate = () => {
             return updatedFields;
         });
     };
+
 
     const handleUpdateUrl = (id, newUrl) => {
         setFields((prevFields) =>
@@ -742,7 +809,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('https://hubsyntax.online/get-forms')
+            .get('http://localhost:4001/get-forms')
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -762,9 +829,10 @@ const EmailTemplateCreate = () => {
         const title = e.target.value.trim();
         const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
 
+
         if (selectedForm) {
             try {
-                const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
 
                 if (data.isConnected) {
@@ -776,7 +844,7 @@ const EmailTemplateCreate = () => {
 
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
-                            `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
 
@@ -784,7 +852,7 @@ const EmailTemplateCreate = () => {
                             alert('Template unlinked from form.');
 
                             const updatedCheckResponse = await fetch(
-                                `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
+                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
 
@@ -825,7 +893,9 @@ const EmailTemplateCreate = () => {
         console.log('Selected form IDs:', selectedFormIds);
     }, [selectedFormIds]);
 
+
     const createOrUpdateForm = async () => {
+
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
         let trimmedTitle = formTitle.trim();
         if (!trimmedTitle) {
@@ -833,9 +903,14 @@ const EmailTemplateCreate = () => {
             return;
         }
 
+        if (selectedFormIds.length === 0) {
+            alert('Please select form before saving the template.');
+            return;
+        }
+
         if (!id) {
             try {
-                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
+                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
 
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
@@ -884,9 +959,10 @@ const EmailTemplateCreate = () => {
                     value = field.value || 'No Value Provided';
                     field.add = field.add;
                     field.splitbg = field.splitbg || '';
-                    field.width = field.width || '50%';
+                    field.splitheight = field.splitheight || '',
+                        field.width = field.width || '50%';
                     field.splitPadding = field.splitPadding || 0
-                    field.splitTextAlin = field.splitTextAlin || 'left'
+                    field.splitTextAlin = field.splitTextAlin || 'left';
                     break;
                 case 'spacer':
                     value = 'Spacer Field';
@@ -911,6 +987,10 @@ const EmailTemplateCreate = () => {
                         field.columnData = Array.from({ length: columnCount }, (_, i) => ({
                             image: columnImages[`${field.id}-${i}`] || '',
                             content: editorValues[`${field.id}-${i}`] || '',
+                            isVisible: false,
+                            Multibtnurl: '',
+                            Multibtnlable: '',
+
                         }));
                     } else {
 
@@ -918,6 +998,9 @@ const EmailTemplateCreate = () => {
                             field.columnData[i] = {
                                 image: columnImages[`${field.id}-${i}`] || field.columnData[i]?.image,
                                 content: editorValues[`${field.id}-${i}`] || field.columnData[i]?.content,
+                                isVisible: field.columnData[i]?.isVisible ?? false,
+                                Multibtnlable: field.columnData[i]?.Multibtnlable || '',
+                                Multibtnurl: field.columnData[i]?.Multibtnurl || '',
                             };
                         }
                     }
@@ -925,8 +1008,9 @@ const EmailTemplateCreate = () => {
                     const validColumns = field.columnData.filter(column => column.image || column.content);
 
                     field.columnData = validColumns;
-                    field.columnsPerRow = columnsPerRow || 1;
+                    field.columnsPerRow = field.columnsPerRow || 1;
                     field.columnCount = validColumns.length;
+
                     break;
                 case 'product':
                     return {
@@ -955,36 +1039,24 @@ const EmailTemplateCreate = () => {
             }
 
             if (field.type === 'socalicon') {
-                field.socalIconHeight = socalIconHeight;
-                field.socalIconWidth = socalIconWidth;
-                field.icons = {
-                    facebook: {
-                        url: selectedIcons.facebook?.url || field.icons.facebook.url,
-                        isHidden: selectedIcons.facebook?.isHidden || false,
-                        value: selectedIcons.facebook?.value || 'Facebook',
-                    },
-                    twitter: {
-                        url: selectedIcons.twitter?.url || field.icons.twitter.url,
-                        isHidden: selectedIcons.twitter?.isHidden || false,
-                        value: selectedIcons.twitter?.value || 'Twitter',
-                    },
-                    instagram: {
-                        url: selectedIcons.instagram?.url || field.icons.instagram.url,
-                        isHidden: selectedIcons.instagram?.isHidden || false,
-                        value: selectedIcons.instagram?.value || 'Instagram',
-                    },
-                    send: {
-                        url: selectedIcons.send?.url || '',
-                        isHidden: selectedIcons.send?.isHidden || false,
-                        value: selectedIcons.send?.value || 'Send',
-                    },
+                field.socalIconHeight = field.socalIconHeight;
+                field.socalIconWidth = field.socalIconWidth;
+
+                const filteredIcons = {
+                    facebook: field.icons.facebook?.isHidden ? undefined : field.icons.facebook,
+                    twitter: field.icons.twitter?.isHidden ? undefined : field.icons.twitter,
+                    instagram: field.icons.instagram?.isHidden ? undefined : field.icons.instagram,
+                    send: field.icons.send?.isHidden ? undefined : field.icons.send,
                 };
+
+                field.icons = Object.fromEntries(
+                    Object.entries(filteredIcons).filter(([key, value]) => value !== undefined)
+                );
 
                 field.customIcons = field.customIcons || [];
             } else {
                 field.icons = {};
             }
-
             return {
                 ...field,
                 label: field.label || (field.type === 'button' ? 'Button' : `Default Label for ${field.type}`),
@@ -999,16 +1071,22 @@ const EmailTemplateCreate = () => {
                 headingbtntopPadding: field.headingbtntopPadding || 10,
                 headingbtnradious: field.headingbtnradious || 4,
                 headingbtnwidth: field.headingbtnwidth || 100,
+                headingsubheading: field.headingsubheading || 16,
                 headingbtnFontSize: field.headingbtnFontSize || 16,
                 headingbtnheight: field.headingbtnheight || 40,
                 headingbtnBorderWidth: field.headingbtnBorderWidth || 1,
                 headingbtnBorderStyle: field.headingbtnBorderStyle || 'solid',
                 headingbtnBorderColor: field.headingbtnBorderColor || '#000',
+                subheadingColor: field.subheadingColor || '',
                 bannerImageWidth: field.bannerImageWidth || '100',
                 bannerImageHeight: field.bannerImageHeight || '',
                 bannerImageTextAlign: field.bannerImageTextAlign || '',
                 richTextAlign: field.richTextAlign || '',
                 richFontsize: field.richFontsize || '',
+                richbgcolor: field.richbgcolor,
+                richtextcolor: field.richtextcolor,
+                richleftPadding: field.richleftPadding || 10,
+                richtopPadding: field.richtopPadding || 10,
                 headingFontWeight: field.headingFontWeight || 600,
                 headingColor: field.headingColor || '#000',
                 headingbg: field.headingbg || '#ffff',
@@ -1032,8 +1110,10 @@ const EmailTemplateCreate = () => {
                 descriptionBorderStyle: field.descriptionBorderStyle || 'solid',
                 descriptionBorderColor: field.descriptionBorderColor || '#000',
                 dividerColor: field.dividerColor || '#000',
+                dividerbgColor: field.dividerbgColor || '',
                 dividerWidth: field.dividerWidth || '100',
                 dividerheight: field.dividerheight || '1',
+                buttonbgColor: field.buttonbgColor || '',
                 buttonColor: field.buttonColor || '#007BFF',
                 buttonFontSize: field.buttonFontSize || 16,
                 buttonTextColor: field.buttonTextColor || '#fff',
@@ -1049,16 +1129,28 @@ const EmailTemplateCreate = () => {
                 socalIconHeight: field.socalIconHeight || 30,
                 socalIconWidth: field.socalIconWidth || 30,
                 socalIconPadding: field.socalIconPadding || 10,
+                socalIcongap: field.socalIcongap || '',
+                socalIconbg: field.socalIconbg || '#FFF',
                 socaliconTextAlign: field.socaliconTextAlign || '',
                 htmlFontSize: field.htmlFontSize || 16,
                 htmlPadding: field.htmlPadding || 10,
                 htmlColor: field.htmlColor || '#000',
                 splitbg: field.splitbg || '',
+                splitbtn: field.splitbtn || '',
+                splitbtnbg: field.splitbtnbg || '',
+                splitbtnfont: field.splitbtnfont || '',
+                splitbtncolor: field.splitbtncolor || '',
+                splitbtnurl: field.splitbtnurl || '',
+                splitbtnheight: field.splitbtnheight || '',
+                splitbtnwidth: field.splitbtnwidth || '',
+                splitbtnradious: field.splitbtnradious || '',
+                splitheight: field.splitheight || '',
                 width: field.width || '100%',
                 spacerHeight: field.spacerHeight || 20,
                 spacerbg: field.spacerbg || '#fff',
                 videoPadding: field.videoPadding || 20,
                 splitPadding: field.splitPadding || 0,
+                splitColor: field.splitColor || '',
                 splitTextAlin: field.splitTextAlin || 'left',
                 videoBorderWidth: field.videoBorderWidth || 1,
                 videoBorderStyle: field.videoBorderStyle || 'solid',
@@ -1090,11 +1182,33 @@ const EmailTemplateCreate = () => {
                 productheight: field.productheight || 30,
                 productbackgroundColor: field.productbackgroundColor || '#007BFF',
                 buttonLabel: field.buttonLabel || '',
+                buttonaline: field.buttonaline || '',
                 fontsizeMulticolumn: field.fontsizeMulticolumn || 14,
-                MulticolumntnBorderColor: field.MulticolumntnBorderColor || '',
+                Multicolumnbgcolor: field.Multicolumnbgcolor || '',
+                Multibgcolor: field.Multibgcolor || '',
+                Multitext: field.Multitext || '',
+                Multigap: field.Multigap || '',
+                Multibtnlable: field.Multibtnlable || '',
+                Multibtncolor: field.Multibtncolor || '',
+                Multibtnbg: field.Multibtnbg || '',
+                Multibtnweight: field.Multibtnweight || '',
+                Multibtnheight: field.Multibtnheight || '',
+                Multibtnradious: field.Multibtnradious || '',
+                Multibtnfont: field.Multibtnfont || '',
+                Multibtnurl: field.Multibtnurl || '',
+                MulticolumnbtnBorderColor: field.MulticolumnbtnBorderColor || '',
                 MulticolumnbtnBorderWidth: field.MulticolumnbtnBorderWidth || '',
                 MulticolumnbtnBorderStyle: field.MulticolumnbtnBorderStyle || '',
-                MulticolumnPadding: field.MulticolumnPadding || ''
+                MultibtnBorderColor: field.MultibtnBorderColor || '',
+                MultiColor: field.MultiColor || '',
+                MultibtnBorderWidth: field.MultibtnBorderWidth || '',
+                MultibtnBorderStyle: field.MultibtnBorderStyle || '',
+                MulticolumnPadding: field.MulticolumnPadding || '',
+                MultiPadding: field.MultiPadding || '',
+                splitBorderColor: field.splitBorderColor || '',
+                splitBorderWidth: field.splitBorderWidth || '',
+                splitBorderStyle: field.splitBorderStyle || '',
+                showbtnmulti: showbtnmulti || false,
             };
         });
 
@@ -1139,7 +1253,7 @@ const EmailTemplateCreate = () => {
             }
         }
     };
-
+    
     const resetFormState = () => {
         setFields([]);
         setEmailTemplateId(null);
@@ -1193,14 +1307,27 @@ const EmailTemplateCreate = () => {
     const toggleViewMode = (mode) => {
         setViewMode(mode);
         setEmailWidth(mode === 'desktop' ? '800px' : '400px');
-        if (mode === 'mobile') {
-            setProductsPerRow(1);
-            setColumnsPerRow(1);
-        } else {
-            setProductsPerRow(3);
-            setColumnsPerRow(3);
-        }
+
+        setFields((prevFields) =>
+            prevFields.map((field) => ({
+                ...field,
+                columnsPerRow: mode === 'mobile' ? 1 : field.defaultColumnsPerRow || 3,
+
+            }))
+        );
     };
+
+    // const toggleViewMode = (mode) => {
+    //     setViewMode(mode);
+    //     setEmailWidth(mode === 'desktop' ? '800px' : '400px');
+    //     if (mode === 'mobile') {
+    //         setProductsPerRow(1);
+    //         setColumnsPerRow(1);
+    //     } else {
+    //         setProductsPerRow(3);
+    //         setColumnsPerRow(3);
+    //     }
+    // };
 
     const toggleColorPicker = () => {
         setShowColorPicker(!showColorPicker);
@@ -1387,6 +1514,16 @@ const EmailTemplateCreate = () => {
         setShowbtnn(!showbtnn);
     };
 
+    const togglesplit = (fieldId) => {
+        setShowbtnsplit((prev) => !prev);
+
+        setFields((prevFields) =>
+            prevFields.map((f) =>
+                f.id === fieldId ? { ...f, showbtnsplit: !f.showbtnsplit } : f
+            )
+        );
+    };
+
     const AddProduct = () => {
         setIsPopupOpen(true);
     }
@@ -1488,6 +1625,13 @@ const EmailTemplateCreate = () => {
         }
     };
 
+    const handleRemoveImage5 = (id) => {
+        const updatedFields = fields.map(field =>
+            field.id === id ? { ...field, headingbgImage: null } : field
+        );
+        setFields(updatedFields);
+    };
+
 
     const handleFieldClick = (fieldId) => {
         setSelectedFieldId(fieldId);
@@ -1546,18 +1690,11 @@ const EmailTemplateCreate = () => {
         product.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleEditChange = (value) => {
-        console.log("Editor value changed:", value);
-        console.log("Active field ID:", activeFieldId);
-        setEditorValueed(value);
-
+    const handleEditChange = (value, fieldId) => {
         setFields((prevFields) => {
             const updatedFields = prevFields.map((field) =>
-                field.id === activeFieldId
-                    ? { ...field, content: value }
-                    : field
+                field.id === fieldId ? { ...field, content: value } : field
             );
-            console.log("Updated fields after editor change:", updatedFields);
             return updatedFields;
         });
     };
@@ -1701,14 +1838,36 @@ const EmailTemplateCreate = () => {
         setFields(updatedFields);
     };
 
-    const handleColoumPerRowChange = (e) => {
-        setColumnsPerRow(Number(e.target.value));
+    const handleColoumPerRowChange = (e, fieldId) => {
+        const updatedFields = fields.map((f) => {
+            if (f.id === fieldId) {
+                return {
+                    ...f,
+                    columnsPerRow: Number(e.target.value),
+                };
+            }
+            return f;
+        });
+        setFields(updatedFields);
     };
 
+    const toggleButtonVisibility = (fieldId, columnIndex) => {
+        const updatedFields = fields.map(field =>
+            field.id === fieldId
+                ? {
+                    ...field,
+                    columnData: field.columnData.map((col, index) =>
+                        index === columnIndex ? { ...col, isVisible: !col.isVisible } : col
+                    ),
+                }
+                : field
+        );
+        setFields(updatedFields);
+    };
 
     return (
         <div>
-            <div className='email-campaing-templates'>
+            <div className='email-campaing-templates email-templates-wredd'>
                 <div className="builder-container">
                     <h3>Email campaign</h3>
 
@@ -1797,7 +1956,6 @@ const EmailTemplateCreate = () => {
                                                                             id="font-family-selector"
                                                                             value={fontFamily}
                                                                             onChange={handleFontChange}
-                                                                            style={{ marginLeft: '10px', padding: '5px' }}
                                                                         >
                                                                             <option value="Arial">Arial</option>
                                                                             <option value="Verdana">Verdana</option>
@@ -1805,34 +1963,38 @@ const EmailTemplateCreate = () => {
                                                                             <option value="Georgia">Georgia</option>
                                                                             <option value="Courier New">Courier New</option>
                                                                             <option value="Roboto">Roboto</option>
+                                                                            <option value="Raleway">Raleway</option>
+                                                                            <option value="Gotham">Gotham</option>
+                                                                            <option value="Montserrat">Montserrat</option>
+                                                                            <option value="Lato">Lato</option>
+                                                                            <option value="Helvetica">Helvetica</option>
+                                                                            <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                            <option value="Poppins">Poppins</option>
+                                                                            <option value="Quicksand">Quicksand</option>
+                                                                            <option value="Work Sans">Work Sans</option>
+                                                                            <option value="Barlow">Barlow</option>
+                                                                            <option value="Varela Round">Varela Round</option>
+                                                                            <option value="Josefin Sans">Josefin Sans</option>
+                                                                            <option value="Inter ">Inter </option>
+                                                                            <option value="open sans">open sans</option>
+
                                                                         </select>
                                                                     </div>
-                                                                    <div className='edit_setting_bg bgcolor'>
-                                                                        <label>
-                                                                            Background Color:
-                                                                        </label>
-                                                                        <div
-                                                                            style={{
-                                                                                height: "40px",
-                                                                                width: "115px",
-                                                                                borderRadius: "4px",
-                                                                                backgroundColor: backgroundColor,
-                                                                                border: "1px solid #ccc",
-                                                                                cursor: "pointer",
-                                                                            }}
-                                                                            onClick={() => document.getElementById('colorInput').click()}
-                                                                        >
+
+                                                                    <div className='edit_setting_bg form'>
+                                                                        <div className='checkbox-option bg-colors'>
+                                                                            <label>  Background Color:</label>
+                                                                            <div className="color-picker-container">
+                                                                                <span className="color-code">{backgroundColor}</span>
+                                                                                <input
+                                                                                    type="color"
+                                                                                    value={backgroundColor}
+                                                                                    onChange={(e) => setBackgroundColor(e.target.value)}
+                                                                                />
+                                                                            </div>
                                                                         </div>
-                                                                        <input
-                                                                            id="colorInput"
-                                                                            type="color"
-                                                                            style={{
-                                                                                display: "none"
-                                                                            }}
-                                                                            value={backgroundColor}
-                                                                            onChange={(e) => setBackgroundColor(e.target.value)}
-                                                                        />
                                                                     </div>
+
                                                                     <div className='edit_setting_bg'>
                                                                         <label>Border-Radious:</label>
                                                                         <input
@@ -1874,13 +2036,14 @@ const EmailTemplateCreate = () => {
                                                                             onChange={handleBackgroundImageUpload}
                                                                         />
                                                                         {backgroundImage && (
-                                                                            <button className='rm-btn'
+                                                                            <button className='rm-btn bg-img'
                                                                                 type="button"
                                                                                 onClick={handleRemoveBackgroundImage}
                                                                                 style={{
                                                                                     margin: '10px 0',
                                                                                     width: '150px',
-                                                                                    textAlign: 'center'
+                                                                                    textAlign: 'center',
+                                                                                    background: 'red'
                                                                                 }}
                                                                             >
 
@@ -1929,6 +2092,7 @@ const EmailTemplateCreate = () => {
 
                                         <div
                                             className="form-builder email-template"
+                                            id="form-container"
                                             ref={formBuilderRef}
                                             style={{
                                                 backgroundColor,
@@ -1986,11 +2150,12 @@ const EmailTemplateCreate = () => {
                                                                                 width: `${field.bannerImageWidth}%`,
                                                                                 height: field.bannerImageHeight || '400px',
                                                                                 opacity: field.headeropacity || '',
-                                                                                position: 'relative'
+                                                                                display: 'flex',
+                                                                                alignItems: 'center'
                                                                             }}
                                                                         >
                                                                             <div className='email-input-field-h1' style={{
-                                                                                position: 'absolute', top: '35%',
+
                                                                                 width: '100%',
                                                                                 textAlign: field.headingTextAlign || '',
                                                                                 padding: `${field.headingPadding}px`,
@@ -2007,41 +2172,40 @@ const EmailTemplateCreate = () => {
                                                                                     }
                                                                                 }, field.headingText || field.value)}
 
-                                                                                {(field.editorContent || editorValue) && (
-                                                                                    <div
-                                                                                        className="heading-editor-content"
-                                                                                        style={{ fontSize: '20px', margin: '20px 0' }}
-                                                                                        dangerouslySetInnerHTML={{
-                                                                                            __html: field.editorContent || editorValue || 'Its a numbers game'
-                                                                                        }}
-                                                                                    />
+                                                                                <div
+                                                                                    className="heading-editor-content"
+                                                                                    style={{ fontSize: `${field.headingsubheading}px`, color: field.subheadingColor, margin: '20px 0' }}
+                                                                                    dangerouslySetInnerHTML={{
+                                                                                        __html: editorValue || field.editorContent || 'It’s a numbers game',
+                                                                                    }}
+                                                                                />
+                                                                                {field.headingUrl && (
+                                                                                    <a href={field.headingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.preventDefault()}>
+                                                                                        <button
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                console.log("Button clicked, but no navigation.");
+                                                                                            }}
+                                                                                            style={{
+                                                                                                background: field.headerbtnbg,
+                                                                                                color: field.headerbtncolor,
+                                                                                                height: `${field.headingbtnheight}px`,
+                                                                                                width: `${field.headingbtnwidth}px`,
+                                                                                                fontSize: `${field.headingbtnFontSize}px`,
+                                                                                                borderRadius: `${field.headingbtnradious}px`,
+                                                                                                paddingLeft: `${field.headingbtnPadding}px`,
+                                                                                                paddingRight: `${field.headingbtnPadding}px`,
+                                                                                                paddingTop: `${field.headingbtntopPadding}px`,
+                                                                                                paddingBottom: `${field.headingbtntopPadding}px`,
+                                                                                                borderWidth: `${field.headingbtnBorderWidth}px`,
+                                                                                                borderStyle: field.headingbtnBorderStyle,
+                                                                                                borderColor: field.headingbtnBorderColor,
+                                                                                            }}
+                                                                                        >
+                                                                                            {field.headerbtn}
+                                                                                        </button>
+                                                                                    </a>
                                                                                 )}
-                                                                                <a href={field.headingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.preventDefault()}>
-                                                                                    <button
-                                                                                        onClick={(e) => {
-                                                                                            e.preventDefault();
-                                                                                            console.log("Button clicked, but no navigation.");
-                                                                                        }}
-                                                                                        style={{
-                                                                                            background: field.headerbtnbg,
-                                                                                            color: field.headerbtncolor,
-                                                                                            height: `${field.headingbtnheight}px`,
-                                                                                            width: `${field.headingbtnwidth}px`,
-                                                                                            fontSize: `${field.headingbtnFontSize}px`,
-                                                                                            borderRadius: `${field.headingbtnradious}px`,
-                                                                                            paddingLeft: `${field.headingbtnPadding}px`,
-                                                                                            paddingRight: `${field.headingbtnPadding}px`,
-                                                                                            paddingTop: `${field.headingbtntopPadding}px`,
-                                                                                            paddingBottom: `${field.headingbtntopPadding}px`,
-                                                                                            borderWidth: `${field.headingbtnBorderWidth}px`,
-                                                                                            borderStyle: field.headingbtnBorderStyle,
-                                                                                            borderColor: field.headingbtnBorderColor,
-                                                                                        }}
-                                                                                    >
-                                                                                        {field.headerbtn}
-                                                                                    </button>
-                                                                                </a>
-
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
@@ -2062,7 +2226,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex' }}
+                                                                        style={{ display: 'flex', width: '100%' }}
                                                                     >
                                                                         <div style={{
                                                                             backgroundColor: field.descriptionbg,
@@ -2109,12 +2273,14 @@ const EmailTemplateCreate = () => {
                                                                                 borderWidth: `${field.imgBorderWidth}px`,
                                                                                 borderStyle: field.imgBorderStyle,
                                                                                 borderColor: field.imgBorderColor,
+                                                                                width: '100%'
                                                                             }}>
 
                                                                             <img src={field.value || imghd} alt="Dynamic" style={{
                                                                                 width: `${field.imgWidth}%`,
                                                                                 padding: `${field.imgPadding}px`,
                                                                             }} />
+
 
                                                                         </div>
 
@@ -2139,10 +2305,12 @@ const EmailTemplateCreate = () => {
                                                                         style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
-                                                                        <hr style={{
-                                                                            border: `1px solid ${field.dividerColor}`, width: `${field.dividerWidth}%`,
-                                                                            height: `${field.dividerheight}px`
-                                                                        }} />
+                                                                        <div style={{ backgroundColor: field.dividerbgColor, width: '100%' }}>
+                                                                            <hr style={{
+                                                                                border: `1px solid ${field.dividerColor}`, width: `${field.dividerWidth}%`,
+                                                                                height: `${field.dividerheight}px`
+                                                                            }} />
+                                                                        </div>
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
@@ -2161,56 +2329,88 @@ const EmailTemplateCreate = () => {
                                                             if (field.type === 'split') {
                                                                 const isImageUploaded = field.add === 'image' && field.value.startsWith('data:image');
                                                                 return (
-                                                                    <div key={field.id} onClick={() => handleFieldClick(field.id)}
-                                                                        className={`email_field split-width ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                    <div style={{ width: '100%' }}>
+                                                                        <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                            className={`email_field split-width ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                            style={{
+                                                                                width: field.width,
+                                                                                backgroundColor: field.splitbg,
+                                                                                padding: `${field.splitPadding}px`,
+                                                                                height: `${field.splitheight}px`,
+                                                                                textAlign: field.splitTextAlin,
+                                                                                position: 'relative',
+                                                                                display: 'flex',
+                                                                                color: field.splitColor,
 
-                                                                        style={{
-                                                                            width: field.width,
-                                                                            backgroundColor: field.splitbg,
-                                                                            padding: `${field.splitPadding}px`,
-                                                                            // border: '1px solid #B5B7C0',
-                                                                            height: '300px',
-                                                                            textAlign: field.splitTextAlin,
-                                                                            position: 'relative',
-                                                                            display: 'flex'
+                                                                            }}
+                                                                        >
+                                                                            {field.add === 'image' ? (
+                                                                                <img
+                                                                                    src={field.value || imghd1}
+                                                                                    alt="Uploaded Preview"
+                                                                                    style={{ width: '100%', height: 'auto' }}
+                                                                                />
+                                                                            ) : (
+                                                                                <div style={{ width: '100%', display: 'flex', alignItems: field.splittext === 'left' ? 'flex-start' : field.splittext === 'center' ? 'center' : 'flex-end' }}>
+                                                                                    <div style={{ width: '100%' }}>
+                                                                                        <div style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...' }} />
+                                                                                        <div >
+                                                                                            {field.showbtnsplit && (
+                                                                                                <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                                                                                    <button style={{
+                                                                                                        marginTop: "20px",
+                                                                                                        backgroundColor: field.splitbtnbg,
+                                                                                                        fontSize: `${field.splitbtnfont}px`,
+                                                                                                        color: field.splitbtncolor,
+                                                                                                        height: `${field.splitbtnheight}px`,
+                                                                                                        width: `${field.splitbtnwidth}px`,
+                                                                                                        borderRadius: `${field.splitbtnradious}px`,
+                                                                                                        borderWidth: `${field.splitBorderWidth}px`,
+                                                                                                        borderStyle: field.splitBorderStyle,
+                                                                                                        borderColor: field.splitBorderColor,
+                                                                                                    }}>
+                                                                                                        {field.splitbtn}</button>
+                                                                                                </a>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
 
-                                                                        }}
-                                                                    >
-                                                                        {field.add === 'image' ? (
-                                                                            <img
-                                                                                src={isImageUploaded ? field.value : imghd1}
-                                                                                alt="Uploaded Preview"
-                                                                                style={{ width: '100%', height: 'auto' }}
-                                                                            />
+                                                                                </div>
+                                                                            )}
 
-                                                                        ) : (
-                                                                            <div style={{ position: 'absolute', top: '40%' }}>
-                                                                                <div dangerouslySetInnerHTML={{ __html: field.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...' }} />
+                                                                            <div className='form-builder-radio-btn email'>
+                                                                                <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                                    <img src={editicon} alt="copy" />
+                                                                                </button>
+                                                                                <button className='remove-btn' onClick={() => removeField(field.id)}>
+                                                                                    <img src={delete1} alt="delete" />
+                                                                                </button>
+                                                                                <button className="copy-btn" onClick={() => addInputField(field.type)}>
+                                                                                    <img src={maximizesize} alt="copy" />
+                                                                                </button>
                                                                             </div>
-                                                                        )}
-                                                                        <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
-                                                                                <img src={editicon} alt="copy" />
-                                                                            </button>
-                                                                            <button className='remove-btn' onClick={() => removeField(field.id)}>
-                                                                                <img src={delete1} alt="delete" />
-                                                                            </button>
-                                                                            <button className="copy-btn" onClick={() => addInputField(field.type)}>
-                                                                                <img src={maximizesize} alt="copy" />
-                                                                            </button>
                                                                         </div>
                                                                     </div>
                                                                 );
                                                             }
-
                                                             if (field.type === 'richtext') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex' }}
+                                                                        style={{ display: 'flex', width: '100%' }}
                                                                     >
-                                                                        <div style={{ width: '100%' }}>
-                                                                            <div style={{ textAlign: field.richTextAlign || '', fontSize: `${field.richFontsize}px` }} dangerouslySetInnerHTML={{ __html: field.content || 'Captivate customers with' }} />
+                                                                        <div style={{ width: '100%' }} >
+                                                                            <div style={{
+                                                                                textAlign: field.richTextAlign || '',
+                                                                                fontSize: `${field.richFontsize}px`,
+                                                                                color: field.richtextcolor,
+                                                                                backgroundColor: field.richbgcolor,
+                                                                                paddingLeft: `${field.richleftPadding}px`,
+                                                                                paddingRight: `${field.richleftPadding}px`,
+                                                                                paddingTop: `${field.richtopPadding}px`,
+                                                                                paddingBottom: `${field.richtopPadding}px`,
+                                                                            }}
+                                                                                dangerouslySetInnerHTML={{ __html: editorValueed || field.content || 'Captivate customers with' }} />
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -2226,6 +2426,7 @@ const EmailTemplateCreate = () => {
                                                                     </div>
                                                                 );
                                                             }
+
                                                             if (field.type === 'spacer') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
@@ -2233,9 +2434,9 @@ const EmailTemplateCreate = () => {
                                                                         style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
-                                                                       <div style={{width:'100%'}}>
-                                                                       <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
-                                                                       </div>
+                                                                        <div style={{ width: '100%' }}>
+                                                                            <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
+                                                                        </div>
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
@@ -2298,7 +2499,7 @@ const EmailTemplateCreate = () => {
                                                                         style={{ display: 'flex' }}
                                                                         ref={emailFieldRef}
                                                                     >
-                                                                        <div style={{ width: '100%' }}>
+                                                                        <div style={{ width: '100%', backgroundColor: field.buttonbgColor, textAlign: field.buttonaline }}>
                                                                             <a href={field.buttonUrll}
                                                                                 onClick={(event) => {
                                                                                     event.preventDefault();
@@ -2375,47 +2576,71 @@ const EmailTemplateCreate = () => {
                                                                     <div key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field columns-container ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex' }}
                                                                     >
-                                                                        <div className="columns-wrapper" style={{ display: 'grid', gap: '10px', gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)` }}>
-                                                                            {Array.from({ length: field.columnCount }, (_, index) => (
-                                                                                <div
-                                                                                    key={index}
-                                                                                    style={{
-                                                                                        fontSize: `${field.fontsizeMulticolumn}px`,
-                                                                                        borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
-                                                                                        borderStyle: field.MulticolumnbtnBorderStyle,
-                                                                                        borderColor: field.MulticolumnbtnBorderColor,
-                                                                                        padding: `${field.MulticolumnPadding}px`
-                                                                                    }}
-                                                                                    className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
-                                                                                    onClick={(e) => handleColumnClick(field.id, index)}
+                                                                        <div style={{ width: '100%' }}>
+                                                                            <div className="columns-wrapper" style={{ display: 'grid', gap: `${field.Multigap}px`, padding: `${field.MultiPadding}px`, gridTemplateColumns: `repeat(${field.columnsPerRow || `3`}, 1fr)`, backgroundColor: field.Multibgcolor }}>
+                                                                                {Array.from({ length: field.columnCount }, (_, index) => (
+                                                                                    <div
+                                                                                        key={index}
+                                                                                        style={{
+                                                                                            fontSize: `${field.fontsizeMulticolumn}px`,
+                                                                                            borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
+                                                                                            borderStyle: field.MulticolumnbtnBorderStyle,
+                                                                                            borderColor: field.MulticolumnbtnBorderColor,
+                                                                                            padding: `${field.MulticolumnPadding}px`,
+                                                                                            backgroundColor: field.Multicolumnbgcolor,
+                                                                                            textAlign: field.Multitext,
+                                                                                            color: field.MultiColor,
+                                                                                        }}
+                                                                                        className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
+                                                                                        onClick={(e) => handleColumnClick(field.id, index)}
 
-                                                                                >
-                                                                                    {field.columnData[index].image && (
-                                                                                        <img
-                                                                                            src={field.columnData[index].image}
-                                                                                            alt={`Uploaded for Column ${index + 1}`}
-                                                                                            style={{ width: '100px', height: '100px', marginTop: '10px' }}
-                                                                                        />
-                                                                                    )}
+                                                                                    >
+                                                                                        {field.columnData[index].image && (
+                                                                                            <img
+                                                                                                src={field.columnData[index].image}
+                                                                                                alt={`Uploaded for Column ${index + 1}`}
+                                                                                                style={{ width: '100%', height: 'auto' }}
+                                                                                            />
+                                                                                        )}
 
-                                                                                    {field.columnData[index].content ? (
-                                                                                        <div
-                                                                                            dangerouslySetInnerHTML={{
-                                                                                                __html: field.columnData[index].content,
-                                                                                            }}
-                                                                                        />
-                                                                                    ) : (
-                                                                                        <div style={{ color: 'gray' }}>
-                                                                                            <h2>Column</h2>
-                                                                                            Elevate your online store with our easy-to-use Text Box feature.
-                                                                                            It's a game-changer for personalization, allowing customers to add their
-                                                                                            special touch directly from a user-friendly drop-down menu.
-                                                                                        </div>
-                                                                                    )}
+                                                                                        {field.columnData[index].content ? (
+                                                                                            <div
+                                                                                                dangerouslySetInnerHTML={{
+                                                                                                    __html: field.columnData[index].content,
+                                                                                                }}
+                                                                                            />
+                                                                                        ) : (
+                                                                                            <div style={{ color: 'gray' }}>
+                                                                                                <h2>Column</h2>
+                                                                                                Elevate your online store with our easy-to-use Text Box feature.
+                                                                                                It's a game-changer for personalization, allowing customers to add their
+                                                                                                special touch directly from a user-friendly drop-down menu.
+                                                                                            </div>
+                                                                                        )}
 
-                                                                                </div>
-                                                                            ))}
+                                                                                        {field.columnData[index].isVisible && (
+                                                                                            <a href={field.columnData[index].Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                                                                                <button style={{
+                                                                                                    marginTop: "20px",
+                                                                                                    backgroundColor: field.Multibtnbg,
+                                                                                                    borderWidth: `${field.MultibtnBorderWidth}px`,
+                                                                                                    borderStyle: field.MultibtnBorderStyle,
+                                                                                                    borderColor: field.MultibtnBorderColor,
+                                                                                                    width: `${field.Multibtnweight || '100'}px`,
+                                                                                                    height: `${field.Multibtnheight || '40'}px`,
+                                                                                                    color: field.Multibtncolor,
+                                                                                                    borderRadius: `${field.Multibtnradious}px`,
+                                                                                                    fontSize: `${field.Multibtnfont || '14'}px`
+                                                                                                }}
+                                                                                                > {field.columnData[index].Multibtnlable}</button>
+                                                                                            </a>
+                                                                                        )}
+
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
@@ -2470,7 +2695,7 @@ const EmailTemplateCreate = () => {
                                                                                         <div>
                                                                                             <h4 style={{ letterSpacing: `${field.productLetterSpacing}px`, fontWeight: field.productWeight, }}>{product.title}</h4>
                                                                                             {showPrice && product.price && (
-                                                                                                <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
+                                                                                                <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
                                                                                                     ${product.price}
                                                                                                 </p>
                                                                                             )}
@@ -2521,8 +2746,8 @@ const EmailTemplateCreate = () => {
                                                                             ref={emailFieldRef}
 
                                                                         >
-                                                                            <div style={{ textAlign: field.socaliconTextAlign || '', padding: `${field.socalIconPadding}px`, width: '100%' }} >
-                                                                                <div className="social-icons" >
+                                                                            <div style={{ textAlign: field.socaliconTextAlign || '', backgroundColor: field.socalIconbg, padding: `${field.socalIconPadding}px`, width: '100%' }} >
+                                                                                <div className="social-icons" style={{ gap: `${field.socalIcongap}px` }}>
                                                                                     {field.icons.facebook && field.icons.facebook.url && !field.icons.facebook.isHidden && (
                                                                                         <a href={field.icons.facebook.url} onClick={(e) => e.preventDefault()}>
                                                                                             <img src={facebook} alt="" style={{ width: `${socalIconWidth}px`, height: `${socalIconHeight}px` }} />
@@ -2541,7 +2766,7 @@ const EmailTemplateCreate = () => {
                                                                                     {field.customIcons.map((icon, index) =>
                                                                                         icon.url && !icon.isHidden ? (
                                                                                             <a key={index} href={icon.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.preventDefault()}>
-                                                                                                <img src={icon.src} alt={`Custom Icon ${index}`} style={{ width: `${socalIconWidth}px`, }} />
+                                                                                                <img src={icon.src} alt={`Custom Icon ${index}`} style={{ width: `${field.socalIconWidth}px`, height: `${field.socalIconHeight}px` }} />
                                                                                             </a>
                                                                                         ) : null
                                                                                     )}
@@ -2594,11 +2819,10 @@ const EmailTemplateCreate = () => {
                                                                                     <div key={index} className="column-setting">
                                                                                         <div className=' form-builder-chaneging-wrap column-settings-show-apps'>
                                                                                             <label>Column {index + 1}</label>
-                                                                                            <button className='rm-btn dl'
+                                                                                            <button className='rm-btn-remove-icon'
                                                                                                 onClick={() => removeColumn(field.id, index)}
-
                                                                                             >
-                                                                                                <img src={dlrm} alt="" />
+                                                                                                <img src={rm} alt="" />
                                                                                             </button>
                                                                                         </div>
                                                                                         <ReactQuill
@@ -2626,12 +2850,59 @@ const EmailTemplateCreate = () => {
                                                                                                 onChange={(e) => handleImageChange1(e, field.id, index)}
                                                                                             />
                                                                                         </div>
+                                                                                        {/* <button onClick={() => toggleButtonVisibility(field.id, index)}>
+                                                                                            {field.columnData[index].isVisible ? 'Hide Column' : 'Show Column'}
+                                                                                        </button> */}
+                                                                                        <div className='form-builder-chaneging-wrap number'>
+                                                                                            <label>Button Label</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                value={field.columnData[index].Multibtnlable}
+                                                                                                onChange={(e) => {
+                                                                                                    const updatedLabel = e.target.value;
+                                                                                                    const updatedFields = fields.map(f =>
+                                                                                                        f.id === field.id
+                                                                                                            ? {
+                                                                                                                ...f,
+                                                                                                                columnData: f.columnData.map((col, i) =>
+                                                                                                                    i === index ? { ...col, Multibtnlable: updatedLabel, isVisible: updatedLabel.trim() !== '' } : col
+                                                                                                                ),
+                                                                                                            }
+                                                                                                            : f
+                                                                                                    );
+                                                                                                    setFields(updatedFields);
+                                                                                                }}
+                                                                                                placeholder="Column Label"
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className='form-builder-chaneging-wrap number'>
+                                                                                            <label>Button Url</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                value={field.columnData[index].Multibtnurl}
+                                                                                                onChange={(e) => {
+                                                                                                    const updatedUrl = e.target.value;
+                                                                                                    const updatedFields = fields.map(f =>
+                                                                                                        f.id === field.id
+                                                                                                            ? {
+                                                                                                                ...f,
+                                                                                                                columnData: f.columnData.map((col, i) =>
+                                                                                                                    i === index ? { ...col, Multibtnurl: updatedUrl } : col
+                                                                                                                ),
+                                                                                                            }
+                                                                                                            : f
+                                                                                                    );
+                                                                                                    setFields(updatedFields);
+                                                                                                }}
+                                                                                                placeholder="Button Url"
+                                                                                            />
+                                                                                        </div>
                                                                                         {field.columnData[index].image ? (
                                                                                             <div className='form-builder-chaneging-wrap images-upload'>
                                                                                                 <img
                                                                                                     src={field.columnData[index].image}
                                                                                                     alt={`Preview for Column ${index + 1}`}
-                                                                                                    style={{ width: '100%' }}
+                                                                                                    width='100%'
                                                                                                 />
                                                                                                 <button
                                                                                                     className='rm-btn remove-coloum'
@@ -2645,13 +2916,14 @@ const EmailTemplateCreate = () => {
 
                                                                                     </div>
                                                                                 ))}
+
                                                                                 <button className='rm-btn' onClick={() => addColumn(field.id)}
                                                                                 >Add Column</button>
                                                                             </div>
                                                                             <div className="product-detalis-all">
                                                                                 <h3>Coloum layout</h3>
                                                                                 <div className="form-builder-chaneging-wrap select">
-                                                                                    <select onChange={handleColoumPerRowChange} value={columnsPerRow}>
+                                                                                    <select onChange={(e) => handleColoumPerRowChange(e, field.id)} value={field.columnsPerRow || '3'}>
                                                                                         {[...Array(6).keys()].map((i) => (
                                                                                             <option key={i + 1} value={i + 1}>
                                                                                                 {i + 1} per row
@@ -2660,8 +2932,261 @@ const EmailTemplateCreate = () => {
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.MultiColor || '#000'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.MultiColor || '#000'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, MultiColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='product-detalis-all btn-split'>
+                                                                                <h3> Button Propertites</h3>
+
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Button Url</label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        value={field.Multibtnurl}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, Multibtnurl: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                        placeholder="Button Url"
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label> Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.Multibtncolor || '#FFFFFF'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.Multibtncolor || '#FFFFFF'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, Multibtncolor: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label> Border Radious (px)</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.Multibtnradious || '2'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, Multibtnradious: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label> Font Size (px)</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.Multibtnfont || '14'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, Multibtnfont: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label> Height (px)</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.Multibtnheight || '40'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, Multibtnheight: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label> Width (px)</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.Multibtnweight || '100'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, Multibtnweight: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label>Background Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.Multibtnbg || '#FFFFFF'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.Multibtnbg || '#FFFFFF'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, Multibtnbg: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label>Border Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.MultibtnBorderColor || '#FFFFFF'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.MultibtnBorderColor || '#FFFFFF'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, MultibtnBorderColor: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label>Border Width (px)</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.MultibtnBorderWidth || '1'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, MultibtnBorderWidth: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap'>
+                                                                                    <label>Border Style</label>
+                                                                                    <select
+                                                                                        value={field.MultibtnBorderStyle}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, MultibtnBorderStyle: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        <option value="solid">Solid</option>
+                                                                                        <option value="dashed">Dashed</option>
+                                                                                        <option value="dotted">Dotted</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.Multibgcolor || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.Multibgcolor || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, Multibgcolor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap number' >
-                                                                                <label>Padding (px)</label>
+                                                                                <label> Padding (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.MultiPadding}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, MultiPadding: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Background Color Coloum</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.Multicolumnbgcolor || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.Multicolumnbgcolor || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, Multicolumnbgcolor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Text Align </label>
+                                                                                <select
+                                                                                    value={field.Multitext}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, Multitext: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select text align</option>
+                                                                                    <option value="left">left</option>
+                                                                                    <option value="center">center</option>
+                                                                                    <option value="right">right</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label> Coloum Padding (px)</label>
                                                                                 <input
                                                                                     type="number"
                                                                                     value={field.MulticolumnPadding}
@@ -2672,6 +3197,21 @@ const EmailTemplateCreate = () => {
                                                                                             )
                                                                                         );
                                                                                     }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Coloum Gap</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.Multigap}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, Multigap: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Coloum-Gap"
                                                                                 />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
@@ -2689,19 +3229,25 @@ const EmailTemplateCreate = () => {
                                                                                     placeholder="Font-Size"
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Border Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.MulticolumnbtnBorderColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, MulticolumnbtnBorderColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Border Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.MulticolumnbtnBorderColor || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.MulticolumnbtnBorderColor || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, MulticolumnbtnBorderColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number' >
@@ -2744,11 +3290,85 @@ const EmailTemplateCreate = () => {
                                                                             <div >
                                                                                 <ReactQuill
                                                                                     value={editorValueed || field.content || 'Captivate customers with'}
-                                                                                    onChange={handleEditChange}
+                                                                                    onChange={(value) => handleEditChange(value, field.id)}
                                                                                     modules={{ toolbar: toolbarOptions }}
                                                                                 />
 
                                                                             </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Button Padding (px)</label>
+                                                                                <div className='form-builder-chanege-top-bottom'>
+                                                                                    <label> Left & Right</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.richleftPadding}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, richleftPadding: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                        placeholder="Padding"
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chanege-top-bottom'>
+
+                                                                                    <label> Top & Bottom </label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.richtopPadding}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, richtopPadding: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                        placeholder="Padding"
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.richbgcolor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.richbgcolor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, richbgcolor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.richtextcolor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.richtextcolor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, richtextcolor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Font Size (px)</label>
                                                                                 <input
@@ -2861,32 +3481,42 @@ const EmailTemplateCreate = () => {
                                                                                 />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Background Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.productbg || '#ffffff'}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, productbg: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.productbg || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.productbg || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, productbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Border Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.productBorderColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, productBorderColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Border Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.productBorderColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.productBorderColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, productBorderColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number' >
@@ -2934,19 +3564,25 @@ const EmailTemplateCreate = () => {
                                                                                     }}
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.productTextColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, productTextColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.productTextColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.productTextColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, productTextColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label> Font-Weight</label>
@@ -3037,33 +3673,44 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     />
                                                                                 </div>
+
                                                                                 <div className='form-builder-chaneging-wrap color'>
-                                                                                    <label>Background Color</label>
-                                                                                    <input
-                                                                                        type="color"
-                                                                                        value={field.productbackgroundColor}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, productbackgroundColor: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
-                                                                                    />
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label>Background Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.productbackgroundColor}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.productbackgroundColor}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, productbackgroundColor: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap color'>
-                                                                                    <label>Border Color</label>
-                                                                                    <input
-                                                                                        type="color"
-                                                                                        value={field.productbtnBorderColor}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, productbtnBorderColor: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
-                                                                                    />
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label>Border Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.productbtnBorderColor}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.productbtnBorderColor}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, productbtnBorderColor: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
 
                                                                                 <div className='form-builder-chaneging-wrap number' >
@@ -3097,19 +3744,25 @@ const EmailTemplateCreate = () => {
                                                                                         <option value="dotted">Dotted</option>
                                                                                     </select>
                                                                                 </div>
+
                                                                                 <div className='form-builder-chaneging-wrap color'>
-                                                                                    <label>Color</label>
-                                                                                    <input
-                                                                                        type="color"
-                                                                                        value={field.productbtnbg || '#ffffff'}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, productbtnbg: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
-                                                                                    />
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label> Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.productbtnbg || '#ffffff'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.productbtnbg || '#ffffff'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, productbtnbg: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap number'>
                                                                                     <label>Border-Radious</label>
@@ -3186,28 +3839,67 @@ const EmailTemplateCreate = () => {
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.headingColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, headingColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.headingColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.headingColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, headingColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className="form-builder-chaneging-wrap">
                                                                                 <label> Subheading</label>
                                                                                 <ReactQuill
                                                                                     value={editorValue || field.editorContent || 'Its a numbers game'}
-                                                                                    onChange={handleEditorChange}
+                                                                                    onChange={(value) => handleEditorChange(value, field.id)}
                                                                                     modules={{ toolbar: toolbarOptions }}
                                                                                 />
 
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label> Subheading Font-Size</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.headingsubheading}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, headingsubheading: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Padding"
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Subheading Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.subheadingColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.subheadingColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, subheadingColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                             <div className="form-builder-changing-wrap url">
 
@@ -3234,36 +3926,44 @@ const EmailTemplateCreate = () => {
                                                                                             }}
                                                                                         />
                                                                                     </div>
-
                                                                                     <div className='form-builder-chaneging-wrap color'>
-                                                                                        <label>Button Background</label>
-                                                                                        <input
-                                                                                            type="color"
-                                                                                            value={field.headerbtnbg}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, headerbtnbg: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                        />
+                                                                                        <div className='checkbox-option bg-colors'>
+                                                                                            <label>Button Background</label>
+                                                                                            <div className="color-picker-container">
+                                                                                                <span className="color-code">{field.headerbtnbg}</span>
+                                                                                                <input
+                                                                                                    type="color"
+                                                                                                    value={field.headerbtnbg}
+                                                                                                    onChange={(e) => {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, headerbtnbg: e.target.value } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap color'>
-                                                                                        <label>Border Color</label>
-                                                                                        <input
-                                                                                            type="color"
-                                                                                            value={field.headingbtnBorderColor}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, headingbtnBorderColor: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                        />
+                                                                                        <div className='checkbox-option bg-colors'>
+                                                                                            <label>Border Color</label>
+                                                                                            <div className="color-picker-container">
+                                                                                                <span className="color-code">{field.headingbtnBorderColor}</span>
+                                                                                                <input
+                                                                                                    type="color"
+                                                                                                    value={field.headingbtnBorderColor}
+                                                                                                    onChange={(e) => {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, headingbtnBorderColor: e.target.value } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
-
                                                                                     <div className='form-builder-chaneging-wrap number' >
                                                                                         <label>Border Width (px)</label>
                                                                                         <input
@@ -3295,24 +3995,30 @@ const EmailTemplateCreate = () => {
                                                                                             <option value="dotted">Dotted</option>
                                                                                         </select>
                                                                                     </div>
+
                                                                                     <div className='form-builder-chaneging-wrap color'>
-                                                                                        <label>Button Color</label>
-                                                                                        <input
-                                                                                            type="color"
-                                                                                            value={field.headerbtncolor}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, headerbtncolor: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                        />
+                                                                                        <div className='checkbox-option bg-colors'>
+                                                                                            <label>Button Color</label>
+                                                                                            <div className="color-picker-container">
+                                                                                                <span className="color-code">{field.headerbtncolor}</span>
+                                                                                                <input
+                                                                                                    type="color"
+                                                                                                    value={field.headerbtncolor}
+                                                                                                    onChange={(e) => {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, headerbtncolor: e.target.value } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Button Padding (px)</label>
                                                                                         <div className='form-builder-chanege-top-bottom'>
-                                                                                            <label> Top & Bottom </label>
+                                                                                            <label> Left & Right</label>
                                                                                             <input
                                                                                                 type="number"
                                                                                                 value={field.headingbtnPadding}
@@ -3327,7 +4033,8 @@ const EmailTemplateCreate = () => {
                                                                                             />
                                                                                         </div>
                                                                                         <div className='form-builder-chanege-top-bottom'>
-                                                                                            <label> Left & Right</label>
+
+                                                                                            <label> Top & Bottom </label>
                                                                                             <input
                                                                                                 type="number"
                                                                                                 value={field.headingbtntopPadding}
@@ -3416,6 +4123,24 @@ const EmailTemplateCreate = () => {
                                                                                 />
 
                                                                             </div>
+                                                                            <div className="form-builder-chaneging-wrap preview img-heading">
+                                                                                {field.headingbgImage && (
+                                                                                    <div className="image-preview">
+                                                                                        <img
+                                                                                            src={field.headingbgImage}
+                                                                                            alt="Background Preview"
+                                                                                            style={{ maxWidth: '100%', maxHeight: '150px', objectFit: 'cover' }}
+                                                                                        />
+                                                                                        <button className='rm-btn showfirst'
+                                                                                            onClick={() => handleRemoveImage5(field.id)}>
+                                                                                              <img src={rm} alt="" />
+                                                                                        </button>
+
+                                                                                    </div>
+                                                                                )}
+
+                                                                            </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Image Width:</label>
                                                                                 <input
@@ -3435,11 +4160,11 @@ const EmailTemplateCreate = () => {
                                                                                 <label>Image Height:</label>
                                                                                 <select
                                                                                     value={
-                                                                                        field.bannerImageHeight === '100px'
+                                                                                        field.bannerImageHeight === '200px'
                                                                                             ? 'small'
-                                                                                            : field.bannerImageHeight === '200px'
+                                                                                            : field.bannerImageHeight === '300px'
                                                                                                 ? 'medium'
-                                                                                                : field.bannerImageHeight === '300px'
+                                                                                                : field.bannerImageHeight === '500px'
                                                                                                     ? 'large'
                                                                                                     : 'default'
                                                                                     }
@@ -3447,9 +4172,9 @@ const EmailTemplateCreate = () => {
                                                                                         const selectedValue = e.target.value;
                                                                                         const heightMapping = {
                                                                                             default: '400px',
-                                                                                            small: '100px',
-                                                                                            medium: '200px',
-                                                                                            large: '300px',
+                                                                                            small: '200px',
+                                                                                            medium: '300px',
+                                                                                            large: '500px',
                                                                                         };
 
                                                                                         setFields((prevFields) =>
@@ -3471,17 +4196,6 @@ const EmailTemplateCreate = () => {
                                                                                 </select>
                                                                             </div>
 
-                                                                            <div className='form-builder-chaneging-wrap preview '>
-                                                                                {field.headingbgImage && (
-                                                                                    <div className="image-preview">
-                                                                                        <img
-                                                                                            src={field.headingbgImage}
-                                                                                            alt="Background Preview"
-                                                                                            style={{ maxWidth: '100%', maxHeight: '150px', objectFit: 'cover' }}
-                                                                                        />
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label> Opacity </label>
                                                                                 <input
@@ -3497,20 +4211,27 @@ const EmailTemplateCreate = () => {
                                                                                     placeholder="Padding"
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Background Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.headingbg || '#ffffff'}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, headingbg: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.headingbg || '#ffffff'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.headingbg || '#ffffff'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, headingbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label> Padding</label>
                                                                                 <input
@@ -3574,19 +4295,25 @@ const EmailTemplateCreate = () => {
 
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Border Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.headingBorderColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, headingBorderColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Border Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.headingBorderColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.headingBorderColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, headingBorderColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number' >
@@ -3793,11 +4520,10 @@ const EmailTemplateCreate = () => {
                                                                     return (
                                                                         <div key={field.id} className="form-builder-chaneging-wrap file">
                                                                             <div>
-
                                                                                 {field.value ? (
                                                                                     <div className='form-builder-img-wrap'>
 
-                                                                                        <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%', height: '170px' }} />
+                                                                                        <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%' }} />
                                                                                         <button className='update-image rm-btn' onClick={() => setImageFieldId(field.id)}>Update Image</button>
                                                                                         <button className='update-image rm-btn' onClick={() => removeField(field.id)}>Remove Image</button>
                                                                                     </div>
@@ -3808,6 +4534,7 @@ const EmailTemplateCreate = () => {
                                                                                         <button className='update-image' onClick={() => setImageFieldId(field.id)}>Upload Image</button>
                                                                                     </div>
                                                                                 )}
+
                                                                                 {imageFieldId === field.id && (
                                                                                     <input
                                                                                         type="file"
@@ -3816,21 +4543,25 @@ const EmailTemplateCreate = () => {
                                                                                     />
                                                                                 )}
                                                                             </div>
-
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Width</label>
                                                                                 <input
                                                                                     type="number"
                                                                                     value={field.imgWidth}
                                                                                     onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, imgWidth: e.target.value } : f
-                                                                                            )
-                                                                                        );
+                                                                                        const newWidth = parseInt(e.target.value, 10);
+
+                                                                                        if (newWidth >= 25 && newWidth <= 100) {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, imgWidth: newWidth } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }
                                                                                     }}
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Align </label>
                                                                                 <select
@@ -3849,20 +4580,27 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="right">right</option>
                                                                                 </select>
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Background Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.imgbg || '#ffffff'}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, imgbg: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.imgbg || '#ffffff'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.imgbg || '#ffffff'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, imgbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label> Padding</label>
                                                                                 <input
@@ -3878,19 +4616,25 @@ const EmailTemplateCreate = () => {
                                                                                     placeholder="Padding"
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Border Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.imgBorderColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, imgBorderColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Border Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.imgBorderColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.imgBorderColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, imgBorderColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number' >
@@ -3930,19 +4674,44 @@ const EmailTemplateCreate = () => {
                                                                 if (field.id === selectedFieldId && field.type === "divider") {
                                                                     return (
                                                                         <div key={field.id} className="form-builder-chaneging-wrap">
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Divider Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.dividerColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, dividerColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Divider Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.dividerColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.dividerColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, dividerColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Divider Backgroundcolor</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.dividerbgColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.dividerbgColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, dividerbgColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Width</label>
@@ -3986,19 +4755,25 @@ const EmailTemplateCreate = () => {
 
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.htmlColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, htmlColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.htmlColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.htmlColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, htmlColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Font Size (px)</label>
                                                                                 <input
@@ -4045,6 +4820,20 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="50%">50%</option>
                                                                                     <option value="75%">75%</option>
                                                                                 </select>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Height</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitheight}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitheight: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
                                                                                 <div style={{ marginTop: '10px' }}>
                                                                                     <label htmlFor="add">Content Type: </label>
                                                                                     <select
@@ -4141,18 +4930,245 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Background color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.splitbg}
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>  color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.splitColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.splitColor || '#000'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, splitColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Text Style</label>
+                                                                                <select
+                                                                                    value={field.splittext}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, splitbg: e.target.value } : f
+                                                                                                f.id === field.id ? { ...f, splittext: e.target.value } : f
                                                                                             )
                                                                                         );
                                                                                     }}
-                                                                                />
+                                                                                >
+                                                                                    <option value="left">TOP</option>
+                                                                                    <option value="center">Center</option>
+                                                                                    <option value="end">Bottom</option>
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div className='product-detalis-all btn-split'>
+                                                                                <h3>Add Button</h3>
+                                                                                <label className="custom-checkbox">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        checked={field.showbtnsplit || false}
+                                                                                        onChange={() => togglesplit(field.id)}
+                                                                                    />
+                                                                                    Button
+                                                                                </label>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Button Lable</label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        value={field.splitbtn}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtn: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Button Url</label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        value={field.splitbtnurl}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtnurl: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label> Button Background color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.splitbtnbg || '#FFFFFF'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.splitbtnbg || '#FFFFFF'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, splitbtnbg: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Font-Size</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitbtnfont}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtnfont: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label> Button color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.splitbtncolor || '#FFFFFF'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.splitbtncolor || '#FFFFFF'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, splitbtncolor: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Height</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitbtnheight}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtnheight: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Width</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitbtnwidth}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtnwidth: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Boder-Radious</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitbtnradious}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtnradious: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
+                                                                                        <label>Border Color</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.splitBorderColor || '#FFFFFF'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.splitBorderColor || '#FFFFFF'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, splitBorderColor: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label>Border Width (px)</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitBorderWidth}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitBorderWidth: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap'>
+                                                                                    <label>Border Style</label>
+                                                                                    <select
+                                                                                        value={field.splitBorderStyle}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitBorderStyle: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        <option value="solid">Solid</option>
+                                                                                        <option value="dashed">Dashed</option>
+                                                                                        <option value="dotted">Dotted</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Background color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.splitbg || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.splitbg || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, splitbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Padding</label>
@@ -4295,19 +5311,25 @@ const EmailTemplateCreate = () => {
                                                                                 />
                                                                                 <p style={{ color: '#A8A8A8' }} className='spacer-height-text'>Current Spacer Height: {field.spacerHeight}px</p>
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label> Spacer Background color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.spacerbg}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, spacerbg: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>  Background color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.spacerbg || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.spacerbg || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, spacerbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     );
@@ -4330,6 +5352,24 @@ const EmailTemplateCreate = () => {
                                                                                         );
                                                                                     }}
                                                                                 />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Text Align </label>
+                                                                                <select
+                                                                                    value={field.buttonaline}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, buttonaline: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select text align</option>
+                                                                                    <option value="left">left</option>
+                                                                                    <option value="center">center</option>
+                                                                                    <option value="right">right</option>
+                                                                                </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Font Size (px)</label>
@@ -4391,34 +5431,64 @@ const EmailTemplateCreate = () => {
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Background Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.buttonColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, buttonColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>  Background color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.buttonbgColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.buttonbgColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, buttonbgColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.buttonTextColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, buttonTextColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Button Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.buttonColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.buttonColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, buttonColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.buttonTextColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.buttonTextColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, buttonTextColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>
                                                                                     Button Url
@@ -4465,19 +5535,25 @@ const EmailTemplateCreate = () => {
                                                                                     placeholder=" Border-Radious"
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
-                                                                                <label>Border Color</label>
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={field.buttonBorderColor}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, buttonBorderColor: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Border Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.buttonBorderColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.buttonBorderColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, buttonBorderColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number' >
@@ -4606,7 +5682,9 @@ const EmailTemplateCreate = () => {
 
                                                                                                         </div>
                                                                                                         <div className='img-socal-costom'>
-                                                                                                            <img src={icon.src} alt={icon.name} style={{ width: "100%" }} />
+                                                                                                            <img src={icon.src} alt={icon.name}
+                                                                                                             style={{ width: "100%" }}
+                                                                                                              />
                                                                                                         </div>
                                                                                                     </div>
 
@@ -4631,20 +5709,65 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
 
                                                                             </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Background Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.socalIconbg}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.socalIconbg}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, socalIconbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Social Icon Gap (px) </label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.socalIcongap}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, socalIcongap: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Social Icon Height (px)</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={socalIconHeight}
-                                                                                    onChange={(e) => setSocalIconHeight(e.target.value)}
+                                                                                    value={field.socalIconHeight}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, socalIconHeight: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
                                                                                 />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Social Icon Width (px)</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={socalIconWidth}
-                                                                                    onChange={(e) => setSocalIconWidth(e.target.value)}
+                                                                                    value={field.socalIconWidth}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, socalIconWidth: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
                                                                                 />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
@@ -4733,7 +5856,7 @@ const EmailTemplateCreate = () => {
                                 </div>
                                 <img src={canclemail} alt="" />
                                 <h2>Warning</h2>
-                                <p>Are you sure you want to cansel this email?</p>
+                                <p>Are you sure you want to cancel this email?</p>
                                 <p className="save-btn cancel" onClick={handleContinue}>Cancel</p>
                             </div>
                         </div>

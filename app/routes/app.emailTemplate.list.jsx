@@ -16,6 +16,8 @@ import facebook from '../images/facebook.png';
 import instagram from '../images/instagram.png';
 import twitter from '../images/twitter.png';
 import plusicon from '../images/plusicon.png';
+import copyeddd from '../images/copyeddd.png';
+
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
@@ -34,7 +36,6 @@ export const loader = async ({ request }) => {
     console.log(shop);
 
     try {
-
         const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
             method: 'GET',
             headers: {
@@ -65,6 +66,8 @@ export default function EmailTemplate() {
         return 'Form' + Math.random().toString(36).substring(2, 15);
     };
     const [formsData, setFormsData] = useState([]);
+    const [newformsData, setNewFormsData] = useState([]);
+    const [current, setCurrent] = useState(1);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [formsPerPage] = useState(4);
@@ -72,23 +75,159 @@ export default function EmailTemplate() {
     const [previwPopup, setPreviwPopup] = useState(false);
     const [selectedForm, setSelectedForm] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [searchTempalte, setSearchTempalte] = useState('');
     const [deletePopup, setDeletePopup] = useState(false);
     const [formToDelete, setFormToDelete] = useState(null);
     const [showFormNames, setShowFormNames] = useState(false);
+    const [showtemplate, setShowTemplate] = useState(false);
     const [selectedFormName, setSelectedFormName] = useState('');
     const { shop } = useLoaderData() || {};
     const [isLoading, setIsLoading] = useState(false);
+    const [matchedData, setMatchedData] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    // const fetchForms = async () => {
+    //     try {
+    //         const response = await axios.get('https://hubsyntax.online/get/data');
+    //         const fetchedData = response.data.data || [];
+    //         // const filteredData = fetchedData.filter(form => form.shop === shop);
+
+    //         setFormsData(fetchedData);
+    //         console.log("Filtered data", fetchedData);
+    //     } catch (error) {
+    //         setError(`Error fetching forms: ${error.message}`);
+    //     }
+    // };
 
     const fetchForms = async () => {
         try {
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get('https://hubsyntax.online/get/base64');
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
 
             setFormsData(filteredData);
-            console.log("Filtered data", filteredData);
+            console.log("Filtered data", fetchedData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
+        }
+    };
+
+    const handlePreviw1 = async (form) => {
+        try {
+            setLoading(true);
+            setSelectedForm(form);
+            setPreviwPopup(!previwPopup);
+
+            const response = await axios.get('https://hubsyntax.online/get/data');
+            const fetchedData = response.data.data || [];
+
+            const matchedData = fetchedData.find(item => item.templateId === form.templateId);
+
+            if (matchedData) {
+                console.log("Matched data:", matchedData);
+                setMatchedData(matchedData);
+            } else {
+                console.log("No matching data found for templateId:", form.templateId);
+                setMatchedData(null);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+        } finally {
+
+            setLoading(false);
+        }
+    };
+
+    const handlePreviw = async (form) => {
+        try {
+            setLoading(true);
+
+            setSelectedForm(form);
+            setPreviwPopup(!previwPopup);
+
+            const response = await axios.get('https://hubsyntax.online/template/data');
+            const fetchedData = response.data.data || [];
+
+            const matchedData = fetchedData.find(item => item.templateId === form.templateId);
+
+            if (matchedData) {
+                console.log("Matched data:", matchedData);
+                setMatchedData(matchedData);
+            } else {
+                console.log("No matching data found for templateId:", form.templateId);
+                setMatchedData(null);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+        } finally {
+
+            setLoading(false);
+        }
+    };
+
+    const handleEditClick = async (form) => {
+        try {
+
+            const response = await axios.get('https://hubsyntax.online/get/data');
+            const fetchedData = response.data.data || [];
+
+            const matchedData = fetchedData.find(item => item.templateId === form.templateId);
+
+            if (matchedData) {
+                const updatedForm = {
+                    ...form,
+                    ...matchedData,
+                };
+
+                navigate('/app/emailTemplate/new', { state: { formData: updatedForm } });
+            } else {
+                console.error(`No matching template found for templateId: ${form.templateId}`);
+            }
+        } catch (error) {
+            console.error(`Error fetching data for template edit: ${error.message}`);
+        }
+    };
+
+    const tempalted = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('https://hubsyntax.online/template/image');
+            const fetchedData = response.data.data || [];
+            const reversedData = fetchedData.slice().reverse();
+            setNewFormsData(reversedData);
+            console.log("Filtered data fetchedData", fetchedData);
+        } catch (error) {
+            setError(`Error fetching forms: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTemplate = async (form) => {
+        try {
+
+            const response = await axios.get('https://hubsyntax.online/get/data');
+            const fetchedData = response.data.data || [];
+
+            const matchedData = fetchedData.find(item => item.templateId === form.templateId);
+
+            if (matchedData) {
+                console.log('Matched data:', matchedData, shop);
+
+                const payload = {
+                    ...matchedData,
+                    shop,
+                };
+
+                const sendResponse = await axios.post('https://hubsyntax.online/template/api', payload);
+                alert('Template copied successfully!');
+                console.log('Response from send API:', sendResponse.data);
+            } else {
+                console.log('No matching data found for templateId:', form.templateId);
+            }
+        } catch (error) {
+            console.error('Error sending template data:', error.message);
+            alert('Error sending template');
         }
     };
 
@@ -122,26 +261,56 @@ export default function EmailTemplate() {
     const handleCopyTemplate = async (template) => {
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
 
-        const copiedForm = {
-            ...template,
-            templateId: generateUniqueFormId(),
-            formId: generateUniqueFormId(),
-            title: `Copy of ${template.title}`,
-            createdAt: timestamp,
-            fields: template.fields.map((field) => ({
-                ...field,
-                id: generateUniqueFormId(),
-            })),
-        };
-
-        delete copiedForm._id;
-
         try {
-            const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
-            console.log('Response from server:', response);
-            if (response.status === 201) {
-                setFormsData((prevForms) => [...prevForms, response.data]);
-                alert('Template copied successfully!');
+            const [base64Response, dataResponse] = await Promise.all([
+                axios.get('https://hubsyntax.online/get/base64'),
+                axios.get('https://hubsyntax.online/get/data'),
+            ]);
+
+            const base64Forms = base64Response.data.data || [];
+            const dataForms = dataResponse.data.data || [];
+
+            console.log('Fetched base64 Forms:', base64Forms);
+            console.log('Fetched Data Forms:', dataForms);
+
+            const base64Form = base64Forms.find(form => form.templateId === template.templateId);
+            const dataForm = dataForms.find(form => form.templateId === template.templateId);
+
+            if (base64Form && dataForm) {
+                console.log('Matching form found in both responses:', dataForm);
+
+                const copiedForm = {
+                    ...dataForm,
+                    templateId: generateUniqueFormId(),
+                    formId: generateUniqueFormId(),
+                    title: `Copy of ${dataForm.title}`,
+                    createdAt: timestamp,
+                    fields: Array.isArray(dataForm.fields)
+                        ? dataForm.fields.map((field) => ({
+                            ...field,
+                            id: generateUniqueFormId(),
+                        }))
+                        : [],
+                };
+
+                delete copiedForm._id;
+
+                const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
+
+                console.log('Response from /copy-email API:', response);
+
+                if (response.status === 201) {
+                    setFormsData((prevForms) => [...prevForms, response.data]);
+                    alert('Template copied successfully!');
+                }
+            } else {
+                if (!base64Form) {
+                    console.error('Template ID not found in base64 response.');
+                }
+                if (!dataForm) {
+                    console.error('Template ID not found in data response.');
+                }
+                alert('No matching template found in both responses.');
             }
         } catch (error) {
             console.error('Error copying template:', error.message);
@@ -150,13 +319,23 @@ export default function EmailTemplate() {
     };
 
 
+
     useEffect(() => {
         fetchForms();
+    }, []);
+
+    useEffect(() => {
+        tempalted();
     }, []);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+    const handlePage = (page) => {
+        setCurrent(page);
+    };
+
 
     const filteredForms = formsData.filter((form) =>
         form.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -166,6 +345,16 @@ export default function EmailTemplate() {
     const currentForms = filteredForms.slice(
         (currentPage - 1) * formsPerPage,
         currentPage * formsPerPage
+    );
+
+    const filteredtemplate = newformsData.filter((form) =>
+        form.title.toLowerCase().includes(searchTempalte.toLowerCase())
+    );
+    const total = Math.ceil(filteredtemplate.length / formsPerPage);
+
+    const currenttemplate = filteredtemplate.slice(
+        (current - 1) * formsPerPage,
+        current * formsPerPage
     );
 
     // const getEmbedUrl = (url) => {
@@ -191,11 +380,12 @@ export default function EmailTemplate() {
                     borderColor: field.headingBorderColor,
                     width: `${field.bannerImageWidth}%`,
                     height: field.bannerImageHeight || '400px',
-                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
                     opacity: field.headeropacity || '',
                 }}>
                     <div style={{
-                        position: 'absolute', top: '40%',
+
                         width: '100%',
                         textAlign: field.headingTextAlign || '',
                         padding: `${field.headingPadding}px`,
@@ -206,11 +396,12 @@ export default function EmailTemplate() {
                             letterSpacing: `${field.headingLetterSpacing}px`,
                             textAlign: field.headingTextAlign ? field.headingTextAlign : '',
                             fontWeight: field.headingFontWeight,
+                            lineHeight: '48px'
                         }}>
                             {field.headingText}</h1>
 
                         {(field.editorContent) && (
-                            <div style={{ fontSize: '20px', margin: '20px 0' }}
+                            <div style={{ fontSize: `${field.headingsubheading}px`, color: field.subheadingColor, margin: '20px 0' }}
                                 className="heading-editor-content"
                                 dangerouslySetInnerHTML={{
                                     __html: field.editorContent
@@ -258,28 +449,43 @@ export default function EmailTemplate() {
 
                 </div>;
             case 'divider':
-                return <hr style={{ borderColor: field.dividerColor || '', width: `${field.dividerWidth || 100}%`, height: `${field.dividerheight || 1}px` }} />;
+                return (
+                    <div style={{ backgroundColor: field.dividerbgColor || 'transparent', width: '100%' }}>
+                        <hr
+                            style={{
+                                backgroundColor: field.dividerbgColor || 'transparent',
+                                borderColor: field.dividerColor || 'transparent',
+                                width: `${field.dividerWidth || 100}%`,
+                                height: `${field.dividerheight || 1}px`,
+                                margin: 'auto'
+                            }}
+                        />
+                    </div>
+                )
+
             case 'button':
                 return (
-                    <a href={field.buttonUrll} target='_blank'>
-                        <button
-                            style={{
-                                backgroundColor: field.buttonColor || '#008CBA',
-                                padding: `${field.buttonPadding}px` || '10px 20px',
-                                height: `${field.buttonHeight}px` || '10px',
-                                width: `${field.buttonWidth}px`,
-                                fontSize: `${field.buttonFontSize}px` || 'Button',
-                                color: field.buttonTextColor,
-                                borderWidth: `${field.buttonBorderWidth}px`,
-                                borderStyle: field.buttonBorderStyle,
-                                borderColor: field.buttonBorderColor,
-                                letterSpacing: `${field.buttonLetterSpacing}px`,
-                                borderRadius: `${field.buttonradious}px`
-                            }}
-                        >
-                            {field.buttonLabel || ''}
-                        </button>
-                    </a>
+                    <div style={{ backgroundColor: field.buttonbgColor, textAlign: field.buttonaline }}>
+                        <a href={field.buttonUrll} target='_blank'>
+                            <button
+                                style={{
+                                    backgroundColor: field.buttonColor || '#008CBA',
+                                    padding: `${field.buttonPadding}px` || '10px 20px',
+                                    height: `${field.buttonHeight}px` || '10px',
+                                    width: `${field.buttonWidth}px`,
+                                    fontSize: `${field.buttonFontSize}px` || 'Button',
+                                    color: field.buttonTextColor,
+                                    borderWidth: `${field.buttonBorderWidth}px`,
+                                    borderStyle: field.buttonBorderStyle,
+                                    borderColor: field.buttonBorderColor,
+                                    letterSpacing: `${field.buttonLetterSpacing}px`,
+                                    borderRadius: `${field.buttonradious}px`
+                                }}
+                            >
+                                {field.buttonLabel || ''}
+                            </button>
+                        </a>
+                    </div>
                 );
             case 'product':
                 return (
@@ -301,7 +507,7 @@ export default function EmailTemplate() {
                                 }}
                             >
                                 {field.products.map((product, index) => (
-                                    <div key={index} className="product-item">
+                                    <div key={index} className="product-item" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
                                         {product.image ? (
                                             <div className="images-gallery">
@@ -317,7 +523,7 @@ export default function EmailTemplate() {
                                         <div>
                                             <h4 style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</h4>
                                             {field.price && (
-                                                <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.price}</p>
+                                                <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.price}</p>
                                             )}
                                         </div>
                                         {field.showbtnn && (
@@ -354,6 +560,7 @@ export default function EmailTemplate() {
                     </div>
 
                 );
+
             case 'images':
                 return <div style={{
                     textAlign: field.imgTextAlign ? field.imgTextAlign : '',
@@ -369,37 +576,73 @@ export default function EmailTemplate() {
                 </div>;
             case 'richtext':
                 return <div>
-                    <div style={{ textAlign: field.richTextAlign }} dangerouslySetInnerHTML={{ __html: field.content }} />
+                    <div style={{
+                        textAlign: field.richTextAlign || '',
+                        fontSize: `${field.richFontsize}px`,
+                        color: field.richtextcolor,
+                        backgroundColor: field.richbgcolor,
+                        paddingLeft: `${field.richleftPadding}px`,
+                        paddingRight: `${field.richleftPadding}px`,
+                        paddingTop: `${field.richtopPadding}px`,
+                        paddingBottom: `${field.richtopPadding}px`,
+                        display: 'flow-root'
+                    }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
             case 'Multicolumn':
                 const columns = parseInt(field.columnCount);
                 const columnsPerRow = field.columnsPerRow || 1;
                 return (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
-                        gap: '10px',
-                    }}>
-                        {field.columnData.map((column, index) => (
-                            <div
-                                key={column._id}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    fontSize: `${field.fontsizeMulticolumn}px`,
-                                    borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
-                                    borderStyle: field.MulticolumnbtnBorderStyle,
-                                    borderColor: field.MulticolumnbtnBorderColor,
-                                    padding: `${field.MulticolumnPadding}px`
-                                }}
-                            >
-                                {column.image && (
-                                    <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
-                                )}
+                    <div style={{ display: 'flow-root', width: '100%' }}>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
+                            gap: `${field.Multigap}px`,
+                            padding: `${field.MultiPadding}px`,
+                            textAlign: 'center',
+                            backgroundColor: field.Multibgcolor,
+                            color: field.MultiColor
+                        }}>
+                            {field.columnData.map((column, index) => (
+                                <div
+                                    key={column._id}
+                                    style={{
+                                        fontSize: `${field.fontsizeMulticolumn}px`,
+                                        borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
+                                        borderStyle: field.MulticolumnbtnBorderStyle,
+                                        borderColor: field.MulticolumnbtnBorderColor,
+                                        padding: `${field.MulticolumnPadding}px`,
+                                        backgroundColor: field.Multicolumnbgcolor,
+                                        textAlign: field.Multitext,
+                                        color: field.MultiColor
+                                    }}
+                                >
+                                    {column.image && (
+                                        <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
+                                    )}
 
-                                <div dangerouslySetInnerHTML={{ __html: column.content }} />
-                            </div>
-                        ))}
+                                    <div dangerouslySetInnerHTML={{ __html: column.content }} />
+
+                                    {column.isVisible && <a href={column.Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                        <button style={{
+                                            marginTop: "20px",
+                                            backgroundColor: field.Multibtnbg,
+                                            borderWidth: `${field.MultibtnBorderWidth}px`,
+                                            borderStyle: field.MultibtnBorderStyle,
+                                            borderColor: field.MultibtnBorderColor,
+                                            width: `${field.Multibtnweight || '100'}px`,
+                                            height: `${field.Multibtnheight || '40'}px`,
+                                            color: field.Multibtncolor,
+                                            borderRadius: `${field.Multibtnradious}px`,
+                                            fontSize: `${field.Multibtnfont || '14'}px`
+                                        }}
+                                        >
+                                            {column.Multibtnlable || 'Click'} </button>
+                                    </a>}
+
+                                </div>
+
+                            ))}
+                        </div>
                     </div>
                 );
 
@@ -426,7 +669,6 @@ export default function EmailTemplate() {
                         style={{
                             height: `${field.spacerHeight || 20}px`,
                             backgroundColor: field.spacerbg || '#EDEDED',
-                            padding: `${field.splitPadding || 0}px 0`,
                         }}
                     ></div>
                 );
@@ -437,55 +679,80 @@ export default function EmailTemplate() {
                             width: field.width,
                             backgroundColor: field.splitbg,
                             padding: `${field.splitPadding}px`,
-                            height: '300px',
+                            height: `${field.splitheight}px`,
                             display: 'flex',
                             position: 'relative',
                             textAlign: field.splitTextAlin,
-                            float: 'inline-start'
+                            float: 'inline-start',
+                            color: field.splitColor,
                         }}
                     >
-
-                        {field.value.startsWith("data:image/") ? (
+                        {field.add === 'image' ? (
                             <img
                                 src={field.value}
                                 alt="Uploaded Preview"
                                 style={{ width: '100%', height: 'auto' }}
                             />
                         ) : (
-                            <p
-                                style={{ position: 'absolute', top: '40%' }}
-                                dangerouslySetInnerHTML={{ __html: field.value || 'Add text...' }}
-                            />
+                            <div style={{ width: '100%', display: 'flex', alignItems: field.splittext === 'left' ? 'flex-start' : field.splittext === 'center' ? 'center' : 'flex-end' }}>
+                                <div style={{ width: '100%' }}>
+                                    <div style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value  }} />
+                                    <div >
+                                        {field.showbtnsplit && (
+                                            <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                                <button style={{
+                                                    marginTop: "20px",
+                                                    backgroundColor: field.splitbtnbg,
+                                                    fontSize: `${field.splitbtnfont}px`,
+                                                    color: field.splitbtncolor,
+                                                    height: `${field.splitbtnheight}px`,
+                                                    width: `${field.splitbtnwidth}px`,
+                                                    borderRadius: `${field.splitbtnradious}px`,
+                                                    borderWidth: `${field.splitBorderWidth}px`,
+                                                    borderStyle: field.splitBorderStyle,
+                                                    borderColor: field.splitBorderColor,
+                                                }}>
+                                                    {field.splitbtn}</button>
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
 
+                            </div>
                         )}
-
                     </div>
                 );
             case 'socalicon':
                 return (
-                    <div style={{ textAlign: field.socaliconTextAlign, padding: `${field.socalIconPadding}px` }} >
-                        <div className="form-builder-icon" style={{ display: 'inline-flex', gap: '5px' }}>
-                            {field.value && field.value.facebook && !field.value.facebook.isHidden && (
-                                <a href={field.value.facebook.url} target="_blank" rel="noopener noreferrer">
-                                    <img src={facebook} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
-                                </a>
+                    <div style={{ textAlign: field.socaliconTextAlign, backgroundColor: field.socalIconbg, padding: `${field.socalIconPadding}px` }} >
+                        <div className="form-builder-icon">
+                            {field.value && field.value.facebook && field.value.facebook.url && !field.value.facebook.isHidden && (
+                                <div>
+                                    <a style={{ paddingRight: `${field.socalIcongap}px` }} href={field.value.facebook.url} target="_blank" rel="noopener noreferrer">
+                                        <img src={facebook} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                                    </a>
+                                </div>
                             )}
-                            {field.value && field.value.twitter && !field.value.twitter.isHidden && (
-                                <a href={field.value.twitter.url} target="_blank" rel="noopener noreferrer">
-                                    <img src={twitter} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
-                                </a>
+                            {field.value && field.value.twitter && field.value.twitter.url && !field.value.twitter.isHidden && (
+                                <div>
+                                    <a style={{ paddingRight: `${field.socalIcongap}px` }} href={field.value.twitter.url} target="_blank" rel="noopener noreferrer">
+                                        <img src={twitter} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                                    </a>
+                                </div>
                             )}
-                            {field.value && field.value.instagram && !field.value.instagram.isHidden && (
-                                <a href={field.value.instagram.url} target="_blank" rel="noopener noreferrer">
-                                    <img src={instagram} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
-                                </a>
+                            {field.value && field.value.instagram && field.value.instagram.url && !field.value.instagram.isHidden && (
+                                <div>
+                                    <a style={{ paddingRight: `${field.socalIcongap}px` }} href={field.value.instagram.url} target="_blank" rel="noopener noreferrer">
+                                        <img src={instagram} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                                    </a>
+                                </div>
                             )}
                             {field.customIcons && field.customIcons.length > 0 && (
                                 <div>
                                     {field.customIcons
                                         .filter((icon) => !icon.isHidden)
                                         .map((icon, index) => (
-                                            <a key={index} href={icon.url} target="_blank" rel="noopener noreferrer">
+                                            <a style={{ paddingRight: `${field.socalIcongap}px` }} key={index} href={icon.url} target="_blank" rel="noopener noreferrer">
                                                 <img
                                                     src={icon.src}
                                                     alt={`custom-icon-${index}`}
@@ -503,26 +770,32 @@ export default function EmailTemplate() {
         }
     };
 
-    const handlePreviw = (form) => {
-        setSelectedForm(form);
-        setPreviwPopup(!previwPopup);
-    }
-
-    const handleEditClick = (form) => {
-        navigate('/app/emailTemplate/new', { state: { formData: form } });
-    };
-
     const handleToggleFormNames = () => {
         setShowFormNames(!showFormNames);
+    };
+
+    const handleToggleTemplate = () => {
+        setShowTemplate(!showtemplate);
     };
 
     const handleSelectFormName = (title) => {
         setSelectedFormName(title);
         setShowFormNames(false);
     };
+
+    const handleSelectTemplate = (title) => {
+        setSelectedFormName(title);
+        setShowTemplate(false);
+    };
+
     const handleSelectAllForms = () => {
         setSelectedFormName(null);
         setShowFormNames(false);
+    };
+
+    const handleSelectAlltemplate = () => {
+        setSelectedFormName(null);
+        setShowTemplate(false);
     };
 
     const handleCreateTemplate = () => {
@@ -531,7 +804,6 @@ export default function EmailTemplate() {
             navigate('/app/emailTemplate/new');
         }, 1000);
     };
-
 
     return (
         <>
@@ -564,150 +836,51 @@ export default function EmailTemplate() {
                     </div>
                 </div>
             )}
-            <div className="email-template-section">
-
-                <div className='container'>
-                    <div className="email-tempalte-your">
-                        <div className="email-tempalte-wrap">
-                            <div className="email-template-h2">
-                                <h2>Your Email template</h2>
-                            </div>
-                            <div className="email-templete-search-bar">
-                                <div className='create-email-templates' onClick={handleCreateTemplate}>
-                                    <img src={plusicon} alt="" />
-                                    <p>Create blank email</p>
+            {loading ? (
+                <div className="skeleton-wrapper fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
                                 </div>
-                                <div className="form-builder-search-bar">
-                                    <input id="search" type="search" placeholder="Search" value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)} />
-                                    <div className="form_build_icon_search">
-                                        <img src={search12} alt="" />
-                                    </div>
-                                </div>
-                                <div className="show_forms_all">
-                                    <span className="name_build">
-                                        Short by :
-                                        <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleFormNames}>
-                                            Email name <span className="form-short">
-                                                <img src={down} alt="" />
-                                            </span>
-                                        </span>
-                                    </span>
-                                    <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
-                                        <div onClick={handleSelectAllForms}>All Templates</div>
-                                        {currentForms.map(form => (
-                                            <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
-                                                {form.title}
-                                            </div>
-                                        ))}
-                                    </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="email-template-show">
-                            <div className="email-template-show-wreped">
-                                {filteredForms.length === 0 ? (
-                                    <p>No forms available.</p>
-                                ) : (
-                                    currentForms.filter(form => selectedFormName ? form.title === selectedFormName : true).map((form) => (
-                                        <div key={form.createdAt} className="email-templates">
-                                            <div className='email-tempalte-text'
-                                                style={{
-                                                    width: form.styles?.width || '100%',
-                                                    borderRadius: `${form.styles?.borderRadious}px` || 5,
-                                                    backgroundColor: form.styles?.backgroundColor || '#fff',
-                                                    padding: `${form.styles?.templatePadding}px`,
-                                                    textAlign: form.styles?.textAlign || 'left',
-                                                    backgroundImage: form.styles?.backgroundImage
-                                                        ? `url(${form.styles.backgroundImage})`
-                                                        : '',
-                                                    backgroundRepeat: 'no-repeat',
-                                                    backgroundSize: 'cover',
-                                                    fontFamily: form.styles?.fontFamily || ''
-                                                }}
-                                            >
-                                                <div>
-
-                                                    {form.fields.map((field) => (
-                                                        <div className='form-builder-template-email ' key={field.name}>{renderField(field)}</div>
-                                                    ))}
-                                                </div>
-                                                <div className='email-title-t'>
-                                                    <h3>{form.title}</h3>
-                                                    <p> {form.createdAt}</p>
-                                                </div>
-                                                <div className='email-templete-icon-wrp'>
-                                                    <div className="email-template-icons-all" >
-                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
-                                                            <img src={copy12} alt="" />
-                                                        </div>
-                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleEditClick(form)}>
-                                                            <img src={oplus} alt="" />
-                                                        </div>
-                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => openDeletePopup(form.templateId)}>
-                                                            <img src={rplus} alt="" />
-                                                        </div>
-                                                        <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw(form)}>
-                                                            <img src={yplus} alt="" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    ))
-                                )}
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div className="pagination">
-                            <nav>
-                                <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
-                                    <li>
-                                        <button
-                                            type="button"
-                                            disabled={currentPage === 1}
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                        >
-                                            <img src={left} alt="Previous" />
-                                        </button>
-                                    </li>
-                                    {Array.from({ length: totalPages }, (_, index) => (
-                                        <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
-                                            <button
-                                                type="button"
-                                                onClick={() => handlePageChange(index + 1)}
-                                                className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
-                                            >
-                                                {index + 1}
-                                            </button>
-                                        </li>
-                                    ))}
-                                    <li>
-                                        <button
-                                            type="button"
-                                            disabled={currentPage === totalPages}
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                        >
-                                            <img src={right} alt="Next" />
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
                         </div>
                     </div>
-                    {/* <div className='email-templete-use-add'>
+                </div>
+            ) : (
+                <div className="email-template-section email-templates-wredd">
+
+                    <div className='container'>
                         <div className="email-tempalte-your">
                             <div className="email-tempalte-wrap">
                                 <div className="email-template-h2">
-                                    <h2>Saved templates</h2>
+                                    <h2>Your Email template</h2>
                                 </div>
                                 <div className="email-templete-search-bar">
-
+                                    <div className='create-email-templates' onClick={handleCreateTemplate}>
+                                        <img src={plusicon} alt="" />
+                                        <p>Create blank email</p>
+                                    </div>
                                     <div className="form-builder-search-bar">
-                                        <input id="search" type="search" placeholder="Search" />
+                                        <input id="search" type="search" placeholder="Search" value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)} />
                                         <div className="form_build_icon_search">
                                             <img src={search12} alt="" />
                                         </div>
@@ -715,85 +888,325 @@ export default function EmailTemplate() {
                                     <div className="show_forms_all">
                                         <span className="name_build">
                                             Short by :
-                                            <span style={{ fontWeight: 700, cursor: 'pointer' }}>
+                                            <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleFormNames}>
                                                 Email name <span className="form-short">
                                                     <img src={down} alt="" />
                                                 </span>
                                             </span>
                                         </span>
-                                        <div className='form-names-list'>
-                                            <div >All Forms</div>
-
+                                        <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
+                                            <div onClick={handleSelectAllForms}>All Templates</div>
+                                            {currentForms.map(form => (
+                                                <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
+                                                    {form.title}
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
-                                    <div className='create-email-templates'>
-                                        <img src={plusicon} alt="" />
-                                        <p>Create blank email</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="email-template-show">
+                                <div className="email-template-show-wreped">
+                                    {filteredForms.length === 0 ? (
+                                        <p>No template available.</p>
+                                    ) : (
+                                        currentForms
+                                            .filter(form => selectedFormName ? form.title === selectedFormName : true)
+                                            .map((form) => (
+                                                <div
+                                                    key={form.createdAt}
+                                                    className="email-templates"
+                                                    style={{
+                                                        backgroundColor: form.styles?.backgroundColor || '',
+                                                        backgroundImage: form.styles?.backgroundImage ? `url(${form.styles.backgroundImage})` : '',
+                                                        borderRadius: form.styles?.borderRadius || '',
+                                                        width: form.styles?.width || '100%',
+                                                        padding: form.styles?.templatePadding || '0',
+                                                        textAlign: form.styles?.textAlign || 'left',
+                                                        fontFamily: form.styles?.fontFamily || 'Arial',
+                                                    }}
+                                                >
+                                                    <div className='email-tempalte-text'>
+                                                        <div>
+                                                            {form.fields?.map((field) => (
+                                                                <div key={field.id}>{renderField(field)}</div>
+                                                            ))}
+                                                        </div>
+                                                        <div className='email-title-t'>
+                                                            <h3>{form.title}</h3>
+                                                            <h3>{form.createdAt}</h3>
+                                                        </div>
+                                                        <div className='email-templete-icon-wrp'>
+                                                            <div className="email-template-icons-all">
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleTemplate(form)}>
+                                                                    <img src={copyeddd} alt="" />
+                                                                </div>
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
+                                                                    <img src={copy12} alt="" />
+                                                                </div>
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleEditClick(form)}>
+                                                                    <img src={oplus} alt="" />
+                                                                </div>
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => openDeletePopup(form.templateId)}>
+                                                                    <img src={rplus} alt="" />
+                                                                </div>
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw1(form)}>
+                                                                    <img src={yplus} alt="" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                    )}
+                                </div>
+                            </div>
+                            <div className="pagination">
+                                <nav>
+                                    <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={currentPage === 1}
+                                                onClick={() => handlePageChange(currentPage - 1)}
+                                            >
+                                                <img src={left} alt="Previous" />
+                                            </button>
+                                        </li>
+                                        {Array.from({ length: totalPages }, (_, index) => (
+                                            <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handlePageChange(index + 1)}
+                                                    className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            </li>
+                                        ))}
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={currentPage === totalPages}
+                                                onClick={() => handlePageChange(currentPage + 1)}
+                                            >
+                                                <img src={right} alt="Next" />
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
-                    </div> */}
-                </div>
-                {deletePopup && (
-                    <div className="form-builder-delete-popup">
-                        <div className="form-builder-create section-wrp">
-                            <div className="form-builder-create-wrped popup">
-                                <div className="form-builder-delete-popup-pop">
-                                    <div className="form_builder_delete_text_flex">
-                                        <div className="form_builder_delete_text">
-                                            <p>Are you sure you want to delete?</p>
-                                        </div>
-                                        <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
-                                            <img src={cancle1} alt="Cancel" />
-                                        </div>
+                        <div className='email-templete-use-add'>
+                            <div className="email-tempalte-your">
+                                <div className="email-tempalte-wrap">
+                                    <div className="email-template-h2">
+                                        <h2>Saved templates</h2>
                                     </div>
-                                    <div className="form_delete_btn">
-                                        <div className="form_delete first" onClick={handleDeleteForm}>
-                                            Delete
+                                    <div className="email-templete-search-bar">
+
+                                        <div className="form-builder-search-bar">
+                                            <input id="search" type="search" placeholder="Search" value={searchTempalte}
+                                                onChange={(e) => setSearchTempalte(e.target.value)} />
+                                            <div className="form_build_icon_search">
+                                                <img src={search12} alt="" />
+                                            </div>
                                         </div>
-                                        <div className="form_delete second" onClick={closeDeletePopup}>
-                                            Cancel
+
+                                        <div className="show_forms_all">
+                                            <span className="name_build">
+                                                Short by :
+                                                <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleTemplate}>
+                                                    Email name <span className="form-short">
+                                                        <img src={down} alt="" />
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            <div className={`form-names-list ${showtemplate ? 'show' : ''}`}>
+                                                <div onClick={handleSelectAlltemplate}>All Templates</div>
+                                                {currenttemplate.map(form => (
+                                                    <div key={form.id} onClick={() => handleSelectTemplate(form.title)}>
+                                                        {form.title}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {/* <div className='create-email-templates' onClick={handleCreateTemplate}>
+                                        <img src={plusicon} alt="" />
+                                        <p>Create blank email</p>
+                                    </div> */}
+                                    </div>
+                                </div>
+                                <div className="email-template-show">
+                                    <div className="email-template-show-wreped">
+                                        {filteredtemplate.length === 0 ? (
+                                            <p>No template available.</p>
+                                        ) : (
+                                            currenttemplate.filter(form => selectedFormName ? form.title === selectedFormName : true).map((form) => (
+                                                <div key={form.createdAt} className="email-templates">
+                                                    <div className='email-tempalte-text'
+                                                    >
+                                                        <div>
+                                                            {form.base64Image && (
+                                                                <img
+                                                                    src={`data:image/jpeg;base64,${form.base64Image}`}
+                                                                    alt={`${form.title} preview`}
+                                                                    style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <div className='email-title-t'>
+                                                            <h3>{form.title}</h3>
+                                                            <h3>{form.createdAt}</h3>
+                                                        </div>
+                                                        <div className='email-templete-icon-wrp'>
+                                                            <div className="email-template-icons-all" >
+                                                                {/* <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleTemplate(form)}>
+                                                                    <img src={copyeddd} alt="" />
+                                                                </div> */}
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw(form)}>
+                                                                    <img src={yplus} alt="" />
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="pagination">
+                                    <nav>
+                                        <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    disabled={current === 1}
+                                                    onClick={() => handlePage(current - 1)}
+                                                >
+                                                    <img src={left} alt="Previous" />
+                                                </button>
+                                            </li>
+                                            {Array.from({ length: total }, (_, index) => (
+                                                <li key={index + 1} aria-current={current === index + 1 ? 'page' : undefined}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handlePage(index + 1)}
+                                                        className={`${current === index + 1 ? 'active' : 'inactive'}`}
+                                                    >
+                                                        {index + 1}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    disabled={currentPage === total}
+                                                    onClick={() => handlePage(currentPage + 1)}
+                                                >
+                                                    <img src={right} alt="Next" />
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {deletePopup && (
+                        <div className="form-builder-delete-popup">
+                            <div className="form-builder-create section-wrp">
+                                <div className="form-builder-create-wrped popup">
+                                    <div className="form-builder-delete-popup-pop">
+                                        <div className="form_builder_delete_text_flex">
+                                            <div className="form_builder_delete_text">
+                                                <p>Are you sure you want to delete?</p>
+                                            </div>
+                                            <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
+                                                <img src={cancle1} alt="Cancel" />
+                                            </div>
+                                        </div>
+                                        <div className="form_delete_btn">
+                                            <div className="form_delete first" onClick={handleDeleteForm}>
+                                                Delete
+                                            </div>
+                                            <div className="form_delete second" onClick={closeDeletePopup}>
+                                                Cancel
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {previwPopup && selectedForm && (
-                    <div className='email-template-reviw-popup'>
-                        <div className='email-tempalte-textt'
-                            style={{
-                                width: selectedForm.styles?.width || '100%',
-                                backgroundColor: selectedForm.styles?.backgroundColor || '#fff',
-                                borderRadius: `${selectedForm.styles?.borderRadious}px` || 5,
-                                padding: `${selectedForm.styles?.templatePadding}px`,
-                                textAlign: selectedForm.styles?.textAlign || 'left',
-                                backgroundImage: selectedForm.styles?.backgroundImage
-                                    ? `url(${selectedForm.styles.backgroundImage})`
-                                    : '',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundSize: 'cover',
-                                fontFamily: selectedForm.styles?.fontFamily || ''
-                            }}
-                        >
-                            <div className='form-builder-icon-deleted' onClick={() => setPreviwPopup(false)}>
-                                <img src={cancle1} alt="" />
-                            </div>
-                            <div>
-                                {selectedForm.fields.map((field) => (
-                                    <div className='form-builder-template-email' key={field.name}>{renderField(field)}</div>
-                                ))}
-                            </div>
+                    {previwPopup && selectedForm && (
+                        <div className='email-template-reviw-popup emial-wrap'>
+
+                            {loading ? (
+                                <div className="skeleton-wrapper forms fade-in">
+                                    <div className="container skeleton-wred">
+                                        <div className="skeleton-wrp">
+                                            <div className="skeleton-wrp-left">
+                                                <div className="skeleton skeleton-header"></div>
+                                                <div className="skeleton-wrp-left-para">
+                                                    <div className="skeleton skeleton-paragraph"></div>
+                                                    <div className="skeleton skeleton-paragraph"></div>
+                                                </div>
+                                                <div className="skeleton-wrp-left-para">
+                                                    <div className="skeleton skeleton-paragraph"></div>
+                                                    <div className="skeleton skeleton-paragraph "></div>
+                                                </div>
+                                            </div>
+                                            <div className="skeleton-wrp-right">
+                                                <div className="skeleton-wrp-left-para right">
+                                                    <div className="skeleton skeleton-paragraph"></div>
+                                                    <div className="skeleton skeleton-paragraph two"></div>
+                                                </div>
+                                                <div className="skeleton-wrp-left-para right">
+                                                    <div className="skeleton skeleton-paragraph"></div>
+                                                    <div className="skeleton skeleton-paragraph two"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className='email-tempalte-textt'
+                                    style={{
+                                        width: matchedData?.styles?.width,
+                                        backgroundColor: matchedData?.styles?.backgroundColor || '#fff',
+                                        borderRadius: `${matchedData?.styles?.borderRadius}px` || 5,
+                                        padding: `${matchedData?.styles?.templatePadding}px`,
+                                        textAlign: matchedData?.styles?.textAlign || 'left',
+                                        backgroundImage: matchedData?.styles?.backgroundImage
+                                            ? `url(${matchedData?.styles.backgroundImage})`
+                                            : '',
+                                        backgroundRepeat: 'no-repeat',
+                                        backgroundSize: 'cover',
+                                        fontFamily: matchedData?.styles?.fontFamily || ''
+                                    }}
+                                >
+                                    <div className='form-builder-icon-deleted' onClick={() => setPreviwPopup(false)}>
+                                        <img src={cancle1} alt="" />
+                                    </div>
+                                    <div>
+                                        {matchedData?.fields?.map((field) => (
+                                            <div className='form-builder-template-email' key={field.name}>
+                                                {renderField(field)}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
         </>
     );
 }

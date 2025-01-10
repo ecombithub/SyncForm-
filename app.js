@@ -3,27 +3,15 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
+import sharp from 'sharp';
+
 const app = express();
 const port = 4001;
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 50 * 1024 * 1024 },
-});
-
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+import fs from 'fs';
+import path from 'path';
 app.use(cors());
 
-const mongoUri = 'mongodb+srv://info:8HhuZSfsVy7clyTN@cluster0.a86kc.mongodb.net/form?retryWrites=true&w=majority&appName=Cluster0';
+const mongoUri = 'mongodb://info:8HhuZSfsVy7clyTN@cluster0-shard-00-00.a86kc.mongodb.net:27017,cluster0-shard-00-01.a86kc.mongodb.net:27017,cluster0-shard-00-02.a86kc.mongodb.net:27017/form?ssl=true&replicaSet=atlas-gb66eq-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(mongoUri)
   .then(() => {
@@ -32,6 +20,29 @@ mongoose.connect(mongoUri)
   .catch(err => {
     console.error('Error connectingcd  to MongoDB:', err);
   });
+
+
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, 'uploads', 'images');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueSuffix);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const formCreateSchema = new mongoose.Schema({
   formId: { type: String, required: true },
@@ -65,13 +76,13 @@ const formCreateSchema = new mongoose.Schema({
     buttonBorderColor: { type: String, required: false },
     buttonBorderWidth: { type: String, required: false },
     buttonBorderStyle: { type: String, required: false },
-    linktext: { type: String,required: false},
-    linkUrl: { type: String,required: false},
-    linkTarget: { type: String,required: false},
-    linkaline: { type: String,required: false},
-    min: { type: String,required: false},
-    max: { type: String,required: false},
-    step: { type: String,required: false},
+    linktext: { type: String, required: false },
+    linkUrl: { type: String, required: false },
+    linkTarget: { type: String, required: false },
+    linkaline: { type: String, required: false },
+    min: { type: String, required: false },
+    max: { type: String, required: false },
+    step: { type: String, required: false },
     btnradious: { type: String, required: false },
     btncolor: { type: String, required: false },
     styles: {
@@ -102,12 +113,13 @@ const formCreateSchema = new mongoose.Schema({
     inputstyle: { type: String, default: 'solid' },
     inputwidth: { type: String, default: '1' },
     inputborderColor: { type: String, default: 'blue' },
+    inputBgColor: { type: String, default: '' },
     labelColor: { type: String, default: 'blue' },
     inputGap: { type: String, default: '10' },
     opacityForm: { type: String, default: '1' },
     textHeading: { type: String, default: '' },
     colorHeading: { type: String, default: '' },
- 
+
   },
   submissionOption: { type: String, required: true },
   thankYouTimer: { type: Number },
@@ -162,12 +174,17 @@ const shopDetailsSchema = new mongoose.Schema({
 });
 
 const ShopDetails = mongoose.model('ShopDetails', shopDetailsSchema);
+
 const columnSchema = new mongoose.Schema({
   columnIndex: { type: Number, required: false },
   image: { type: String, required: false },
-  content: { type: String, required: false }
+  content: { type: String, required: false },
+  isVisible: { type: Boolean, default: false },
+  Multibtnlable: { type: String, default: 'Shop Now' },
+  Multibtnurl: { type: String, default: false },
 });
-const EmailTemplats = new mongoose.Schema({
+
+const emailTemplateSchema = new mongoose.Schema({
   templateId: { type: String, required: true },
   shop: { type: String, required: true },
   form_ids: {
@@ -187,10 +204,10 @@ const EmailTemplats = new mongoose.Schema({
   },
   fields: [
     {
-
       name: { type: String, required: true },
       label: { type: String, required: true },
       type: { type: String, required: true },
+      headingbgImage: { type: String, required: false },
       headerbtnbg: { type: String, required: false },
       headerbtncolor: { type: String, required: false },
       headingbtnPadding: { type: String, required: false },
@@ -199,6 +216,7 @@ const EmailTemplats = new mongoose.Schema({
       headingbtnFontSize: { type: String, required: false },
       headingbtnwidth: { type: String, required: false },
       headingbtnheight: { type: String, required: false },
+      headingsubheading: { type: String, required: false },
       headerbtn: { type: String, required: false },
       columnCount: { type: Number, required: false },
       columnData: { type: [columnSchema], required: false },
@@ -216,6 +234,7 @@ const EmailTemplats = new mongoose.Schema({
       headingFontWeight: { type: String, required: false },
       headingColor: { type: String, required: false },
       headingbg: { type: String, required: false },
+      subheadingColor: { type: String, required: false },
       headingBorderColor: { type: String, required: false },
       headingBorderWidth: { type: String, required: false },
       headingbtnBorderWidth: { type: String, required: false },
@@ -226,7 +245,7 @@ const EmailTemplats = new mongoose.Schema({
       headingPadding: { type: String, required: false },
       headingTextAlign: { type: String, required: false },
       headingText: { type: String, required: false },
-      headingbgImage: { type: String, required: false },
+
       descriptionText: { type: String, required: false },
       texteditorValue: { type: String, required: false },
       descritionFontSize: { type: String, required: false },
@@ -244,6 +263,7 @@ const EmailTemplats = new mongoose.Schema({
       image: { type: String, required: false },
       url: { type: String, required: false },
       dividerColor: { type: String, required: false },
+      dividerbgColor: { type: String, required: false },
       dividerWidth: { type: String, required: false },
       dividerheight: { type: String, required: false },
       buttonLabel: { type: String, required: false },
@@ -257,6 +277,8 @@ const EmailTemplats = new mongoose.Schema({
       buttonBackgroundColor: { type: String, required: false },
       buttonradious: { type: String, required: false },
       buttonColor: { type: String, required: false },
+      buttonbgColor: { type: String, required: false },
+      buttonaline: { type: String, required: false },
       buttonUrll: { type: String, default: '' },
       buttonTextColor: { type: String, default: false },
       buttonPadding: { type: String, required: false },
@@ -264,11 +286,24 @@ const EmailTemplats = new mongoose.Schema({
       socalIconWidth: { type: String, required: false },
       socalIconHeight: { type: String, required: false },
       socalIconPadding: { type: String, required: false },
+      socalIconbg: { type: String, required: false },
+      socalIcongap: { type: String, required: false },
       socaliconTextAlign: { type: String, required: false },
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
       splitbg: { type: String, required: false },
+      splitbtn: { type: String, required: false },
+      splitbtnbg: { type: String, required: false },
+      splittext: { type: String, required: false },
+      splitColor: { type: String, required: false },
+      splitbtnfont: { type: String, required: false },
+      splitbtncolor: { type: String, required: false },
+      splitbtnurl: { type: String, required: false },
+      splitbtnheight: { type: String, required: false },
+      splitbtnwidth: { type: String, required: false },
+      splitbtnradious: { type: String, required: false },
+      splitheight: { type: String, required: false },
       add: { type: String, required: false },
       width: { type: String, required: false },
       spacerHeight: { type: String, required: false },
@@ -312,12 +347,273 @@ const EmailTemplats = new mongoose.Schema({
       productheight: { type: String, required: false },
       buttonUrl: { type: String, required: false },
       showbtnn: { type: Boolean, default: false },
+      showbtnsplit: { type: Boolean, default: false },
+      showbtnmulti: { type: Boolean, default: false },
       fontsizeMulticolumn: { type: String, required: false },
+      Multicolumnbgcolor: { type: String, required: false },
+      Multibgcolor: { type: String, required: false },
+      MultiPadding: { type: String, required: false },
+      Multitext: { type: String, required: false },
+      Multigap: { type: String, required: false },
       MulticolumnbtnBorderWidth: { type: String, required: false },
       MulticolumnbtnBorderColor: { type: String, required: false },
       MulticolumnbtnBorderStyle: { type: String, required: false },
+      MultibtnBorderWidth: { type: String, required: false },
+      MultiColor: { type: String, required: false },
+      MultibtnBorderColor: { type: String, required: false },
+      MultibtnBorderStyle: { type: String, required: false },
+      Multibtnheight: { type: String, required: false },
+      Multibtnweight: { type: String, required: false },
+      Multibtncolor: { type: String, required: false },
+      Multibtnradious: { type: String, required: false },
+      Multibtnfont: { type: String, required: false },
+      splitBorderWidth: { type: String, required: false },
+      splitBorderColor: { type: String, required: false },
+      splitBorderStyle: { type: String, required: false },
       richFontsize: { type: String, required: false },
+      richtopPadding: { type: String, required: false },
+      richleftPadding: { type: String, required: false },
+      richbgcolor: { type: String, required: false },
+      richtextcolor: { type: String, required: false },
       MulticolumnPadding: { type: String, required: false },
+      Multibtnlable: { type: String, required: false },
+      Multibtnbg: { type: String, required: false },
+      Multibtnurl: { type: String, required: false },
+      icons: {
+        facebook: {
+          url: { type: String, required: false },
+          isHidden: { type: Boolean, default: false },
+          value: { type: String, required: false, default: 'Facebook' },
+        },
+        twitter: {
+          url: { type: String, required: false },
+          isHidden: { type: Boolean, default: false },
+          value: { type: String, required: false, default: 'Twitter' },
+        },
+        instagram: {
+          url: { type: String, required: false },
+          isHidden: { type: Boolean, default: false },
+          value: { type: String, required: false, default: 'Instagram' },
+        },
+        url: { type: String, required: false }
+      },
+      customIcons: [
+        {
+          url: { type: String, required: true },
+          src: { type: String, required: true },
+          isHidden: { type: Boolean, default: false }
+        }
+      ],
+    }
+  ],
+  createdAt: { type: String, required: true },
+  styles: {
+    width: { type: String, required: false },
+    backgroundImage: { type: String, required: false },
+    backgroundColor: { type: String, required: false },
+    borderRadious: { type: String, required: false },
+    textAlign: { type: String, required: false },
+    fontFamily: { type: String, required: false },
+    headingFontSize: { type: String, required: false },
+    dividerColor: { type: String, required: false },
+    templatePadding: { type: String, required: false }
+  }
+});
+const Email = mongoose.model('EmailTemplats', emailTemplateSchema);
+
+const coloumtemplate = new mongoose.Schema({
+  columnIndex: { type: Number, required: false },
+  image: { type: String, required: false },
+  content: { type: String, required: false },
+  isVisible: { type: Boolean, default: false },
+  Multibtnlable: { type: String, default: 'Shop Now' },
+  Multibtnurl: { type: String, default: false },
+});
+
+const ShowTemplats = new mongoose.Schema({
+  templateId: { type: String, required: true },
+  title: { type: String, required: true },
+  headingText: {
+    text: { type: String, required: false },
+    fontSize: { type: String, required: false }
+  },
+  fields: [
+    {
+
+      name: { type: String, required: true },
+      label: { type: String, required: true },
+      type: { type: String, required: true },
+      headerbtnbg: { type: String, required: false },
+      headerbtncolor: { type: String, required: false },
+      headingbtnPadding: { type: String, required: false },
+      headingbtntopPadding: { type: String, required: false },
+      headingbtnradious: { type: String, required: false },
+      headingbtnFontSize: { type: String, required: false },
+      headingbtnwidth: { type: String, required: false },
+      headingbtnheight: { type: String, required: false },
+      headingsubheading: { type: String, required: false },
+      headerbtn: { type: String, required: false },
+      columnCount: { type: Number, required: false },
+      columnData: { type: [coloumtemplate], required: false },
+      value: { type: Object, required: false, default: { typeValue: 'No Value Provided', customIcons: [] } },
+      bannerImageWidth: { type: String, required: false },
+      bannerImageHeight: { type: String, required: false },
+      bannerImageTextAlign: { type: String, required: false },
+      editorContent: { type: String, required: false },
+      headingUrl: { type: String, required: false },
+      richTextAlign: { type: String, required: false },
+      imageUrl: { type: String, required: false },
+      headingFontSize: { type: String, required: false },
+      headingLevel: { type: String, required: false },
+      headeropacity: { type: String, required: false },
+      headingFontWeight: { type: String, required: false },
+      headingColor: { type: String, required: false },
+      headingbg: { type: String, required: false },
+      subheadingColor: { type: String, required: false },
+      headingBorderColor: { type: String, required: false },
+      headingBorderWidth: { type: String, required: false },
+      headingbtnBorderWidth: { type: String, required: false },
+      headingbtnBorderStyle: { type: String, required: false },
+      headingbtnBorderColor: { type: String, required: false },
+      headingBorderStyle: { type: String, required: false },
+      headingLetterSpacing: { type: String, required: false },
+      headingPadding: { type: String, required: false },
+      headingTextAlign: { type: String, required: false },
+      headingText: { type: String, required: false },
+      headingbgImage: { type: Object, required: false },
+      descriptionText: { type: String, required: false },
+      texteditorValue: { type: String, required: false },
+      descritionFontSize: { type: String, required: false },
+      descritionFontWeight: { type: String, required: false },
+      descritionColor: { type: String, required: false },
+      descriptionbg: { type: String, required: false },
+      descriptionPadding: { type: String, required: false },
+      descriptionTextAlign: { type: String, required: false },
+      descriptionLetterSpacing: { type: String, required: false },
+      descriptionBorderColor: { type: String, required: false },
+      descriptionBorderWidth: { type: String, required: false },
+      descriptionBorderStyle: { type: String, required: false },
+      content: { type: String, required: false },
+      platform: { type: String, required: false },
+      image: { type: String, required: false },
+      url: { type: String, required: false },
+      dividerColor: { type: String, required: false },
+      dividerWidth: { type: String, required: false },
+      dividerbgColor: { type: String, required: false },
+      dividerheight: { type: String, required: false },
+      buttonLabel: { type: String, required: false },
+      buttonWidth: { type: String, required: false },
+      buttonHeight: { type: String, required: false },
+      buttonFontSize: { type: String, required: false },
+      buttonLetterSpacing: { type: String, required: false },
+      buttonBorderColor: { type: String, required: false },
+      buttonBorderWidth: { type: String, required: false },
+      buttonBorderStyle: { type: String, required: false },
+      buttonBackgroundColor: { type: String, required: false },
+      buttonradious: { type: String, required: false },
+      buttonColor: { type: String, required: false },
+      buttonbgColor: { type: String, required: false },
+      buttonaline: { type: String, required: false },
+      buttonUrll: { type: String, default: '' },
+      buttonTextColor: { type: String, default: false },
+      buttonPadding: { type: String, required: false },
+      htmlContent: { type: String, required: false, default: "" },
+      socalIconWidth: { type: String, required: false },
+      socalIconHeight: { type: String, required: false },
+      socalIconPadding: { type: String, required: false },
+      socalIconbg: { type: String, required: false },
+      socalIcongap: { type: String, required: false },
+      socaliconTextAlign: { type: String, required: false },
+      htmlFontSize: { type: String, required: false },
+      htmlPadding: { type: String, required: false },
+      htmlColor: { type: String, required: false },
+      splitbg: { type: String, required: false },
+      splitbtn: { type: String, required: false },
+      splitbtnbg: { type: String, required: false },
+      splittext: { type: String, required: false },
+      splitColor: { type: String, required: false },
+      splitbtnfont: { type: String, required: false },
+      splitbtncolor: { type: String, required: false },
+      splitbtnurl: { type: String, required: false },
+      splitbtnheight: { type: String, required: false },
+      splitbtnwidth: { type: String, required: false },
+      splitbtnradious: { type: String, required: false },
+      splitheight: { type: String, required: false },
+      add: { type: String, required: false },
+      width: { type: String, required: false },
+      spacerHeight: { type: String, required: false },
+      spacerbg: { type: String, required: false },
+      videoPadding: { type: String, required: false },
+      splitPadding: { type: String, required: false },
+      splitTextAlin: { type: String, required: false },
+      videoBorderWidth: { type: String, required: false },
+      videoBorderStyle: { type: String, required: false },
+      videoBorderColor: { type: String, required: false },
+      imgWidth: { type: String, required: false },
+      imgTextAlign: { type: String, required: false },
+      imgPadding: { type: String, required: false },
+      imgbg: { type: String, required: false },
+      imgBorderColor: { type: String, required: false },
+      imgBorderWidth: { type: String, required: false },
+      imgBorderStyle: { type: String, required: false },
+      products: { type: [Object], required: false },
+      productsPerRow: { type: Number, default: 3 },
+      columnsPerRow: { type: Number, default: 3 },
+      viewMode: { type: String, enum: ['desktop', 'mobile'], default: 'desktop' },
+      price: { type: Boolean, default: false },
+      productPadding: { type: String, required: false },
+      productbg: { type: String, required: false },
+      productBorderWidth: { type: String, required: false },
+      productBorderStyle: { type: String, required: false },
+      productBorderColor: { type: String, required: false },
+      productFontSize: { type: String, required: false },
+      productTextColor: { type: String, required: false },
+      productWeight: { type: String, required: false },
+      productLetterSpacing: { type: String, required: false },
+      productbtnBorderColor: { type: String, required: false },
+      productbtnBorderWidth: { type: String, required: false },
+      productbtnBorderStyle: { type: String, required: false },
+      productbtnbg: { type: String, required: false },
+      productradious: { type: String, required: false },
+      productLabel: { type: String, required: false },
+      productfontSize: { type: String, required: false },
+      productwidth: { type: String, required: false },
+      productbackgroundColor: { type: String, required: false },
+      productheight: { type: String, required: false },
+      buttonUrl: { type: String, required: false },
+      showbtnn: { type: Boolean, default: false },
+      showbtnsplit: { type: Boolean, default: false },
+      showbtnmulti: { type: Boolean, default: false },
+      fontsizeMulticolumn: { type: String, required: false },
+      Multicolumnbgcolor: { type: String, required: false },
+      Multibgcolor: { type: String, required: false },
+      Multigap: { type: String, required: false },
+      Multitext: { type: String, required: false },
+      MultiPadding: { type: String, required: false },
+      MulticolumnbtnBorderWidth: { type: String, required: false },
+      MulticolumnbtnBorderColor: { type: String, required: false },
+      MulticolumnbtnBorderStyle: { type: String, required: false },
+      MultibtnBorderWidth: { type: String, required: false },
+      MultibtnBorderColor: { type: String, required: false },
+      MultiColor: { type: String, required: false },
+      MultibtnBorderStyle: { type: String, required: false },
+      Multibtnheight: { type: String, required: false },
+      Multibtnweight: { type: String, required: false },
+      Multibtncolor: { type: String, required: false },
+      Multibtnradious: { type: String, required: false },
+      Multibtnfont: { type: String, required: false },
+      splitBorderWidth: { type: String, required: false },
+      splitBorderColor: { type: String, required: false },
+      splitBorderStyle: { type: String, required: false },
+      richFontsize: { type: String, required: false },
+      richbgcolor: { type: String, required: false },
+      richtopPadding: { type: String, required: false },
+      richleftPadding: { type: String, required: false },
+      richtextcolor: { type: String, required: false },
+      MulticolumnPadding: { type: String, required: false },
+      Multibtnlable: { type: String, required: false },
+      Multibtnurl: { type: String, required: false },
+      Multibtnbg: { type: String, required: false },
       icons: {
         facebook: {
           url: { type: String, required: false },
@@ -359,8 +655,7 @@ const EmailTemplats = new mongoose.Schema({
   }
 });
 
-const Email = mongoose.model('EmailTemplats', EmailTemplats);
-
+const Templated = mongoose.model('saveTempaltes', ShowTemplats);
 
 const templateSchema = new mongoose.Schema({
   TemplateAll: { type: Object, required: false },
@@ -380,13 +675,13 @@ const supportdata = new mongoose.Schema({
   submittedAt: { type: Date, default: Date.now },
 });
 
-const Support = mongoose.model('supportEmails', supportdata); 
+const Support = mongoose.model('supportEmails', supportdata);
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'sahil@hubsyntax.com',
-    pass: 'wqnr gaom dgzq asyu', 
+    pass: 'wqnr gaom dgzq asyu',
   },
 });
 
@@ -405,7 +700,7 @@ const sendEmails = (formData) => {
     `,
   };
 
-  return transporter.sendMail(mailOptions); 
+  return transporter.sendMail(mailOptions);
 };
 
 app.post('/email-submit', async (req, res) => {
@@ -446,21 +741,14 @@ app.post('/api/template', async (req, res) => {
   }
 });
 
-import fs from 'fs';
-import path from 'path';
-import { Buffer } from 'buffer';
 
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const uploadDir = path.join(__dirname, 'upload');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+// const uploadDir = path.join(__dirname, 'upload');
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir);
+// }
 
 const saveBase64Image = (base64Str, fileName) => {
   const base64Data = base64Str.replace(/^data:image\/png;base64,/, '');
@@ -484,43 +772,11 @@ const sendEmail = async (email, TemplateAll) => {
 
     const attachments = [];
 
-
-    const getEmbedUrl = (url) => {
-      console.log("Input URL:", url);
-      const urlObj = new URL(url);
-      const videoId = urlObj.searchParams.get('v');
-      console.log("Video ID extracted:", videoId);
-
-      if (videoId) {
-        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-        console.log("Embed URL:", embedUrl);
-        return embedUrl;
-      }
-
-      return url;
-    };
-
-
     const renderFieldsHTML = () => {
       return fields
         .map((field) => {
           switch (field.type) {
             case 'heading':
-              const headingbgImage = field.headingbgImage || '';
-              const updatedimageUrl = headingbgImage.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-                if (match.startsWith('data:image/png;base64,')) {
-                  const uniqueId = `image-${Date.now()}`;
-                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
-                  attachments.push({
-                    filename: `${uniqueId}.png`,
-                    path: imagePath,
-                    cid: uniqueId,
-                  });
-
-                  return `cid:${uniqueId}`;
-                }
-                return match;
-              });
               const editorContent = field.editorContent || '';
               const updateeditorContent = editorContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
                 if (match.startsWith('data:image/png;base64,')) {
@@ -538,136 +794,210 @@ const sendEmail = async (email, TemplateAll) => {
               });
 
               return `
-               <div style="background-image: url('${updatedimageUrl}');
+             <div style="background-image:url('${field.headingbgImage || ''}'); 
                 background-size: cover; background-position: center;
                 border-width: ${field.headingBorderWidth || 1}px;
                 border-style: ${field.headingBorderStyle || 'solid'};
                 border-color: ${field.headingBorderColor || '#000'};
                 width: ${field.bannerImageWidth || 100}%;
                 height: ${field.bannerImageHeight || '400px'};
-                position: relative;">
-              <div style="position: absolute; top: 40%; width: 100%; text-align: ${field.headingTextAlign || 'center'}; padding: ${field.headingPadding || '20px'}px;">
-              <h1 style="font-size: ${field.headingFontSize || 30}px; 
-                   color: ${field.headingColor || '#000'}; 
-                   font-weight: ${field.headingFontWeight || 'bold'}; 
-                   line-height: 1; 
-                   letter-spacing: ${field.headingLetterSpacing || 0}px; 
-                   text-align: ${field.headingTextAlign || 'center'};">
-                   ${field.headingText || 'Heading'}
-                    </h1>
-              <div style="font-size: 20px; margin: 20px 0;">
-                 ${updateeditorContent || ''}</div>
-              ${field.headingUrl ? `
-                <a href="${field.headingUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                  <button
-                    style="
-                      font-size: ${field.headingbtnFontSize || 16}px;
-                      width: ${field.headingbtnwidth || 'auto'}px;
-                      height: ${field.headingbtnheight || 'auto'}px;
-                      background-color: ${field.headerbtnbg || '#007bff'};
-                      border-width: ${field.headingbtnBorderWidth || 1}px;
-                      border-style: ${field.headingbtnBorderStyle || 'solid'};
-                      border-color: ${field.headingbtnBorderColor || '#007bff'};
-                      color: ${field.headerbtncolor || '#fff'};
-                      border-radius: ${field.headingbtnradious || 4}px;
-                      padding: ${field.headingbtnPadding || '10px 20px'}px;
-                      cursor: pointer;
-                    "
-                    class="show-bnt-product"
-                  >
-                    ${field.headerbtn || 'Buy Now'}
-                  </button>
-                </a>
-              ` : ''}
-              </div>
+                opacity:${field.headeropacity};
+               ">
+             <table role="presentation" width="100%" height="100%" style="height: 100%; width: 100%; border-collapse: collapse;">
+                <tr>
+          <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
+            <div style="width: 100%; text-align: ${field.headingTextAlign || 'center'};">
+            <h1 style="font-size: ${field.headingFontSize || 30}px; 
+              color: ${field.headingColor || '#000'}; 
+              font-weight: ${field.headingFontWeight || 'bold'}; 
+              line-height: 48px; 
+              letter-spacing: ${field.headingLetterSpacing || 0}px; 
+              text-align: ${field.headingTextAlign || 'center'};">
+              ${field.headingText || ''}
+            </h1>
+            <div style="font-size: ${field.headingsubheading}px; color:${field.subheadingColor}; margin: 20px 0;">
+              ${updateeditorContent || ''}
+            </div>
+            
+            ${field.headingUrl ? `
+              <a href="${field.headingUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <button style="
+                  font-size: ${field.headingbtnFontSize || 16}px;
+                  width: ${field.headingbtnwidth || 'auto'}px;
+                  height: ${field.headingbtnheight || 'auto'}px;
+                  background-color: ${field.headerbtnbg || '#007bff'};
+                  border-width: ${field.headingbtnBorderWidth || 1}px;
+                  border-style: ${field.headingbtnBorderStyle || 'solid'};
+                  border-color: ${field.headingbtnBorderColor || '#007bff'};
+                  color: ${field.headerbtncolor || '#fff'};
+                  border-radius: ${field.headingbtnradious || 4}px;
+                  padding-left: ${field.headingbtnPadding || '10px'}px;
+                  padding-right: ${field.headingbtnPadding || '10px'}px;
+                  padding-top: ${field.headingbtntopPadding || '10px'}px;
+                  padding-bottom: ${field.headingbtntopPadding || '10px'}px;
+                  cursor: pointer;
+                " class="show-bnt-product">
+                  ${field.headerbtn || 'Buy Now'}
+                </button>
+              </a>
+            ` : ''}
+          </div>
+           </td>
+         </tr>
+        </table>
               </div>
             `;
             case 'richtext':
               const content = field.content || '';
-              const updatedContent = content.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-                if (match.startsWith('data:image/png;base64,')) {
-                  const uniqueId = `image-${Date.now()}`;
-                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
-                  attachments.push({
-                    filename: `${uniqueId}.png`,
-                    path: imagePath,
-                    cid: uniqueId,
-                  });
-
-                  return `cid:${uniqueId}`;
-                }
-                return match;
-              });
-              return `
-                    <div>
-                      <div style = "text-align: ${field.richTextAlign || 'left'}" >${updatedContent}</div>
-                    </div>
-                  `;
-            case 'description':
-              return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
-            case 'button':
-              return `
-                <a href="${field.buttonUrll || '#'}" target="_blank">
-                  <button style="background-color: ${field.buttonColor || '#008CBA'}; padding: ${field.buttonPadding || '10px 20px'}; height: ${field.buttonHeight || '40px'}px; width: ${field.buttonWidth || 'auto'}px; font-size: ${field.buttonFontSize || '16px'}px; border: ${field.buttonBorderWidth || '0'}px ${field.buttonBorderStyle || 'none'} ${field.buttonBorderColor || '#000'};
-                   color:${field.buttonTextColor}; cursor: pointer;">
-                    ${field.buttonLabel || 'Click Here'}
-                  </button>
-                </a>`;
-            case 'Multicolumn':
-              const columns = parseInt(field.columnCount) || 6;
-              const columnHtml = field.columnData.map((column, index) => {
-                let updatedContent = column.content || '';
-
-                if (column.image) {
-                  if (column.image.startsWith('data:image/png;base64,')) {
-                    const uniqueId = `image-${Date.now()}-${index}`;
-                    const imagePath = saveBase64Image(column.image, `${uniqueId}.png`);
+              const updatedContent = content
+                .replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                  if (match.startsWith('data:image/png;base64,')) {
+                    const uniqueId = `image-${Date.now()}`;
+                    const imagePath = saveBase64Image(match, `${uniqueId}.png`);
                     attachments.push({
                       filename: `${uniqueId}.png`,
                       path: imagePath,
                       cid: uniqueId,
                     });
-                    updatedContent = updatedContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-                      if (match.startsWith('data:image/png;base64,')) {
-                        return `cid:${uniqueId}`;
-                      }
-                      return match;
-                    });
-                    return `
-                          <div class="column" style="padding: 10px;  width:33.3%; box-sizing: border-box; border: 1px solid black;">
-                            <img src="cid:${uniqueId}" alt="Image ${index + 1}" style="width: 100%;" />
-                            <div>${updatedContent}</div>
-                          </div>`;
+
+                    return `cid:${uniqueId}`;
                   }
-                  return `
-                        <div class="column" style="padding: 10px;  width:33.3%; box-sizing: border-box; border: 1px solid black;">
-                          <img src="${column.image}" alt="Image ${index + 1}" style="width: 100%;" />
-                          <div>${updatedContent}</div>
-                        </div>`;
+                  return match;
+                })
+                .replace(/<p><br><\/p>/g, '');
+
+              return `
+                <div>
+                  <div style="text-align: ${field.richTextAlign || 'left'};
+                      color:${field.richtextcolor};
+                      display: flow-root;
+                      font-size: ${field.richFontsize || 16}px;
+                      background-color: ${field.richbgcolor || '#007bff'};
+                      padding-left: ${field.richleftPadding || '10px'}px;
+                      padding-right: ${field.richleftPadding || '10px'}px;
+                      padding-top: ${field.richtopPadding || '10px'}px;
+                      padding-bottom: ${field.richtopPadding || '10px'}px;">
+                    ${updatedContent}
+                  </div>
+                </div>
+              `;
+
+            case 'description':
+              return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
+            case 'button': {
+              return `
+                  <div style="background-color: ${field.buttonbgColor || '#008CBA'}; text-align: ${field.buttonaline || 'left'};">
+                    <a href="${field.buttonUrll || '#'}" target="_blank" style="text-decoration: none;">
+                      <button style="
+                        background-color: ${field.buttonColor || '#008CBA'};
+                        padding: ${field.buttonPadding || '10px 20px'}px;
+                        height: ${field.buttonHeight || '40'}px;
+                        width: ${field.buttonWidth || 'auto'}px;
+                        font-size: ${field.buttonFontSize || '16'}px;
+                        border: ${field.buttonBorderWidth || '0'}px 
+                                ${field.buttonBorderStyle || 'none'} 
+                                ${field.buttonBorderColor || '#000'};
+                        color: ${field.buttonTextColor || '#fff'};
+                        cursor: pointer;
+                        border-radius: ${field.buttonradious}px;
+                      ">
+                        ${field.buttonLabel || 'Click Here'}
+                      </button>
+                    </a>
+                  </div>`;
+            }
+            case 'Multicolumn': {
+              const columnsPerRow = field.columnsPerRow || 1;
+              let columnCount = 0;
+              let result = `
+                <div style="color: ${field.MultiColor || '#000'}; padding: ${field.MultiPadding || '1px'}px; text-align: center; background-color: ${field.Multibgcolor || 'transparent'};">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              `;
+
+              field.columnData.forEach((column, index) => {
+                if (columnCount % columnsPerRow === 0) {
+                  if (columnCount > 0) result += '</tr>';
+                  result += '<tr>';
                 }
 
-                updatedContent = updatedContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-                  const uniqueId = `image-${Date.now()}`;
-                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                let imageCid = '';
+                if (column.image && column.image.startsWith('data:image/png;base64,')) {
+                  const uniqueId = `image-${Date.now()}-${index}`;
+                  const imagePath = saveBase64Image(column.image, `${uniqueId}.png`);
                   attachments.push({
                     filename: `${uniqueId}.png`,
                     path: imagePath,
                     cid: uniqueId,
                   });
-                  return `cid:${uniqueId}`;
-                });
-                return `
-                      <div class="column" style="padding: 10px; width:33.3%; box-sizing: border-box; border: 1px solid black;">
-                        <div>${updatedContent}</div>
-                      </div>`;
-              }).join('');
+                  imageCid = `cid:${uniqueId}`;
+                }
 
-              return `
-                    <div class="multicolumn-container" style="display: flex;flex-wrap: wrap; gap: 10px; border: 1px solid #ddd; box-sizing: border-box;">
-                      ${columnHtml}
-                    </div>`;
+                let processedContent = column.content.replace(
+                  /<p><br><\/p>/g,
+                  ''
+                ).replace(
+                  /<img src="data:image\/[a-zA-Z]*;base64,[^"]*"/g,
+                  (match) => {
+                    const uniqueId = `content-image-${Date.now()}-${index}`;
+                    const base64Data = match.match(/data:image\/[a-zA-Z]*;base64,[^"]*/)[0];
+                    const imagePath = saveBase64Image(base64Data, `${uniqueId}.png`);
+                    attachments.push({
+                      filename: `${uniqueId}.png`,
+                      path: imagePath,
+                      cid: uniqueId,
+                    });
+                    return `<img src="cid:${uniqueId}"`;
+                  }
+                );
 
-            case 'images':
+                result += `
+                  <td style="
+                    width: ${100 / columnsPerRow}%;
+                    text-align: ${field.Multitext || 'center'};
+                    font-size: ${field.fontsizeMulticolumn || 14}px;
+                    border-width: ${field.MulticolumnbtnBorderWidth || 1}px;
+                    border-style: ${field.MulticolumnbtnBorderStyle || 'solid'};
+                    border-color: ${field.MulticolumnbtnBorderColor || '#000'};
+                    padding: ${field.MulticolumnPadding || '10'}px;
+                    background-color: ${field.Multicolumnbgcolor || 'transparent'};
+                    color: ${field.MultiColor || '#000'};
+                  ">
+                    ${imageCid ? `<img src="${imageCid}" alt="Column ${index}" style="width: 100%; height: auto;" />` : ''}
+                    ${processedContent}
+                    ${column.isVisible
+                    ? `
+                      <a href="${column.Multibtnurl || '#'}" target="_blank" style="text-decoration: none;">
+                        <button style="
+                          margin-top: 20px;
+                          background-color: ${field.Multibtnbg || '#007BFF'};
+                          border-width: ${field.MultibtnBorderWidth || 2}px;
+                          border-style: ${field.MultibtnBorderStyle || 'solid'};
+                          border-color: ${field.MultibtnBorderColor || '#000'};
+                          width: ${field.Multibtnweight || 100}px;
+                          height: ${field.Multibtnheight || 40}px;
+                          color: ${field.Multibtncolor || '#000'};
+                          border-radius: ${field.Multibtnradious || 0}px;
+                          font-size: ${field.Multibtnfont || 14}px;
+                          cursor: pointer;
+                        ">
+                          ${column.Multibtnlable || 'Click'}
+                        </button>
+                      </a>
+                    `
+                    : ''
+                  }
+                  </td>
+                `;
+
+                columnCount++;
+              });
+
+              if (columnCount % columnsPerRow !== 0) result += '</tr>';
+              result += '</table></div>';
+
+              return result;
+            }
+            case 'images': {
               if (field.value.startsWith('data:image/png;base64,')) {
                 const uniqueId = `image-${Date.now()}`;
                 const imagePath = saveBase64Image(field.value, `${uniqueId}.png`);
@@ -676,34 +1006,54 @@ const sendEmail = async (email, TemplateAll) => {
                   path: imagePath,
                   cid: uniqueId,
                 });
-                return `<img src="cid:${uniqueId}" alt="${field.label || 'Image'}" style="width: 100%;" />`;
-              }
-              return `<img src="${field.value}" alt="${field.label || 'Image'}" style="width: 100%;" />`;
-            case 'split':
-              const value = field.value || '';
-              const updatedvalue = value.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-                if (match.startsWith('data:image/png;base64,')) {
-                  const uniqueId = `image-${Date.now()}`;
-                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
-                  attachments.push({
-                    filename: `${uniqueId}.png`,
-                    path: imagePath,
-                    cid: uniqueId,
-                  });
 
-                  return `cid:${uniqueId}`;
-                }
-                return match;
-              });
-              return (
-                `<div style="background-color: ${field.splitbg || '#ffffff'}; 
-                   width: ${field.width}; 
-                   float: inline-start;
-                   height: 300px;
-                   text-align:${field.splitTextAlin};
-                   ">
-                <div>
-                   ${field.value.startsWith("data:image/")
+                return `
+                      <div style="
+                        text-align: ${field.imgTextAlign || 'center'};
+                        background-color: ${field.imgbg || 'transparent'};
+                        border-width: ${field.imgBorderWidth || 1}px;
+                        border-style: ${field.imgBorderStyle || 'solid'};
+                        border-color: ${field.imgBorderColor || '#000'};
+                        padding: ${field.imgPadding || 0}px;
+                      ">
+                        <img 
+                          src="cid:${uniqueId}" 
+                          alt="${field.label || 'Image'}" 
+                          style="width: ${field.imgWidth || 100}%;"
+                        />
+                      </div>`;
+              }
+              return '';
+            }
+
+            case 'split': {
+              const value = field.value || '';
+              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, () => '');
+
+              return `
+                <div style="
+                  overflow: hidden;
+                  background-color: ${field.splitbg || '#ffffff'}; 
+                  width: ${field.width || '100%'};
+                  height: ${field.splitheight || 'auto'}px;
+                  padding: ${field.splitPadding || 0}px;
+                  float: inline-start;
+                  color:${field.splitColor};
+                ">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
+                    width: 100%; 
+                    height: 100%; 
+                    text-align: ${field.splitTextAlin || 'left'};
+                    border-spacing: 0; 
+                    float: inline-start;
+                    color:${field.splitColor};
+                  ">
+                    <tr>
+                      <td style="
+                        vertical-align: ${field.splittext === 'end' ? 'bottom' : (field.splittext === 'left' || !field.splittext ? 'top' : field.splittext)};
+                        text-align: ${field.splitTextAlin || 'left'}; 
+                      ">
+                        ${field.value.startsWith('data:image/')
                   ? (() => {
                     const uniqueId = `image-${Date.now()}`;
                     const imagePath = saveBase64Image(field.value, `${uniqueId}.png`);
@@ -712,76 +1062,110 @@ const sendEmail = async (email, TemplateAll) => {
                       path: imagePath,
                       cid: uniqueId,
                     });
-
-                    return `<img src="cid:${uniqueId}" style="width:100%" alt="Uploaded Preview"/>`;
+                    return `<img src="cid:${uniqueId}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />`;
                   })()
-                  : `<div>${updatedvalue}</div>`
+                  : `<div>${updatedValue}</div>`
                 }
+                        ${field.showbtnsplit
+                  ? `
+                            <a href="${field.splitbtnurl || '#'}" target="_blank" style="text-decoration: none;">
+                              <button style="
+                                margin-top: 20px;
+                                background-color: ${field.splitbtnbg || '#007BFF'};
+                                font-size: ${field.splitbtnfont || 14}px;
+                                color: ${field.splitbtncolor || '#FFF'};
+                                height: ${field.splitbtnheight || 40}px;
+                                width: ${field.splitbtnwidth || 100}px;
+                                border-radius: ${field.splitbtnradious || 0}px;
+                                border-width: ${field.splitBorderWidth || 2}px;
+                                border-style: ${field.splitBorderStyle || 'solid'};
+                                border-color: ${field.splitBorderColor || '#000'};
+                                cursor: pointer;
+                              ">
+                                ${field.splitbtn || 'Click Me'}
+                              </button>
+                            </a>
+                            `
+                  : ''
+                }
+                      </td>
+                    </tr>
+                  </table>
                 </div>
-              </div>
-                `
-              );
+              `;
+            }
             case 'product':
               return `
-                  <div class="product-grid" style="
-                    display: flex;
-                    grid-template-columns: repeat(${field.productsPerRow}, 1fr);
-                    gap: 20px;
-                    padding: ${field.productPadding}px;
-                    background-color: ${field.productbg};
-                    border-width: ${field.productBorderWidth}px;
-                    border-style: ${field.productBorderStyle};
-                    border-color: ${field.productBorderColor};
-                    font-size: ${field.productFontSize}px;
-                    color: ${field.productTextColor};
-                  ">
-                    ${product.image ? `
-                      <div class="images-gallery">
-                        <img
-                          src="${product.image}"
-                          alt="${product.images || 'Product Image'}"
-                          style="width: 150px; height: 150px; object-fit: cover;"
-                        />
-                      </div>
-                    ` : '<p>No image available</p>'}
-              
-                    <div>
-                      <h4 style="font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                        ${product.title}
-                      </h4>
-              
-                      ${field.price && product.price ? `
-                        <p style="font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                          Price: $${product.price}
-                        </p>
-                      ` : ''}
-              
-                      ${field.showbtnn ? `
-                        <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                          <button
-                            style="
-                              font-size: ${field.productfontSize}px;
-                              width: ${field.productwidth}px;
-                              height: ${field.productheight}px;
-                              background-color: ${field.productbackgroundColor};
-                              border-width: ${field.productbtnBorderWidth}px;
-                              border-style: ${field.productbtnBorderStyle};
-                              border-color: ${field.productbtnBorderColor};
-                              color: ${field.productbtnbg};
-                              border-radius: ${field.productradious}px;
-                              cursor: pointer;
-                            "
-                            class="show-bnt-product"
-                          >
-                            ${field.productLabel || 'Buy Now'}
-                          </button>
-                        </a>
-                      ` : ''}
-                    </div>
-                  </div>
-                `;
+                <div>
+                  ${field.products && field.products.length > 0 ? `
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="width: 100%; border-spacing: 0;">
+                      <tr>
+                        ${field.products.map((product, index) => `
+                          <td style="
+                            width: ${100 / field.productsPerRow}%;
+                            padding: ${field.productPadding}px;
+                            text-align: center;
+                            background-color: ${field.productbg};
+                            border-width: ${field.productBorderWidth}px;
+                            border-style: ${field.productBorderStyle};
+                            border-color: ${field.productBorderColor};
+                            font-size: ${field.productFontSize}px;
+                            color: ${field.productTextColor};
+                          ">
+                            ${product.image ? `
+                              <div class="images-gallery">
+                                <img
+                                  src="${product.image}"
+                                  alt="${product.title || 'Product Image'}"
+                                  style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;"
+                                />
+                              </div>
+                            ` : '<p>No image available</p>'}
+            
+                            <div>
+                              <h4 style=" margin-top: 10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                                ${product.title}
+                              </h4>
+            
+                              ${field.price && product.price ? `
+                                <p style=" margin-top:10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                                  Price: $${product.price}
+                                </p>
+                              ` : ''}
+            
+                              ${field.showbtnn ? `
+                                <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                                  <button
+                                    style="
+                                      margin-top: 10px;
+                                      font-size: ${field.productfontSize}px;
+                                      width: ${field.productwidth}px;
+                                      height: ${field.productheight}px;
+                                      background-color: ${field.productbackgroundColor};
+                                      border-width: ${field.productbtnBorderWidth}px;
+                                      border-style: ${field.productbtnBorderStyle};
+                                      border-color: ${field.productbtnBorderColor};
+                                      color: ${field.productbtnbg};
+                                      border-radius: ${field.productradious}px;
+                                      cursor: pointer;
+                                    "
+                                    class="show-btn-product"
+                                  >
+                                    ${field.productLabel || 'Buy Now'}
+                                  </button>
+                                </a>
+                              ` : ''}
+                            </div>
+                          </td>
+                        `).join('')}
+                      </tr>
+                    </table>
+                  ` : '<p>No products available</p>'}
+                </div>
+              `;
+
             case 'divider':
-              return `<hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'}; height: ${field.dividerHeight || '1px'}; margin: ${field.dividerMargin || '20px 0'};" />`;
+              return ` <div style = "background-color: ${field.dividerbgColor || 'transparent'}; width:100%;"> <hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'}%; height: ${field.dividerHeight || '1px'}; margin: auto " /> </div>`;
             case 'html convert':
               return `<div style="color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
             case 'spacer':
@@ -790,38 +1174,74 @@ const sendEmail = async (email, TemplateAll) => {
                       </div>
                     `;
             case 'socalicon':
-              const icons = [];
+
               if (field.value) {
-                if (field.value.facebook && !field.value.facebook.isHidden) {
-                  icons.push(`<a href="${field.value.facebook.url}" target="_blank"><img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/facebook.png?v=1732510414" alt="Facebook" style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" /></a>`);
+
+                const icons = [];
+
+                if (field.value.facebook && !field.value.facebook.isHidden && field.value.facebook.url) {
+                  icons.push(`
+                    <a href="${field.value.facebook.url}" target="_blank" rel="noopener noreferrer">
+                      <img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/facebook.png?v=1732510414" 
+                           alt="Facebook" 
+                           style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
+                    </a>
+                  `);
                 }
-                if (field.value.twitter && !field.value.twitter.isHidden) {
-                  icons.push(`<a href="${field.value.twitter.url}" target="_blank"><img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/twitter.png?v=1732510414" alt="Twitter" style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" /></a>`);
+
+                if (field.value.twitter && !field.value.twitter.isHidden && field.value.twitter.url) {
+                  icons.push(`
+                    <a href="${field.value.twitter.url}" target="_blank" rel="noopener noreferrer">
+                      <img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/twitter.png?v=1732510414" 
+                           alt="Twitter" 
+                           style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
+                    </a>
+                  `);
                 }
-                if (field.value.instagram && !field.value.instagram.isHidden) {
-                  icons.push(`<a href="${field.value.instagram.url}" target="_blank"><img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/instagram.png?v=1732510414" alt="Instagram" style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" /></a>`);
+
+                if (field.value.instagram && !field.value.instagram.isHidden && field.value.instagram.url) {
+                  icons.push(`
+                    <a href="${field.value.instagram.url}" target="_blank" rel="noopener noreferrer">
+                      <img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/instagram.png?v=1732510414" 
+                           alt="Instagram" 
+                           style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
+                    </a>
+                  `);
                 }
-                if (field.customIcons && field.customIcons.length > 0) {
+
+                if (field.customIcons && Array.isArray(field.customIcons)) {
                   field.customIcons
-                    .filter(icon => !icon.isHidden)
+                    .filter(icon => !icon.isHidden && icon.url)
                     .forEach((icon, index) => {
                       const uniqueId = `custom-icon-${Date.now()}-${index}`;
-                      if (icon.src.startsWith('data:image/png;base64,')) {
+
+                      if (icon.src && icon.src.startsWith('data:image/png;base64,')) {
                         const imagePath = saveBase64Image(icon.src, `${uniqueId}.png`);
                         attachments.push({
                           filename: `${uniqueId}.png`,
                           path: imagePath,
                           cid: uniqueId,
                         });
-                        icons.push(
-                          `<a href="${icon.url}" target="_blank" rel="noopener noreferrer">
-                             <img src="cid:${uniqueId}" alt="${uniqueId}" style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px" />
-                           </a>`
-                        );
+                        icons.push(`
+                          <a href="${icon.url} "style="padding-right: ${field.socalIcongap}px;" target="_blank" rel="noopener noreferrer">
+                            <img src="cid:${uniqueId}" 
+                                 alt="${uniqueId}" 
+                                 style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
+                          </a>
+                        `);
                       }
                     });
                 }
-                return `<div>${icons.join('')}</div>`;
+
+                return `
+                  <div style="
+                    text-align: ${field.socaliconTextAlign || 'left'}; 
+                    background-color: ${field.socalIconbg || 'transparent'}; 
+                    padding: ${field.socalIconPadding || 0}px;
+                  ">
+                    ${icons.join('')}
+                  </div>
+                `;
               }
               return '';
             default:
@@ -833,9 +1253,57 @@ const sendEmail = async (email, TemplateAll) => {
 
     const fieldsHTML = renderFieldsHTML();
 
+    const backgroundImage = TemplateAll.styles.backgroundImage || '';
+    const updatedimageUrl = backgroundImage.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+      if (match.startsWith('data:image/png;base64,')) {
+        const uniqueId = `image-${Date.now()}`;
+        const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+        attachments.push({
+          filename: `${uniqueId}.png`,
+          path: imagePath,
+          cid: uniqueId,
+        });
+
+        return `cid:${uniqueId}`;
+      }
+      return match;
+    });
     const userHtmlContent = `
+
     <html>
-      <body style="background-color: ${TemplateAll.styles.backgroundColor || 'white'}; width: ${TemplateAll.styles.width || '100%'}; border-radius: ${TemplateAll.styles.borderRadious || '0'}px; text-align: ${TemplateAll.styles.textAlign || 'left'}; padding: ${TemplateAll.styles.templatePadding || '0'}px; font-family: ${TemplateAll.styles.fontFamily || 'Arial'}; margin:auto">
+     <head>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      h1{
+          font-size: 40px !important;
+          line-height: 50px;
+      }
+          h2 {
+         font-size: 30px !important;
+         line-height: 40px;
+       }
+        
+     a {
+    text-decoration: none;
+     }
+    </style>
+  </head>
+      <body style="background-color: ${TemplateAll.styles.backgroundColor || 'white'};
+       width: ${TemplateAll.styles.width || '100%'}; 
+       border-radius: ${TemplateAll.styles.borderRadious || '0'}px;
+        text-align: ${TemplateAll.styles.textAlign || 'left'};
+        padding: ${TemplateAll.styles.templatePadding || '0'}px;
+        font-family: ${TemplateAll.styles.fontFamily || 'Arial'};
+        margin:auto;
+        background-image: url('${updatedimageUrl}');
+        background-repeat: no-repeat;
+        background-size: cover;
+         ">
         <div>
           ${fieldsHTML}
         </div>
@@ -847,7 +1315,6 @@ const sendEmail = async (email, TemplateAll) => {
         <body>
           <h1>New form submission from ${email}</h1>
           <div>
-           
           </div>
         </body>
       </html>
@@ -929,6 +1396,17 @@ app.get('/get/data', async (req, res) => {
   }
 });
 
+app.get('/get/base64', async (req, res) => {
+  try {
+
+    const data = await Email.find({});
+    res.status(200).json({ message: 'Form data retrieved', data: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching forms', error: error.message });
+  }
+});
+
 app.get('/check-form-connected/:formId', async (req, res) => {
   const { formId } = req.params;
 
@@ -966,18 +1444,192 @@ app.put('/unlink-template/:formId', async (req, res) => {
   }
 });
 
-app.post('/send/api', upload.single('image'), async (req, res) => {
-  console.log('respose-data', req.body);
+const saveBase64Image2 = (base64Data, fileName) => {
+  const uploadDir = path.join(__dirname, 'uploads', 'images');
+
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const filePath = path.join(uploadDir, fileName);
+
+  fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+
+  return `http://localhost:4001/uploads/images/${fileName}`;
+};
+
+app.post('/send/api', upload.single('file'), async (req, res) => {
   try {
-    const { templateId, shop, title, fields, createdAt, styles, form_ids } = req.body;
-    console.log('Form IDs:', form_ids);
+    console.log('Request Body:', req.body);
+    console.log('Uploaded File:', req.file);
+
+    const { templateId, shop, title, fields, createdAt, form_ids, styles } = req.body;
+
     const formIds = Array.isArray(form_ids) ? form_ids : [form_ids];
-    const formIdsStr = formIds.map(id => String(id));
+    const fieldsArray = Array.isArray(fields) ? fields : [fields];
+
+    if (styles && styles.backgroundImage && styles.backgroundImage.startsWith('data:image')) {
+      const base64Data = styles.backgroundImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `backgroundImage_${Date.now()}.png`;
+      styles.backgroundImage = saveBase64Image2(base64Data, fileName);
+    }
+    fieldsArray.forEach(field => {
+      let headingbgImage = field.headingbgImage;
+
+      if (headingbgImage && headingbgImage.startsWith('data:image')) {
+        const base64Data = headingbgImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+        const fileName = `headingbgImage_${Date.now()}.png`;
+        field.headingbgImage = saveBase64Image2(base64Data, fileName);
+      }
+
+      if (field.customIcons && Array.isArray(field.customIcons)) {
+        field.customIcons.forEach(icon => {
+          if (icon.src && typeof icon.src === 'string' && icon.src.startsWith('data:image')) {
+            const base64Data = icon.src.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const fileName = `customIcon_${Date.now()}.png`;
+            icon.src = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+
+      if (field.columnData && Array.isArray(field.columnData)) {
+        field.columnData.forEach(column => {
+          if (column.image && typeof column.image === 'string' && column.image.startsWith('data:image')) {
+            const base64Data = column.image.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const fileName = `columnImage_${Date.now()}.png`;
+            column.image = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+    });
+
+    fieldsArray.forEach(field => {
+      if (field.value && typeof field.value === 'string' && field.value.startsWith('data:image')) {
+        const base64Data = field.value.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+        const fileName = `field_image_${Date.now()}.png`;
+        field.value = saveBase64Image2(base64Data, fileName);
+      }
+    });
+
     const formData = new Email({
       templateId,
       shop,
       title,
-      form_ids: formIdsStr,
+      form_ids: formIds,
+      fields: fieldsArray,
+      createdAt,
+      styles
+    });
+
+    const savedForm = await formData.save();
+    res.status(201).json({ message: 'Form saved successfully', data: savedForm });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error saving form', error: error.message });
+  }
+});
+
+app.put('/update/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    let updatedFormData = req.body;
+
+    if (updatedFormData.styles && updatedFormData.styles.backgroundImage && updatedFormData.styles.backgroundImage.startsWith('data:image')) {
+      const base64Data = updatedFormData.styles.backgroundImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `backgroundImage_${Date.now()}.png`;
+      updatedFormData.styles.backgroundImage = saveBase64Image2(base64Data, fileName);
+    }
+    updatedFormData.fields.forEach(field => {
+      let headingbgImage = field.headingbgImage;
+
+      if (headingbgImage && headingbgImage.startsWith('data:image')) {
+        const base64Data = headingbgImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+        const fileName = `headingbgImage_${Date.now()}.png`;
+        field.headingbgImage = saveBase64Image2(base64Data, fileName);
+      }
+
+      if (field.columnData && Array.isArray(field.columnData)) {
+        field.columnData.forEach((column, index) => {
+
+          if (column && column.image && column.image.startsWith('data:image')) {
+            const base64Data = column.image.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const fileName = `columnImage_${Date.now()}_${index}.png`;
+            column.image = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+    });
+
+    updatedFormData.fields.forEach(field => {
+
+      if (field.value && typeof field.value === 'string' && field.value.startsWith('data:image')) {
+        const base64Data = field.value.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+        const fileName = `field_image_${Date.now()}.png`;
+        field.value = saveBase64Image2(base64Data, fileName);
+      }
+
+      if (field.customIcons && Array.isArray(field.customIcons)) {
+        field.customIcons.forEach(icon => {
+          if (icon.src && typeof icon.src === 'string' && icon.src.startsWith('data:image')) {
+            const base64Data = icon.src.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const fileName = `customIcon_${Date.now()}.png`;
+            icon.src = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+    });
+
+    const updatedForm = await Email.findByIdAndUpdate(id, updatedFormData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedForm) {
+      return res.status(404).json({ message: 'Form not found' });
+    }
+
+    res.status(200).json({
+      message: 'Form updated successfully',
+      data: updatedForm,
+    });
+  } catch (error) {
+    console.error('Error updating form:', error);
+    res.status(500).json({
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+});
+
+app.get('/template/data', async (req, res) => {
+  try {
+    const data = await Templated.find({});
+    res.status(200).json({ message: 'Form data retrieved', data: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching forms', error: error.message });
+  }
+});
+
+app.get('/template/image', async (req, res) => {
+  try {
+    const data = await Templated.find({}).select('templateId title  createdAt base64Image');
+    res.status(200).json({ message: 'Form data retrieved', data: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching forms', error: error.message });
+  }
+});
+
+app.post('/template/api', upload.single('image'), async (req, res) => {
+  console.log('respose-data', req.body);
+  try {
+    const { templateId, base64Image, title, fields, createdAt, styles } = req.body;
+    const formData = new Templated({
+      templateId,
+      title,
+      base64Image,
       fields,
       createdAt,
       styles,
@@ -992,20 +1644,6 @@ app.post('/send/api', upload.single('image'), async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error saving form', error: error.message });
-  }
-});
-
-app.put('/update/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const updatedForm = await Email.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
-    if (!updatedForm) {
-      return res.status(404).json({ message: 'Form not found' });
-    }
-    res.status(200).json({ message: 'Form updated successfully', data: updatedForm });
-  } catch (error) {
-    console.error("Error updating form:", error);
-    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -1307,7 +1945,7 @@ app.post('/form-data', async (req, res) => {
       counter++;
     }
 
-    const { formId, shop, fields, createdAt, styles, submissionOption,toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
+    const { formId, shop, fields, createdAt, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
     const newFormEntry = new FormModel({
       formId,
       shop,
@@ -1398,9 +2036,9 @@ app.listen(port, () => {
 //     title: { type: String, required: true },
 //     fields: [{
 //         id: { type: String, required: true },
-//         type: { 
-//             type: String, 
-//             required: true, 
+//         type: {
+//             type: String,
+//             required: true,
 //             enum: ['text', 'name', 'button', 'divider', 'heading', 'radio','file','number','date','datetime','images','link', 'checkbox','location','toggle', 'select','textarea','password', 'email', 'phone','time','description','url','slider']
 //         },
 //         label: { type: String, required: true },
@@ -1408,21 +2046,21 @@ app.listen(port, () => {
 //         required: { type: Boolean, default: false },
 //         readonly: { type: Boolean, default: false },
 //         width: { type: String, default: '100%' },
-//         text: { type: String, default: '' }, 
+//         text: { type: String, default: '' },
 //         description: { type: String, default: '' },
 //         level: { type: String, enum: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], required: false },
 //         fontSize: { type: String, default: '16px' },
-//         padding: { type: String, default: '10px' }, 
+//         padding: { type: String, default: '10px' },
 //         color: { type: String, default: '#45a7f6' },
 //         dividerColor: { type: String, default: '#000' },
-//         buttonWidth: { type: String, default: 'auto' },   
-//         buttonHeight: { type: String, default: 'auto' }, 
-//         backgroundColor: { type: String, default: '#45a7f6' }, 
+//         buttonWidth: { type: String, default: 'auto' },
+//         buttonHeight: { type: String, default: 'auto' },
+//         backgroundColor: { type: String, default: '#45a7f6' },
 //         options: [{
 //             id: { type: String, required: true },
-//             label: { type: String, required: true }, 
+//             label: { type: String, required: true },
 //             value: { type: String, required: true },
-//             name: { type: String, required: true, default: function() { return this.label || this.value; } } 
+//             name: { type: String, required: true, default: function() { return this.label || this.value; } }
 //         }]
 //     }],
 //     createdAt: { type: String, required: true },
@@ -1435,14 +2073,14 @@ app.listen(port, () => {
 //         padding: { type: String, default: '0' },
 //         borderColor: { type: String, default: '' },
 //         borderRadius: { type: String, default: '0' },
-//         borderWidth: { type: String, default: '1px' }, 
-//         borderStyle: { type: String, default: 'solid' } 
+//         borderWidth: { type: String, default: '1px' },
+//         borderStyle: { type: String, default: 'solid' }
 
 //     },
-//     status: { 
-//         type: String, 
-//         enum: ['live', 'draft'], 
-//         required: true 
+//     status: {
+//         type: String,
+//         enum: ['live', 'draft'],
+//         required: true
 //     },
 // });
 
@@ -1501,7 +2139,7 @@ app.listen(port, () => {
 
 // app.get('/get-forms', async (req, res) => {
 //   try {
-//     const forms = await FormModel.find(); 
+//     const forms = await FormModel.find();
 //     res.json(forms);
 //   } catch (error) {
 //     res.status(500).send('Error: ' + error.message);
@@ -1534,7 +2172,7 @@ app.listen(port, () => {
 //       return res.status(400).send('A form with this title already exists. Please choose a different title.');
 //     }
 
-//     const { formId, fields, createdAt, styles, status } = req.body; 
+//     const { formId, fields, createdAt, styles, status } = req.body;
 //     const newFormEntry = new FormModel({ formId, title, fields, createdAt, styles, status });
 //     await newFormEntry.save();
 
@@ -1668,7 +2306,7 @@ app.listen(port, () => {
 
 // app.get('/get-forms', async (req, res) => {
 //   try {
-//     const forms = await FormModel.find(); 
+//     const forms = await FormModel.find();
 //     res.json(forms);
 //   } catch (error) {
 //     res.status(500).send('Error: ' + error.message);
@@ -1736,7 +2374,7 @@ app.listen(port, () => {
 //         height: 600px;
 //         width: 100%;
 //         max-width: 600px;
-//         margin: 50px auto; 
+//         margin: 50px auto;
 //         padding: 20px;
 //         background-color: #f6f8fc;
 //         border-radius: 10px;
@@ -1847,7 +2485,7 @@ app.listen(port, () => {
 
 // app.post('/register', async (req, res) => {
 //   const { name, lastName, email, message, emailSubject, emailMessage } = req.body;
-//   await sendEmail(name, lastName, email, message, emailSubject, emailMessage);  
+//   await sendEmail(name, lastName, email, message, emailSubject, emailMessage);
 //   res.status(200).json({ message: 'Email sent successfully' });
 // });
 
@@ -1974,277 +2612,3 @@ app.listen(port, () => {
 // app.listen(port, () => {
 //   console.log(`Server is running on http://localhost:${port}`);
 // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<div class="form_builder_app {{ block.id }}">
-  <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
-</div>
-
-<script>
-  $(document).ready(function () {
-    const formId = '{{ block.settings.formId }}';
-
-    console.log('Form ID:', formId);
-
-    if (formId && formId !== 'default-id') {
-      fetchFormData(formId);
-    }
-
-    function fetchFormData(id) {
-      $('#formData-{{ block.id }}').empty();
-
-      $.ajax({
-        url: `http://localhost:4001/get-form/${id}`,
-        method: 'GET',
-        success: function (data) {
-          console.log('Fetched form data:', data);
-          displayFormData(data);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error('Error: ' + errorThrown);
-          $('#formData-{{ block.id }}').append('<p>Error fetching form data. Please try again.</p>');
-        },
-      });
-    }
-
-    function displayFormData(formData) {
-      const container = $('#formData-{{ block.id }}');
-
-      const formTitle = formData.title || 'Form Data';
-
-      if (formData.styles) {
-        for (const [key, value] of Object.entries(formData.styles)) {
-          container.css(key, value);
-        }
-      }
-
-      container.append(`<h2>${formTitle}</h2>`);
-
-      if (formData.fields && formData.fields.length > 0) {
-        formData.fields.forEach((field) => {
-          const floatStyle = (field.type === 'text') ? 'float: inline-start;' : ''; 
-          
-          const fieldHtml = `
-          <div key="${field.id}" style="width: ${field.width}; ${floatStyle}" class="input-field">
-              <label>${field.label}</label>
-              ${getFieldInput(field)}  
-          </div>
-      `;
-          container.append(fieldHtml);
-        });
-      } else {
-        container.append('<p>No fields available.</p>');
-      }
-      container.append('<div class="clear-float"></div>');
-    }
-
-    function getFieldInput(field) {
-      if (field.type === 'text') {
-        return `<input type="text" class="custom-text-input" placeholder="${field.placeholder || ''}" 
-                style="width: ${field.width || 'auto'};" 
-                aria-label="${field.label || 'Text Input'}" />`;
-      } else if (field.type === 'textarea') {
-        return `<textarea placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" aria-label="${field.label || 'Textarea'}"></textarea>`;
-      } else if (field.type === 'select') {
-        const options = field.options
-          .map((option) => `<option value="${option.value}">${option.label}</option>`)
-          .join('');
-        return `<select style="width: ${field.width || 'auto'};" aria-label="${
-          field.label || 'Select Input'
-        }">${options}</select>`;
-      } else if (field.type === 'checkbox') {
-        return `
-          <div>
-            ${field.options
-              .map(
-                (option) => `
-                <div key="${option.id}" class="form_checkbox_flex">
-                  <input type="checkbox" 
-                    name="${field.name}" 
-                    value="${option.value}"
-                    ${field.required ? 'required' : ''} 
-                    ${field.readonly ? 'readonly' : ''} />
-                  <label>${option.label}</label>
-                </div>
-              `
-              )
-              .join('')}
-          </div>
-        `;
-      } else if (field.type === 'radio') {
-        return field.options
-          .map(
-            (option) => `
-            <label>
-              <input type="radio" name="${field.name}" value="${option.value}" 
-                ${option.checked ? 'checked' : ''} 
-                aria-label="${field.label || 'Radio Input'}" />
-              ${option.label}
-            </label>
-          `
-          )
-          .join('');
-      } else if (field.type === 'divider') {
-        return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" />`;
-      } else if (field.type === 'description') {
-        return `<p>${field.text}</p>`;
-      } else if (field.type === 'heading') {
-        return `<h1 style="font-size: ${field.fontSize || '16px'};">${field.text}</h1>`;
-      } else if (field.type === 'number') {
-        return `<input type="number" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'file') {
-        return `<input type="file" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'email') {
-        return `<input type="email" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'phone') {
-        return `<input type="tel" placeholder="${field.placeholder || ''}" style="width: ${field.width || 'auto'};" />`;
-      } else if (field.type === 'password') {
-        return `<input type="password" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'url') {
-        return `<input type="url" placeholder="${field.placeholder || ''}" style="width: ${field.width || 'auto'};" />`;
-      } else if (field.type === 'location') {
-        return `<input type="text" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'date') {
-        return `<input type="date" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'datetime') {
-        return `<input type="datetime-local" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'time') {
-        return `<input type="time" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'link') {
-        return `<input type="url" placeholder="${field.placeholder || ''}" style="width: ${field.width || 'auto'};" />`;
-      } else if (field.type === 'images') {
-        return `<input type="file" multiple placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'slider') {
-        return `<input type="range" placeholder="${field.placeholder || ''}" style="width: ${
-          field.width || 'auto'
-        };" />`;
-      } else if (field.type === 'button') {
-        return `
-          <div>
-            <button style="background-color: ${field.color}; font-size: ${field.fontSize || '16px'}; padding: ${
-          field.padding || '10px'
-        }; color: #fff;" onclick="submitFormData()">
-              ${field.label}
-            </button>
-          </div>
-        `;
-      }
-
-      return '';
-    }
-  });
-
-  function generateUniqueId() {
-    return 'field_' + Math.random().toString(36).substr(2, 9);
-  }
-
-  function submitFormData() {
-    const formData = {
-      id: '{{ block.settings.formId }}',
-      title: $('#formData-{{ block.id }} h2').text(),
-      fields: [],
-    };
-
-    $('#formData-{{ block.id }} .input-field').each(function () {
-      const input = $(this).find('input, textarea');
-      const fieldName = $(this).find('label').text().trim();
-      const fieldValue = input.is(':radio') ? input.filter(':checked').val() : input.val() || '';
-
-      const fieldObject = {
-        id: generateUniqueId(),
-        name: fieldName,
-        value: fieldValue,
-      };
-
-      if (fieldValue) {
-        formData.fields.push(fieldObject);
-      }
-    });
-
-    console.log('Form Data to send:', formData);
-
-    $.ajax({
-      url: 'http://localhost:4001/api/forms',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(formData),
-      success: function (response) {
-        console.log('Form submitted successfully:', response);
-        alert('Form submitted successfully!');
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error('Error submitting form:', errorThrown);
-        alert('Error submitting form. Please try again.');
-      },
-    });
-  }
-</script>
-
-{% schema %}
-{
-  "name": "Form Submission",
-  "target": "section",
-  "settings": [
-    { "type": "color", "id": "colour", "label": "Button Text Colour", "default": "#ff0000" },
-    { "type": "color", "id": "bgcolour", "label": "Button Background Colour", "default": "#ff0000" },
-    { "type": "text", "id": "formId", "label": "Form ID" }
-  ]
-}
-{% endschema %} */}

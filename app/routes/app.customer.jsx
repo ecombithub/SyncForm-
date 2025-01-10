@@ -106,7 +106,9 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('https://hubsyntax.online/api/customer');
+                setLoading(true);
+                await new Promise((resolve) => setTimeout(resolve, 3000));
+                const response = await axios.get('http://localhost:4001/api/customer');
 
                 if (!shop) {
                     console.log('Shop not found');
@@ -135,8 +137,9 @@ function Customer() {
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const response = await axios.get('https://hubsyntax.online/api/forms');
-
+                setLoading(true);
+                await new Promise((resolve) => setTimeout(resolve, 3000));
+                const response = await axios.get('http://localhost:4001/api/forms');
                 const filteredForms = response.data.filter(form => form.shop === shop);
 
                 if (filteredForms.length > 0) {
@@ -160,9 +163,7 @@ function Customer() {
         fetchForms();
     }, []);
 
-    if (loading) {
-        return <div></div>;
-    }
+ 
 
     const handleToggleFormNames = () => {
         setShowFormNames(!showFormNames);
@@ -308,6 +309,36 @@ function Customer() {
     };
 
     return (
+        <>
+        {loading ? (
+            <div className="skeleton-wrapper fade-in">
+                <div className="container skeleton-wred">
+                    <div className="skeleton-wrp">
+                        <div className="skeleton-wrp-left">
+                            <div className="skeleton skeleton-header"></div>
+                            <div className="skeleton-wrp-left-para">
+                                <div className="skeleton skeleton-paragraph"></div>
+                                <div className="skeleton skeleton-paragraph"></div>
+                            </div>
+                            <div className="skeleton-wrp-left-para">
+                                <div className="skeleton skeleton-paragraph"></div>
+                                <div className="skeleton skeleton-paragraph "></div>
+                            </div>
+                        </div>
+                        <div className="skeleton-wrp-right">
+                            <div className="skeleton-wrp-left-para right">
+                                <div className="skeleton skeleton-paragraph"></div>
+                                <div className="skeleton skeleton-paragraph two"></div>
+                            </div>
+                            <div className="skeleton-wrp-left-para right">
+                                <div className="skeleton skeleton-paragraph"></div>
+                                <div className="skeleton skeleton-paragraph two"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        ) : (
         <div className='form_builder_customer'>
             <div className='container'>
                 <div className="form-builder-customer_title">
@@ -587,6 +618,8 @@ function Customer() {
                 </div>
             </div>
         </div>
+        )}
+        </>
     );
 }
 
