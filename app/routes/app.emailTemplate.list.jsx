@@ -101,7 +101,7 @@ export default function EmailTemplate() {
 
     const fetchForms = async () => {
         try {
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get('https://hubsyntax.online/get/base64');
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
 

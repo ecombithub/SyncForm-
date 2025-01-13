@@ -21,7 +21,6 @@ mongoose.connect(mongoUri)
     console.error('Error connectingcd  to MongoDB:', err);
   });
 
-
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -741,23 +740,6 @@ app.post('/api/template', async (req, res) => {
   }
 });
 
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
-// const uploadDir = path.join(__dirname, 'upload');
-// if (!fs.existsSync(uploadDir)) {
-//   fs.mkdirSync(uploadDir);
-// }
-
-const saveBase64Image = (base64Str, fileName) => {
-  const base64Data = base64Str.replace(/^data:image\/png;base64,/, '');
-  const filePath = path.join(uploadDir, fileName);
-  fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-  return filePath;
-};
-
-
 const sendEmail = async (email, TemplateAll) => {
   try {
     console.log('Preparing to send email');
@@ -921,16 +903,16 @@ const sendEmail = async (email, TemplateAll) => {
                 }
 
                 let imageCid = '';
-                if (column.image && column.image.startsWith('data:image/png;base64,')) {
-                  const uniqueId = `image-${Date.now()}-${index}`;
-                  const imagePath = saveBase64Image(column.image, `${uniqueId}.png`);
-                  attachments.push({
-                    filename: `${uniqueId}.png`,
-                    path: imagePath,
-                    cid: uniqueId,
-                  });
-                  imageCid = `cid:${uniqueId}`;
-                }
+                // if (column.image && column.image.startsWith('data:image/png;base64,')) {
+                //   const uniqueId = `image-${Date.now()}-${index}`;
+                //   const imagePath = saveBase64Image(column.image, `${uniqueId}.png`);
+                //   attachments.push({
+                //     filename: `${uniqueId}.png`,
+                //     path: imagePath,
+                //     cid: uniqueId,
+                //   });
+                //   imageCid = `cid:${uniqueId}`;
+                // }
 
                 let processedContent = column.content.replace(
                   /<p><br><\/p>/g,
@@ -962,7 +944,7 @@ const sendEmail = async (email, TemplateAll) => {
                     background-color: ${field.Multicolumnbgcolor || 'transparent'};
                     color: ${field.MultiColor || '#000'};
                   ">
-                    ${imageCid ? `<img src="${imageCid}" alt="Column ${index}" style="width: 100%; height: auto;" />` : ''}
+                    <img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />
                     ${processedContent}
                     ${column.isVisible
                     ? `
@@ -1017,7 +999,7 @@ const sendEmail = async (email, TemplateAll) => {
                         padding: ${field.imgPadding || 0}px;
                       ">
                         <img 
-                          src="cid:${uniqueId}" 
+                          src="${field.value}" 
                           alt="${field.label || 'Image'}" 
                           style="width: ${field.imgWidth || 100}%;"
                         />
@@ -1028,71 +1010,58 @@ const sendEmail = async (email, TemplateAll) => {
 
             case 'split': {
               const value = field.value || '';
-              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, () => '');
+              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');
 
               return `
-                <div style="
-                  overflow: hidden;
-                  background-color: ${field.splitbg || '#ffffff'}; 
-                  width: ${field.width || '100%'};
-                  height: ${field.splitheight || 'auto'}px;
-                  padding: ${field.splitPadding || 0}px;
-                  float: inline-start;
-                  color:${field.splitColor};
-                ">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
-                    width: 100%; 
-                    height: 100%; 
-                    text-align: ${field.splitTextAlin || 'left'};
-                    border-spacing: 0; 
-                    float: inline-start;
-                    color:${field.splitColor};
+      <div style="
+        overflow: hidden;
+        background-color: ${field.splitbg || '#ffffff'};
+        width: ${field.width || '100%'};
+        height: ${field.splitheight || 'auto'}px;
+        padding: ${field.splitPadding || 0}px;
+        float: inline-start;
+        color: ${field.splitColor};
+      ">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
+          width: 100%;
+          height: 100%;
+          text-align: ${field.splitTextAlign || 'left'};
+          border-spacing: 0;
+          color: ${field.splitColor};
+        ">
+          <tr>
+            <td style="
+              vertical-align: ${field.splittext === 'end' ? 'bottom' : field.splittext === 'left' || !field.splittext ? 'top' : field.splittext};
+              text-align: ${field.splitTextAlign || 'left'};
+            ">
+              ${field.add === 'image' ?
+                  `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
+                  `<div>${updatedValue}</div>`
+                }
+              ${field.showbtnsplit ?
+                  `<a href="${field.splitbtnurl || '#'}" target="_blank" style="text-decoration: none;">
+                  <button style="
+                    margin-top: 20px;
+                    background-color: ${field.splitbtnbg || '#007BFF'};
+                    font-size: ${field.splitbtnfont || 14}px;
+                    color: ${field.splitbtncolor || '#FFF'};
+                    height: ${field.splitbtnheight || 40}px;
+                    width: ${field.splitbtnwidth || 100}px;
+                    border-radius: ${field.splitbtnradious || 0}px;
+                    border-width: ${field.splitBorderWidth || 2}px;
+                    border-style: ${field.splitBorderStyle || 'solid'};
+                    border-color: ${field.splitBorderColor || '#000'};
+                    cursor: pointer;
                   ">
-                    <tr>
-                      <td style="
-                        vertical-align: ${field.splittext === 'end' ? 'bottom' : (field.splittext === 'left' || !field.splittext ? 'top' : field.splittext)};
-                        text-align: ${field.splitTextAlin || 'left'}; 
-                      ">
-                        ${field.value.startsWith('data:image/')
-                  ? (() => {
-                    const uniqueId = `image-${Date.now()}`;
-                    const imagePath = saveBase64Image(field.value, `${uniqueId}.png`);
-                    attachments.push({
-                      filename: `${uniqueId}.png`,
-                      path: imagePath,
-                      cid: uniqueId,
-                    });
-                    return `<img src="cid:${uniqueId}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />`;
-                  })()
-                  : `<div>${updatedValue}</div>`
+                    ${field.splitbtn || 'Click Me'}
+                  </button>
+                </a>` : ''
                 }
-                        ${field.showbtnsplit
-                  ? `
-                            <a href="${field.splitbtnurl || '#'}" target="_blank" style="text-decoration: none;">
-                              <button style="
-                                margin-top: 20px;
-                                background-color: ${field.splitbtnbg || '#007BFF'};
-                                font-size: ${field.splitbtnfont || 14}px;
-                                color: ${field.splitbtncolor || '#FFF'};
-                                height: ${field.splitbtnheight || 40}px;
-                                width: ${field.splitbtnwidth || 100}px;
-                                border-radius: ${field.splitbtnradious || 0}px;
-                                border-width: ${field.splitBorderWidth || 2}px;
-                                border-style: ${field.splitBorderStyle || 'solid'};
-                                border-color: ${field.splitBorderColor || '#000'};
-                                cursor: pointer;
-                              ">
-                                ${field.splitbtn || 'Click Me'}
-                              </button>
-                            </a>
-                            `
-                  : ''
-                }
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              `;
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
             }
             case 'product':
               return `
@@ -1214,25 +1183,21 @@ const sendEmail = async (email, TemplateAll) => {
                     .filter(icon => !icon.isHidden && icon.url)
                     .forEach((icon, index) => {
                       const uniqueId = `custom-icon-${Date.now()}-${index}`;
-
-                      if (icon.src && icon.src.startsWith('data:image/png;base64,')) {
-                        const imagePath = saveBase64Image(icon.src, `${uniqueId}.png`);
-                        attachments.push({
-                          filename: `${uniqueId}.png`,
-                          path: imagePath,
-                          cid: uniqueId,
-                        });
-                        icons.push(`
-                          <a href="${icon.url} "style="padding-right: ${field.socalIcongap}px;" target="_blank" rel="noopener noreferrer">
-                            <img src="cid:${uniqueId}" 
-                                 alt="${uniqueId}" 
-                                 style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
-                          </a>
-                        `);
-                      }
+                
+                      document.write(`
+                        <a href="${icon.url}" 
+                           style="padding-right: ${field.socalIcongap || 8}px;" 
+                           target="_blank" 
+                           rel="noopener noreferrer">
+                          <img src="${icon.src}" 
+                               alt="${icon.alt || `Icon ${index + 1}`}" 
+                               style="height: ${field.socalIconHeight || 24}px; 
+                                      width: ${field.socalIconWidth || 24}px;" />
+                        </a>
+                      `);
                     });
                 }
-
+              
                 return `
                   <div style="
                     text-align: ${field.socaliconTextAlign || 'left'}; 
