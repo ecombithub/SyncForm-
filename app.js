@@ -186,6 +186,7 @@ const columnSchema = new mongoose.Schema({
 const emailTemplateSchema = new mongoose.Schema({
   templateId: { type: String, required: true },
   shop: { type: String, required: true },
+  TemplateImage: { type: String, required: true },
   form_ids: {
     type: [String],
     required: true,
@@ -1218,21 +1219,21 @@ const sendEmail = async (email, TemplateAll) => {
 
     const fieldsHTML = renderFieldsHTML();
 
-    const backgroundImage = TemplateAll.styles.backgroundImage || '';
-    const updatedimageUrl = backgroundImage.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-      if (match.startsWith('data:image/png;base64,')) {
-        const uniqueId = `image-${Date.now()}`;
-        const imagePath = saveBase64Image(match, `${uniqueId}.png`);
-        attachments.push({
-          filename: `${uniqueId}.png`,
-          path: imagePath,
-          cid: uniqueId,
-        });
+    // const backgroundImage = TemplateAll.styles.backgroundImage || '';
+    // const updatedimageUrl = backgroundImage.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+    //   if (match.startsWith('data:image/png;base64,')) {
+    //     const uniqueId = `image-${Date.now()}`;
+    //     const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+    //     attachments.push({
+    //       filename: `${uniqueId}.png`,
+    //       path: imagePath,
+    //       cid: uniqueId,
+    //     });
 
-        return `cid:${uniqueId}`;
-      }
-      return match;
-    });
+    //     return `cid:${uniqueId}`;
+    //   }
+    //   return match;
+    // });
     const userHtmlContent = `
 
     <html>
@@ -1265,7 +1266,7 @@ const sendEmail = async (email, TemplateAll) => {
         padding: ${TemplateAll.styles.templatePadding || '0'}px;
         font-family: ${TemplateAll.styles.fontFamily || 'Arial'};
         margin:auto;
-        background-image: url('${updatedimageUrl}');
+        background-image: url('${TemplateAll.styles.backgroundImage}');
         background-repeat: no-repeat;
         background-size: cover;
          ">
@@ -1364,7 +1365,7 @@ app.get('/get/data', async (req, res) => {
 app.get('/get/base64', async (req, res) => {
   try {
 
-    const data = await Email.find({});
+    const data = await Email.find({}).select('templateId shop TemplateImage title createdAt');
     res.status(200).json({ message: 'Form data retrieved', data: data });
   } catch (error) {
     console.error(error);
@@ -1420,7 +1421,7 @@ const saveBase64Image2 = (base64Data, fileName) => {
 
   fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
-  return `http://localhost:4001/uploads/images/${fileName}`;
+  return `https://hubsyntax.online/uploads/images/${fileName}`;
 };
 
 app.post('/send/api', upload.single('file'), async (req, res) => {
@@ -1428,16 +1429,24 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
     console.log('Request Body:', req.body);
     console.log('Uploaded File:', req.file);
 
-    const { templateId, shop, title, fields, createdAt, form_ids, styles } = req.body;
+    let { templateId, shop, TemplateImage, title, fields, createdAt, form_ids, styles } = req.body; 
 
     const formIds = Array.isArray(form_ids) ? form_ids : [form_ids];
     const fieldsArray = Array.isArray(fields) ? fields : [fields];
 
+    if (TemplateImage && TemplateImage.startsWith('data:image')) {
+      const base64Data = TemplateImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `templateImage_${Date.now()}.png`;
+      const savedFilePath = saveBase64Image2(base64Data, fileName);
+      TemplateImage = savedFilePath; 
+    }
+    
     if (styles && styles.backgroundImage && styles.backgroundImage.startsWith('data:image')) {
       const base64Data = styles.backgroundImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
       const fileName = `backgroundImage_${Date.now()}.png`;
       styles.backgroundImage = saveBase64Image2(base64Data, fileName);
     }
+
     fieldsArray.forEach(field => {
       let headingbgImage = field.headingbgImage;
 
@@ -1479,6 +1488,7 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
     const formData = new Email({
       templateId,
       shop,
+      TemplateImage,
       title,
       form_ids: formIds,
       fields: fieldsArray,
@@ -1495,10 +1505,17 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
   }
 });
 
+
 app.put('/update/:id', async (req, res) => {
   const { id } = req.params;
   try {
     let updatedFormData = req.body;
+
+    if (updatedFormData.TemplateImage && updatedFormData.TemplateImage.startsWith('data:image')) {
+      const base64Data = updatedFormData.TemplateImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `templateImage_${Date.now()}.png`;
+      updatedFormData.TemplateImage = saveBase64Image2(base64Data, fileName); 
+    }
 
     if (updatedFormData.styles && updatedFormData.styles.backgroundImage && updatedFormData.styles.backgroundImage.startsWith('data:image')) {
       const base64Data = updatedFormData.styles.backgroundImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');

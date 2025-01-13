@@ -696,7 +696,7 @@ export default function EmailTemplate() {
                         ) : (
                             <div style={{ width: '100%', display: 'flex', alignItems: field.splittext === 'left' ? 'flex-start' : field.splittext === 'center' ? 'center' : 'flex-end' }}>
                                 <div style={{ width: '100%' }}>
-                                    <div style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value  }} />
+                                    <div style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value }} />
                                     <div >
                                         {field.showbtnsplit && (
                                             <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
@@ -916,21 +916,16 @@ export default function EmailTemplate() {
                                                 <div
                                                     key={form.createdAt}
                                                     className="email-templates"
-                                                    style={{
-                                                        backgroundColor: form.styles?.backgroundColor || '',
-                                                        backgroundImage: form.styles?.backgroundImage ? `url(${form.styles.backgroundImage})` : '',
-                                                        borderRadius: form.styles?.borderRadius || '',
-                                                        width: form.styles?.width || '100%',
-                                                        padding: form.styles?.templatePadding || '0',
-                                                        textAlign: form.styles?.textAlign || 'left',
-                                                        fontFamily: form.styles?.fontFamily || 'Arial',
-                                                    }}
                                                 >
                                                     <div className='email-tempalte-text'>
                                                         <div>
-                                                            {form.fields?.map((field) => (
-                                                                <div key={field.id}>{renderField(field)}</div>
-                                                            ))}
+                                                            {form.TemplateImage && (
+                                                                <img
+                                                                    src={form.TemplateImage}
+                                                                    alt="Template"
+                                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                                />
+                                                            )}
                                                         </div>
                                                         <div className='email-title-t'>
                                                             <h3>{form.title}</h3>

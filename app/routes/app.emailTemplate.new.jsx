@@ -903,10 +903,10 @@ const EmailTemplateCreate = () => {
             return;
         }
 
-        if (selectedFormIds.length === 0) {
-            alert('Please select form before saving the template.');
-            return;
-        }
+        // if (selectedFormIds.length === 0) {
+        //     alert('Please select form before saving the template.');
+        //     return;
+        // }
 
         if (!id) {
             try {
@@ -1214,46 +1214,64 @@ const EmailTemplateCreate = () => {
 
         console.log('Updated fields:', updatedFields);
 
-        const formData = {
-            templateId,
-            shop,
-            form_ids: selectedFormIds.map(id => String(id)),
-            title: trimmedTitle,
-            fields: updatedFields,
-            createdAt: timestamp,
-            styles: {
-                backgroundImage,
-                backgroundColor,
-                borderRadious,
-                templatePadding,
-                textAlign,
-                fontFamily,
-                width: viewMode === 'desktop' ? '800px' : '400px',
-                dividerColor,
-            },
-        };
-
         try {
             setSaveEmail(!saveEmail);
-            const response = id
-                ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
-                : await axios.post('https://hubsyntax.online/send/api', formData);
-            console.log('Form saved successfully with title:', trimmedTitle);
-            const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
-            console.log(successMessage, response.data);
-
-            if (!id) {
-                resetFormState();
+        
+            const templateElement = document.getElementById('template-container');
+        
+            if (templateElement) {
+                const htmlToImage = await import('html-to-image');
+                try {
+                   
+                    const dataUrl = await htmlToImage.toPng(templateElement);
+        
+                    const formData = {
+                        templateId,
+                        shop,
+                        form_ids: selectedFormIds.map(id => String(id)),
+                        title: trimmedTitle,
+                        fields: updatedFields,
+                        createdAt: timestamp,
+                        TemplateImage: dataUrl,  
+                        styles: {
+                            backgroundImage,
+                            backgroundColor,
+                            borderRadious,
+                            templatePadding,
+                            textAlign,
+                            fontFamily,
+                            width: viewMode === 'desktop' ? '800px' : '400px',
+                            dividerColor,
+                        },
+                    };
+                   console.log(dataUrl)
+                    const response = id
+                        ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)  
+                        : await axios.post('https://hubsyntax.online/send/api', formData); 
+        
+                    console.log('Form saved successfully with title:', trimmedTitle);
+                    const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
+                    console.log(successMessage, response.data);
+        
+                    if (!id) {
+                        resetFormState();
+                    }
+        
+                    setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
+        
+                } catch (error) {
+                    console.error('Error generating template image:', error);
+                }
             }
-            setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
         } catch (error) {
             console.error('Error saving form:', error);
             if (error.response) {
                 console.error('Response data:', error.response.data);
             }
         }
+        
     };
-    
+
     const resetFormState = () => {
         setFields([]);
         setEmailTemplateId(null);
@@ -2092,7 +2110,7 @@ const EmailTemplateCreate = () => {
 
                                         <div
                                             className="form-builder email-template"
-                                            id="form-container"
+                                            id="template-container"
                                             ref={formBuilderRef}
                                             style={{
                                                 backgroundColor,
@@ -4133,7 +4151,7 @@ const EmailTemplateCreate = () => {
                                                                                         />
                                                                                         <button className='rm-btn showfirst'
                                                                                             onClick={() => handleRemoveImage5(field.id)}>
-                                                                                              <img src={rm} alt="" />
+                                                                                            <img src={rm} alt="" />
                                                                                         </button>
 
                                                                                     </div>
@@ -5683,8 +5701,8 @@ const EmailTemplateCreate = () => {
                                                                                                         </div>
                                                                                                         <div className='img-socal-costom'>
                                                                                                             <img src={icon.src} alt={icon.name}
-                                                                                                             style={{ width: "100%" }}
-                                                                                                              />
+                                                                                                                style={{ width: "100%" }}
+                                                                                                            />
                                                                                                         </div>
                                                                                                     </div>
 

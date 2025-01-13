@@ -3699,7 +3699,7 @@ button.btn-templates {
 }
 
 .email-template-section .form-builder-create.section-wrp {
-    max-width: 95%;
+    max-width: 100%;
 }
 
 .email_field {
