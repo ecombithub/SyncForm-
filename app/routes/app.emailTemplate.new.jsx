@@ -40,6 +40,7 @@ import productcancle from '../images/productcancle.png';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import 'react-quill/dist/quill.snow.css';
+import imageCompression from 'browser-image-compression';
 
 import '../index.css';
 import { useNavigate } from 'react-router-dom';
@@ -1216,15 +1217,42 @@ const EmailTemplateCreate = () => {
 
         try {
             setSaveEmail(!saveEmail);
-        
+
             const templateElement = document.getElementById('template-container');
-        
+
             if (templateElement) {
                 const htmlToImage = await import('html-to-image');
                 try {
-                   
+
                     const dataUrl = await htmlToImage.toPng(templateElement);
-        
+                    const response1 = await fetch(dataUrl);
+                    const imageBlob = await response1.blob();
+
+                    let compressedBlob;
+                    let maxSizeMB = 0.05; 
+                    let maxWidthOrHeight = 800;
+
+                    do {
+                        const compressionOptions = {
+                            maxSizeMB,
+                            maxWidthOrHeight,
+                            useWebWorker: true,
+                        };
+
+                        compressedBlob = await imageCompression(imageBlob, compressionOptions);
+
+                        maxSizeMB -= 0.005; 
+                        maxWidthOrHeight -= 50; 
+                    } while (compressedBlob.size > 10 * 1024 && maxSizeMB > 0 && maxWidthOrHeight > 200);
+
+                    if (compressedBlob.size > 10 * 1024) {
+                        console.warn('Could not compress the image to 10 KB. Using the smallest possible size.');
+                    }
+
+                    const compressedDataUrl = await imageCompression.getDataUrlFromFile(compressedBlob);
+
+                    console.log(`Compressed size: ${(compressedBlob.size / 1024).toFixed(2)} KB`);
+
                     const formData = {
                         templateId,
                         shop,
@@ -1232,7 +1260,7 @@ const EmailTemplateCreate = () => {
                         title: trimmedTitle,
                         fields: updatedFields,
                         createdAt: timestamp,
-                        TemplateImage: dataUrl,  
+                        TemplateImage: compressedDataUrl,
                         styles: {
                             backgroundImage,
                             backgroundColor,
@@ -1244,21 +1272,21 @@ const EmailTemplateCreate = () => {
                             dividerColor,
                         },
                     };
-                   console.log(dataUrl)
+                    console.log(dataUrl);
                     const response = id
-                        ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)  
-                        : await axios.post('https://hubsyntax.online/send/api', formData); 
-        
+                        ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
+                        : await axios.post('https://hubsyntax.online/send/api', formData);
+
                     console.log('Form saved successfully with title:', trimmedTitle);
                     const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
                     console.log(successMessage, response.data);
-        
+
                     if (!id) {
                         resetFormState();
                     }
-        
+
                     setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
-        
+
                 } catch (error) {
                     console.error('Error generating template image:', error);
                 }
@@ -1269,7 +1297,7 @@ const EmailTemplateCreate = () => {
                 console.error('Response data:', error.response.data);
             }
         }
-        
+
     };
 
     const resetFormState = () => {

@@ -923,7 +923,7 @@ export default function EmailTemplate() {
                                                                 <img
                                                                     src={form.TemplateImage}
                                                                     alt="Template"
-                                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                                    style={{ width: '100%', maxWidth: '100%', height: 'auto' }}
                                                                 />
                                                             )}
                                                         </div>

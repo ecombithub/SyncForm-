@@ -40,8 +40,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 const formCreateSchema = new mongoose.Schema({
   formId: { type: String, required: true },
@@ -1421,7 +1421,7 @@ const saveBase64Image2 = (base64Data, fileName) => {
 
   fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
-  return `https://hubsyntax.online/uploads/images/${fileName}`;
+  return `http://localhost:4001/uploads/images/${fileName}`;
 };
 
 app.post('/send/api', upload.single('file'), async (req, res) => {
@@ -1504,7 +1504,6 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
     res.status(500).json({ message: 'Error saving form', error: error.message });
   }
 });
-
 
 app.put('/update/:id', async (req, res) => {
   const { id } = req.params;

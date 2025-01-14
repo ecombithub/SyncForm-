@@ -37,6 +37,7 @@
     "@shopify/shopify-app-session-storage-prisma": "^5.0.2",
     "axios": "^1.7.3",
     "bootstrap": "^5.3.3",
+    "browser-image-compression": "^2.0.2",
     "canvas": "^3.0.1",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
