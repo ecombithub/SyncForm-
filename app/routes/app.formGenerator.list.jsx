@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Formgenerated from './app.formGenerator.new';
 import { Link, useNavigate } from '@remix-run/react';
-import Index from './app._index';
 import plus from '../images/plusicon.png';
 import vecter1 from '../images/vecter1.png';
 import oplus from '../images/oplus.png';
@@ -178,7 +176,7 @@ const Formdata = () => {
         setTimeout(async () => {
             try {
 
-                await fetch(`https://hubsyntax.online/delete-form/${formToDelete}`, {
+                await fetch(`http://localhost:4001/delete-form/${formToDelete}`, {
                     method: 'DELETE',
                 });
 
@@ -231,7 +229,7 @@ const Formdata = () => {
         const fetchPaymentPlan = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
+                const response = await axios.get(`http://localhost:4001/payment/plan?shop=${shop}`);
                 setUserPlan(response.data);
 
                 await fetchForms(response.data);
@@ -245,7 +243,7 @@ const Formdata = () => {
             try {
                 setLoading(true);
                 await new Promise((resolve) => setTimeout(resolve, 3000));
-                const response1 = await fetch('https://hubsyntax.online/get-forms');
+                const response1 = await fetch('http://localhost:4001/get-forms');
                 if (!response1.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -255,7 +253,7 @@ const Formdata = () => {
 
                 setCreatedForms(filteredForms);
                 console.log(filteredForms)
-                const response2 = await axios.get('https://hubsyntax.online/api/forms');
+                const response2 = await axios.get('http://localhost:4001/api/forms');
                 const apiFormsData = response2.data;
 
                 const updatedForms = filteredForms.map((form1) => {
@@ -273,7 +271,7 @@ const Formdata = () => {
                 if (userPlan?.plan === 'free' && userPlan.status === 'active') {
                     const formsToDisable = updatedForms.slice(1);
                     for (const form of formsToDisable) {
-                        await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+                        await fetch(`http://localhost:4001/delete-form/${form.formId}`, {
                             method: 'DELETE',
                         });
                     }
@@ -342,7 +340,7 @@ const Formdata = () => {
         try {
 
             setTimeout(async () => {
-                const response = await fetch('https://hubsyntax.online/copy-form', {
+                const response = await fetch('http://localhost:4001/copy-form', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -700,7 +698,7 @@ const Formdata = () => {
                             <div className='form-builder-create-wrped'>
                                 {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
                                     form.formId === currentFormId && (
-                                        <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover' }} className="form-details">
+                                        <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover',backgroundPosition:'center' }} className="form-details">
                                             {form.fields.map(field => (
                                                 <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
 
@@ -708,7 +706,7 @@ const Formdata = () => {
                                                     {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                     {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                     {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}></textarea>}
-                                                    {field.type === 'description' && <p>{field.text}</p>}
+                                                    {field.type === 'description' && <p style={{fontSize:`${field.textSize}px`,color:field.textColor, textAlign:field.textAline}}>{field.text}</p>}
                                                     {field.type === 'toggle' && (
                                                         <label className="custom-toggle">
                                                             <input type="checkbox" aria-label={field.label} />

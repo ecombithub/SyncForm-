@@ -251,6 +251,7 @@ const Formgenerated = () => {
             formBuilder.style.backgroundImage = imageFile ? `url(${imageFile})` : backgroundImage || 'none';
             formBuilder.style.backgroundSize = 'cover';
             formBuilder.style.backgroundRepeat = 'no-repeat';
+            formBuilder.style.backgroundPosition = 'center';
             formBuilder.style.boxShadow = boxShadow;
             formBuilder.style.width = formWidth;
             formBuilder.style.padding = `${padding}px`;
@@ -362,6 +363,9 @@ const Formgenerated = () => {
             btncolor: type === 'button' ? '#fff' : undefined,
             btnradious: type === 'button' ? '4' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
+            textSize:type === 'description' ? '16' : undefined,
+            textAline:type === 'description' ? 'left' : undefined,
+            textColor: type === 'description' ? '#000000' : undefined,
             headingText: type === 'heading' ? 'Add Heading' : undefined,
             linktext: type === 'link' ? 'Link' : undefined,
             linkUrl: type === 'link' ? '' : undefined,
@@ -920,10 +924,10 @@ const Formgenerated = () => {
         console.log('New form object:', JSON.stringify(newForm, null, 2));
 
         const request = isEditing
-            ? axios.put(`https://hubsyntax.online/update-form/${editingFormId}`, newForm, {
+            ? axios.put(`http://localhost:4001/update-form/${editingFormId}`, newForm, {
                 headers: { 'Content-Type': 'application/json' }
             })
-            : axios.post('https://hubsyntax.online/form-data', newForm, {
+            : axios.post('http://localhost:4001/form-data', newForm, {
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -1369,32 +1373,32 @@ const Formgenerated = () => {
     return (
         <div>
             {isLoading && (
-                  <div className="skeleton-wrapper fade-in">
-                  <div className="container skeleton-wred">
-                    <div className="skeleton-wrp">
-                    <div className="skeleton-wrp-left">
-                        <div className="skeleton skeleton-header"></div>
-                        <div className="skeleton-wrp-left-para">
-                        <div className="skeleton skeleton-paragraph"></div>
-                        <div className="skeleton skeleton-paragraph"></div>
+                <div className="skeleton-wrapper fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
+                                </div>
+                            </div>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="skeleton-wrp-left-para">
-                        <div className="skeleton skeleton-paragraph"></div>
-                        <div className="skeleton skeleton-paragraph "></div>
-                        </div>
-                      </div>
-                      <div className="skeleton-wrp-right">
-                      <div className="skeleton-wrp-left-para right">
-                      <div className="skeleton skeleton-paragraph"></div>
-                      <div className="skeleton skeleton-paragraph two"></div>
-                      </div>
-                      <div className="skeleton-wrp-left-para right">
-                      <div className="skeleton skeleton-paragraph"></div>
-                      <div className="skeleton skeleton-paragraph two"></div>
-                      </div>
-                      </div>
                     </div>
-                  </div>
                 </div>
             )}
             <div className="builder-container">
@@ -2005,7 +2009,7 @@ const Formgenerated = () => {
                                                             }}>
                                                             <div className='form_builder_heading_hover'>
                                                                 <label>
-                                                                    <div className="description-field" style={{ fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1 }}
+                                                                    <div className="description-field" style={{ fontSize: `${field.textSize}px`, color:field.textColor, textAlign:field.textAline, width: field.width, opacity: field.opacity || 1 }}
                                                                     >
                                                                         <p>{field.text}</p>
                                                                     </div>
@@ -3277,10 +3281,43 @@ const Formgenerated = () => {
                                                                         onChange={(e) => setDescriptionText(e.target.value)}
                                                                     />
                                                                 </div>
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Font-Size:</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={selectedField.textSize}
+                                                                        onChange={(e) => updateFieldProperty('textSize', e.target.value, selectedField.id)}
+
+                                                                    />
+                                                                </div>
+
+                                                                <div className='checkbox-option bg-colors'>
+                                                                    <label> Color</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{selectedField.textColor}</span>
+                                                                        <input
+                                                                            type="color"
+                                                                            value={selectedField.textColor}
+                                                                             onChange={(e) => updateFieldProperty('textColor', e.target.value, selectedField.id)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Text Align </label>
+                                                                    <select
+                                                                        value={selectedField.textAline}
+                                                                        onChange={(e) => updateFieldProperty('textAline', e.target.value, selectedField.id)}
+                                                                    >
+                                                                        <option value="left">left</option>
+                                                                        <option value="center">center</option>
+                                                                        <option value="right">right</option>
+                                                                    </select>
+                                                                </div>
 
                                                             </>
                                                         )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
                                                             <label>Placeholder</label>
                                                             <input
                                                                 type="text"
@@ -3289,7 +3326,7 @@ const Formgenerated = () => {
                                                             />
                                                         </div>
                                                         )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && (
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Description</label>
                                                                 <input
@@ -3299,7 +3336,7 @@ const Formgenerated = () => {
                                                                 />
                                                             </div>
                                                         )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && (
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Input Width</label>
                                                                 <select
@@ -3322,7 +3359,7 @@ const Formgenerated = () => {
                                                             />
                                                         </div>
                                                     </div>
-                                                    {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
+                                                    {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
                                                         <div className='form_builder_option_select'>
                                                             <h3>Options</h3>
                                                             <div className='form-builder-options-container'>

@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
-import sharp from 'sharp';
 
 const app = express();
 const port = 4001;
@@ -75,6 +74,9 @@ const formCreateSchema = new mongoose.Schema({
     buttonBorderColor: { type: String, required: false },
     buttonBorderWidth: { type: String, required: false },
     buttonBorderStyle: { type: String, required: false },
+    textSize: { type: String, required: false },
+    textAline: { type: String, required: false },
+    textColor: { type: String, required: false },
     linktext: { type: String, required: false },
     linkUrl: { type: String, required: false },
     linkTarget: { type: String, required: false },
@@ -433,6 +435,7 @@ const coloumtemplate = new mongoose.Schema({
 const ShowTemplats = new mongoose.Schema({
   templateId: { type: String, required: true },
   title: { type: String, required: true },
+  TemplateImage: { type: String, required: true },
   headingText: {
     text: { type: String, required: false },
     fontSize: { type: String, required: false }
@@ -1026,14 +1029,14 @@ const sendEmail = async (email, TemplateAll) => {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
           width: 100%;
           height: 100%;
-          text-align: ${field.splitTextAlign || 'left'};
+          text-align: ${field.splitTextAlin || 'left'};
           border-spacing: 0;
           color: ${field.splitColor};
         ">
           <tr>
             <td style="
               vertical-align: ${field.splittext === 'end' ? 'bottom' : field.splittext === 'left' || !field.splittext ? 'top' : field.splittext};
-              text-align: ${field.splitTextAlign || 'left'};
+              text-align: ${field.splitTextAlin || 'left'};
             ">
               ${field.add === 'image' ?
                   `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
@@ -1253,6 +1256,9 @@ const sendEmail = async (email, TemplateAll) => {
          font-size: 30px !important;
          line-height: 40px;
        }
+      h3 {
+         font-size: 20px !important;
+      }
         
      a {
     text-decoration: none;
@@ -1460,7 +1466,8 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
         field.customIcons.forEach(icon => {
           if (icon.src && typeof icon.src === 'string' && icon.src.startsWith('data:image')) {
             const base64Data = icon.src.replace(/^data:image\/(?:png|jpeg);base64,/, '');
-            const fileName = `customIcon_${Date.now()}.png`;
+            const uniqueSuffix = Math.random().toString(36).substring(2, 15);
+            const fileName = `customIcon_${uniqueSuffix}.png`;
             icon.src = saveBase64Image2(base64Data, fileName);
           }
         });
@@ -1532,7 +1539,6 @@ app.put('/update/:id', async (req, res) => {
 
       if (field.columnData && Array.isArray(field.columnData)) {
         field.columnData.forEach((column, index) => {
-
           if (column && column.image && column.image.startsWith('data:image')) {
             const base64Data = column.image.replace(/^data:image\/(?:png|jpeg);base64,/, '');
             const fileName = `columnImage_${Date.now()}_${index}.png`;
@@ -1554,7 +1560,8 @@ app.put('/update/:id', async (req, res) => {
         field.customIcons.forEach(icon => {
           if (icon.src && typeof icon.src === 'string' && icon.src.startsWith('data:image')) {
             const base64Data = icon.src.replace(/^data:image\/(?:png|jpeg);base64,/, '');
-            const fileName = `customIcon_${Date.now()}.png`;
+            const uniqueSuffix = Math.random().toString(36).substring(2, 15);
+            const fileName = `customIcon_${uniqueSuffix}.png`;
             icon.src = saveBase64Image2(base64Data, fileName);
           }
         });
@@ -1595,7 +1602,7 @@ app.get('/template/data', async (req, res) => {
 
 app.get('/template/image', async (req, res) => {
   try {
-    const data = await Templated.find({}).select('templateId title  createdAt base64Image');
+    const data = await Templated.find({}).select('templateId title  createdAt TemplateImage');
     res.status(200).json({ message: 'Form data retrieved', data: data });
   } catch (error) {
     console.error(error);
@@ -1606,11 +1613,11 @@ app.get('/template/image', async (req, res) => {
 app.post('/template/api', upload.single('image'), async (req, res) => {
   console.log('respose-data', req.body);
   try {
-    const { templateId, base64Image, title, fields, createdAt, styles } = req.body;
+    const { templateId, TemplateImage, title, fields, createdAt, styles } = req.body;
     const formData = new Templated({
       templateId,
       title,
-      base64Image,
+      TemplateImage,
       fields,
       createdAt,
       styles,
@@ -1912,7 +1919,7 @@ app.get('/get-form/:formId', async (req, res) => {
   }
 });
 
-app.post('/form-data', async (req, res) => {
+app.post('/form-data', upload.single('file'), async (req, res) => {
   try {
     const { title } = req.body;
 
@@ -1927,6 +1934,7 @@ app.post('/form-data', async (req, res) => {
     }
 
     const { formId, shop, fields, createdAt, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
+  
     const newFormEntry = new FormModel({
       formId,
       shop,
@@ -1950,7 +1958,6 @@ app.post('/form-data', async (req, res) => {
     console.error('Error:', error.message);
   }
 });
-
 
 app.put('/update-form/:formId', async (req, res) => {
   try {

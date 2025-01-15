@@ -88,7 +88,7 @@ export default function EmailTemplate() {
 
     // const fetchForms = async () => {
     //     try {
-    //         const response = await axios.get('https://hubsyntax.online/get/data');
+    //         const response = await axios.get('http://localhost:4001/get/data');
     //         const fetchedData = response.data.data || [];
     //         // const filteredData = fetchedData.filter(form => form.shop === shop);
 
@@ -101,12 +101,13 @@ export default function EmailTemplate() {
 
     const fetchForms = async () => {
         try {
-            const response = await axios.get('https://hubsyntax.online/get/base64');
+            setLoading(true);
+            const response = await axios.get('http://localhost:4001/get/base64');
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
-
-            setFormsData(filteredData);
-            console.log("Filtered data", fetchedData);
+            const reversedData = filteredData.slice().reverse();
+            setFormsData(reversedData);
+            console.log("Filtered data", reversedData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
         }
@@ -118,7 +119,7 @@ export default function EmailTemplate() {
             setSelectedForm(form);
             setPreviwPopup(!previwPopup);
 
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get('http://localhost:4001/get/data');
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -145,7 +146,7 @@ export default function EmailTemplate() {
             setSelectedForm(form);
             setPreviwPopup(!previwPopup);
 
-            const response = await axios.get('https://hubsyntax.online/template/data');
+            const response = await axios.get('http://localhost:4001/template/data');
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -168,7 +169,7 @@ export default function EmailTemplate() {
     const handleEditClick = async (form) => {
         try {
 
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get('http://localhost:4001/get/data');
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -191,7 +192,7 @@ export default function EmailTemplate() {
     const tempalted = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('https://hubsyntax.online/template/image');
+            const response = await axios.get('http://localhost:4001/template/image');
             const fetchedData = response.data.data || [];
             const reversedData = fetchedData.slice().reverse();
             setNewFormsData(reversedData);
@@ -206,7 +207,7 @@ export default function EmailTemplate() {
     const handleTemplate = async (form) => {
         try {
 
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get('http://localhost:4001/get/data');
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -219,7 +220,7 @@ export default function EmailTemplate() {
                     shop,
                 };
 
-                const sendResponse = await axios.post('https://hubsyntax.online/template/api', payload);
+                const sendResponse = await axios.post('http://localhost:4001/template/api', payload);
                 alert('Template copied successfully!');
                 console.log('Response from send API:', sendResponse.data);
             } else {
@@ -234,7 +235,7 @@ export default function EmailTemplate() {
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
         try {
-            const response = await axios.delete(`https://hubsyntax.online/delete/${formToDelete}`);
+            const response = await axios.delete(`http://localhost:4001/delete/${formToDelete}`);
             console.log(response.data.message);
 
             setFormsData((prevForms) =>
@@ -263,8 +264,8 @@ export default function EmailTemplate() {
 
         try {
             const [base64Response, dataResponse] = await Promise.all([
-                axios.get('https://hubsyntax.online/get/base64'),
-                axios.get('https://hubsyntax.online/get/data'),
+                axios.get('http://localhost:4001/get/base64'),
+                axios.get('http://localhost:4001/get/data'),
             ]);
 
             const base64Forms = base64Response.data.data || [];
@@ -295,7 +296,7 @@ export default function EmailTemplate() {
 
                 delete copiedForm._id;
 
-                const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
+                const response = await axios.post('http://localhost:4001/copy-email', copiedForm);
 
                 console.log('Response from /copy-email API:', response);
 
@@ -928,8 +929,8 @@ export default function EmailTemplate() {
                                                             )}
                                                         </div>
                                                         <div className='email-title-t'>
-                                                            <h3>{form.title}</h3>
-                                                            <h3>{form.createdAt}</h3>
+                                                            <p>{form.title}</p>
+                                                            <p>{form.createdAt}</p>
                                                         </div>
                                                         <div className='email-templete-icon-wrp'>
                                                             <div className="email-template-icons-all">
@@ -1171,7 +1172,7 @@ export default function EmailTemplate() {
                                     </div>
                                 </div>
                             ) : (
-                                <div className='email-tempalte-textt'
+                                <div className='email-tempalte-textt text-wraped '
                                     style={{
                                         width: matchedData?.styles?.width,
                                         backgroundColor: matchedData?.styles?.backgroundColor || '#fff',

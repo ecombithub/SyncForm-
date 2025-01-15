@@ -41,7 +41,7 @@ export default function Support() {
             alert('An error occurred while submitting the form. Please try again.');
         }
     };
-    
+
     const handleShow = () => {
         setShowPopup(!showPopup);
     }
@@ -59,7 +59,9 @@ export default function Support() {
                         <h4>Contact support</h4>
                         <p>Need Assistance? Our live chat support is ready to assist you in real-time. Connect with us now and experience speedy solutions to all your questions and concerns!</p>
                         <div className="form_builder_support_btn">
-                            <div className="form_builder_support_btn_first">
+                            <div className="form_builder_support_btn_first" onClick={() => {
+                                window.tidioChatApi?.open();
+                            }}>
                                 <p>Live chat</p>
                             </div>
                             <div className="form_builder_support_btn_second" onClick={handleShow}>
@@ -78,27 +80,27 @@ export default function Support() {
                                         <div className="service-form-input">
                                             <div className="servies-input">
                                                 <label htmlFor="name">Name</label>
-                                                <input type="name" value={name} onChange={(e)=>setName(e.target.value)} />
+                                                <input type="name" value={name} onChange={(e) => setName(e.target.value)} />
                                             </div>
                                             <div className="servies-input">
                                                 <label htmlFor="email">E-mail</label>
-                                                <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+                                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                             </div>
                                             <div className="servies-input">
                                                 <label htmlFor="Department">Category</label>
-                                                <input type="test"  value={category} onChange={(e)=>setCategory(e.target.value)}/>
+                                                <input type="test" value={category} onChange={(e) => setCategory(e.target.value)} />
                                             </div>
                                             <div className="servies-input">
                                                 <label htmlFor="Computer ID">Theme ID or Collaborator Code</label>
-                                                <input type="test" value={theme} onChange={(e)=>setTheme(e.target.value)} />
+                                                <input type="test" value={theme} onChange={(e) => setTheme(e.target.value)} />
                                             </div>
                                             <div className="servies-input shop">
                                                 <label htmlFor="Shop">Shop</label>
-                                                <input type="test" value={shop} onChange={(e)=>setShop(e.target.value)}/>
+                                                <input type="test" value={shop} onChange={(e) => setShop(e.target.value)} />
                                             </div>
                                             <div className="servies-input textarea">
                                                 <label htmlFor="Describe the Problem">Describe the Problem</label>
-                                                <textarea id="w3review" name="w3review" rows="4" cols="50" value={describe} onChange={(e)=>setDescribe(e.target.value)}></textarea>
+                                                <textarea id="w3review" name="w3review" rows="4" cols="50" value={describe} onChange={(e) => setDescribe(e.target.value)}></textarea>
                                             </div>
                                         </div>
                                         <div className="it-service-icon" onClick={handleHide}>

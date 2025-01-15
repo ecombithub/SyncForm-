@@ -34,13 +34,10 @@ import rich from '../images/rich0.png';
 import rm from '../images/rm.png';
 import cancleimg from '../images/cancleimg.png';
 import bk from '../images/bk.png';
-import dlrm from '../images/dlrm.png';
 import search12 from '../images/search12.png';
 import productcancle from '../images/productcancle.png';
 import { format } from 'date-fns';
-import html2canvas from 'html2canvas';
 import 'react-quill/dist/quill.snow.css';
-import imageCompression from 'browser-image-compression';
 
 import '../index.css';
 import { useNavigate } from 'react-router-dom';
@@ -236,6 +233,8 @@ const EmailTemplateCreate = () => {
     const [columnsPerRow, setColumnsPerRow] = useState(3);
     const [showbtnsplit, setShowbtnsplit] = useState(false);
     const [showbtnmulti, setShowbtnmulti] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const handleFontChange = (event) => {
         setFontFamily(event.target.value);
@@ -273,6 +272,7 @@ const EmailTemplateCreate = () => {
                             setShowbtnn(true);
                         }
                     }
+
                     if (field.type === 'split') {
                         console.log('split for split field:', field.price);
                         if (field.showbtnsplit === true) {
@@ -286,6 +286,7 @@ const EmailTemplateCreate = () => {
                             setShowbtnmulti(true);
                         }
                     }
+
                     return { ...field, id: field.id || generateUniqueId() };
                 });
 
@@ -491,7 +492,6 @@ const EmailTemplateCreate = () => {
             Multibtncolor: type === 'Multicolumn' ? '#0000' : undefined,
             Multibtnfont: type === 'Multicolumn' ? '14' : undefined,
             Multibtnurl: type === 'Multicolumn' ? '' : undefined,
-
         };
     };
 
@@ -810,7 +810,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('https://hubsyntax.online/get-forms')
+            .get('http://localhost:4001/get-forms')
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -833,7 +833,7 @@ const EmailTemplateCreate = () => {
 
         if (selectedForm) {
             try {
-                const response = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
                 const data = await response.json();
 
                 if (data.isConnected) {
@@ -845,7 +845,7 @@ const EmailTemplateCreate = () => {
 
                     if (confirmUnlink) {
                         const unlinkResponse = await fetch(
-                            `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
                             { method: 'PUT' }
                         );
 
@@ -853,7 +853,7 @@ const EmailTemplateCreate = () => {
                             alert('Template unlinked from form.');
 
                             const updatedCheckResponse = await fetch(
-                                `https://hubsyntax.online/check-form-connected/${selectedForm.formId}`
+                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
                             );
                             const updatedCheckData = await updatedCheckResponse.json();
 
@@ -911,7 +911,7 @@ const EmailTemplateCreate = () => {
 
         if (!id) {
             try {
-                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
+                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
 
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
@@ -1225,33 +1225,6 @@ const EmailTemplateCreate = () => {
                 try {
 
                     const dataUrl = await htmlToImage.toPng(templateElement);
-                    const response1 = await fetch(dataUrl);
-                    const imageBlob = await response1.blob();
-
-                    let compressedBlob;
-                    let maxSizeMB = 0.05; 
-                    let maxWidthOrHeight = 800;
-
-                    do {
-                        const compressionOptions = {
-                            maxSizeMB,
-                            maxWidthOrHeight,
-                            useWebWorker: true,
-                        };
-
-                        compressedBlob = await imageCompression(imageBlob, compressionOptions);
-
-                        maxSizeMB -= 0.005; 
-                        maxWidthOrHeight -= 50; 
-                    } while (compressedBlob.size > 10 * 1024 && maxSizeMB > 0 && maxWidthOrHeight > 200);
-
-                    if (compressedBlob.size > 10 * 1024) {
-                        console.warn('Could not compress the image to 10 KB. Using the smallest possible size.');
-                    }
-
-                    const compressedDataUrl = await imageCompression.getDataUrlFromFile(compressedBlob);
-
-                    console.log(`Compressed size: ${(compressedBlob.size / 1024).toFixed(2)} KB`);
 
                     const formData = {
                         templateId,
@@ -1260,7 +1233,7 @@ const EmailTemplateCreate = () => {
                         title: trimmedTitle,
                         fields: updatedFields,
                         createdAt: timestamp,
-                        TemplateImage: compressedDataUrl,
+                        TemplateImage: dataUrl,
                         styles: {
                             backgroundImage,
                             backgroundColor,
@@ -1274,8 +1247,8 @@ const EmailTemplateCreate = () => {
                     };
                     console.log(dataUrl);
                     const response = id
-                        ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
-                        : await axios.post('https://hubsyntax.online/send/api', formData);
+                        ? await axios.put(`http://localhost:4001/update/${id}`, formData)
+                        : await axios.post('http://localhost:4001/send/api', formData);
 
                     console.log('Form saved successfully with title:', trimmedTitle);
                     const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
@@ -1314,10 +1287,10 @@ const EmailTemplateCreate = () => {
 
     const handleContinue = () => {
         navigate('/app/emailTemplate/list');
+        setIsLoading(true);
         setSaveEmail(false);
         setCancelEmail(false)
     };
-
 
     const handleBackgroundImageUpload = (e) => {
         const file = e.target.files[0];
@@ -1913,6 +1886,35 @@ const EmailTemplateCreate = () => {
 
     return (
         <div>
+            {isLoading && (
+                <div className="skeleton-wrapper fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
+                                </div>
+                            </div>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className='email-campaing-templates email-templates-wredd'>
                 <div className="builder-container">
                     <h3>Email campaign</h3>
@@ -2137,7 +2139,7 @@ const EmailTemplateCreate = () => {
                                         </div>
 
                                         <div
-                                            className="form-builder email-template"
+                                            className="form-builder email-template text-wraped"
                                             id="template-container"
                                             ref={formBuilderRef}
                                             style={{
@@ -2641,7 +2643,6 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                         className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
                                                                                         onClick={(e) => handleColumnClick(field.id, index)}
-
                                                                                     >
                                                                                         {field.columnData[index].image && (
                                                                                             <img
@@ -2657,35 +2658,42 @@ const EmailTemplateCreate = () => {
                                                                                                     __html: field.columnData[index].content,
                                                                                                 }}
                                                                                             />
-                                                                                        ) : (
-                                                                                            <div style={{ color: 'gray' }}>
-                                                                                                <h2>Column</h2>
-                                                                                                Elevate your online store with our easy-to-use Text Box feature.
-                                                                                                It's a game-changer for personalization, allowing customers to add their
-                                                                                                special touch directly from a user-friendly drop-down menu.
-                                                                                            </div>
-                                                                                        )}
+                                                                                        ) : null}
 
                                                                                         {field.columnData[index].isVisible && (
-                                                                                            <a href={field.columnData[index].Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
-                                                                                                <button style={{
-                                                                                                    marginTop: "20px",
-                                                                                                    backgroundColor: field.Multibtnbg,
-                                                                                                    borderWidth: `${field.MultibtnBorderWidth}px`,
-                                                                                                    borderStyle: field.MultibtnBorderStyle,
-                                                                                                    borderColor: field.MultibtnBorderColor,
-                                                                                                    width: `${field.Multibtnweight || '100'}px`,
-                                                                                                    height: `${field.Multibtnheight || '40'}px`,
-                                                                                                    color: field.Multibtncolor,
-                                                                                                    borderRadius: `${field.Multibtnradious}px`,
-                                                                                                    fontSize: `${field.Multibtnfont || '14'}px`
-                                                                                                }}
-                                                                                                > {field.columnData[index].Multibtnlable}</button>
+                                                                                            <a href={field.columnData[index].Multibtnurl} target="_blank" onClick={(e) => e.preventDefault()}>
+                                                                                                <button
+                                                                                                    style={{
+                                                                                                        marginTop: '20px',
+                                                                                                        backgroundColor: field.Multibtnbg,
+                                                                                                        borderWidth: `${field.MultibtnBorderWidth}px`,
+                                                                                                        borderStyle: field.MultibtnBorderStyle,
+                                                                                                        borderColor: field.MultibtnBorderColor,
+                                                                                                        width: `${field.Multibtnweight || '100'}px`,
+                                                                                                        height: `${field.Multibtnheight || '40'}px`,
+                                                                                                        color: field.Multibtncolor,
+                                                                                                        borderRadius: `${field.Multibtnradious}px`,
+                                                                                                        fontSize: `${field.Multibtnfont || '14'}px`,
+                                                                                                    }}
+                                                                                                >
+                                                                                                    {field.columnData[index].Multibtnlable}
+                                                                                                </button>
                                                                                             </a>
                                                                                         )}
 
+                                                                                        {!field.columnData[index].image &&
+                                                                                            !field.columnData[index].content &&
+                                                                                            !field.columnData[index].isVisible && (
+                                                                                                <div style={{ color: 'gray' }}>
+                                                                                                    <h2>Column</h2>
+                                                                                                    Elevate your online store with our easy-to-use Text Box feature.
+                                                                                                    It's a game-changer for personalization, allowing customers to add their
+                                                                                                    special touch directly from a user-friendly drop-down menu.
+                                                                                                </div>
+                                                                                            )}
                                                                                     </div>
                                                                                 ))}
+
                                                                             </div>
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
@@ -4567,9 +4575,10 @@ const EmailTemplateCreate = () => {
                                                                         <div key={field.id} className="form-builder-chaneging-wrap file">
                                                                             <div>
                                                                                 {field.value ? (
-                                                                                    <div className='form-builder-img-wrap'>
-
-                                                                                        <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%' }} />
+                                                                                    <div>
+                                                                                        <div className='form-builder-img-wrap'>
+                                                                                            <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%' }} />
+                                                                                        </div>
                                                                                         <button className='update-image rm-btn' onClick={() => setImageFieldId(field.id)}>Update Image</button>
                                                                                         <button className='update-image rm-btn' onClick={() => removeField(field.id)}>Remove Image</button>
                                                                                     </div>
