@@ -259,7 +259,7 @@ function Index() {
           </div>
           <div className="form_build_contact">
             <div className="form_build_count">
-              <p style={{ fontWeight: 800 }}>Contact with us</p>
+              <p style={{ fontWeight: 800 }}>Contact with Sahil</p>
               <p>for fast installation</p>
               <button style={{ cursor: 'pointer' }}
                 onClick={() => {
