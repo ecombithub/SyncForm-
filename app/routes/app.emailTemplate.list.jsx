@@ -22,18 +22,21 @@ import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;
 
     const response = {
         assets: [],
         shop,
+        apiUrl,
         error: false,
         accessToken,
         errorMessage: ''
     };
 
     console.log(shop);
+    console.log("API URL:", apiUrl);
 
     try {
         const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
@@ -81,14 +84,14 @@ export default function EmailTemplate() {
     const [showFormNames, setShowFormNames] = useState(false);
     const [showtemplate, setShowTemplate] = useState(false);
     const [selectedFormName, setSelectedFormName] = useState('');
-    const { shop } = useLoaderData() || {};
+    const { shop, apiUrl } = useLoaderData() || {};
     const [isLoading, setIsLoading] = useState(false);
     const [matchedData, setMatchedData] = useState(null);
     const [loading, setLoading] = useState(false);
 
     // const fetchForms = async () => {
     //     try {
-    //         const response = await axios.get('https://hubsyntax.online/get/data');
+    //         const response = await axios.get('http://localhost:4001/get/data');
     //         const fetchedData = response.data.data || [];
     //         // const filteredData = fetchedData.filter(form => form.shop === shop);
 
@@ -98,11 +101,12 @@ export default function EmailTemplate() {
     //         setError(`Error fetching forms: ${error.message}`);
     //     }
     // };
-
+  
     const fetchForms = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('https://hubsyntax.online/get/base64');
+            const response = await axios.get(`${apiUrl}/get/base64`);
+          
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
             const reversedData = filteredData.slice().reverse();
@@ -119,7 +123,7 @@ export default function EmailTemplate() {
             setSelectedForm(form);
             setPreviwPopup(!previwPopup);
 
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get(`${ apiUrl}/get/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -146,7 +150,7 @@ export default function EmailTemplate() {
             setSelectedForm(form);
             setPreviwPopup(!previwPopup);
 
-            const response = await axios.get('https://hubsyntax.online/template/data');
+            const response = await axios.get(`${ apiUrl}/template/data` );
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -169,7 +173,7 @@ export default function EmailTemplate() {
     const handleEditClick = async (form) => {
         try {
 
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get( `${ apiUrl}/get/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -191,8 +195,8 @@ export default function EmailTemplate() {
 
     const tempalted = async () => {
         setLoading(true);
-        try {
-            const response = await axios.get('https://hubsyntax.online/template/image');
+        try { 
+            const response = await axios.get(`${ apiUrl}/template/image`);
             const fetchedData = response.data.data || [];
             const reversedData = fetchedData.slice().reverse();
             setNewFormsData(reversedData);
@@ -207,7 +211,7 @@ export default function EmailTemplate() {
     const handleTemplate = async (form) => {
         try {
 
-            const response = await axios.get('https://hubsyntax.online/get/data');
+            const response = await axios.get(`${ apiUrl}/get/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -220,7 +224,7 @@ export default function EmailTemplate() {
                     shop,
                 };
 
-                const sendResponse = await axios.post('https://hubsyntax.online/template/api', payload);
+                const sendResponse = await axios.post(`${ apiUrl}/template/api`, payload);
                 alert('Template copied successfully!');
                 console.log('Response from send API:', sendResponse.data);
             } else {
@@ -235,7 +239,7 @@ export default function EmailTemplate() {
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
         try {
-            const response = await axios.delete(`https://hubsyntax.online/delete/${formToDelete}`);
+            const response = await axios.delete(`${ apiUrl}/delete/${formToDelete}`);
             console.log(response.data.message);
 
             setFormsData((prevForms) =>
@@ -264,8 +268,8 @@ export default function EmailTemplate() {
 
         try {
             const [base64Response, dataResponse] = await Promise.all([
-                axios.get('https://hubsyntax.online/get/base64'),
-                axios.get('https://hubsyntax.online/get/data'),
+                axios.get(`${ apiUrl}/get/base64`),
+                axios.get(`${ apiUrl}/get/data`),
             ]);
 
             const base64Forms = base64Response.data.data || [];
@@ -295,8 +299,8 @@ export default function EmailTemplate() {
                 };
 
                 delete copiedForm._id;
-
-                const response = await axios.post('https://hubsyntax.online/copy-email', copiedForm);
+                               
+                const response = await axios.post(`${ apiUrl}/copy-email`, copiedForm);
 
                 console.log('Response from /copy-email API:', response);
 

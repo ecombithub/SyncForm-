@@ -3709,7 +3709,7 @@ button.btn-templates {
 }
 
 .email_field {
-     /* border: 1px solid #EEEEEE;  */
+    /* border: 1px solid #EEEEEE;  */
     position: relative;
     border-radius: 4px;
     transition: border-color 0.3s ease;
@@ -3727,6 +3727,8 @@ button.copy-btn {
 .form-builder-chaneging-wrap textarea {
     border: 1px solid #B5B7C0;
     border-radius: 4px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .email-campaing-templates .form-builder-radio-btn {
@@ -4487,7 +4489,7 @@ button.show-data-icon {
     position: absolute;
     width: 15%;
     background: red !important;
-    right:4%;
+    right: 4%;
 }
 
 .custom-range-slider {
@@ -4651,7 +4653,7 @@ button.rm-btn.showfirst img {
     width: 10%;
 }
 
-.email-show-icon img{
+.email-show-icon img {
     width: 100%;
 }
 
@@ -4730,7 +4732,7 @@ button.rm-btn.showfirst img {
     width: 100%;
     height: 8px;
     margin-bottom: 10px;
-    
+
 }
 
 .skeleton-wrp-left-para.right {
@@ -5358,7 +5360,7 @@ button.rm-btn.showfirst img {
     }
 
     .form-main-wrp table tr {
-        grid-template-columns: 26% 50% 20%;
+        grid-template-columns: 26% 30% 20% 20%;
     }
 
     .builder-forms .builder-sections .builder-sections-new-list {
@@ -5564,11 +5566,27 @@ button.rm-btn.showfirst img {
     }
 
     .form-main-wrp table tr {
-        grid-template-columns: 30% 30% 34% !important;
+        grid-template-columns: 26% 22% 24% 20% !important;
     }
 
     .form_builder_support .form_builder_convert {
         display: block;
+    }
+
+    .form-builder-green-btn {
+        width: 22%;
+    }
+
+    .form-builder-edit {
+        width: 22%;
+    }
+
+    .form-delete-icon {
+        width: 22%;
+    }
+
+    .form-show-icon {
+        width: 22%;
     }
 
     .form_builder_support .form_builder_convert .form_builder_blogs {
@@ -5692,6 +5710,26 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width:540px) {
+    .form-main-wrp table tr {
+        grid-template-columns: 26% 17% 22% 28% !important;
+    }
+
+    .form-builder-green-btn {
+        width: 100%;
+    }
+
+    .form-builder-edit {
+        width: 100%;
+    }
+
+    .form-delete-icon {
+        width: 100%;
+    }
+
+    .form-show-icon {
+        width: 100%;
+    }
+
     .copied-message {
         right: -29px;
     }

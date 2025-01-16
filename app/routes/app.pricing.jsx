@@ -18,6 +18,7 @@ import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
     const { shop, accessToken } = session;
     console.log('Access Token:', accessToken);
     console.log('Shop:', shop);
@@ -29,7 +30,7 @@ export const loader = async ({ request }) => {
             },
         });
 
-        return { charges: response.data.recurring_application_charges || [], shop };
+        return { charges: response.data.recurring_application_charges || [], shop, apiUrl };
     } catch (error) {
         console.error('Error fetching current charges:', error.response ? error.response.data : error.message);
         return { charges: [], error: error.response ? error.response.data : error.message };
@@ -105,7 +106,7 @@ export default function Pricing() {
     const actionData = useActionData();
     const [transactionStatus, setTransactionStatus] = useState(null);
     const [selectedPlan, setSelectedPlan] = useState(null);
-    const { charges, error, shop } = useLoaderData();
+    const { charges, error, shop, apiUrl } = useLoaderData();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [lastChargeId, setLastChargeId] = useState(null);
     const activePlan = charges.find(charge => charge.status === 'active');
@@ -161,7 +162,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
             console.log("Payment data saved response:", response.data);
 
         } catch (error) {
@@ -223,7 +224,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
             console.log("Payment data saved response:", response.data);
         } catch (error) {
             if (error.response) {

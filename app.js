@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const port = 4001;
@@ -1426,9 +1428,10 @@ const saveBase64Image2 = (base64Data, fileName) => {
   const filePath = path.join(uploadDir, fileName);
 
   fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-
-  return `https://hubsyntax.online/uploads/images/${fileName}`;
+  const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
+  return `${apiUrl}/uploads/images/${fileName}`;
 };
+
 
 app.post('/send/api', upload.single('file'), async (req, res) => {
   try {

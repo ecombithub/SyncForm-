@@ -45,10 +45,11 @@ import { useLoaderData } from "@remix-run/react";
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;
-
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
     const response = {
         assets: [],
         shop,
+        apiUrl,
         error: false,
         accessToken,
         errorMessage: ''
@@ -212,7 +213,7 @@ const Formgenerated = () => {
     const [url, setUrl] = useState('');
     const [ReactQuill, setReactQuill] = useState(null);
     const [isDropdownVisible, setDropdownVisible] = useState(false);
-    const { shop } = useLoaderData() || {};
+    const { shop,apiUrl } = useLoaderData() || {};
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
     const [inputRadious, setInputRadious] = useState('4');
@@ -922,12 +923,13 @@ const Formgenerated = () => {
         };
 
         console.log('New form object:', JSON.stringify(newForm, null, 2));
+      
 
         const request = isEditing
-            ? axios.put(`https://hubsyntax.online/update-form/${editingFormId}`, newForm, {
+            ? axios.put(`${apiUrl}/update-form/${editingFormId}`, newForm, {
                 headers: { 'Content-Type': 'application/json' }
             })
-            : axios.post('https://hubsyntax.online/form-data', newForm, {
+            : axios.post(`${apiUrl}/form-data`, newForm, {
                 headers: { 'Content-Type': 'application/json' }
             });
 

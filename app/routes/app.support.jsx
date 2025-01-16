@@ -4,6 +4,51 @@ import cancle1 from '../images/cancle1.png'
 import { useState } from 'react';
 import axios from 'axios';
 import '../index.css';
+import { authenticate, apiVersion } from "../shopify.server";
+import { useLoaderData } from "@remix-run/react";
+
+export const loader = async ({ request }) => {
+    const { session } = await authenticate.admin(request);
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+    const { shop, accessToken } = session;
+
+    const response = {
+        assets: [],
+        shop,
+        apiUrl,
+        error: false,
+        accessToken,
+        errorMessage: ''
+    };
+
+    console.log(shop);
+
+    try {
+
+        const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+            method: 'GET',
+            headers: {
+                'X-Shopify-Access-Token': accessToken,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!assetResponse.ok) {
+            const errorText = await assetResponse.text();
+            throw new Error(`Failed to fetch assets: ${errorText}`);
+        }
+
+        const assetData = await assetResponse.json();
+        response.assets = assetData.assets || [];
+
+    } catch (err) {
+        console.error("Error fetching data:", err.message);
+        response.error = true;
+        response.errorMessage = err.message;
+    }
+
+    return response;
+};
 
 export default function Support() {
     const [showPopup, setShowPopup] = useState(false);
@@ -13,10 +58,11 @@ export default function Support() {
     const [theme, setTheme] = useState('');
     const [shop, setShop] = useState('');
     const [describe, setDescribe] = useState('');
+    const { apiUrl } = useLoaderData() || {};
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('https://hubsyntax.online/email-submit', {
+            const response = await axios.post(`${apiUrl}/email-submit`, {
                 name,
                 email,
                 category,

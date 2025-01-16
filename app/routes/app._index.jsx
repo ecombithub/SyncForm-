@@ -18,11 +18,12 @@ import cancleimg from '../images/cancleimg.png';
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const { shop, accessToken } = session;
-
+  const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
   const response = {
     assets: [],
     activeThemeId: null,
     shop,
+    apiUrl,
     error: false,
     accessToken,
     errorMessage: ''
@@ -76,7 +77,7 @@ export const loader = async ({ request }) => {
 };
 
 function Index() {
-  const { activeThemeId, shop, accessToken, errorMessage, assets } = useLoaderData() || {};
+  const { activeThemeId, shop,apiUrl, accessToken, errorMessage, assets } = useLoaderData() || {};
   const [dataSent, setDataSent] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [userPlan, setUserPlan] = useState(null);
@@ -89,7 +90,8 @@ function Index() {
     const saveShopDetails = async () => {
       if (shop && accessToken && !dataSent) {
         try {
-          const response = await fetch("https://hubsyntax.online/api/save-shop", {
+        
+          const response = await fetch(`${apiUrl}/api/save-shop`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -115,7 +117,7 @@ function Index() {
 
     const checkFreePlanStatusAndSendData = async () => {
       try {
-        const planResponse = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
+        const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
 
 
         if (planResponse.data.status === 'active') {
@@ -130,7 +132,7 @@ function Index() {
           };
 
 
-          const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+          const response = await axios.post(`${apiUrl}payment/confirm`, paymentData);
           console.log("Payment data saved response:", response.data);
           setResponseData(response.data);
         } else {
@@ -153,7 +155,7 @@ function Index() {
               billingOn: new Date().toISOString(),
             };
 
-            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
+            const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
             console.log("Payment data saved response (new free plan):", response.data);
             setResponseData(response.data);
           }
@@ -174,7 +176,7 @@ function Index() {
   useEffect(() => {
     const fetchPaymentPlan = async () => {
       try {
-        const response = await axios.get(`https://hubsyntax.online/payment/plan?shop=${shop}`);
+        const response = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
         setUserPlan(response.data);
         await fetchForms(response.data);
       } catch (error) {
@@ -185,7 +187,7 @@ function Index() {
 
     const fetchForms = async (userPlan) => {
       try {
-        const response = await fetch('https://hubsyntax.online/get-forms');
+        const response = await fetch(`${apiUrl}/get-forms`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -206,7 +208,7 @@ function Index() {
               if (form.shop === shop) {
                 console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
                 try {
-                  const deleteResponse = await fetch(`https://hubsyntax.online/delete-form/${form.formId}`, {
+                  const deleteResponse = await fetch(`${apiUrl}/delete-form/${form.formId}`, {
                     method: 'DELETE',
                   });
                   if (!deleteResponse.ok) {

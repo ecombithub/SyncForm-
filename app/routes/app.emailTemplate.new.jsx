@@ -74,8 +74,10 @@ const generateUniqueId = (length = 22) => {
 
 export const loader = async ({ request }) => {
     try {
+        const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
         const { session } = await authenticate.admin(request);
         const { shop, accessToken } = session;
+        console.log('apiUrl:', apiUrl);
         console.log('Shop:', shop);
         console.log('Access Token:', accessToken);
 
@@ -142,7 +144,7 @@ export const loader = async ({ request }) => {
 
         console.log('Processed Products:', productsWithData);
 
-        return { products: productsWithData, shop: shop };
+        return { products: productsWithData, shop: shop, apiUrl:apiUrl  };
     } catch (err) {
         console.error("Error fetching products:", err.message);
         return { products: [], shop: null };
@@ -184,7 +186,7 @@ const EmailTemplateCreate = () => {
     const [selectedFormIds, setSelectedFormIds] = useState([]);
     const [selectedTitles, setSelectedTitles] = useState([]);
     const [showVideoInput, setShowVideoInput] = useState(false);
-    const { products, shop, apiVersion } = useLoaderData();
+    const { products, shop,apiUrl, apiVersion } = useLoaderData();
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -813,7 +815,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('https://hubsyntax.online/get-forms')
+            .get(`${apiUrl}/get-forms`)
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -850,7 +852,7 @@ const EmailTemplateCreate = () => {
             try {
                 const results = await Promise.all(
                     formDataAdd.map(async (form) => {
-                        const response = await fetch(`https://hubsyntax.online/check-form-connected/${form.formId}`);
+                        const response = await fetch(`${apiUrl}/check-form-connected/${form.formId}`);
                         const data = await response.json();
                         return data.isConnected ? form.formId : null;
                     })
@@ -876,14 +878,14 @@ const EmailTemplateCreate = () => {
                 if (isFormIdMatched) {
                     console.log(`Form ID ${selectedForm.formId} is found in formData.form_ids`);
 
-                    const checkResponse = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                    const checkResponse = await fetch(`${apiUrl}/check-form-connected/${selectedForm.formId}`);
                     const checkData = await checkResponse.json();
 
                     if (checkData.isConnected) {
                         const confirmUnlink = window.confirm('Do you want to unlink it?');
                         if (confirmUnlink) {
                             const unlinkResponse = await fetch(
-                                `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                                `${apiUrl}/unlink-template/${selectedForm.formId}`,
                                 { method: 'PUT' }
                             );
 
@@ -903,7 +905,7 @@ const EmailTemplateCreate = () => {
                     console.log(`Form ID ${selectedForm.formId} is NOT found in formData.form_ids`);
                 }
 
-                const response = await fetch(`https://hubsyntax.online/get/data`);
+                const response = await fetch(`${apiUrl}/get/data`);
                 const tempeltedata = await response.json();
                 const tempeltedataArray = tempeltedata?.data;
 
@@ -964,7 +966,7 @@ const EmailTemplateCreate = () => {
 
         if (!id) {
             try {
-                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
+                const response = await axios.get(`${apiUrl}/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
 
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
@@ -1300,8 +1302,8 @@ const EmailTemplateCreate = () => {
                     };
                     console.log(dataUrl);
                     const response = id
-                        ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
-                        : await axios.post('https://hubsyntax.online/send/api', formData);
+                        ? await axios.put(`${apiUrl}/update/${id}`, formData)
+                        : await axios.post(`${apiUrl}/send/api`, formData);
 
                     console.log('Form saved successfully with title:', trimmedTitle);
                     const successMessage = id ? 'Form updated successfully' : 'Form created successfully';

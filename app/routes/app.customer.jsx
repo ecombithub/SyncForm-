@@ -18,11 +18,13 @@ import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
     const { shop, accessToken } = session;
 
     const response = {
         assets: [],
         shop,
+        apiUrl,
         error: false,
         accessToken,
         errorMessage: ''
@@ -71,7 +73,7 @@ function Customer() {
     const [totalSubmissions, setTotalSubmissions] = useState(0);
     const [percentage, setPercentage] = useState(0);
     const [percentage1, setPercentage1] = useState(0);
-    const { shop } = useLoaderData() || {};
+    const { shop, apiUrl } = useLoaderData() || {};
 
     useEffect(() => {
         const animatedValue = { value: 0 };
@@ -108,7 +110,7 @@ function Customer() {
             try {
                 setLoading(true);
                 await new Promise((resolve) => setTimeout(resolve, 3000));
-                const response = await axios.get('https://hubsyntax.online/api/customer');
+                const response = await axios.get(`${apiUrl}/api/customer`);
 
                 if (!shop) {
                     console.log('Shop not found');
@@ -139,7 +141,7 @@ function Customer() {
             try {
                 setLoading(true);
                 await new Promise((resolve) => setTimeout(resolve, 3000));
-                const response = await axios.get('https://hubsyntax.online/api/forms');
+                const response = await axios.get(`${apiUrl}/api/forms`);
                 const filteredForms = response.data.filter(form => form.shop === shop);
 
                 if (filteredForms.length > 0) {

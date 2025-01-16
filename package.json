@@ -41,6 +41,7 @@
     "canvas": "^3.0.1",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.7",
     "file-saver": "^2.0.5",
     "flowbite-react": "^0.10.2",
     "gsap": "^3.12.5",
