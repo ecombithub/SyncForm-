@@ -34,10 +34,13 @@ import rich from '../images/rich0.png';
 import rm from '../images/rm.png';
 import cancleimg from '../images/cancleimg.png';
 import bk from '../images/bk.png';
+import dlrm from '../images/dlrm.png';
 import search12 from '../images/search12.png';
 import productcancle from '../images/productcancle.png';
 import { format } from 'date-fns';
+import html2canvas from 'html2canvas';
 import 'react-quill/dist/quill.snow.css';
+
 
 import '../index.css';
 import { useNavigate } from 'react-router-dom';
@@ -234,7 +237,8 @@ const EmailTemplateCreate = () => {
     const [showbtnsplit, setShowbtnsplit] = useState(false);
     const [showbtnmulti, setShowbtnmulti] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [connectedForms, setConnectedForms] = useState([]);
+    const selectRef = useRef(null);
 
     const handleFontChange = (event) => {
         setFontFamily(event.target.value);
@@ -272,7 +276,6 @@ const EmailTemplateCreate = () => {
                             setShowbtnn(true);
                         }
                     }
-
                     if (field.type === 'split') {
                         console.log('split for split field:', field.price);
                         if (field.showbtnsplit === true) {
@@ -286,7 +289,6 @@ const EmailTemplateCreate = () => {
                             setShowbtnmulti(true);
                         }
                     }
-
                     return { ...field, id: field.id || generateUniqueId() };
                 });
 
@@ -492,6 +494,7 @@ const EmailTemplateCreate = () => {
             Multibtncolor: type === 'Multicolumn' ? '#0000' : undefined,
             Multibtnfont: type === 'Multicolumn' ? '14' : undefined,
             Multibtnurl: type === 'Multicolumn' ? '' : undefined,
+
         };
     };
 
@@ -810,7 +813,7 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         axios
-            .get('http://localhost:4001/get-forms')
+            .get('https://hubsyntax.online/get-forms')
             .then((res) => {
                 console.log('API Response:', res.data);
                 const filteredData = res.data.filter((form) => form.shop === shop);
@@ -826,46 +829,95 @@ const EmailTemplateCreate = () => {
         }
     }, [formDataAdd]);
 
+    useEffect(() => {
+        if (selectRef.current) {
+          
+            formDataAdd.forEach((form) => {
+                const isFormIdMatched = formData?.form_ids?.includes(form.formId);
+                if (isFormIdMatched && selectRef.current) {
+                    const option = selectRef.current.querySelector(`option[value="${form.title}"]`);
+                    if (option) {
+                        option.disabled = false; 
+                        console.log(`Automatically enabling form ID: ${form.formId}`);
+                    }
+                }
+            });
+        }
+    }, [formData, formDataAdd]);
+
+    useEffect(() => {
+        const fetchConnectedForms = async () => {
+            try {
+                const results = await Promise.all(
+                    formDataAdd.map(async (form) => {
+                        const response = await fetch(`https://hubsyntax.online/check-form-connected/${form.formId}`);
+                        const data = await response.json();
+                        return data.isConnected ? form.formId : null;
+                    })
+                );
+                setConnectedForms(results.filter((id) => id !== null));
+            } catch (error) {
+                console.error('Error fetching connected forms:', error);
+            }
+        };
+
+        fetchConnectedForms();
+    }, [formDataAdd]);
+
     const handleFormSelect = async (e) => {
         const title = e.target.value.trim();
         const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
 
-
         if (selectedForm) {
             try {
-                const response = await fetch(`http://localhost:4001/check-form-connected/${selectedForm.formId}`);
-                const data = await response.json();
 
-                if (data.isConnected) {
-                    alert('This form is already connected to a template.');
+                const isFormIdMatched = formData?.form_ids?.includes(selectedForm.formId);
 
-                    const confirmUnlink = window.confirm(
-                        'Do you want to unlink it?'
-                    );
+                if (isFormIdMatched) {
+                    console.log(`Form ID ${selectedForm.formId} is found in formData.form_ids`);
 
-                    if (confirmUnlink) {
-                        const unlinkResponse = await fetch(
-                            `http://localhost:4001/unlink-template/${selectedForm.formId}`,
-                            { method: 'PUT' }
-                        );
+                    const checkResponse = await fetch(`https://hubsyntax.online/check-form-connected/${selectedForm.formId}`);
+                    const checkData = await checkResponse.json();
 
-                        if (unlinkResponse.ok) {
-                            alert('Template unlinked from form.');
-
-                            const updatedCheckResponse = await fetch(
-                                `http://localhost:4001/check-form-connected/${selectedForm.formId}`
+                    if (checkData.isConnected) {
+                        const confirmUnlink = window.confirm('Do you want to unlink it?');
+                        if (confirmUnlink) {
+                            const unlinkResponse = await fetch(
+                                `https://hubsyntax.online/unlink-template/${selectedForm.formId}`,
+                                { method: 'PUT' }
                             );
-                            const updatedCheckData = await updatedCheckResponse.json();
 
-                            if (!updatedCheckData.isConnected) {
-                                console.log('Form is no longer connected to a template.');
+                            if (unlinkResponse.ok) {
+                                alert('Template unlinked from form.');
+                                setConnectedForms((prevForms) =>
+                                    prevForms.filter((id) => id !== selectedForm.formId)
+                                );
+                            } else {
+                                alert('Failed to unlink template.');
                             }
                         } else {
-                            alert('Failed to unlink template.');
+                            return;
                         }
-                    } else {
+                    }
+                } else {
+                    console.log(`Form ID ${selectedForm.formId} is NOT found in formData.form_ids`);
+                }
+
+                const response = await fetch(`https://hubsyntax.online/get/data`);
+                const tempeltedata = await response.json();
+                const tempeltedataArray = tempeltedata?.data;
+
+                if (tempeltedataArray && Array.isArray(tempeltedataArray)) {
+                    const isFormConnected = tempeltedataArray.some((template) =>
+                        template.form_ids.includes(selectedForm.formId)
+                    );
+
+                    if (isFormConnected) {
+                        alert(`The form "${selectedForm.title}" is already connected to another template and cannot be connected to a different one.`);
                         return;
                     }
+                } else {
+                    throw new Error('Invalid data received from /get/data.');
                 }
 
                 setSelectedFormIds((prevFormIds) => {
@@ -890,6 +942,7 @@ const EmailTemplateCreate = () => {
         }
     };
 
+
     useEffect(() => {
         console.log('Selected form IDs:', selectedFormIds);
     }, [selectedFormIds]);
@@ -911,7 +964,7 @@ const EmailTemplateCreate = () => {
 
         if (!id) {
             try {
-                const response = await axios.get(`http://localhost:4001/check-title/${trimmedTitle}`);
+                const response = await axios.get(`https://hubsyntax.online/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
 
                     trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
@@ -1247,8 +1300,8 @@ const EmailTemplateCreate = () => {
                     };
                     console.log(dataUrl);
                     const response = id
-                        ? await axios.put(`http://localhost:4001/update/${id}`, formData)
-                        : await axios.post('http://localhost:4001/send/api', formData);
+                        ? await axios.put(`https://hubsyntax.online/update/${id}`, formData)
+                        : await axios.post('https://hubsyntax.online/send/api', formData);
 
                     console.log('Form saved successfully with title:', trimmedTitle);
                     const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
@@ -1929,19 +1982,27 @@ const EmailTemplateCreate = () => {
                             />
                         </div>
                         <div className='template-select-forms'>
-                            <select onChange={handleFormSelect}>
+                            <select onChange={handleFormSelect} ref={selectRef}>
                                 <option value="">Select a form</option>
-                                {formDataAdd.map((form) => (
-                                    <option
-                                        key={form.id}
-                                        value={form.title}
-                                        style={{
-                                            color: selectedFormIds.includes(form.formId) ? '#45A7F6' : 'black',
-                                        }}
-                                    >
-                                        {form.title}
-                                    </option>
-                                ))}
+                                {formDataAdd.map((form) => {
+                                    const isFormConnected = connectedForms.includes(form.formId);
+                                    const isFormIdMatched = formData?.form_ids?.includes(form.formId);
+                                    const isDisabled = isFormConnected || isFormIdMatched;
+
+                                    return (
+                                        <option
+                                            key={form.id}
+                                            value={form.title}
+                                            style={{
+                                                color: selectedFormIds.includes(form.formId) ? '#45A7F6' : (isDisabled ? '#A9A9A9' : 'black'),
+    
+                                            }}
+                                            disabled={isDisabled}
+                                        >
+                                            {form.title}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                     </div>

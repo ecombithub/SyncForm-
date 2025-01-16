@@ -1371,7 +1371,7 @@ app.get('/get/data', async (req, res) => {
 app.get('/get/base64', async (req, res) => {
   try {
 
-    const data = await Email.find({}).select('templateId shop TemplateImage title createdAt');
+    const data = await Email.find({}).select('templateId shop TemplateImage form_ids title createdAt');
     res.status(200).json({ message: 'Form data retrieved', data: data });
   } catch (error) {
     console.error(error);
@@ -1381,7 +1381,6 @@ app.get('/get/base64', async (req, res) => {
 
 app.get('/check-form-connected/:formId', async (req, res) => {
   const { formId } = req.params;
-
   try {
 
     const form = await Email.findOne({ form_ids: formId });
@@ -1401,11 +1400,12 @@ app.put('/unlink-template/:formId', async (req, res) => {
   const { formId } = req.params;
 
   try {
-    const form = await Email.findOne({ form_ids: formId });
+    const form = await Email.findOne({ form_ids: formId, });
 
     if (!form) {
-      return res.status(404).json({ message: 'Form not found' });
+      return res.status(404).json({ message: 'Form and template combination not found' });
     }
+
     form.form_ids = form.form_ids.filter((id) => id !== formId);
     await form.save();
 
@@ -1427,7 +1427,7 @@ const saveBase64Image2 = (base64Data, fileName) => {
 
   fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
-  return `http://localhost:4001/uploads/images/${fileName}`;
+  return `https://hubsyntax.online/uploads/images/${fileName}`;
 };
 
 app.post('/send/api', upload.single('file'), async (req, res) => {

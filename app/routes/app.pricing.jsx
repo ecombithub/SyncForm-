@@ -161,7 +161,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
+            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
             console.log("Payment data saved response:", response.data);
 
         } catch (error) {
@@ -223,7 +223,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post('http://localhost:4001/payment/confirm', paymentData);
+            const response = await axios.post('https://hubsyntax.online/payment/confirm', paymentData);
             console.log("Payment data saved response:", response.data);
         } catch (error) {
             if (error.response) {

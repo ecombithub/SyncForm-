@@ -142,16 +142,15 @@
       headingaline
     ) {
       const uniqueId = field.id || generateUniqueId();
-
       switch (field.type) {
         case 'name':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" />`;
+          }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" /> ${field.description}`;
         case 'text':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" />`;
+          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" />${field.description}`;
         case 'toggle':
           return `
             <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
@@ -161,7 +160,8 @@
                 aria-label="${field.label || 'Toggle'}" 
                  onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#white'; 
                           this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';" 
-              />
+                />
+                ${field.description}
               <span style="
                 position: absolute;
                 cursor: pointer;
@@ -189,7 +189,9 @@
         case 'textarea':
           return `<textarea placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}"></textarea>`;
+          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}">
+           ${field.description}
+          </textarea>`;
         case 'checkbox':
           return `
                 <div>
@@ -199,12 +201,13 @@
                     <div class="form_checkbox_flex">
                       <input type="checkbox" id="${option.id}" name="${field.name}" value="${option.value}" ${
                         field.required ? 'required' : ''
-                      } ${field.readonly ? 'readonly' : ''} />
+                      } ${field.readonly ? 'readonly' : ''}/>
                       <label for="${option.id}">${option.label}</label>
                     </div>
                   `
                     )
                     .join('')}
+                 ${field.description}
                 </div>
               `;
         case 'radio':
@@ -216,12 +219,13 @@
                     <div class="form_radio_flex">
                       <input type="radio" id="${option.id}" name="${field.name}" value="${option.value}" ${
                         option.checked ? 'checked' : ''
-                      } aria-label="${field.label || 'Radio Input'}" />
+                      } aria-label="${field.label || 'Radio Input'}"/>
                       <label for="${option.id}">${option.label}</label>
                     </div>
                   `
                     )
                     .join('')}
+                     ${field.description}
                 </div>
               `;
         case 'select':
@@ -235,10 +239,11 @@
                   }" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Select Input'}">
                     ${options}
                   </select>
+                   ${field.description}
                 </div>
               `;
         case 'divider':
-          return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" />`;
+          return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" /> ${field.description}`;
         case 'description':
           return `<p style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
@@ -255,43 +260,43 @@
         case 'number':
           return `<input type="number" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'file':
           return `<input type="file" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'email':
           return `<input type="email" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  ${field.description}`;
         case 'phone':
           return `<input type="tel" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'password':
           return `<input type="password" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'url':
           return `<input type="url" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description} `;
         case 'location':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'date':
           return `<input type="date" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />${field.description}`;
         case 'datetime':
           return `<input type="datetime-local" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'time':
           return `<input type="time" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
         case 'link':
           return `
         <a
@@ -303,7 +308,7 @@
           text-align: ${field.linkaline || 'left'};
           padding: ${field.padding || '0'};
           "
-             >${field.linktext || 'Default Link Text'}</a>
+             >${field.linktext || 'Default Link Text'} ${field.description}</a>
       `;
 
         case 'images':
@@ -318,7 +323,7 @@
                     min="${field.min}" 
                     max="${field.max}" 
                     step="${field.step}" 
-                    />`;
+                    /> ${field.description}`;
         case 'button':
           return `
               <div>
@@ -339,7 +344,9 @@
                 </button>
               </div>
             `;
+            
         default:
+        
           return '';
       }
     }
