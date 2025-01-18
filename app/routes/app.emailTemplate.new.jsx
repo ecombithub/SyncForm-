@@ -415,6 +415,7 @@ const EmailTemplateCreate = () => {
             customIcons: [],
             spacerHeight: type === 'spacer' ? '20' : undefined,
             spacerbg: type === 'spacer' ? '#FFFFFF' : undefined,
+            splittextSize: type === 'split' ? '14' : undefined,
             splittext: type === 'split' ? 'left' : undefined,
             splitbtn: type === 'split' ? 'Add Text' : undefined,
             splitbtnbg: type === 'split' ? '#007BFF' : undefined,
@@ -496,7 +497,7 @@ const EmailTemplateCreate = () => {
             Multibtncolor: type === 'Multicolumn' ? '#0000' : undefined,
             Multibtnfont: type === 'Multicolumn' ? '14' : undefined,
             Multibtnurl: type === 'Multicolumn' ? '' : undefined,
-
+            Multiborderradious: type === 'Multicolumn' ? '2' : undefined,
         };
     };
 
@@ -1256,6 +1257,7 @@ const EmailTemplateCreate = () => {
                 MulticolumnbtnBorderWidth: field.MulticolumnbtnBorderWidth || '',
                 MulticolumnbtnBorderStyle: field.MulticolumnbtnBorderStyle || '',
                 MultibtnBorderColor: field.MultibtnBorderColor || '',
+                Multiborderradious: field.Multiborderradious || '',
                 MultiColor: field.MultiColor || '',
                 MultibtnBorderWidth: field.MultibtnBorderWidth || '',
                 MultibtnBorderStyle: field.MultibtnBorderStyle || '',
@@ -1264,6 +1266,7 @@ const EmailTemplateCreate = () => {
                 splitBorderColor: field.splitBorderColor || '',
                 splitBorderWidth: field.splitBorderWidth || '',
                 splitBorderStyle: field.splitBorderStyle || '',
+                splittextSize:field.splittextSize|| '',
                 showbtnmulti: showbtnmulti || false,
             };
         });
@@ -2452,6 +2455,7 @@ const EmailTemplateCreate = () => {
                                                                                 position: 'relative',
                                                                                 display: 'flex',
                                                                                 color: field.splitColor,
+                                                                                fontSize:`${field.splittextSize}px`
 
                                                                             }}
                                                                         >
@@ -2542,7 +2546,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex' }}
+                                                                        style={{ display: 'flex', width:"100%" }}
                                                                         ref={emailFieldRef}
                                                                     >
                                                                         <div style={{ width: '100%' }}>
@@ -2687,7 +2691,7 @@ const EmailTemplateCreate = () => {
                                                                     <div key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field columns-container ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex' }}
+                                                                        style={{ display: 'flex',width: '100%' }}
                                                                     >
                                                                         <div style={{ width: '100%' }}>
                                                                             <div className="columns-wrapper" style={{ display: 'grid', gap: `${field.Multigap}px`, padding: `${field.MultiPadding}px`, gridTemplateColumns: `repeat(${field.columnsPerRow || `3`}, 1fr)`, backgroundColor: field.Multibgcolor }}>
@@ -2703,6 +2707,7 @@ const EmailTemplateCreate = () => {
                                                                                             backgroundColor: field.Multicolumnbgcolor,
                                                                                             textAlign: field.Multitext,
                                                                                             color: field.MultiColor,
+                                                                                            borderRadius:`${field.Multiborderradious}px`
                                                                                         }}
                                                                                         className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
                                                                                         onClick={(e) => handleColumnClick(field.id, index)}
@@ -2748,7 +2753,7 @@ const EmailTemplateCreate = () => {
                                                                                             !field.columnData[index].content &&
                                                                                             !field.columnData[index].isVisible && (
                                                                                                 <div style={{ color: 'gray' }}>
-                                                                                                    <h2>Column</h2>
+                                                                                                    <h3>Column</h3>
                                                                                                     Elevate your online store with our easy-to-use Text Box feature.
                                                                                                     It's a game-changer for personalization, allowing customers to add their
                                                                                                     special touch directly from a user-friendly drop-down menu.
@@ -3344,6 +3349,21 @@ const EmailTemplateCreate = () => {
                                                                                         );
                                                                                     }}
                                                                                     placeholder="Font-Size"
+                                                                                />
+                                                                            </div>
+
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label> Border-Radious (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.Multiborderradious}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, Multiborderradious: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
                                                                                 />
                                                                             </div>
 
@@ -5066,6 +5086,20 @@ const EmailTemplateCreate = () => {
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Font-Size</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splittextSize}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splittextSize: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Style</label>
                                                                                 <select

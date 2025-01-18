@@ -1,4 +1,3 @@
-import '../index.css';
 import { Link, useNavigate } from '@remix-run/react';
 import React, { useState, useEffect } from 'react';
 import user from '../images/user.png'

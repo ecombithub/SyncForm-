@@ -12,7 +12,7 @@ import copy22 from '../images/copy222.png'
 import cancle1 from '../images/cancle1.png'
 import copy12 from '../images/copy12.png'
 import cancleimg from '../images/cancleimg.png';
-
+import '../index.css';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { authenticate, apiVersion } from "../shopify.server";

@@ -61,6 +61,10 @@ export default function Support() {
     const { apiUrl } = useLoaderData() || {};
 
     const handleSubmit = async () => {
+        if(!shop || !name || ! email || !category || !theme || !describe){
+            alert('Please fill in all fields.');
+            return;
+        }
         try {
             const response = await axios.post(`${apiUrl}/email-submit`, {
                 name,

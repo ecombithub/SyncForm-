@@ -313,6 +313,7 @@ const emailTemplateSchema = new mongoose.Schema({
       spacerHeight: { type: String, required: false },
       spacerbg: { type: String, required: false },
       videoPadding: { type: String, required: false },
+      splittextSize: { type: String, required: false },
       splitPadding: { type: String, required: false },
       splitTextAlin: { type: String, required: false },
       videoBorderWidth: { type: String, required: false },
@@ -381,6 +382,7 @@ const emailTemplateSchema = new mongoose.Schema({
       richtextcolor: { type: String, required: false },
       MulticolumnPadding: { type: String, required: false },
       Multibtnlable: { type: String, required: false },
+      Multiborderradious: { type: String, required: false },
       Multibtnbg: { type: String, required: false },
       Multibtnurl: { type: String, required: false },
       icons: {
@@ -550,6 +552,7 @@ const ShowTemplats = new mongoose.Schema({
       spacerbg: { type: String, required: false },
       videoPadding: { type: String, required: false },
       splitPadding: { type: String, required: false },
+      splittextSize: { type: String, required: false },
       splitTextAlin: { type: String, required: false },
       videoBorderWidth: { type: String, required: false },
       videoBorderStyle: { type: String, required: false },
@@ -618,6 +621,7 @@ const ShowTemplats = new mongoose.Schema({
       MulticolumnPadding: { type: String, required: false },
       Multibtnlable: { type: String, required: false },
       Multibtnurl: { type: String, required: false },
+      Multiborderradious: { type: String, required: false },
       Multibtnbg: { type: String, required: false },
       icons: {
         facebook: {
@@ -745,6 +749,25 @@ app.post('/api/template', async (req, res) => {
     res.status(500).json({ message: 'Error processing the request', error });
   }
 });
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname1 = dirname(__filename);
+
+const uploadDir = path.join(__dirname1, 'upload');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+const saveBase64Image = (base64Str, fileName) => {
+  const base64Data = base64Str.replace(/^data:image\/png;base64,/, '');
+  const filePath = path.join(uploadDir, fileName);
+  fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+  return filePath;
+};
 
 const sendEmail = async (email, TemplateAll) => {
   try {
@@ -899,7 +922,7 @@ const sendEmail = async (email, TemplateAll) => {
               let columnCount = 0;
               let result = `
                 <div style="color: ${field.MultiColor || '#000'}; padding: ${field.MultiPadding || '1px'}px; text-align: center; background-color: ${field.Multibgcolor || 'transparent'};">
-                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" >
               `;
 
               field.columnData.forEach((column, index) => {
@@ -907,18 +930,6 @@ const sendEmail = async (email, TemplateAll) => {
                   if (columnCount > 0) result += '</tr>';
                   result += '<tr>';
                 }
-
-                let imageCid = '';
-                // if (column.image && column.image.startsWith('data:image/png;base64,')) {
-                //   const uniqueId = `image-${Date.now()}-${index}`;
-                //   const imagePath = saveBase64Image(column.image, `${uniqueId}.png`);
-                //   attachments.push({
-                //     filename: `${uniqueId}.png`,
-                //     path: imagePath,
-                //     cid: uniqueId,
-                //   });
-                //   imageCid = `cid:${uniqueId}`;
-                // }
 
                 let processedContent = column.content.replace(
                   /<p><br><\/p>/g,
@@ -940,7 +951,7 @@ const sendEmail = async (email, TemplateAll) => {
 
                 result += `
                   <td style="
-                    width: ${100 / columnsPerRow}%;
+                    width: calc(${100 / columnsPerRow}% - ${field.Multigap || 0}px); 
                     text-align: ${field.Multitext || 'center'};
                     font-size: ${field.fontsizeMulticolumn || 14}px;
                     border-width: ${field.MulticolumnbtnBorderWidth || 1}px;
@@ -949,6 +960,7 @@ const sendEmail = async (email, TemplateAll) => {
                     padding: ${field.MulticolumnPadding || '10'}px;
                     background-color: ${field.Multicolumnbgcolor || 'transparent'};
                     color: ${field.MultiColor || '#000'};
+                     border-radius: ${field.Multiborderradious || 0}px;
                   ">
                     <img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />
                     ${processedContent}
@@ -1027,6 +1039,7 @@ const sendEmail = async (email, TemplateAll) => {
         padding: ${field.splitPadding || 0}px;
         float: inline-start;
         color: ${field.splitColor};
+        font-size: ${field.splittextSize || 14}px;
       ">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
           width: 100%;
@@ -1149,9 +1162,7 @@ const sendEmail = async (email, TemplateAll) => {
                       </div>
                     `;
             case 'socalicon':
-
               if (field.value) {
-
                 const icons = [];
 
                 if (field.value.facebook && !field.value.facebook.isHidden && field.value.facebook.url) {
@@ -1190,20 +1201,20 @@ const sendEmail = async (email, TemplateAll) => {
                     .forEach((icon, index) => {
                       const uniqueId = `custom-icon-${Date.now()}-${index}`;
                 
-                      document.write(`
-                        <a href="${icon.url}" 
-                           style="padding-right: ${field.socalIcongap || 8}px;" 
-                           target="_blank" 
-                           rel="noopener noreferrer">
-                          <img src="${icon.src}" 
-                               alt="${icon.alt || `Icon ${index + 1}`}" 
-                               style="height: ${field.socalIconHeight || 24}px; 
-                                      width: ${field.socalIconWidth || 24}px;" />
-                        </a>
-                      `);
+                      if (icon.src) {
+                        icons.push(`
+                          <a href="${icon.url}" 
+                             style="padding-right: ${field.socalIcongap}px;" 
+                             target="_blank" 
+                             rel="noopener noreferrer">
+                            <img src="${icon.src}" 
+                                 alt="icon-${index}" 
+                                 style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
+                          </a>
+                        `);
+                      }
                     });
                 }
-              
                 return `
                   <div style="
                     text-align: ${field.socaliconTextAlign || 'left'}; 
@@ -1214,7 +1225,7 @@ const sendEmail = async (email, TemplateAll) => {
                   </div>
                 `;
               }
-              return '';
+          
             default:
               return '';
           }

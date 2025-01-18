@@ -618,7 +618,8 @@ export default function EmailTemplate() {
                                         padding: `${field.MulticolumnPadding}px`,
                                         backgroundColor: field.Multicolumnbgcolor,
                                         textAlign: field.Multitext,
-                                        color: field.MultiColor
+                                        color: field.MultiColor,
+                                        borderRadius:`${field.Multiborderradious}px`
                                     }}
                                 >
                                     {column.image && (
@@ -639,6 +640,7 @@ export default function EmailTemplate() {
                                             color: field.Multibtncolor,
                                             borderRadius: `${field.Multibtnradious}px`,
                                             fontSize: `${field.Multibtnfont || '14'}px`
+
                                         }}
                                         >
                                             {column.Multibtnlable || 'Click'} </button>
@@ -674,6 +676,8 @@ export default function EmailTemplate() {
                         style={{
                             height: `${field.spacerHeight || 20}px`,
                             backgroundColor: field.spacerbg || '#EDEDED',
+                            width:'100%',
+                            display:'flex'
                         }}
                     ></div>
                 );
@@ -690,6 +694,7 @@ export default function EmailTemplate() {
                             textAlign: field.splitTextAlin,
                             float: 'inline-start',
                             color: field.splitColor,
+                            fontSize:`${field.splittextSize}px`
                         }}
                     >
                         {field.add === 'image' ? (
