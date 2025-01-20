@@ -999,34 +999,22 @@ const sendEmail = async (email, TemplateAll) => {
               return result;
             }
             case 'images': {
-              if (field.value.startsWith('data:image/png;base64,')) {
-                const uniqueId = `image-${Date.now()}`;
-                const imagePath = saveBase64Image(field.value, `${uniqueId}.png`);
-                attachments.push({
-                  filename: `${uniqueId}.png`,
-                  path: imagePath,
-                  cid: uniqueId,
-                });
-
-                return `
-                      <div style="
-                        text-align: ${field.imgTextAlign || 'center'};
-                        background-color: ${field.imgbg || 'transparent'};
-                        border-width: ${field.imgBorderWidth || 1}px;
-                        border-style: ${field.imgBorderStyle || 'solid'};
-                        border-color: ${field.imgBorderColor || '#000'};
-                        padding: ${field.imgPadding || 0}px;
-                      ">
-                        <img 
-                          src="${field.value}" 
-                          alt="${field.label || 'Image'}" 
-                          style="width: ${field.imgWidth || 100}%;"
-                        />
-                      </div>`;
-              }
-              return '';
+              return `
+                <div style="
+                  text-align: ${field.imgTextAlign || 'center'};
+                  background-color: ${field.imgbg || 'transparent'};
+                  border-width: ${field.imgBorderWidth || 1}px;
+                  border-style: ${field.imgBorderStyle || 'solid'};
+                  border-color: ${field.imgBorderColor || '#000'};
+                  padding: ${field.imgPadding || 0}px;
+                ">
+                  <img 
+                    src="${field.value}" 
+                    alt="${field.label || 'Image'}" 
+                    style="width: ${field.imgWidth || 100}%;"
+                  />
+                </div>`;
             }
-
             case 'split': {
               const value = field.value || '';
               const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');

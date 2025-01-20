@@ -17,7 +17,7 @@
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `http://localhost:4001/get-form/${id}`,
+        url: `https://hubsyntax.online/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -437,7 +437,7 @@
       console.log('Form Data:', JSON.stringify(formData));
       
       $.ajax({
-        url: 'http://localhost:4001/api/forms',
+        url: 'https://hubsyntax.online/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -450,7 +450,7 @@
           console.log('Form ID:', formData.id);
           if (formData.id) {
             $.ajax({
-                url: 'http://localhost:4001/get/data',
+                url: 'https://hubsyntax.online/get/data',
                 method: 'GET',
                 success: function(data) {
                     console.log('Fetched data:', data);
@@ -462,7 +462,7 @@
                         console.log('Matched form data:', matchingForm);
         
                         $.ajax({
-                            url: 'http://localhost:4001/api/template',
+                            url: 'https://hubsyntax.online/api/template',
                             method: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify({
@@ -588,7 +588,7 @@
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `http://localhost:4001/get-form/${id}`,
+          url: `https://hubsyntax.online/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -687,7 +687,7 @@
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: `http://localhost:4001/get/data`,
+          url: `https://hubsyntax.online/get/data`,
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -750,7 +750,7 @@
               console.log('Form Data:', JSON.stringify(formData));
 
               $.ajax({
-                url: 'http://localhost:4001/api/forms',
+                url: 'https://hubsyntax.online/api/forms',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
@@ -768,7 +768,7 @@
                   });
 
                   $.ajax({
-                    url: 'http://localhost:4001/api/template',
+                    url: 'https://hubsyntax.online/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -856,7 +856,7 @@
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `http://localhost:4001/get-form/${id}`,
+        url: `https://hubsyntax.online/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -1221,7 +1221,7 @@
       console.log('Email:', formData.email);
 
       $.ajax({
-        url: 'http://localhost:4001/get/data',
+        url: 'https://hubsyntax.online/get/data',
         method: 'GET',
         data: { formId: formData.id },
         success: function (response) {
@@ -1281,7 +1281,7 @@
           console.log('Form Data:', JSON.stringify(formData));
 
           $.ajax({
-            url: 'http://localhost:4001/api/forms',
+            url: 'https://hubsyntax.online/api/forms',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
@@ -1303,7 +1303,7 @@
               }, 2000);
 
               $.ajax({
-                url: 'http://localhost:4001/api/template',
+                url: 'https://hubsyntax.online/api/template',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
