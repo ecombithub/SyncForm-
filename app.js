@@ -82,6 +82,7 @@ const formCreateSchema = new mongoose.Schema({
     linktext: { type: String, required: false },
     linkUrl: { type: String, required: false },
     linkTarget: { type: String, required: false },
+    customClass: { type: String, required: false },
     linkaline: { type: String, required: false },
     min: { type: String, required: false },
     max: { type: String, required: false },
@@ -1491,7 +1492,8 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
         field.columnData.forEach(column => {
           if (column.image && typeof column.image === 'string' && column.image.startsWith('data:image')) {
             const base64Data = column.image.replace(/^data:image\/(?:png|jpeg);base64,/, '');
-            const fileName = `columnImage_${Date.now()}.png`;
+            const uniqueSuffix = Math.random().toString(36).substring(2, 15);
+            const fileName = `columnImage_${uniqueSuffix}.png`;
             column.image = saveBase64Image2(base64Data, fileName);
           }
         });
@@ -1555,7 +1557,8 @@ app.put('/update/:id', async (req, res) => {
         field.columnData.forEach((column, index) => {
           if (column && column.image && column.image.startsWith('data:image')) {
             const base64Data = column.image.replace(/^data:image\/(?:png|jpeg);base64,/, '');
-            const fileName = `columnImage_${Date.now()}_${index}.png`;
+            const uniqueSuffix = Math.random().toString(36).substring(2, 15);
+            const fileName = `columnImage_${uniqueSuffix}.png`;
             column.image = saveBase64Image2(base64Data, fileName);
           }
         });

@@ -74,7 +74,7 @@ const generateUniqueId = (length = 22) => {
 
 export const loader = async ({ request }) => {
     try {
-        const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+        const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
         const { session } = await authenticate.admin(request);
         const { shop, accessToken } = session;
         console.log('apiUrl:', apiUrl);
@@ -144,7 +144,7 @@ export const loader = async ({ request }) => {
 
         console.log('Processed Products:', productsWithData);
 
-        return { products: productsWithData, shop: shop, apiUrl:apiUrl  };
+        return { products: productsWithData, shop: shop, apiUrl: apiUrl };
     } catch (err) {
         console.error("Error fetching products:", err.message);
         return { products: [], shop: null };
@@ -186,7 +186,7 @@ const EmailTemplateCreate = () => {
     const [selectedFormIds, setSelectedFormIds] = useState([]);
     const [selectedTitles, setSelectedTitles] = useState([]);
     const [showVideoInput, setShowVideoInput] = useState(false);
-    const { products, shop,apiUrl, apiVersion } = useLoaderData();
+    const { products, shop, apiUrl, apiVersion } = useLoaderData();
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -834,13 +834,13 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         if (selectRef.current) {
-          
+
             formDataAdd.forEach((form) => {
                 const isFormIdMatched = formData?.form_ids?.includes(form.formId);
                 if (isFormIdMatched && selectRef.current) {
                     const option = selectRef.current.querySelector(`option[value="${form.title}"]`);
                     if (option) {
-                        option.disabled = false; 
+                        option.disabled = false;
                         console.log(`Automatically enabling form ID: ${form.formId}`);
                     }
                 }
@@ -1266,7 +1266,7 @@ const EmailTemplateCreate = () => {
                 splitBorderColor: field.splitBorderColor || '',
                 splitBorderWidth: field.splitBorderWidth || '',
                 splitBorderStyle: field.splitBorderStyle || '',
-                splittextSize:field.splittextSize|| '',
+                splittextSize: field.splittextSize || '',
                 showbtnmulti: showbtnmulti || false,
             };
         });
@@ -1554,29 +1554,33 @@ const EmailTemplateCreate = () => {
 
     const handleRemoveProductFromForm = (index) => {
         const productToRemove = productTitles?.[index];
-
+    
         if (!productToRemove) return;
-
+    
         setProductTitles((prevTitles) =>
-            Array.isArray(prevTitles) ? prevTitles.filter((title, i) => i !== index) : prevTitles
+            Array.isArray(prevTitles) ? prevTitles.filter((_, i) => i !== index) : prevTitles
         );
-
+    
         setSelectedProducts((prevSelectedProducts) =>
             Array.isArray(prevSelectedProducts)
-                ? prevSelectedProducts.filter((product) => product.title !== productToRemove)
+                ? prevSelectedProducts.filter((product, i) => i !== index)
                 : prevSelectedProducts
         );
-
+    
         setFields((prevFields) =>
             Array.isArray(prevFields)
                 ? prevFields.map((field) =>
                     field.type === 'product'
-                        ? { ...field, products: field.products.filter((product) => product.title !== productToRemove) }
+                        ? {
+                            ...field,
+                            products: field.products.filter((_, i) => i !== index),
+                        }
                         : field
                 )
                 : prevFields
         );
     };
+    
 
     const handleClosePopup = () => {
         setIsPopupOpen(false);
@@ -2000,7 +2004,7 @@ const EmailTemplateCreate = () => {
                                             value={form.title}
                                             style={{
                                                 color: selectedFormIds.includes(form.formId) ? '#45A7F6' : (isDisabled ? '#A9A9A9' : 'black'),
-    
+
                                             }}
                                             disabled={isDisabled}
                                         >
@@ -2455,7 +2459,7 @@ const EmailTemplateCreate = () => {
                                                                                 position: 'relative',
                                                                                 display: 'flex',
                                                                                 color: field.splitColor,
-                                                                                fontSize:`${field.splittextSize}px`
+                                                                                fontSize: `${field.splittextSize}px`
 
                                                                             }}
                                                                         >
@@ -2546,7 +2550,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex', width:"100%" }}
+                                                                        style={{ display: 'flex', width: "100%" }}
                                                                         ref={emailFieldRef}
                                                                     >
                                                                         <div style={{ width: '100%' }}>
@@ -2691,7 +2695,7 @@ const EmailTemplateCreate = () => {
                                                                     <div key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field columns-container ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex',width: '100%' }}
+                                                                        style={{ display: 'flex', width: '100%' }}
                                                                     >
                                                                         <div style={{ width: '100%' }}>
                                                                             <div className="columns-wrapper" style={{ display: 'grid', gap: `${field.Multigap}px`, padding: `${field.MultiPadding}px`, gridTemplateColumns: `repeat(${field.columnsPerRow || `3`}, 1fr)`, backgroundColor: field.Multibgcolor }}>
@@ -2707,7 +2711,7 @@ const EmailTemplateCreate = () => {
                                                                                             backgroundColor: field.Multicolumnbgcolor,
                                                                                             textAlign: field.Multitext,
                                                                                             color: field.MultiColor,
-                                                                                            borderRadius:`${field.Multiborderradious}px`
+                                                                                            borderRadius: `${field.Multiborderradious}px`
                                                                                         }}
                                                                                         className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
                                                                                         onClick={(e) => handleColumnClick(field.id, index)}
@@ -5087,19 +5091,19 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
-                                                                                    <label>Font-Size</label>
-                                                                                    <input
-                                                                                        type="number"
-                                                                                        value={field.splittextSize}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, splittextSize: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
-                                                                                    />
-                                                                                </div>
+                                                                                <label>Font-Size</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.splittextSize}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, splittextSize: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Style</label>
                                                                                 <select
@@ -6057,12 +6061,11 @@ const EmailTemplateCreate = () => {
                                                         <div className='product-itm-all-prices'>
                                                             <h3>{product.title}</h3>
                                                             <p className='price-product-all'>Price: ${product.price}</p>
+
                                                         </div>
                                                     </div>
 
                                                 </div>
-
-
                                             </div>
                                         ))
                                     ) : (

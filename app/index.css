@@ -28,7 +28,6 @@ button.action_btn {
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
-
 }
 
 .modal-costomer .loaddr img {
@@ -484,6 +483,18 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
     cursor: pointer;
     position: relative;
     width: 15%;
+}
+.form-builder-green-btn{
+    position: relative;
+    cursor: pointer;
+}
+
+.form-builder-green-btn:hover .noUi-tooltip-id {
+    display: flex;
+    right: -23px;
+}
+.form-builder-green-btn:hover .noUi-tooltip-id::after {
+    display: block;
 }
 
 .form-delete-icon:hover .noUi-tooltip-id {
@@ -2779,6 +2790,7 @@ p.form_build_h2_four {
     background-image: url('../app//images/testbg.png');
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
     padding: 25px;
     border-radius: 20px;
 }

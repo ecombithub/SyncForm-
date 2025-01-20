@@ -362,16 +362,6 @@ export default function EmailTemplate() {
         current * formsPerPage
     );
 
-    // const getEmbedUrl = (url) => {
-    //     const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
-    //     const shortUrlRegex = /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]+)/;
-    //     const match = youtubeRegex.exec(url) || shortUrlRegex.exec(url);
-    //     if (match) {
-    //         return `https://www.youtube.com/embed/${match[1]}`;
-    //     }
-    //     return url;
-    // };
-
     const renderField = (field) => {
         const { viewMode = 'desktop' } = field;
         switch (field.type) {
@@ -451,7 +441,6 @@ export default function EmailTemplate() {
                         fontWeight: field.descritionFontWeight,
                         color: field.descritionColor
                     }}>{field.value}</p>
-
                 </div>;
             case 'divider':
                 return (
@@ -563,7 +552,6 @@ export default function EmailTemplate() {
                             <p>No products available</p>
                         )}
                     </div>
-
                 );
 
             case 'images':
@@ -655,21 +643,7 @@ export default function EmailTemplate() {
 
             case 'html convert':
                 return <div style={{ padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
-            // case 'video':
-            //     return (
-            //         <div style={{ padding: `${field.videoPadding || 0}px`, textAlign: 'center', borderWidth: `${field.videoBorderWidth}px`, borderStyle: field.videoBorderStyle, borderColor: field.videoBorderColor }} >
-            //             <iframe
-            //                 width="100%"
-            //                 height="315"
-            //                 src={getEmbedUrl(field.value)}
-            //                 title={field.label || 'Video'}
-            //                 frameBorder="0"
-            //                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            //                 allowFullScreen
-            //                 style={{ maxWidth: field.width || '100%' }}
-            //             ></iframe>
-            //         </div>
-            //     );
+            
             case 'spacer':
                 return (
                     <div

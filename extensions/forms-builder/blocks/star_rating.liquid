@@ -83,7 +83,7 @@
           const fieldHtml = `
                   <div key="${field.id}" style= "width: ${
             field.width
-          }; ${floatStyle} margin-bottom: ${inputGap}px;"class="${`input-field input-gap ${
+          }; ${floatStyle} margin-bottom: ${inputGap}px;"class="${`input-field ${field.customClass} input-gap ${
             parseFloat(field.width) <= 50 ? 'small-width' : ''
           }`}">
                       ${
@@ -118,6 +118,8 @@
           container.append(fieldHtml);
         });
         $('.input-gap').css('padding', '5px');
+        $('.input-gap').css('display', 'flow-root');
+
 
       } else {
         container.append('<p>No fields available.</p>');
@@ -547,6 +549,8 @@
           }, 2000);
         },
       });
+
+      
       
     };
   });

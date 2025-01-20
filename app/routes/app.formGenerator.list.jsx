@@ -586,7 +586,10 @@ const Formdata = () => {
                                                                 <td style={{ textAlign: "center" }}>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
                                                                         <div className='form-builder-table-flex-btn'>
-                                                                            <div className='form-builder-green-btn' style={{ cursor: "pointer" }} onClick={() => handleCopyForm(form.formId)} ><img src={copy12} alt="" /></div>
+                                                                            <div className='form-builder-green-btn' onClick={() => handleCopyForm(form.formId)} >
+                                                                                <img src={copy12} alt="" />
+                                                                                <div className="noUi-tooltip-id">Copy Form</div>
+                                                                                </div>
                                                                             <div className='form-builder-edit' onClick={() => handleEdit(form.formId)}>
                                                                                 <img src={oplus} alt="" />
                                                                                 <div className="noUi-tooltip-id">Edit</div>
@@ -724,7 +727,7 @@ const Formdata = () => {
                                     form.formId === currentFormId && (
                                         <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover',backgroundPosition:'center' }} className="form-details">
                                             {form.fields.map(field => (
-                                                <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
+                                                <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
 
                                                     {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
                                                     {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
@@ -835,6 +838,7 @@ const Formdata = () => {
                                                         </div>
                                                     )}
                                                     {field.description}
+                                                 
                                                 </div>
                                             ))}
                                             <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>

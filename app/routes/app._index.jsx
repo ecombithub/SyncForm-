@@ -17,7 +17,7 @@ import cancleimg from '../images/cancleimg.png';
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const { shop, accessToken } = session;
-  const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+  const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
   const response = {
     assets: [],
     activeThemeId: null,
@@ -76,7 +76,7 @@ export const loader = async ({ request }) => {
 };
 
 function Index() {
-  const { activeThemeId, shop,apiUrl, accessToken, errorMessage, assets } = useLoaderData() || {};
+  const { activeThemeId, shop, apiUrl, accessToken} = useLoaderData() || {};
   const [dataSent, setDataSent] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [userPlan, setUserPlan] = useState(null);
@@ -89,7 +89,7 @@ function Index() {
     const saveShopDetails = async () => {
       if (shop && accessToken && !dataSent) {
         try {
-        
+
           const response = await fetch(`${apiUrl}/api/save-shop`, {
             method: "POST",
             headers: {
@@ -247,9 +247,6 @@ function Index() {
   const handleUpgrade = () => {
     navigator('/app/pricing');
   }
-
-
-
 
   return (
     <>

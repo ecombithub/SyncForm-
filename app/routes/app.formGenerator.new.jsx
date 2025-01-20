@@ -1855,7 +1855,7 @@ const Formgenerated = () => {
                                                     onClick={() => handleFieldClick(field, index)}
                                                 >
                                                     {field.type === 'name' && (
-                                                        <div className={`input-field`} style={{
+                                                        <div className={`input-field ${field.customClass}`} style={{
                                                             width: "100%",
                                                             border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                 ? '1px solid #33cba2'

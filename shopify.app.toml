@@ -3,7 +3,7 @@
 client_id = "9a390d651825c642518ca581ba64c579"
 name = "Form Builder HUB"
 handle = "form-builder-hub"
-application_url = "https://basement-destiny-chinese-sh.trycloudflare.com"
+application_url = "https://horses-wonder-pioneer-clicks.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_customers,read_orders,read_products,read_themes,write_customers,w
 
 [auth]
 redirect_urls = [
-  "https://basement-destiny-chinese-sh.trycloudflare.com/auth/callback",
-  "https://basement-destiny-chinese-sh.trycloudflare.com/auth/shopify/callback",
-  "https://basement-destiny-chinese-sh.trycloudflare.com/api/auth/callback"
+  "https://horses-wonder-pioneer-clicks.trycloudflare.com/auth/callback",
+  "https://horses-wonder-pioneer-clicks.trycloudflare.com/auth/shopify/callback",
+  "https://horses-wonder-pioneer-clicks.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

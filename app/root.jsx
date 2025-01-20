@@ -28,7 +28,7 @@ export default function App() {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
         <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css" />
 
-      <script src="//code.tidio.co/3snvje9fsrr1an4mo8tffkv7r9wwdfal.js" async></script> 
+        <script src="//code.tidio.co/3snvje9fsrr1an4mo8tffkv7r9wwdfal.js" async></script> 
 
         <Meta />
         <Links />

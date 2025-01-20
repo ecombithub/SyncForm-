@@ -87,6 +87,7 @@ function Customer() {
             ease: 'power1.out',
         });
     }, []);
+    
     useEffect(() => {
         const animatedValue = { value: 0 };
 

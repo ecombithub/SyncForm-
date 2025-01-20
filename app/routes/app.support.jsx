@@ -9,7 +9,7 @@ import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
-    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
     const { shop, accessToken } = session;
 
     const response = {
@@ -61,7 +61,7 @@ export default function Support() {
     const { apiUrl } = useLoaderData() || {};
 
     const handleSubmit = async () => {
-        if(!shop || !name || ! email || !category || !theme || !describe){
+        if (!shop || !name || !email || !category || !theme || !describe) {
             alert('Please fill in all fields.');
             return;
         }
@@ -94,6 +94,12 @@ export default function Support() {
 
     const handleShow = () => {
         setShowPopup(!showPopup);
+        setName('');
+        setEmail('');
+        setCategory('');
+        setTheme('');
+        setShop('');
+        setDescribe('');
     }
     const handleHide = () => {
         setShowPopup(!showPopup);
@@ -120,48 +126,7 @@ export default function Support() {
                         </div>
 
                     </div>
-                    <div className='form-builder-wrap-popup-inputs'>
-                        {showPopup && (
-                            <div className="popup">
-                                <div className="popup-content">
-                                    <div className="it-services">
-                                        <h2>Support ticket</h2>
-                                        <p>Please provide the details of the problem</p>
-                                        <div className="service-form-input">
-                                            <div className="servies-input">
-                                                <label htmlFor="name">Name</label>
-                                                <input type="name" value={name} onChange={(e) => setName(e.target.value)} />
-                                            </div>
-                                            <div className="servies-input">
-                                                <label htmlFor="email">E-mail</label>
-                                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                            </div>
-                                            <div className="servies-input">
-                                                <label htmlFor="Department">Category</label>
-                                                <input type="test" value={category} onChange={(e) => setCategory(e.target.value)} />
-                                            </div>
-                                            <div className="servies-input">
-                                                <label htmlFor="Computer ID">Theme ID or Collaborator Code</label>
-                                                <input type="test" value={theme} onChange={(e) => setTheme(e.target.value)} />
-                                            </div>
-                                            <div className="servies-input shop">
-                                                <label htmlFor="Shop">Shop</label>
-                                                <input type="test" value={shop} onChange={(e) => setShop(e.target.value)} />
-                                            </div>
-                                            <div className="servies-input textarea">
-                                                <label htmlFor="Describe the Problem">Describe the Problem</label>
-                                                <textarea id="w3review" name="w3review" rows="4" cols="50" value={describe} onChange={(e) => setDescribe(e.target.value)}></textarea>
-                                            </div>
-                                        </div>
-                                        <div className="it-service-icon" onClick={handleHide}>
-                                            <img src={cancle1} alt="" />
-                                        </div>
-                                        <button className='btn' onClick={handleSubmit}>Submit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+
                     <div className="form_build_help_show know">
                         <h4>Knowledge base & roadmap</h4>
                         <p>In case you have any questions or difficulties setting up the app, you can check our Knowledge base.</p>
@@ -227,6 +192,48 @@ export default function Support() {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className='form-builder-wrap-popup-inputs'>
+                {showPopup && (
+                    <div className="popup">
+                        <div className="popup-content">
+                            <div className="it-services">
+                                <h2>Support ticket</h2>
+                                <p>Please provide the details of the problem</p>
+                                <div className="service-form-input">
+                                    <div className="servies-input">
+                                        <label htmlFor="name">Name</label>
+                                        <input type="name" value={name} onChange={(e) => setName(e.target.value)} />
+                                    </div>
+                                    <div className="servies-input">
+                                        <label htmlFor="email">E-mail</label>
+                                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                    </div>
+                                    <div className="servies-input">
+                                        <label htmlFor="Department">Category</label>
+                                        <input type="test" value={category} onChange={(e) => setCategory(e.target.value)} />
+                                    </div>
+                                    <div className="servies-input">
+                                        <label htmlFor="Computer ID">Theme ID or Collaborator Code</label>
+                                        <input type="test" value={theme} onChange={(e) => setTheme(e.target.value)} />
+                                    </div>
+                                    <div className="servies-input shop">
+                                        <label htmlFor="Shop">Shop</label>
+                                        <input type="test" value={shop} onChange={(e) => setShop(e.target.value)} />
+                                    </div>
+                                    <div className="servies-input textarea">
+                                        <label htmlFor="Describe the Problem">Describe the Problem</label>
+                                        <textarea id="w3review" name="w3review" rows="4" cols="50" value={describe} onChange={(e) => setDescribe(e.target.value)}></textarea>
+                                    </div>
+                                </div>
+                                <div className="it-service-icon" onClick={handleHide}>
+                                    <img src={cancle1} alt="" />
+                                </div>
+                                <button className='btn' onClick={handleSubmit}>Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
         </div>
