@@ -100,7 +100,7 @@ function Index() {
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to save shop details');
+            throw new Error(errorData.error || 'Failed to save the shop details');
           }
 
           const data = await response.json();
