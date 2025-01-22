@@ -378,6 +378,7 @@ export default function EmailTemplate() {
                     display: 'flex',
                     alignItems: 'center',
                     opacity: field.headeropacity || '',
+                    margin:`${field.headingmargin}px`
                 }}>
                     <div style={{
 
@@ -578,7 +579,8 @@ export default function EmailTemplate() {
                         paddingRight: `${field.richleftPadding}px`,
                         paddingTop: `${field.richtopPadding}px`,
                         paddingBottom: `${field.richtopPadding}px`,
-                        display: 'flow-root'
+                        display: 'flow-root',
+                        textDecoration: field.richline,
                     }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
             case 'Multicolumn':

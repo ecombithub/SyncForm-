@@ -41,11 +41,13 @@ import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;
-    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
     const response = {
         assets: [],
         shop,
@@ -85,19 +87,9 @@ export const loader = async ({ request }) => {
 };
 
 const toolbarOptions = [
-    [{ header: '1' }, { header: '2' }, { header: '3' }, { header: '4' }, { header: '5' }, { header: '6' }],
-    ['bold', 'italic', 'underline'],
-    ['link', 'image'],
+    ['bold', 'italic', 'underline'], [{ color: [] }, { background: [] }], ['link', 'image'],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ script: 'sub' }, { script: 'super' }],
-    [{ indent: '-1' }, { indent: '+1' }],
-    [{ direction: 'rtl' }],
-    [{ size: ['small', 'medium', 'large', 'huge'] }],
-    [{ color: [] }, { background: [] }],
-    [{ font: [] }],
-    [{ align: [] }],
-    [{ header: [] }],
-    ['clean'],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
 ];
 
 const generateUniqueId = (length = 22) => {
@@ -213,7 +205,7 @@ const Formgenerated = () => {
     const [url, setUrl] = useState('');
     const [ReactQuill, setReactQuill] = useState(null);
     const [isDropdownVisible, setDropdownVisible] = useState(false);
-    const { shop,apiUrl } = useLoaderData() || {};
+    const { shop, apiUrl } = useLoaderData() || {};
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
     const [inputRadious, setInputRadious] = useState('4');
@@ -234,6 +226,7 @@ const Formgenerated = () => {
     const [linkTarget, setLinkTarget] = useState('_self');
     const [isActive, setIsActive] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [enabledFields, setEnabledFields] = useState({});
 
     useEffect(() => {
 
@@ -358,14 +351,15 @@ const Formgenerated = () => {
             buttonheight: existingField?.buttonheight || '40px',
             inputPadding: "10px",
             inputBorderRadious: "4",
+            fontSize: type === 'button' ? '16' : undefined,
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
             btncolor: type === 'button' ? '#fff' : undefined,
             btnradious: type === 'button' ? '4' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
-            textSize:type === 'description' ? '16' : undefined,
-            textAline:type === 'description' ? 'left' : undefined,
+            textSize: type === 'description' ? '16' : undefined,
+            textAline: type === 'description' ? 'left' : undefined,
             textColor: type === 'description' ? '#000000' : undefined,
             headingText: type === 'heading' ? 'Add Heading' : undefined,
             linktext: type === 'link' ? 'Link' : undefined,
@@ -923,7 +917,7 @@ const Formgenerated = () => {
         };
 
         console.log('New form object:', JSON.stringify(newForm, null, 2));
-      
+
 
         const request = isEditing
             ? axios.put(`${apiUrl}/update-form/${editingFormId}`, newForm, {
@@ -1197,9 +1191,13 @@ const Formgenerated = () => {
         }
     }
 
-    const toggleFieldEnabled = () => {
-        setIsFieldEnabled(!isFieldEnabled);
+    const toggleFieldEnabled = (fieldId) => {
+        setEnabledFields((prev) => ({
+            ...prev,
+            [fieldId]: !prev[fieldId],
+        }));
     };
+
 
     const handleSubmits = (e) => {
         e.preventDefault();
@@ -1555,8 +1553,8 @@ const Formgenerated = () => {
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <div className="edit_setting_bg current-url">
-                                                            <label htmlFor="boxShadowSelect">Current url:</label>
+                                                        <div className="edit_setting_bg current-url inherit-class">
+                                                            <label htmlFor="boxShadowSelect">Current URL:</label>
                                                             <div className="toggle-container">
                                                                 <label htmlFor="toggleSwitch" className="switch">
                                                                     <input
@@ -2011,7 +2009,7 @@ const Formgenerated = () => {
                                                             }}>
                                                             <div className='form_builder_heading_hover'>
                                                                 <label>
-                                                                    <div className="description-field" style={{ fontSize: `${field.textSize}px`, color:field.textColor, textAlign:field.textAline, width: field.width, opacity: field.opacity || 1 }}
+                                                                    <div className="description-field" style={{ fontSize: `${field.textSize}px`, color: field.textColor, textAlign: field.textAline, width: field.width, opacity: field.opacity || 1 }}
                                                                     >
                                                                         <p>{field.text}</p>
                                                                     </div>
@@ -2332,7 +2330,7 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'phone' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
+                                                        <div className={`input-field phone-edit ${field.customClass}`} style={{
                                                             width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                 ? '1px solid #33cba2'
                                                                 : '1px solid transparent',
@@ -2344,14 +2342,32 @@ const Formgenerated = () => {
                                                         }}>
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
-
                                                                     {field.label || "Phone Number"}
-                                                                    <input
-                                                                        style={{
-                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                    <PhoneInput
+                                                                        country={'us'}
+                                                                        value={field.value}
+                                                                        onChange={(value) => updateFieldProperty('phone', value, field.id)}
+                                                                        inputProps={{
+                                                                            name: field.name,
+                                                                            required: field.required,
+                                                                            disabled: field.disabled,
+                                                                            readOnly: field.readonly,
+                                                                        }}
+                                                                        containerStyle={{
+                                                                            width: '100%',
+                                                                            opacity: field.opacity || 1,
+                                                                        }}
+                                                                        inputStyle={{
+                                                                            width: '100%',
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${inputRadious}px`,
+                                                                            borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
-                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
+                                                                            backgroundColor: inputBgColor,
+                                                                        }}
+                                                                        buttonStyle={{
+                                                                            borderRadius: `${inputRadious}px`, 
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2359,23 +2375,15 @@ const Formgenerated = () => {
                                                                                 setHoveredFieldId(null);
                                                                             }
                                                                         }}
-                                                                        type="tel"
-                                                                        className="name"
-                                                                        name={field.name}
-                                                                        placeholder={field.placeholder || 'e.g +1-416-555-112'}
-                                                                        required={field.required}
-                                                                        disabled={field.disabled}
-                                                                        readOnly={field.readonly}
-                                                                        onChange={(e) => updateFieldProperty('phone', e.target.value, field.id)}
                                                                     />
                                                                 </label>
+
                                                                 <div className='description'>
                                                                     {field.description}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     )}
-
                                                     {field.type === 'password' && (
                                                         <div className={`input-field ${field.customClass}`} style={{
                                                             width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
@@ -2508,40 +2516,46 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
                                                     {field.type === 'toggle' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
+                                                        <div
+                                                            className={`input-field ${field.customClass}`}
+                                                            style={{
+                                                                width: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
                                                                     ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}>
-                                                            <div style={{ width: '100%', opacity: field.opacity || 1, }}
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
+                                                        >
+                                                            <div  className='form-build-toggle'
+                                                                style={{ width: '100%', opacity: field.opacity || 1 }}
                                                                 onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                 onMouseLeave={() => {
                                                                     if (!(selectedField && selectedField.id === field.id)) {
                                                                         setHoveredFieldId(null);
                                                                     }
-                                                                }}>
+                                                                }}
+                                                            >
                                                                 <label className="toggle-switch" style={{ color: labelColor }}>
-                                                                    {field.label || "Toggle"}
                                                                     <input
-
                                                                         type="checkbox"
-                                                                        checked={isFieldEnabled}
-                                                                        onChange={toggleFieldEnabled}
+                                                                        checked={enabledFields[field.id] || false}
+                                                                        onChange={() => toggleFieldEnabled(field.id)}
                                                                         name={field.name}
                                                                     />
                                                                     <span className="slider"></span>
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div style={{ marginBottom: '5px' }}>{field.label || "Toggle"}</div>
+                                                                <div className="description">
                                                                     {field.description}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     )}
+
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'date' && (
                                                             <div className={`input-field ${field.customClass}`} style={{
@@ -3066,7 +3080,7 @@ const Formgenerated = () => {
                                                                             <label>Font Size (px)</label>
                                                                             <input
                                                                                 type="number"
-                                                                                value={selectedField.fontSize}
+                                                                                value={selectedField.fontSize }
                                                                                 onChange={(e) => updateFieldProperty('fontSize', e.target.value)}
                                                                             />
                                                                         </div>
@@ -3300,7 +3314,7 @@ const Formgenerated = () => {
                                                                         <input
                                                                             type="color"
                                                                             value={selectedField.textColor}
-                                                                             onChange={(e) => updateFieldProperty('textColor', e.target.value, selectedField.id)}
+                                                                            onChange={(e) => updateFieldProperty('textColor', e.target.value, selectedField.id)}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -3319,7 +3333,7 @@ const Formgenerated = () => {
 
                                                             </>
                                                         )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                        { selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
                                                             <label>Placeholder</label>
                                                             <input
                                                                 type="text"

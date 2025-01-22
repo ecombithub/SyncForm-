@@ -51,14 +51,7 @@ const toolbarOptions = [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
     ['bold', 'italic', 'underline'],
     ['link', 'image'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ script: 'sub' }, { script: 'super' }],
-    [{ indent: '-1' }, { indent: '+1' }],
-    [{ direction: 'rtl' }],
-    [{ size: ['small', 'medium', 'large', 'huge'] }],
     [{ color: [] }, { background: [] }],
-    [{ font: [] }],
-    [{ align: [] }],
     ['clean'],
 ];
 
@@ -241,10 +234,43 @@ const EmailTemplateCreate = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [connectedForms, setConnectedForms] = useState([]);
     const selectRef = useRef(null);
+    const [fonts, setFonts] = useState([]);
+
+    useEffect(() => {
+        const fetchFonts = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/font-family`);
+                const data = await response.json();
+                if (data && data.data) {
+                    setFonts(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching fonts:', error);
+            }
+        };
+
+        fetchFonts();
+    }, []);
 
     const handleFontChange = (event) => {
-        setFontFamily(event.target.value);
+        const selectedFont = event.target.value;
+        setFontFamily(selectedFont);
     };
+
+    useEffect(() => {
+        const selectedFontData = fonts.find(font => font.fontFamily === fontFamily);
+
+        if (selectedFontData && selectedFontData.fontUrl) {
+
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = selectedFontData.fontUrl;
+            document.head.appendChild(link);
+            return () => {
+                document.head.removeChild(link);
+            };
+        }
+    }, [fontFamily, fonts]);
 
     useEffect(() => {
         if (formData) {
@@ -354,6 +380,7 @@ const EmailTemplateCreate = () => {
             headingTextAlign: type === 'heading' ? "" : undefined,
             headingColor: type === 'heading' ? '#000' : undefined,
             headingbg: type === 'heading' ? '#0000' : undefined,
+            headingmargin: type === 'heading' ? '0' : undefined,
             headingbgImage: type === 'heading' ? '' : undefined,
             headingBorderColor: type === 'heading' ? '#000000' : undefined,
             headingBorderWidth: type === 'heading' ? '0' : undefined,
@@ -405,6 +432,7 @@ const EmailTemplateCreate = () => {
             socalIconbg: type === 'socalicon' ? '#FFFFFF' : undefined,
             socaliconTextAlign: type === 'socalicon' ? "" : undefined,
             htmlColor: type === 'html convert' ? '#000' : undefined,
+            htmlaline: type === 'html convert' ? '' : undefined,
             htmlFontSize: type === 'html convert' ? 16 : undefined,
             htmlPadding: type === 'html convert' ? 10 : undefined,
             icons: {
@@ -468,6 +496,7 @@ const EmailTemplateCreate = () => {
             productbackgroundColor: type === 'product' ? '#007BFF' : undefined,
             additionalButtons: [],
             displayStyle: 'flex',
+            richline: type === 'richtext' ? 'line-Trough' : undefined,
             richleftPadding: type === 'richtext' ? 10 : undefined,
             richtopPadding: type === 'richtext' ? 10 : undefined,
             richFontsize: type === 'richtext' ? "14" : undefined,
@@ -1142,6 +1171,7 @@ const EmailTemplateCreate = () => {
                 richFontsize: field.richFontsize || '',
                 richbgcolor: field.richbgcolor,
                 richtextcolor: field.richtextcolor,
+                richline: field.richline,
                 richleftPadding: field.richleftPadding || 10,
                 richtopPadding: field.richtopPadding || 10,
                 headingFontWeight: field.headingFontWeight || 600,
@@ -1149,6 +1179,7 @@ const EmailTemplateCreate = () => {
                 headingbg: field.headingbg || '#ffff',
                 headingPadding: field.headingPadding || 0,
                 headingbgImage: field.headingbgImage || '',
+                headingmargin: field.headingmargin || '',
                 headingLetterSpacing: field.headingLetterSpacing || 0,
                 headingTextAlign: field.headingTextAlign || '',
                 headingText: field.headingText,
@@ -1192,6 +1223,7 @@ const EmailTemplateCreate = () => {
                 htmlFontSize: field.htmlFontSize || 16,
                 htmlPadding: field.htmlPadding || 10,
                 htmlColor: field.htmlColor || '#000',
+                htmlaline: field.htmlaline,
                 splitbg: field.splitbg || '',
                 splitbtn: field.splitbtn || '',
                 splitbtnbg: field.splitbtnbg || '',
@@ -1554,19 +1586,19 @@ const EmailTemplateCreate = () => {
 
     const handleRemoveProductFromForm = (index) => {
         const productToRemove = productTitles?.[index];
-    
+
         if (!productToRemove) return;
-    
+
         setProductTitles((prevTitles) =>
             Array.isArray(prevTitles) ? prevTitles.filter((_, i) => i !== index) : prevTitles
         );
-    
+
         setSelectedProducts((prevSelectedProducts) =>
             Array.isArray(prevSelectedProducts)
                 ? prevSelectedProducts.filter((product, i) => i !== index)
                 : prevSelectedProducts
         );
-    
+
         setFields((prevFields) =>
             Array.isArray(prevFields)
                 ? prevFields.map((field) =>
@@ -1580,7 +1612,7 @@ const EmailTemplateCreate = () => {
                 : prevFields
         );
     };
-    
+
 
     const handleClosePopup = () => {
         setIsPopupOpen(false);
@@ -2075,27 +2107,15 @@ const EmailTemplateCreate = () => {
                                                                             value={fontFamily}
                                                                             onChange={handleFontChange}
                                                                         >
-                                                                            <option value="Arial">Arial</option>
-                                                                            <option value="Verdana">Verdana</option>
-                                                                            <option value="Times New Roman">Times New Roman</option>
-                                                                            <option value="Georgia">Georgia</option>
-                                                                            <option value="Courier New">Courier New</option>
-                                                                            <option value="Roboto">Roboto</option>
-                                                                            <option value="Raleway">Raleway</option>
-                                                                            <option value="Gotham">Gotham</option>
-                                                                            <option value="Montserrat">Montserrat</option>
-                                                                            <option value="Lato">Lato</option>
-                                                                            <option value="Helvetica">Helvetica</option>
-                                                                            <option value="Source Sans Pro">Source Sans Pro</option>
-                                                                            <option value="Poppins">Poppins</option>
-                                                                            <option value="Quicksand">Quicksand</option>
-                                                                            <option value="Work Sans">Work Sans</option>
-                                                                            <option value="Barlow">Barlow</option>
-                                                                            <option value="Varela Round">Varela Round</option>
-                                                                            <option value="Josefin Sans">Josefin Sans</option>
-                                                                            <option value="Inter ">Inter </option>
-                                                                            <option value="open sans">open sans</option>
-
+                                                                            {fonts.length > 0 ? (
+                                                                                fonts.map((font, index) => (
+                                                                                    <option key={index} value={font.fontFamily}>
+                                                                                        {font.fontFamily}
+                                                                                    </option>
+                                                                                ))
+                                                                            ) : (
+                                                                                <option value="Arial">Arial</option>
+                                                                            )}
                                                                         </select>
                                                                     </div>
 
@@ -2114,7 +2134,7 @@ const EmailTemplateCreate = () => {
                                                                     </div>
 
                                                                     <div className='edit_setting_bg'>
-                                                                        <label>Border-Radious:</label>
+                                                                        <label>Border-Radius (px):</label>
                                                                         <input
                                                                             type="text"
                                                                             id="Border-radious"
@@ -2222,7 +2242,7 @@ const EmailTemplateCreate = () => {
                                                 backgroundSize: 'cover',
                                                 backgroundPosition: 'center',
                                                 margin: 'auto',
-                                                fontFamily
+                                                fontFamily: fontFamily,
                                             }}
                                         >
                                             {fields.length === 0 ? (
@@ -2269,7 +2289,8 @@ const EmailTemplateCreate = () => {
                                                                                 height: field.bannerImageHeight || '400px',
                                                                                 opacity: field.headeropacity || '',
                                                                                 display: 'flex',
-                                                                                alignItems: 'center'
+                                                                                alignItems: 'center',
+                                                                                margin: `${field.headingmargin}px`
                                                                             }}
                                                                         >
                                                                             <div className='email-input-field-h1' style={{
@@ -2528,6 +2549,7 @@ const EmailTemplateCreate = () => {
                                                                                 paddingRight: `${field.richleftPadding}px`,
                                                                                 paddingTop: `${field.richtopPadding}px`,
                                                                                 paddingBottom: `${field.richtopPadding}px`,
+                                                                                textDecoration: field.richline,
                                                                             }}
                                                                                 dangerouslySetInnerHTML={{ __html: editorValueed || field.content || 'Captivate customers with' }} />
                                                                             <div className='form-builder-radio-btn email'>
@@ -2670,7 +2692,7 @@ const EmailTemplateCreate = () => {
                                                                             ref={emailFieldRef}
                                                                         >
                                                                             <div style={{ width: '100%' }}>
-                                                                                <div style={{ color: field.htmlColor, fontSize: `${field.htmlFontSize}px`, padding: `${field.htmlPadding}px` }}
+                                                                                <div style={{ color: field.htmlColor, textAlign: field.htmlaline, fontSize: `${field.htmlFontSize}px`, padding: `${field.htmlPadding}px` }}
                                                                                     className="preview-content"
                                                                                     dangerouslySetInnerHTML={{ __html: field.value || field.htmltext }}
                                                                                 />
@@ -3058,25 +3080,7 @@ const EmailTemplateCreate = () => {
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
-                                                                            <div className='form-builder-chaneging-wrap color'>
-                                                                                <div className='checkbox-option bg-colors'>
-                                                                                    <label> Color</label>
-                                                                                    <div className="color-picker-container">
-                                                                                        <span className="color-code">{field.MultiColor || '#000'}</span>
-                                                                                        <input
-                                                                                            type="color"
-                                                                                            value={field.MultiColor || '#000'}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, MultiColor: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
+
                                                                             <div className='product-detalis-all btn-split'>
                                                                                 <h3> Button Propertites</h3>
 
@@ -3097,7 +3101,7 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap color'>
                                                                                     <div className='checkbox-option bg-colors'>
-                                                                                        <label> Color</label>
+                                                                                        <label> Text-color</label>
                                                                                         <div className="color-picker-container">
                                                                                             <span className="color-code">{field.Multibtncolor || '#FFFFFF'}</span>
                                                                                             <input
@@ -3238,7 +3242,27 @@ const EmailTemplateCreate = () => {
                                                                                         <option value="solid">Solid</option>
                                                                                         <option value="dashed">Dashed</option>
                                                                                         <option value="dotted">Dotted</option>
+                                                                                        <option value="double">double</option>
                                                                                     </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Text-color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.MultiColor || '#000'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.MultiColor || '#000'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, MultiColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
@@ -3276,7 +3300,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label>Background Color Coloum</label>
+                                                                                    <label>Background Color Column</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.Multicolumnbgcolor || '#FFFFFF'}</span>
                                                                                         <input
@@ -3357,7 +3381,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number' >
-                                                                                <label> Border-Radious (px)</label>
+                                                                                <label> Border-Radius (px)</label>
                                                                                 <input
                                                                                     type="number"
                                                                                     value={field.Multiborderradious}
@@ -3370,7 +3394,6 @@ const EmailTemplateCreate = () => {
                                                                                     }}
                                                                                 />
                                                                             </div>
-
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
                                                                                     <label>Border Color</label>
@@ -3420,6 +3443,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="solid">Solid</option>
                                                                                     <option value="dashed">Dashed</option>
                                                                                     <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
                                                                                 </select>
                                                                             </div>
                                                                         </div>
@@ -3453,8 +3477,8 @@ const EmailTemplateCreate = () => {
                                                                                         placeholder="Padding"
                                                                                     />
                                                                                 </div>
-                                                                                <div className='form-builder-chanege-top-bottom'>
 
+                                                                                <div className='form-builder-chanege-top-bottom'>
                                                                                     <label> Top & Bottom </label>
                                                                                     <input
                                                                                         type="number"
@@ -3492,7 +3516,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label>Color</label>
+                                                                                    <label>Text-color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.richtextcolor}</span>
                                                                                         <input
@@ -3542,6 +3566,27 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="right">right</option>
                                                                                 </select>
                                                                             </div>
+                                                                            <div className="form-builder-chaneging-wrap-custom-checkbox">
+                                                                                <label>Crossed-out</label>
+                                                                                <div className="form-builder-costom custom-checkbox-form-build">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        id={`richline-toggle-${field.id}`}
+                                                                                        checked={field.richline === 'line-through'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields((prevFields) =>
+                                                                                                prevFields.map((f) =>
+                                                                                                    f.id === field.id
+                                                                                                        ? { ...f, richline: e.target.checked ? 'line-through' : undefined }
+                                                                                                        : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                    <label htmlFor={`richline-toggle-${field.id}`}></label>
+                                                                                </div>
+                                                                            </div>
+
                                                                         </div>
                                                                     )
                                                                 }
@@ -3689,6 +3734,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="solid">Solid</option>
                                                                                     <option value="dashed">Dashed</option>
                                                                                     <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
@@ -3708,7 +3754,7 @@ const EmailTemplateCreate = () => {
 
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label> Color</label>
+                                                                                    <label> Text-color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.productTextColor}</span>
                                                                                         <input
@@ -3836,6 +3882,25 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap color'>
                                                                                     <div className='checkbox-option bg-colors'>
+                                                                                        <label> Font Size (px)</label>
+                                                                                        <div className="color-picker-container">
+                                                                                            <span className="color-code">{field.productbtnbg || '#ffffff'}</span>
+                                                                                            <input
+                                                                                                type="color"
+                                                                                                value={field.productbtnbg || '#ffffff'}
+                                                                                                onChange={(e) => {
+                                                                                                    setFields(prevFields =>
+                                                                                                        prevFields.map(f =>
+                                                                                                            f.id === field.id ? { ...f, productbtnbg: e.target.value } : f
+                                                                                                        )
+                                                                                                    );
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap color'>
+                                                                                    <div className='checkbox-option bg-colors'>
                                                                                         <label>Border Color</label>
                                                                                         <div className="color-picker-container">
                                                                                             <span className="color-code">{field.productbtnBorderColor}</span>
@@ -3883,30 +3948,13 @@ const EmailTemplateCreate = () => {
                                                                                         <option value="solid">Solid</option>
                                                                                         <option value="dashed">Dashed</option>
                                                                                         <option value="dotted">Dotted</option>
+                                                                                        <option value="double">double</option>
                                                                                     </select>
                                                                                 </div>
 
-                                                                                <div className='form-builder-chaneging-wrap color'>
-                                                                                    <div className='checkbox-option bg-colors'>
-                                                                                        <label> Color</label>
-                                                                                        <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.productbtnbg || '#ffffff'}</span>
-                                                                                            <input
-                                                                                                type="color"
-                                                                                                value={field.productbtnbg || '#ffffff'}
-                                                                                                onChange={(e) => {
-                                                                                                    setFields(prevFields =>
-                                                                                                        prevFields.map(f =>
-                                                                                                            f.id === field.id ? { ...f, productbtnbg: e.target.value } : f
-                                                                                                        )
-                                                                                                    );
-                                                                                                }}
-                                                                                            />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
+
                                                                                 <div className='form-builder-chaneging-wrap number'>
-                                                                                    <label>Border-Radious</label>
+                                                                                    <label>Border-Radius (px)</label>
                                                                                     <input
                                                                                         type="number"
                                                                                         value={field.productradious || '#ffffff'}
@@ -3981,7 +4029,7 @@ const EmailTemplateCreate = () => {
 
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label> Color</label>
+                                                                                    <label> Text-color </label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.headingColor}</span>
                                                                                         <input
@@ -4025,7 +4073,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label>Subheading Color</label>
+                                                                                    <label>Subheading Text-color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.subheadingColor}</span>
                                                                                         <input
@@ -4134,6 +4182,7 @@ const EmailTemplateCreate = () => {
                                                                                             <option value="solid">Solid</option>
                                                                                             <option value="dashed">Dashed</option>
                                                                                             <option value="dotted">Dotted</option>
+                                                                                            <option value="double">double</option>
                                                                                         </select>
                                                                                     </div>
 
@@ -4174,7 +4223,6 @@ const EmailTemplateCreate = () => {
                                                                                             />
                                                                                         </div>
                                                                                         <div className='form-builder-chanege-top-bottom'>
-
                                                                                             <label> Top & Bottom </label>
                                                                                             <input
                                                                                                 type="number"
@@ -4353,6 +4401,22 @@ const EmailTemplateCreate = () => {
                                                                                 />
                                                                             </div>
 
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label> Margin </label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.headingmargin}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, headingmargin: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Margin"
+                                                                                />
+                                                                            </div>
+
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
                                                                                     <label> Background Color</label>
@@ -4371,6 +4435,60 @@ const EmailTemplateCreate = () => {
                                                                                         />
                                                                                     </div>
                                                                                 </div>
+                                                                            </div>
+
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label>Border Color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.headingBorderColor}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.headingBorderColor}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, headingBorderColor: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label>Border Width (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.headingBorderWidth}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, headingBorderWidth: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Border Style</label>
+                                                                                <select
+                                                                                    value={field.headingBorderStyle}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, headingBorderStyle: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="solid">Solid</option>
+                                                                                    <option value="dashed">Dashed</option>
+                                                                                    <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
+
+                                                                                </select>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number'>
@@ -4437,57 +4555,6 @@ const EmailTemplateCreate = () => {
                                                                                 />
                                                                             </div>
 
-                                                                            <div className='form-builder-chaneging-wrap color'>
-                                                                                <div className='checkbox-option bg-colors'>
-                                                                                    <label>Border Color</label>
-                                                                                    <div className="color-picker-container">
-                                                                                        <span className="color-code">{field.headingBorderColor}</span>
-                                                                                        <input
-                                                                                            type="color"
-                                                                                            value={field.headingBorderColor}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, headingBorderColor: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div className='form-builder-chaneging-wrap number' >
-                                                                                <label>Border Width (px)</label>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    value={field.headingBorderWidth}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, headingBorderWidth: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
-                                                                            </div>
-                                                                            <div className='form-builder-chaneging-wrap'>
-                                                                                <label>Border Style</label>
-                                                                                <select
-                                                                                    value={field.headingBorderStyle}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, headingBorderStyle: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                >
-                                                                                    <option value="solid">Solid</option>
-                                                                                    <option value="dashed">Dashed</option>
-                                                                                    <option value="dotted">Dotted</option>
-                                                                                </select>
-                                                                            </div>
                                                                         </div>
                                                                     );
                                                                 }
@@ -4651,6 +4718,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="solid">Solid</option>
                                                                                     <option value="dashed">Dashed</option>
                                                                                     <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
                                                                                 </select>
                                                                             </div>
                                                                         </div>
@@ -4808,6 +4876,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="solid">Solid</option>
                                                                                     <option value="dashed">Dashed</option>
                                                                                     <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
                                                                                 </select>
                                                                             </div>
                                                                         </div>
@@ -4859,16 +4928,21 @@ const EmailTemplateCreate = () => {
                                                                                 <label>Width</label>
                                                                                 <input
                                                                                     type="number"
+                                                                                    max="100"
                                                                                     value={field.dividerWidth}
                                                                                     onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, dividerWidth: e.target.value } : f
-                                                                                            )
-                                                                                        );
+                                                                                        const value = parseInt(e.target.value, 10);
+                                                                                        if (value <= 100) { 
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, dividerWidth: value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }
                                                                                     }}
                                                                                 />
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Height</label>
                                                                                 <input
@@ -4898,7 +4972,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label> Color</label>
+                                                                                    <label> Text-color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.htmlColor}</span>
                                                                                         <input
@@ -4914,6 +4988,24 @@ const EmailTemplateCreate = () => {
                                                                                         />
                                                                                     </div>
                                                                                 </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Text Align </label>
+                                                                                <select
+                                                                                    value={field.htmlaline}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, htmlaline: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select text align</option>
+                                                                                    <option value="left">left</option>
+                                                                                    <option value="center">center</option>
+                                                                                    <option value="right">right</option>
+                                                                                </select>
                                                                             </div>
 
                                                                             <div className='form-builder-chaneging-wrap number'>
@@ -5073,7 +5165,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label>  color</label>
+                                                                                    <label> Text-Color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.splitColor}</span>
                                                                                         <input
@@ -5119,6 +5211,57 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="left">TOP</option>
                                                                                     <option value="center">Center</option>
                                                                                     <option value="end">Bottom</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap color'>
+                                                                                <div className='checkbox-option bg-colors'>
+                                                                                    <label> Background color</label>
+                                                                                    <div className="color-picker-container">
+                                                                                        <span className="color-code">{field.splitbg || '#FFFFFF'}</span>
+                                                                                        <input
+                                                                                            type="color"
+                                                                                            value={field.splitbg || '#FFFFFF'}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, splitbg: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Padding</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.splitPadding}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, splitPadding: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Text Align </label>
+                                                                                <select
+                                                                                    value={field.splitTextAlin}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, splitTextAlin: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select text align</option>
+                                                                                    <option value="left">left</option>
+                                                                                    <option value="center">center</option>
+                                                                                    <option value="right">right</option>
                                                                                 </select>
                                                                             </div>
 
@@ -5304,60 +5447,11 @@ const EmailTemplateCreate = () => {
                                                                                         <option value="solid">Solid</option>
                                                                                         <option value="dashed">Dashed</option>
                                                                                         <option value="dotted">Dotted</option>
+                                                                                        <option value="double">double</option>
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
-                                                                            <div className='form-builder-chaneging-wrap color'>
-                                                                                <div className='checkbox-option bg-colors'>
-                                                                                    <label> Background color</label>
-                                                                                    <div className="color-picker-container">
-                                                                                        <span className="color-code">{field.splitbg || '#FFFFFF'}</span>
-                                                                                        <input
-                                                                                            type="color"
-                                                                                            value={field.splitbg || '#FFFFFF'}
-                                                                                            onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitbg: e.target.value } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }}
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className='form-builder-chaneging-wrap number'>
-                                                                                <label>Padding</label>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    value={field.splitPadding}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, splitPadding: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                />
-                                                                            </div>
-                                                                            <div className='form-builder-chaneging-wrap'>
-                                                                                <label>Text Align </label>
-                                                                                <select
-                                                                                    value={field.splitTextAlin}
-                                                                                    onChange={(e) => {
-                                                                                        setFields(prevFields =>
-                                                                                            prevFields.map(f =>
-                                                                                                f.id === field.id ? { ...f, splitTextAlin: e.target.value } : f
-                                                                                            )
-                                                                                        );
-                                                                                    }}
-                                                                                >
-                                                                                    <option value="">Select text align</option>
-                                                                                    <option value="left">left</option>
-                                                                                    <option value="center">center</option>
-                                                                                    <option value="right">right</option>
-                                                                                </select>
-                                                                            </div>
+
 
                                                                         </div>
                                                                     );
@@ -5440,6 +5534,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="solid">Solid</option>
                                                                                     <option value="dashed">Dashed</option>
                                                                                     <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
                                                                                 </select>
                                                                             </div>
 
@@ -5508,6 +5603,22 @@ const EmailTemplateCreate = () => {
                                                                                         );
                                                                                     }}
                                                                                 />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>
+                                                                                    Button Url
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        value={field.buttonUrll}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, buttonUrll: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </label>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Align </label>
@@ -5627,7 +5738,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label> Color</label>
+                                                                                    <label> Text-color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.buttonTextColor}</span>
                                                                                         <input
@@ -5645,22 +5756,6 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                             </div>
 
-                                                                            <div className='form-builder-chaneging-wrap'>
-                                                                                <label>
-                                                                                    Button Url
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        value={field.buttonUrll}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, buttonUrll: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
-                                                                                    />
-                                                                                </label>
-                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label> Letter Spacing</label>
                                                                                 <input
@@ -5677,7 +5772,7 @@ const EmailTemplateCreate = () => {
                                                                                 />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
-                                                                                <label> Border-Radious</label>
+                                                                                <label> Border-Radius (px)</label>
                                                                                 <input
                                                                                     type="number"
                                                                                     value={field.buttonradious}
@@ -5688,7 +5783,7 @@ const EmailTemplateCreate = () => {
                                                                                             )
                                                                                         );
                                                                                     }}
-                                                                                    placeholder=" Border-Radious"
+                                                                                    placeholder=" Border-Radius"
                                                                                 />
                                                                             </div>
 
@@ -5741,6 +5836,8 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="solid">Solid</option>
                                                                                     <option value="dashed">Dashed</option>
                                                                                     <option value="dotted">Dotted</option>
+                                                                                    <option value="double">double</option>
+
                                                                                 </select>
                                                                             </div>
 

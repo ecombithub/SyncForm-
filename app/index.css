@@ -7,12 +7,29 @@
     font-size: 30px !important;
     line-height: 40px;
 }
+.text-wraped a {
+    text-decoration: none;
+    color: black;
+}
 
 .text-wraped h3 {
     font-size: 20px !important;
     font-weight: 600 !important;
     margin: 0 !important;
 }
+
+.text-wraped h4 {
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+}
+
+.text-wraped h5{
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+}
+
 
 .container {
     width: 100%;
@@ -32,6 +49,12 @@ button.action_btn {
 
 .modal-costomer .loaddr img {
     width: 10%;
+}
+
+.form-build-toggle {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .modal-costomer .loaddr {
@@ -484,7 +507,8 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
     position: relative;
     width: 15%;
 }
-.form-builder-green-btn{
+
+.form-builder-green-btn {
     position: relative;
     cursor: pointer;
 }
@@ -493,6 +517,7 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
     display: flex;
     right: -23px;
 }
+
 .form-builder-green-btn:hover .noUi-tooltip-id::after {
     display: block;
 }
@@ -649,13 +674,13 @@ button.procduct-canclebtn img {
 
 .form-builder-icon-delete {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 5px;
+    right: 30px;
     cursor: pointer;
 }
 
 .form-builder-icon-delete img {
-    width: 100%;
+    position: fixed;
 }
 
 
@@ -818,6 +843,7 @@ th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--verticalAlignTop.Polaris-Dat
 input:checked+.slider {
     background-color: #2196F3;
 }
+
 
 input:checked+.slider:before {
     transform: translateX(26px);
@@ -3711,10 +3737,14 @@ button.btn-templates {
     float: right;
     cursor: pointer;
     position: absolute;
-    right: 0px;
-    top: 0px;
+    right: 3%;
+    top: 1%;
     z-index: 9999;
 }
+
+.email-template-reviw-popup .form-builder-icon-deleted img{
+  position: fixed;
+} 
 
 .email-template-section .form-builder-create.section-wrp {
     max-width: 100%;
@@ -6009,16 +6039,163 @@ button.rm-btn.showfirst img {
     transition: 0.4s;
 }
 
-input:checked+.slider {
-    background-color: #4caf50;
-}
-
-input:checked+.slider:before {
-    transform: translateX(14px);
-}
-
-.edit_setting_bg.current-url {
+.edit_setting_bg.current-url.inherit-class {
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
+}
+
+.edit_setting_bg.current-url.inherit-class .toggle-container input:checked+.slider {
+    background-color: #4caf50;
+}
+
+.edit_setting_bg.current-url.inherit-class .toggle-container input:checked+.slider:before {
+    transform: translateX(14px);
+}
+
+.custom-checkbox-form-build.inherit-class {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.custom-checkbox-form-build.inherit-class input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-checkbox-form-build.inherit-class label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: 2px solid #aaa;
+}
+
+.custom-checkbox-form-build.inherit-class input[type="checkbox"]:checked+label {
+    background-color: #4caf50;
+    border-color: #4caf50;
+}
+
+.custom-checkbox-form-build.inherit-class label:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.3s ease;
+}
+
+.custom-checkbox-form-build.inherit-class input[type="checkbox"]:checked+label:after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+
+.form-builder-chaneging-wrap-custom-checkbox label {
+    line-height: 35px;
+    color: #180000;
+    font-size: 14px;
+}
+
+.form-builder-chaneging-wrap-custom-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.edit_setting_bg.current-url .toggle-container input:checked+.slider {
+    background-color: #4caf50;
+}
+
+.edit_setting_bg.current-url .toggle-container input:checked+.slider:before {
+    transform: translateX(14px);
+}
+
+.custom-checkbox-form-build {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.custom-checkbox-form-build input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-checkbox-form-build label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: 2px solid #aaa;
+}
+
+.input-field.phone-edit .react-tel-input input.form-control {
+    width: 100%;
+}
+
+.input-field.phone-edit .flag-dropdown {
+    height: 33px;
+    top: 1px !important;
+    width: 40px;
+    border-radius: 0 !important;
+    background: transparent;
+    left: 2px;
+}
+
+.phone-edit .flag-dropdown {
+    height: 33px;
+    top: 1px !important;
+    width: 40px;
+    border-radius: 0 !important;
+    background: transparent !important;
+    left: 2px;
+}
+
+.phone-edit input.form-control {
+    width: 100%;
+}
+
+.edit_setting_bg.current-url label {
+    font-size: 14px;
+    color: #180000;
+}
+
+.custom-checkbox-form-build input[type="checkbox"]:checked+label {
+    background-color: #4caf50;
+    border-color: #4caf50;
+}
+
+.custom-checkbox-form-build label:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.3s ease;
+}
+
+.custom-checkbox-form-build input[type="checkbox"]:checked+label:after {
+    transform: translate(-50%, -50%) scale(1);
 }

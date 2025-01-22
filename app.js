@@ -239,6 +239,7 @@ const emailTemplateSchema = new mongoose.Schema({
       headingFontWeight: { type: String, required: false },
       headingColor: { type: String, required: false },
       headingbg: { type: String, required: false },
+      headingmargin: { type: String, required: false },
       subheadingColor: { type: String, required: false },
       headingBorderColor: { type: String, required: false },
       headingBorderWidth: { type: String, required: false },
@@ -297,6 +298,7 @@ const emailTemplateSchema = new mongoose.Schema({
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
+      htmlaline : { type: String, required: false },
       splitbg: { type: String, required: false },
       splitbtn: { type: String, required: false },
       splitbtnbg: { type: String, required: false },
@@ -379,6 +381,7 @@ const emailTemplateSchema = new mongoose.Schema({
       richFontsize: { type: String, required: false },
       richtopPadding: { type: String, required: false },
       richleftPadding: { type: String, required: false },
+      richline: { type: String, required: false },
       richbgcolor: { type: String, required: false },
       richtextcolor: { type: String, required: false },
       MulticolumnPadding: { type: String, required: false },
@@ -477,6 +480,7 @@ const ShowTemplats = new mongoose.Schema({
       headingFontWeight: { type: String, required: false },
       headingColor: { type: String, required: false },
       headingbg: { type: String, required: false },
+      headingmargin: { type: String, required: false },
       subheadingColor: { type: String, required: false },
       headingBorderColor: { type: String, required: false },
       headingBorderWidth: { type: String, required: false },
@@ -535,6 +539,7 @@ const ShowTemplats = new mongoose.Schema({
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
+      htmlaline : { type: String, required: false },
       splitbg: { type: String, required: false },
       splitbtn: { type: String, required: false },
       splitbtnbg: { type: String, required: false },
@@ -616,6 +621,7 @@ const ShowTemplats = new mongoose.Schema({
       splitBorderStyle: { type: String, required: false },
       richFontsize: { type: String, required: false },
       richbgcolor: { type: String, required: false },
+      richline: { type: String, required: false },
       richtopPadding: { type: String, required: false },
       richleftPadding: { type: String, required: false },
       richtextcolor: { type: String, required: false },
@@ -686,6 +692,24 @@ const supportdata = new mongoose.Schema({
 });
 
 const Support = mongoose.model('supportEmails', supportdata);
+
+const fontfamily = new mongoose.Schema({
+  fontFamily: { type: String, required: true, unique: true },
+  fontUrl: { type: String, required: true },
+});
+
+const Fontfamily = mongoose.model('font_familys', fontfamily);
+
+app.get('/font-family', async (req, res) => {
+  try {
+
+    const fonts = await Fontfamily.find({});
+    res.status(200).json({ message: 'Font data retrieved', data: fonts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching fonts', error: error.message });
+  }
+});
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -790,7 +814,7 @@ const sendEmail = async (email, TemplateAll) => {
           switch (field.type) {
             case 'heading':
               const editorContent = field.editorContent || '';
-              const updateeditorContent = editorContent.replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+              const updateeditorContent = editorContent.replace(/<p><br><\/p>/g, '').replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
                 if (match.startsWith('data:image/png;base64,')) {
                   const uniqueId = `image-${Date.now()}`;
                   const imagePath = saveBase64Image(match, `${uniqueId}.png`);
@@ -814,10 +838,11 @@ const sendEmail = async (email, TemplateAll) => {
                 width: ${field.bannerImageWidth || 100}%;
                 height: ${field.bannerImageHeight || '400px'};
                 opacity:${field.headeropacity};
+                margin:${field.headingmargin};
                ">
              <table role="presentation" width="100%" height="100%" style="height: 100%; width: 100%; border-collapse: collapse;">
                 <tr>
-          <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
+            <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
             <div style="width: 100%; text-align: ${field.headingTextAlign || 'center'};">
             <h1 style="font-size: ${field.headingFontSize || 30}px; 
               color: ${field.headingColor || '#000'}; 
@@ -879,20 +904,21 @@ const sendEmail = async (email, TemplateAll) => {
                 .replace(/<p><br><\/p>/g, '');
 
               return `
-                <div>
-                  <div style="text-align: ${field.richTextAlign || 'left'};
-                      color:${field.richtextcolor};
-                      display: flow-root;
-                      font-size: ${field.richFontsize || 16}px;
-                      background-color: ${field.richbgcolor || '#007bff'};
-                      padding-left: ${field.richleftPadding || '10px'}px;
-                      padding-right: ${field.richleftPadding || '10px'}px;
-                      padding-top: ${field.richtopPadding || '10px'}px;
-                      padding-bottom: ${field.richtopPadding || '10px'}px;">
-                    ${updatedContent}
-                  </div>
-                </div>
-              `;
+    <div>
+          <div style="text-align: ${field.richTextAlign || 'left'};
+                  color: ${field.richtextcolor || '#000'};
+                  display: flow-root;
+                  text-decoration: ${field.richline || 'none'};
+                  font-size: ${field.richFontsize || '16'}px;
+                  background-color: ${field.richbgcolor || '#fff'};
+                  padding-left: ${field.richleftPadding || '10'}px;
+                  padding-right: ${field.richrightPadding || '10'}px;
+                  padding-top: ${field.richtopPadding || '10'}px;
+                  padding-bottom: ${field.richbottomPadding || '10'}px;">
+        ${updatedContent}
+      </div>
+    </div>
+  `;
 
             case 'description':
               return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
@@ -963,7 +989,7 @@ const sendEmail = async (email, TemplateAll) => {
                     color: ${field.MultiColor || '#000'};
                      border-radius: ${field.Multiborderradious || 0}px;
                   ">
-                    <img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />
+                     ${column.image ? `<img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />` : ''}
                     ${processedContent}
                     ${column.isVisible
                     ? `
@@ -1144,7 +1170,7 @@ const sendEmail = async (email, TemplateAll) => {
             case 'divider':
               return ` <div style = "background-color: ${field.dividerbgColor || 'transparent'}; width:100%;"> <hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'}%; height: ${field.dividerHeight || '1px'}; margin: auto " /> </div>`;
             case 'html convert':
-              return `<div style="color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
+              return `<div style="text-align: ${field.htmlaline || 'left'};  color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
             case 'spacer':
               return `
                       <div style="height: ${field.spacerHeight || '20px'}px; background-color: ${field.spacerbg || '#EDEDED'}; padding: ${field.splitPadding || '0'}px 0;">
@@ -1189,7 +1215,7 @@ const sendEmail = async (email, TemplateAll) => {
                     .filter(icon => !icon.isHidden && icon.url)
                     .forEach((icon, index) => {
                       const uniqueId = `custom-icon-${Date.now()}-${index}`;
-                
+
                       if (icon.src) {
                         icons.push(`
                           <a href="${icon.url}" 
@@ -1214,7 +1240,7 @@ const sendEmail = async (email, TemplateAll) => {
                   </div>
                 `;
               }
-          
+
             default:
               return '';
           }
@@ -1261,6 +1287,14 @@ const sendEmail = async (email, TemplateAll) => {
       h3 {
          font-size: 20px !important;
       }
+         
+       h4{
+       font-size: 18px important;
+       }
+
+       h5{
+       font-size: 15px important;
+       }
         
      a {
     text-decoration: none;
@@ -1438,7 +1472,7 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
     console.log('Request Body:', req.body);
     console.log('Uploaded File:', req.file);
 
-    let { templateId, shop, TemplateImage, title, fields, createdAt, form_ids, styles } = req.body; 
+    let { templateId, shop, TemplateImage, title, fields, createdAt, form_ids, styles } = req.body;
 
     const formIds = Array.isArray(form_ids) ? form_ids : [form_ids];
     const fieldsArray = Array.isArray(fields) ? fields : [fields];
@@ -1447,9 +1481,9 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
       const base64Data = TemplateImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
       const fileName = `templateImage_${Date.now()}.png`;
       const savedFilePath = saveBase64Image2(base64Data, fileName);
-      TemplateImage = savedFilePath; 
+      TemplateImage = savedFilePath;
     }
-    
+
     if (styles && styles.backgroundImage && styles.backgroundImage.startsWith('data:image')) {
       const base64Data = styles.backgroundImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
       const fileName = `backgroundImage_${Date.now()}.png`;
@@ -1524,7 +1558,7 @@ app.put('/update/:id', async (req, res) => {
     if (updatedFormData.TemplateImage && updatedFormData.TemplateImage.startsWith('data:image')) {
       const base64Data = updatedFormData.TemplateImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
       const fileName = `templateImage_${Date.now()}.png`;
-      updatedFormData.TemplateImage = saveBase64Image2(base64Data, fileName); 
+      updatedFormData.TemplateImage = saveBase64Image2(base64Data, fileName);
     }
 
     if (updatedFormData.styles && updatedFormData.styles.backgroundImage && updatedFormData.styles.backgroundImage.startsWith('data:image')) {
@@ -1939,7 +1973,7 @@ app.post('/form-data', upload.single('file'), async (req, res) => {
     }
 
     const { formId, shop, fields, createdAt, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
-  
+
     const newFormEntry = new FormModel({
       formId,
       shop,

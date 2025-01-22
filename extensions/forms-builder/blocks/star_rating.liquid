@@ -1,10 +1,75 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
 
 <div class="form_builder_app {{ block.id }}">
   <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
 </div>
 
 <script>
+
+function toggleDropdown(event, fieldName) {
+  event.preventDefault();
+
+  const dropdown = document.getElementById(`dropdown-${fieldName}`);
+  const selectBox = dropdown.previousElementSibling; 
+  const arrowSpan = selectBox.querySelector('span:last-child'); 
+
+  const isVisible = dropdown.style.display === 'block';
+  dropdown.style.display = isVisible ? 'none' : 'block';
+  arrowSpan.textContent = isVisible ? '▼' : '▲'; 
+}
+
+document.addEventListener('click', function (event) {
+  const selectContainers = document.querySelectorAll('.custom-select-container');
+
+  selectContainers.forEach((container) => {
+    if (!container.contains(event.target)) {
+      const dropdown = container.querySelector('.custom-select-dropdown');
+      if (dropdown) {
+        dropdown.style.display = 'none';
+
+        const selectBox = container.querySelector('.custom-select-box');
+        const arrowSpan = selectBox.querySelector('span:last-child');
+        arrowSpan.textContent = '▼';
+      }
+    }
+  });
+});
+
+function filterOptions(event, fieldName) {
+  const searchInput = event.target.value.toLowerCase();
+  const optionsContainer = document.querySelector(
+    `#dropdown-${fieldName} .options-container`
+  );
+  const options = optionsContainer.querySelectorAll('.custom-select-option');
+
+  options.forEach((option) => {
+    const text = option.textContent.toLowerCase();
+    option.style.display = text.includes(searchInput) ? 'block' : 'none';
+  });
+}
+
+document.addEventListener('click', function (event) {
+  if (event.target.classList.contains('custom-select-option')) {
+    const selectedValue = event.target.getAttribute('data-value');
+    const selectedLabel = event.target.textContent;
+
+    const selectBox = event.target
+      .closest('.custom-select-container')
+      .querySelector('.custom-select-box span:first-child');
+    selectBox.textContent = selectedLabel;
+
+    const dropdown = event.target.closest('.custom-select-dropdown');
+    dropdown.style.display = 'none';
+
+    const arrowSpan = selectBox.nextElementSibling;
+    arrowSpan.textContent = '▼';
+
+    console.log('Selected Value:', selectedValue);
+  }
+});
+
   $(document).ready(function () {
     const formId = '{{ block.settings.formId }}';
     console.log('Form ID:', formId);
@@ -17,7 +82,7 @@
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `https://hubsyntax.online/get-form/${id}`,
+        url: `http://localhost:4001/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -79,7 +144,7 @@
           const inputWidth = formData.styles.inputwidth;
           const headingcolor = formData.styles.colorHeading;
           const headingaline = formData.styles.textHeading;
-         
+
           const fieldHtml = `
                   <div key="${field.id}" style= "width: ${
             field.width
@@ -119,8 +184,7 @@
         });
         $('.input-gap').css('padding', '5px');
         $('.input-gap').css('display', 'flow-root');
-
-
+        $('.iti').css('width', '100%');
       } else {
         container.append('<p>No fields available.</p>');
       }
@@ -160,10 +224,10 @@
                 type="checkbox" 
                 style="display: none;" 
                 aria-label="${field.label || 'Toggle'}" 
-                 onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#white'; 
+                onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
                           this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';" 
-                />
-                ${field.description}
+              />
+              ${field.description || ''}
               <span style="
                 position: absolute;
                 cursor: pointer;
@@ -188,6 +252,7 @@
                 transform: translateX(0);
               "></span>
             </label>`;
+
         case 'textarea':
           return `<textarea placeholder="${
             field.placeholder || ''
@@ -230,18 +295,38 @@
                      ${field.description}
                 </div>
               `;
-        case 'select':
-          const options = field.options
-            .map((option) => `<option value="${option.value}">${option.label}</option>`)
-            .join('');
-          return `
-                <div>
-                  <select name="${
+              case 'select':
+              const options = field.options
+                .map(
+                  (option) =>
+                    `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
+                )
+                .join('');
+            
+              return `
+                <div class="custom-select-container" style="position: relative;">
+                  <div class="custom-select-box" style="width: ${
+                    field.width || 'auto'
+                  }; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color :${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle}; cursor: pointer;" onclick="toggleDropdown(event, '${field.name}')">
+                    <span>${field.label || 'Select Input'}</span><span style = "float: right">▼</span>
+                  </div>
+                  <div id="dropdown-${
                     field.name
-                  }" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Select Input'}">
-                    ${options}
-                  </select>
-                   ${field.description}
+                  }" class="custom-select-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; border: 1px solid ${inputBorderColor || '#ccc'}; background-color: #fff; padding: 5px; z-index: 100;">
+                    <input
+                      type="text"
+                      id="search-${field.name}"
+                      placeholder="Search..."
+                      style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: ${
+                        inputRadius || '4px'
+                      }; border: 1px solid #ccc;"
+                      oninput="filterOptions(event, '${field.name}')"
+                    />
+                    <div class="options-container" style = "cursor : "pointer"">
+                      ${options}
+                    </div>
+                  </div>
+                  ${field.description}
                 </div>
               `;
         case 'divider':
@@ -252,13 +337,13 @@
                   text-align: ${field.textAline || 'center'};">
                   ${field.text || 'Default description'}
                   </p>`;
-          case 'heading':
+        case 'heading':
           return `<h1 style="font-size: ${field.fontSize || '16px'}; 
                   color: ${headingcolor || '#000'}; 
                   text-align: ${headingaline || 'center'};">
                   ${field.text || 'Default Heading'}
                   </h1>`;
-        
+
         case 'number':
           return `<input type="number" placeholder="${
             field.placeholder || ''
@@ -272,9 +357,35 @@
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  ${field.description}`;
         case 'phone':
-          return `<input type="tel" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
+          const phoneInputHtml = `
+          <input type="tel" id="phone-${uniqueId}" placeholder="${field.placeholder || ''}" 
+            style="width: ${field.width || '100%'}; 
+                   padding: ${field.inputPadding || '10px'}; 
+                   border-radius: ${inputRadius || '4px'}px; 
+                   border-color: ${inputBorderColor || '#ccc'}; 
+                   background-color: ${inputBgColor || '#fff'}; 
+                   border-width: ${inputWidth || '1'}px; 
+                   border-style: ${inputStyle || 'solid'};" />
+          ${field.description || ''}
+        `;
+          setTimeout(() => {
+            const phoneInput = document.querySelector(`#phone-${uniqueId}`);
+            if (phoneInput) {
+              const iti = window.intlTelInput(phoneInput, {
+                initialCountry: 'us',
+                utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
+              });
+
+              iti.setCountry('us');
+              $('.iti').css('width', '100%');
+
+              phoneInput.addEventListener('input', () => {
+                const phoneNumber = iti.getNumber();
+                console.log('Formatted phone number: ', phoneNumber);
+              });
+            }
+          }, 100);
+          return phoneInputHtml;
         case 'password':
           return `<input type="password" placeholder="${
             field.placeholder || ''
@@ -341,14 +452,15 @@
                     border-radius: ${field.btnradious}px;
                     color:${field.btncolor}"
                     data-url="${formUrl}"
-                    onclick="submitFormData('{{ block.id }}', this, '${editorValue || ''}', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}', '${toggleStatus}')">
+                    onclick="submitFormData('{{ block.id }}', this, '${
+                      editorValue || ''
+                    }', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}', '${toggleStatus}')">
                   ${field.label || 'Submit'}
                 </button>
               </div>
             `;
-            
+
         default:
-        
           return '';
       }
     }
@@ -359,7 +471,15 @@
 
     const currentTimestamp = new Date().toISOString();
 
-    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer, formshop, toggleStatus) {
+    window.submitFormData = function (
+      blockId,
+      button,
+      editorValue,
+      submissionOption,
+      thankYouTimer,
+      formshop,
+      toggleStatus
+    ) {
       const container = $('#formData-' + blockId);
       const formID = container.find('p').first().text().split(': ')[1];
       console.log('Editor Value:', editorValue);
@@ -375,7 +495,7 @@
         title: $('#formData-' + blockId + ' h2')
           .text()
           .replace(formshop, '')
-          .replace(/Enabled|Disabled/, '') 
+          .replace(/Enabled|Disabled/, '')
           .trim(),
         fields: [],
         send: currentTimestamp,
@@ -386,9 +506,9 @@
 
       if (toggleStatus === 'Enabled') {
         console.log('Window URL:', window.location.href);
-        formData.currentUrl = window.location.href; 
+        formData.currentUrl = window.location.href;
       } else if (toggleStatus === 'Disabled') {
-        console.log('Form submission is disabled'); 
+        console.log('Form submission is disabled');
       }
 
       const emailField = $('#formData-' + blockId + ' input[type="email"]');
@@ -399,10 +519,13 @@
       $('#formData-' + blockId + ' .input-field').each(function () {
         const fieldName = $(this).find('label').text().trim();
         const input = $(this).find('input, select, textarea');
+        const dropdown = $(this).find('.custom-select-box span:first-child'); 
         const fieldId = input.attr('id') || generateUniqueId();
-      
+
         let fieldValue;
-        if (input.is(':radio')) {
+        if (dropdown.length > 0) {
+          fieldValue = dropdown.text().trim(); 
+        } else if (input.is(':radio')) {
           fieldValue = $('input[name="' + input.attr('name') + '"]:checked').val();
         } else if (input.is(':checkbox')) {
           fieldValue = [];
@@ -415,13 +538,13 @@
         } else {
           fieldValue = input.val();
         }
-      
+
         if (input.attr('required') !== undefined && fieldValue.trim() === '') {
           alert(`Please fill out the ${fieldName}`);
           isValid = false;
           return false;
         }
-      
+
         if (fieldValue !== undefined && fieldValue.trim() !== '') {
           formData.fields.push({
             id: fieldId,
@@ -431,13 +554,13 @@
           });
         }
       });
-      
+
       if (!isValid) return;
-      
+
       console.log('Form Data:', JSON.stringify(formData));
-      
+
       $.ajax({
-        url: 'https://hubsyntax.online/api/forms',
+        url: 'http://localhost:4001/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -445,77 +568,87 @@
           console.log('Form submitted successfully:', response);
           alert('Form submitted successfully!');
 
-          console.log('Form ID:', formData.id); 
-          
+          console.log('Form ID:', formData.id);
+
           console.log('Form ID:', formData.id);
           if (formData.id) {
             $.ajax({
-                url: 'https://hubsyntax.online/get/data',
-                method: 'GET',
-                success: function(data) {
-                    console.log('Fetched data:', data);
-        
-                    const matchingForm = data.data.find((form) => form.form_ids.includes(formData.id));
-        
-                    if (matchingForm) {
-                    
-                        console.log('Matched form data:', matchingForm);
-        
-                        $.ajax({
-                            url: 'https://hubsyntax.online/api/template',
-                            method: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                TemplateAll: matchingForm,
-                                email: formData.email,
-                            }),
-                            success: function(templateResponse) {
-                                console.log('Template data sent successfully:', templateResponse);
-                            },
-                            error: function(jqXHR, textStatus, errorThrown) {
-                                console.error('Error sending template data:', errorThrown);
-                            }
-                        });
-                    } else {
-                       
-                        console.log('No matching form found for Form ID:', formData.id);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching data:', {
-                        textStatus: textStatus,
-                        errorThrown: errorThrown,
-                        responseText: jqXHR.responseText,
-                    });
+              url: 'http://localhost:4001/get/data',
+              method: 'GET',
+              success: function (data) {
+                console.log('Fetched data:', data);
+
+                const matchingForm = data.data.find((form) => form.form_ids.includes(formData.id));
+
+                if (matchingForm) {
+                  console.log('Matched form data:', matchingForm);
+
+                  $.ajax({
+                    url: 'http://localhost:4001/api/template',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                      TemplateAll: matchingForm,
+                      email: formData.email,
+                    }),
+                    success: function (templateResponse) {
+                      console.log('Template data sent successfully:', templateResponse);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                      console.error('Error sending template data:', errorThrown);
+                    },
+                  });
+                } else {
+                  console.log('No matching form found for Form ID:', formData.id);
                 }
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching data:', {
+                  textStatus: textStatus,
+                  errorThrown: errorThrown,
+                  responseText: jqXHR.responseText,
+                });
+              },
             });
-        } else {
+          } else {
             console.log('Form ID is not available');
-        }
+          }
           const formUrl = $(button).data('url');
-      
+
           const successMessage = '<p id="success-message">Form submitted successfully!</p>';
           const successElement = $(successMessage);
-    
+
           setTimeout(function () {
             $('#success-message').remove();
           }, 2000);
-      
+
           if (editorValue) {
             const editorValueDisplay = `<p>${editorValue}</p>`;
             const messageElement = $(editorValueDisplay);
             $('#formData-' + blockId).append(messageElement);
-      
+
             successElement.hide();
             $('#formData-' + blockId).append(successElement);
           } else {
             $('#formData-' + blockId).append(successElement);
           }
-      
+
           if (submissionOption === 'Hide form and show thank you message') {
             $(
-              '#formData-' + blockId + ' .form, #formData-' + blockId + ' input, #formData-' + blockId + ' textarea, ' +
-              '#formData-' + blockId + ' select, #formData-' + blockId + ' button, #formData-' + blockId + ' label'
+              '#formData-' +
+                blockId +
+                ' .form, #formData-' +
+                blockId +
+                ' input, #formData-' +
+                blockId +
+                ' textarea, ' +
+                '#formData-' +
+                blockId +
+                ' select, #formData-' +
+                blockId +
+                ' button, #formData-' +
+                blockId +
+                ' label'
             ).hide();
           } else if (thankYouTimer) {
             const timerDuration = parseInt(thankYouTimer) * 1000;
@@ -523,14 +656,16 @@
               $('#formData-' + blockId + ' p').fadeOut();
             }, timerDuration);
           }
-      
+
           if (formUrl && formUrl !== 'undefined') {
             window.open(formUrl);
           } else {
             console.log('No valid form URL provided.');
           }
-      
-          $('#formData-' + blockId + ' input, #formData-' + blockId + ' textarea, #formData-' + blockId + ' select').val('');
+
+          $(
+            '#formData-' + blockId + ' input, #formData-' + blockId + ' textarea, #formData-' + blockId + ' select'
+          ).val('');
         },
         error: function (jqXHR, textStatus, errorThrown) {
           console.error('Error submitting form:', {
@@ -541,7 +676,7 @@
           const errorMessage = '<p>Error submitting form. Please try again.</p>';
           const errorContainer = $('#formData-' + blockId);
           errorContainer.append(errorMessage);
-      
+
           setTimeout(function () {
             errorContainer.find('p').fadeOut('slow', function () {
               $(this).remove();
@@ -549,9 +684,6 @@
           }, 2000);
         },
       });
-
-      
-      
     };
   });
 </script>
@@ -588,7 +720,7 @@
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `https://hubsyntax.online/get-form/${id}`,
+          url: `http://localhost:4001/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -687,7 +819,7 @@
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: `https://hubsyntax.online/get/data`,
+          url: `http://localhost:4001/get/data`,
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -750,7 +882,7 @@
               console.log('Form Data:', JSON.stringify(formData));
 
               $.ajax({
-                url: 'https://hubsyntax.online/api/forms',
+                url: 'http://localhost:4001/api/forms',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
@@ -768,7 +900,7 @@
                   });
 
                   $.ajax({
-                    url: 'https://hubsyntax.online/api/template',
+                    url: 'http://localhost:4001/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -837,565 +969,567 @@
   {% endschema %}
 {% endcomment %}
 
-{% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% comment %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<div class="form_builder_app {{ block.id }}">
-  <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
-</div>
+  <div class="form_builder_app {{ block.id }}">
+    <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
+  </div>
 
-<script>
-  $(document).ready(function () {
-    const formId = '{{ block.settings.formId }}';
-    console.log('Form ID:', formId);
+  <script>
+    $(document).ready(function () {
+      const formId = '{{ block.settings.formId }}';
+      console.log('Form ID:', formId);
 
-    if (formId && formId !== 'default-id') {
-      fetchFormData(formId);
-    }
+      if (formId && formId !== 'default-id') {
+        fetchFormData(formId);
+      }
 
-    function fetchFormData(id) {
-      $('#formData-{{ block.id }}').empty();
+      function fetchFormData(id) {
+        $('#formData-{{ block.id }}').empty();
 
-      $.ajax({
-        url: `https://hubsyntax.online/get-form/${id}`,
-        method: 'GET',
-        success: function (data) {
-          console.log('Fetched form data:', data);
-          displayFormData(data);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error('Error: ' + errorThrown);
-          $('#formData-{{ block.id }}').append('<p></p>');
-        },
-      });
-    }
-
-    function displayFormData(formData) {
-      const container = $('#formData-{{ block.id }}');
-      const formTitle = formData.title || 'Form Data';
-      const formID = formData.formId || 'Unknown ID';
-      const formshop = formData.shop || 'Form shop';
-      const toggleStatus = formData.toggleStatus || 'toggleStatus';
-
-      console.log('Formshop:', formshop);
-      container.empty();
-
-      if (formData.styles) {
-        console.log('Form styles:', formData.styles);
-
-        container.css({
-          backgroundSize: 'cover',
-          backgroundColor: formData.styles.backgroundColor || '',
-          backgroundImage: formData.styles.backgroundImage || 'none',
-          backgroundRepeat: formData.styles.backgroundRepeat || 'no-repeat',
-          boxShadow: formData.styles.boxShadow || '',
-          width: formData.styles.width || '100%',
-          padding: formData.styles.padding || '20px',
-          borderColor: formData.styles.borderColor || '',
-          borderWidth: formData.styles.borderWidth || '',
-          borderStyle: formData.styles.borderStyle || '',
-          opacity: formData.styles.opacityForm || '',
-          borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
-          margin: 'auto',
+        $.ajax({
+          url: `http://localhost:4001/get-form/${id}`,
+          method: 'GET',
+          success: function (data) {
+            console.log('Fetched form data:', data);
+            displayFormData(data);
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Error: ' + errorThrown);
+            $('#formData-{{ block.id }}').append('<p></p>');
+          },
         });
       }
-      container.append(`<h2 style="display:none">${formshop}</h2>`);
-      container.append(`<h2 style="display:none">${formTitle}</h2>`);
-      container.append(`<h2 style="display:none">${toggleStatus}</h2>`);
-      container.append(`<p style="display:none"><strong>Form ID:</strong> ${formID}</p>`);
 
-      if (formData.fields && formData.fields.length > 0) {
-        formData.fields.forEach((field) => {
-          const floatStyle =
-            (field.type === 'text' || field.type === 'name') && parseFloat(field.width) <= 50
-              ? 'float: inline-start;'
-              : '';
-          const inputGap = formData.styles.inputGap || '0px';
-          const labelColor = formData.styles.labelColor || '#000';
-          const inputRadius = formData.styles.inputRadious;
-          const inputBorderColor = formData.styles.inputborderColor;
-          const inputBgColor = formData.styles.inputBgColor;
-          const inputStyle = formData.styles.inputstyle;
-          const inputWidth = formData.styles.inputwidth;
-          const headingcolor = formData.styles.colorHeading;
-          const headingaline = formData.styles.textHeading;
-         
-          const fieldHtml = `
-                  <div key="${field.id}" style= "width: ${
-            field.width
-          }; ${floatStyle} margin-bottom: ${inputGap}px;"class="${`input-field input-gap ${
-            parseFloat(field.width) <= 50 ? 'small-width' : ''
-          }`}">
-                      ${
-                        field.type !== 'heading' &&
-                        field.type !== 'description' &&
-                        field.type !== 'button' &&
-                        field.type !== 'toggle' &&
-                        field.type !== 'link' &&
-                        field.type !== 'divider'
-                          ? `<label style="color: ${labelColor};">${field.label}</label>`
-                          : ''
-                      }
-                      
-                     ${getFieldInput(
-                       field,
-                       formData.url,
-                       formData.submissionOption,
-                       formData.thankYouTimer,
-                       formData.editorValue,
-                       formshop,
-                       toggleStatus,
-                       inputRadius,
-                       inputBorderColor,
-                       inputBgColor,
-                       inputStyle,
-                       inputWidth,
-                       headingcolor,
-                       headingaline
-                     )}
-                  </div>
-                  `;
-          container.append(fieldHtml);
-        });
-        $('.input-gap').css('padding', '5px');
-      } else {
-        container.append('<p>No fields available.</p>');
-      }
-      container.append('<div class="clear-float"></div>');
-    }
+      function displayFormData(formData) {
+        const container = $('#formData-{{ block.id }}');
+        const formTitle = formData.title || 'Form Data';
+        const formID = formData.formId || 'Unknown ID';
+        const formshop = formData.shop || 'Form shop';
+        const toggleStatus = formData.toggleStatus || 'toggleStatus';
 
-    function getFieldInput(
-      field,
-      formUrl,
-      submissionOption,
-      thankYouTimer,
-      editorValue,
-      formshop,
-      toggleStatus,
-      inputRadius,
-      inputBorderColor,
-      inputBgColor,
-      inputStyle,
-      inputWidth,
-      headingcolor,
-      headingaline
-    ) {
-      const uniqueId = field.id || generateUniqueId();
+        console.log('Formshop:', formshop);
+        container.empty();
 
-      switch (field.type) {
-        case 'name':
-          return `<input type="text" placeholder="${
-            field.placeholder || ''
-          }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" />`;
-        case 'text':
-          return `<input type="text" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" />`;
-        case 'toggle':
-          return `
-            <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
-              <input 
-                type="checkbox" 
-                style="display: none;" 
-                aria-label="${field.label || 'Toggle'}" 
-                 onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#white'; 
-                          this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';" 
-              />
-              <span style="
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: #cccccc;
-                transition: 0.4s;
-                border-radius: 24px;
-              "></span>
-              <span style="
-                position: absolute;
-                content: '';
-                height: 18px;
-                width: 18px;
-                left: 3px;
-                bottom: 3px;
-                background-color: white;
-                transition: 0.4s;
-                border-radius: 50%;
-                transform: translateX(0);
-              "></span>
-            </label>`;
-        case 'textarea':
-          return `<textarea placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}"></textarea>`;
-        case 'checkbox':
-          return `
-                <div>
-                  ${field.options
-                    .map(
-                      (option) => `
-                    <div class="form_checkbox_flex">
-                      <input type="checkbox" id="${option.id}" name="${field.name}" value="${option.value}" ${
-                        field.required ? 'required' : ''
-                      } ${field.readonly ? 'readonly' : ''} />
-                      <label for="${option.id}">${option.label}</label>
-                    </div>
-                  `
-                    )
-                    .join('')}
-                </div>
-              `;
-        case 'radio':
-          return `
-                <div>
-                  ${field.options
-                    .map(
-                      (option) => `
-                    <div class="form_radio_flex">
-                      <input type="radio" id="${option.id}" name="${field.name}" value="${option.value}" ${
-                        option.checked ? 'checked' : ''
-                      } aria-label="${field.label || 'Radio Input'}" />
-                      <label for="${option.id}">${option.label}</label>
-                    </div>
-                  `
-                    )
-                    .join('')}
-                </div>
-              `;
-        case 'select':
-          const options = field.options
-            .map((option) => `<option value="${option.value}">${option.label}</option>`)
-            .join('');
-          return `
-                <div>
-                  <select name="${
-                    field.name
-                  }" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Select Input'}">
-                    ${options}
-                  </select>
-                </div>
-              `;
-        case 'divider':
-          return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" />`;
-        case 'description':
-          return `<p>${field.text}</p>`;
-          case 'heading':
-          return `<h1 style="font-size: ${field.fontSize || '16px'}; 
-                  color: ${headingcolor || '#000'}; 
-                  text-align: ${headingaline || 'center'};">
-                  ${field.text || 'Default Heading'}
-                  </h1>`;
-        
-        case 'number':
-          return `<input type="number" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'file':
-          return `<input type="file" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'email':
-          return `<input type="email" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'phone':
-          return `<input type="tel" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'password':
-          return `<input type="password" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'url':
-          return `<input type="url" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'location':
-          return `<input type="text" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'date':
-          return `<input type="date" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'datetime':
-          return `<input type="datetime-local" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'time':
-          return `<input type="time" placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'link':
-          return `
-        <a
-        href="${field.linkUrl || '#'}"
-        target="${field.linkTarget || '_blank'}"
-         style="
-          width: ${field.width || '100%'};
-          text-decoration: none;
-          text-align: ${field.linkaline || 'left'};
-          padding: ${field.padding || '0'};
-          "
-             >${field.linktext || 'Default Link Text'}</a>
-      `;
+        if (formData.styles) {
+          console.log('Form styles:', formData.styles);
 
-        case 'images':
-          return `<input type="file" multiple placeholder="${
-            field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'slider':
-          return `<input 
-                    type="range" 
-                    placeholder="${field.placeholder || ''}" 
-                    style="width: ${field.width || '100%'};" 
-                    min="${field.min}" 
-                    max="${field.max}" 
-                    step="${field.step}" 
-                    />`;
-        case 'button':
-          return `
-              <div>
-                <button
-                  style="background-color: ${
-                    field.backgroundColor || '#007bff'
-                  }; height: ${field.buttonHeight || '40px'}; width: ${field.buttonWidth || '150px'};
-                   font-size: ${field.fontSize};
-                    padding: ${field.padding || '10px'};
-                    border-width: ${field.buttonBorderWidth}px;
-                    border-style: ${field.buttonBorderStyle || 'solid'};
-                    border-color: ${field.buttonBorderColor || '#000'};
-                    border-radius: ${field.btnradious}px;
-                    color:${field.btncolor}"
-                    data-url="${formUrl}"
-                    onclick="submitFormData('{{ block.id }}', this, '${editorValue || ''}', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}', '${toggleStatus}')">
-                  ${field.label || 'Submit'}
-                </button>
-              </div>
-            `;
-        default:
-          return '';
-      }
-    }
-
-    function generateUniqueId() {
-      return Math.random().toString(36).substr(2, 9);
-    }
-
-    const currentTimestamp = new Date().toISOString();
-
-    window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer, formshop, toggleStatus) {
-      const container = $('#formData-' + blockId);
-      const formID = container.find('p').first().text().split(': ')[1];
-      console.log('Editor Value:', editorValue);
-      console.log('Submission Option:', submissionOption);
-      console.log('Thank You Timer:', thankYouTimer);
-      console.log('form_id:', formID);
-      console.log('formshop:', formshop);
-      console.log('toggleStatus:', toggleStatus);
-
-      const formData = {
-        id: formID,
-        shop: formshop || 'defaultShopName',
-        title: $('#formData-' + blockId + ' h2')
-          .text()
-          .replace(formshop, '')
-          .replace(/Enabled|Disabled/, '') 
-          .trim(),
-        fields: [],
-        send: currentTimestamp,
-        url: $(button).data('url') || '',
-        editorValue: editorValue,
-        thankYouTimer: thankYouTimer,
-      };
-
-      if (toggleStatus === 'Enabled') {
-        console.log('Window URL:', window.location.href);
-        formData.currentUrl = window.location.href; 
-      } else if (toggleStatus === 'Disabled') {
-        console.log('Form submission is disabled'); 
-      }
-
-      const emailField = $('#formData-' + blockId + ' input[type="email"]');
-      formData.email = emailField.val();
-      console.log('Email:', formData.email);
-
-      $.ajax({
-        url: 'https://hubsyntax.online/get/data',
-        method: 'GET',
-        data: { formId: formData.id },
-        success: function (response) {
-          console.log('API Response:', response);
-
-          const matchingForm = response.data.find((form) => form.form_ids.includes(formData.id));
-
-          if (matchingForm) {
-            console.log('Form IDs match. Proceeding with form submission.');
-
-            formData.TemplateTitle = matchingForm.title;
-            formData.TemplateId = matchingForm.templateId;
-          } else {
-            console.log('No matching form found, but proceeding with submission.');
-          }
-
-          let isValid = true;
-
-          $('#formData-' + blockId + ' .input-field').each(function () {
-            const fieldName = $(this).find('label').text().trim();
-            const input = $(this).find('input, select, textarea');
-            const fieldId = input.attr('id') || generateUniqueId();
-
-            let fieldValue;
-            if (input.is(':radio')) {
-              fieldValue = $('input[name="' + input.attr('name') + '"]:checked').val();
-            } else if (input.is(':checkbox')) {
-              fieldValue = [];
-              $(this)
-                .find('input[type="checkbox"]:checked')
-                .each(function () {
-                  fieldValue.push($(this).val());
-                });
-              fieldValue = fieldValue.join(', ');
-            } else {
-              fieldValue = input.val();
-            }
-
-            if (input.attr('required') !== undefined && fieldValue.trim() === '') {
-              alert(`Please fill out the ${fieldName}`);
-              isValid = false;
-              return false;
-            }
-
-            if (fieldValue !== undefined && fieldValue.trim() !== '') {
-              formData.fields.push({
-                id: fieldId,
-                name: fieldName,
-                value: fieldValue,
-                send: currentTimestamp,
-              });
-            }
+          container.css({
+            backgroundSize: 'cover',
+            backgroundColor: formData.styles.backgroundColor || '',
+            backgroundImage: formData.styles.backgroundImage || 'none',
+            backgroundRepeat: formData.styles.backgroundRepeat || 'no-repeat',
+            boxShadow: formData.styles.boxShadow || '',
+            width: formData.styles.width || '100%',
+            padding: formData.styles.padding || '20px',
+            borderColor: formData.styles.borderColor || '',
+            borderWidth: formData.styles.borderWidth || '',
+            borderStyle: formData.styles.borderStyle || '',
+            opacity: formData.styles.opacityForm || '',
+            borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
+            margin: 'auto',
           });
+        }
+        container.append(`<h2 style="display:none">${formshop}</h2>`);
+        container.append(`<h2 style="display:none">${formTitle}</h2>`);
+        container.append(`<h2 style="display:none">${toggleStatus}</h2>`);
+        container.append(`<p style="display:none"><strong>Form ID:</strong> ${formID}</p>`);
 
-          if (!isValid) return;
+        if (formData.fields && formData.fields.length > 0) {
+          formData.fields.forEach((field) => {
+            const floatStyle =
+              (field.type === 'text' || field.type === 'name') && parseFloat(field.width) <= 50
+                ? 'float: inline-start;'
+                : '';
+            const inputGap = formData.styles.inputGap || '0px';
+            const labelColor = formData.styles.labelColor || '#000';
+            const inputRadius = formData.styles.inputRadious;
+            const inputBorderColor = formData.styles.inputborderColor;
+            const inputBgColor = formData.styles.inputBgColor;
+            const inputStyle = formData.styles.inputstyle;
+            const inputWidth = formData.styles.inputwidth;
+            const headingcolor = formData.styles.colorHeading;
+            const headingaline = formData.styles.textHeading;
 
-          console.log('Form Data:', JSON.stringify(formData));
+            const fieldHtml = `
+                    <div key="${field.id}" style= "width: ${
+              field.width
+            }; ${floatStyle} margin-bottom: ${inputGap}px;"class="${`input-field input-gap ${
+              parseFloat(field.width) <= 50 ? 'small-width' : ''
+            }`}">
+                        ${
+                          field.type !== 'heading' &&
+                          field.type !== 'description' &&
+                          field.type !== 'button' &&
+                          field.type !== 'toggle' &&
+                          field.type !== 'link' &&
+                          field.type !== 'divider'
+                            ? `<label style="color: ${labelColor};">${field.label}</label>`
+                            : ''
+                        }
 
-          $.ajax({
-            url: 'https://hubsyntax.online/api/forms',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function (response) {
-              console.log('Form submitted successfully:', response);
-              alert('Form submitted successfully!');
-              const formUrl = $(button).data('url');
+                       ${getFieldInput(
+                         field,
+                         formData.url,
+                         formData.submissionOption,
+                         formData.thankYouTimer,
+                         formData.editorValue,
+                         formshop,
+                         toggleStatus,
+                         inputRadius,
+                         inputBorderColor,
+                         inputBgColor,
+                         inputStyle,
+                         inputWidth,
+                         headingcolor,
+                         headingaline
+                       )}
+                    </div>
+                    `;
+            container.append(fieldHtml);
+          });
+          $('.input-gap').css('padding', '5px');
+        } else {
+          container.append('<p>No fields available.</p>');
+        }
+        container.append('<div class="clear-float"></div>');
+      }
 
-              const successMessage = '<p id="success-message">Form submitted successfully!</p>';
-              const successElement = $(successMessage);
+      function getFieldInput(
+        field,
+        formUrl,
+        submissionOption,
+        thankYouTimer,
+        editorValue,
+        formshop,
+        toggleStatus,
+        inputRadius,
+        inputBorderColor,
+        inputBgColor,
+        inputStyle,
+        inputWidth,
+        headingcolor,
+        headingaline
+      ) {
+        const uniqueId = field.id || generateUniqueId();
 
-              console.log('Sending Template Data:', {
-                TemplateAll: matchingForm,
-                email: formData.email,
-              });
+        switch (field.type) {
+          case 'name':
+            return `<input type="text" placeholder="${
+              field.placeholder || ''
+            }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" />`;
+          case 'text':
+            return `<input type="text" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" />`;
+          case 'toggle':
+            return `
+              <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
+                <input
+                  type="checkbox"
+                  style="display: none;"
+                  aria-label="${field.label || 'Toggle'}"
+                   onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#white';
+                            this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';"
+                />
+                <span style="
+                  position: absolute;
+                  cursor: pointer;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background-color: #cccccc;
+                  transition: 0.4s;
+                  border-radius: 24px;
+                "></span>
+                <span style="
+                  position: absolute;
+                  content: '';
+                  height: 18px;
+                  width: 18px;
+                  left: 3px;
+                  bottom: 3px;
+                  background-color: white;
+                  transition: 0.4s;
+                  border-radius: 50%;
+                  transform: translateX(0);
+                "></span>
+              </label>`;
+          case 'textarea':
+            return `<textarea placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}"></textarea>`;
+          case 'checkbox':
+            return `
+                  <div>
+                    ${field.options
+                      .map(
+                        (option) => `
+                      <div class="form_checkbox_flex">
+                        <input type="checkbox" id="${option.id}" name="${field.name}" value="${option.value}" ${
+                          field.required ? 'required' : ''
+                        } ${field.readonly ? 'readonly' : ''} />
+                        <label for="${option.id}">${option.label}</label>
+                      </div>
+                    `
+                      )
+                      .join('')}
+                  </div>
+                `;
+          case 'radio':
+            return `
+                  <div>
+                    ${field.options
+                      .map(
+                        (option) => `
+                      <div class="form_radio_flex">
+                        <input type="radio" id="${option.id}" name="${field.name}" value="${option.value}" ${
+                          option.checked ? 'checked' : ''
+                        } aria-label="${field.label || 'Radio Input'}" />
+                        <label for="${option.id}">${option.label}</label>
+                      </div>
+                    `
+                      )
+                      .join('')}
+                  </div>
+                `;
+          case 'select':
+            const options = field.options
+              .map((option) => `<option value="${option.value}">${option.label}</option>`)
+              .join('');
+            return `
+                  <div>
+                    <select name="${
+                      field.name
+                    }" required="${field.required ? 'true' : 'false'}" style="width: ${field.width || 'auto'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " aria-label="${field.label || 'Select Input'}">
+                      ${options}
+                    </select>
+                  </div>
+                `;
+          case 'divider':
+            return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" />`;
+          case 'description':
+            return `<p>${field.text}</p>`;
+            case 'heading':
+            return `<h1 style="font-size: ${field.fontSize || '16px'};
+                    color: ${headingcolor || '#000'};
+                    text-align: ${headingaline || 'center'};">
+                    ${field.text || 'Default Heading'}
+                    </h1>`;
 
-              setTimeout(function () {
-                $('#success-message').remove();
-              }, 2000);
+          case 'number':
+            return `<input type="number" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'file':
+            return `<input type="file" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'email':
+            return `<input type="email" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'phone':
+            return `<input type="tel" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'password':
+            return `<input type="password" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'url':
+            return `<input type="url" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'location':
+            return `<input type="text" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'date':
+            return `<input type="date" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'datetime':
+            return `<input type="datetime-local" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'time':
+            return `<input type="time" placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'link':
+            return `
+          <a
+          href="${field.linkUrl || '#'}"
+          target="${field.linkTarget || '_blank'}"
+           style="
+            width: ${field.width || '100%'};
+            text-decoration: none;
+            text-align: ${field.linkaline || 'left'};
+            padding: ${field.padding || '0'};
+            "
+               >${field.linktext || 'Default Link Text'}</a>
+        `;
 
-              $.ajax({
-                url: 'https://hubsyntax.online/api/template',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
+          case 'images':
+            return `<input type="file" multiple placeholder="${
+              field.placeholder || ''
+            }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
+          case 'slider':
+            return `<input
+                      type="range"
+                      placeholder="${field.placeholder || ''}"
+                      style="width: ${field.width || '100%'};"
+                      min="${field.min}"
+                      max="${field.max}"
+                      step="${field.step}"
+                      />`;
+          case 'button':
+            return `
+                <div>
+                  <button
+                    style="background-color: ${
+                      field.backgroundColor || '#007bff'
+                    }; height: ${field.buttonHeight || '40px'}; width: ${field.buttonWidth || '150px'};
+                     font-size: ${field.fontSize};
+                      padding: ${field.padding || '10px'};
+                      border-width: ${field.buttonBorderWidth}px;
+                      border-style: ${field.buttonBorderStyle || 'solid'};
+                      border-color: ${field.buttonBorderColor || '#000'};
+                      border-radius: ${field.btnradious}px;
+                      color:${field.btncolor}"
+                      data-url="${formUrl}"
+                      onclick="submitFormData('{{ block.id }}', this, '${editorValue || ''}', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}', '${toggleStatus}')">
+                    ${field.label || 'Submit'}
+                  </button>
+                </div>
+              `;
+          default:
+            return '';
+        }
+      }
+
+      function generateUniqueId() {
+        return Math.random().toString(36).substr(2, 9);
+      }
+
+      const currentTimestamp = new Date().toISOString();
+
+      window.submitFormData = function (blockId, button, editorValue, submissionOption, thankYouTimer, formshop, toggleStatus) {
+        const container = $('#formData-' + blockId);
+        const formID = container.find('p').first().text().split(': ')[1];
+        console.log('Editor Value:', editorValue);
+        console.log('Submission Option:', submissionOption);
+        console.log('Thank You Timer:', thankYouTimer);
+        console.log('form_id:', formID);
+        console.log('formshop:', formshop);
+        console.log('toggleStatus:', toggleStatus);
+
+        const formData = {
+          id: formID,
+          shop: formshop || 'defaultShopName',
+          title: $('#formData-' + blockId + ' h2')
+            .text()
+            .replace(formshop, '')
+            .replace(/Enabled|Disabled/, '')
+            .trim(),
+          fields: [],
+          send: currentTimestamp,
+          url: $(button).data('url') || '',
+          editorValue: editorValue,
+          thankYouTimer: thankYouTimer,
+        };
+
+        if (toggleStatus === 'Enabled') {
+          console.log('Window URL:', window.location.href);
+          formData.currentUrl = window.location.href;
+        } else if (toggleStatus === 'Disabled') {
+          console.log('Form submission is disabled');
+        }
+
+        const emailField = $('#formData-' + blockId + ' input[type="email"]');
+        formData.email = emailField.val();
+        console.log('Email:', formData.email);
+
+        $.ajax({
+          url: 'http://localhost:4001/get/data',
+          method: 'GET',
+          data: { formId: formData.id },
+          success: function (response) {
+            console.log('API Response:', response);
+
+            const matchingForm = response.data.find((form) => form.form_ids.includes(formData.id));
+
+            if (matchingForm) {
+              console.log('Form IDs match. Proceeding with form submission.');
+
+              formData.TemplateTitle = matchingForm.title;
+              formData.TemplateId = matchingForm.templateId;
+            } else {
+              console.log('No matching form found, but proceeding with submission.');
+            }
+
+            let isValid = true;
+
+            $('#formData-' + blockId + ' .input-field').each(function () {
+              const fieldName = $(this).find('label').text().trim();
+              const input = $(this).find('input, select, textarea');
+              const fieldId = input.attr('id') || generateUniqueId();
+
+              let fieldValue;
+              if (input.is(':radio')) {
+                fieldValue = $('input[name="' + input.attr('name') + '"]:checked').val();
+              } else if (input.is(':checkbox')) {
+                fieldValue = [];
+                $(this)
+                  .find('input[type="checkbox"]:checked')
+                  .each(function () {
+                    fieldValue.push($(this).val());
+                  });
+                fieldValue = fieldValue.join(', ');
+              } else {
+                fieldValue = input.val();
+              }
+
+              if (input.attr('required') !== undefined && fieldValue.trim() === '') {
+                alert(`Please fill out the ${fieldName}`);
+                isValid = false;
+                return false;
+              }
+
+              if (fieldValue !== undefined && fieldValue.trim() !== '') {
+                formData.fields.push({
+                  id: fieldId,
+                  name: fieldName,
+                  value: fieldValue,
+                  send: currentTimestamp,
+                });
+              }
+            });
+
+            if (!isValid) return;
+
+            console.log('Form Data:', JSON.stringify(formData));
+
+            $.ajax({
+              url: 'http://localhost:4001/api/forms',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(formData),
+              success: function (response) {
+                console.log('Form submitted successfully:', response);
+                alert('Form submitted successfully!');
+                const formUrl = $(button).data('url');
+
+                const successMessage = '<p id="success-message">Form submitted successfully!</p>';
+                const successElement = $(successMessage);
+
+                console.log('Sending Template Data:', {
                   TemplateAll: matchingForm,
                   email: formData.email,
-                }),
-                success: function (templateResponse) {
-                  console.log('Template data sent successfully:', templateResponse);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                  console.error('Error sending template data:', errorThrown);
-                },
-              });
-
-              if (editorValue) {
-                const editorValueDisplay = `<p>${editorValue}</p>`;
-                const messageElement = $(editorValueDisplay);
-                $('#formData-' + blockId).append(messageElement);
-
-                successElement.hide();
-                $('#formData-' + blockId).append(successElement);
-              } else {
-                $('#formData-' + blockId).append(successElement);
-              }
-
-              if (submissionOption === 'Hide form and show thank you message') {
-                $(
-                  '#formData-' +
-                    blockId +
-                    ' .form, #formData-' +
-                    blockId +
-                    ' input, #formData-' +
-                    blockId +
-                    ' textarea, #formData-' +
-                    blockId +
-                    ' select, #formData-' +
-                    blockId +
-                    ' button, #formData-' +
-                    blockId +
-                    ' label'
-                ).hide();
-              } else if (thankYouTimer) {
-                const timerDuration = parseInt(thankYouTimer) * 1000;
-                setTimeout(() => {
-                  $('#formData-' + blockId + ' p').fadeOut();
-                }, timerDuration);
-              }
-
-              if (formUrl && formUrl !== 'undefined') {
-                window.open(formUrl);
-              } else {
-                console.log('No valid form URL provided.');
-              }
-
-              $(
-                '#formData-' + blockId + ' input, #formData-' + blockId + ' textarea, #formData-' + blockId + ' select'
-              ).val('');
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-              console.error('Error submitting form:', {
-                textStatus: textStatus,
-                errorThrown: errorThrown,
-                responseText: jqXHR.responseText,
-              });
-              const errorMessage = '<p>Error submitting form. Please try again.</p>';
-              const errorContainer = $('#formData-' + blockId);
-              errorContainer.append(errorMessage);
-              setTimeout(function() {
-                errorContainer.find('p').fadeOut('slow', function() {
-                    $(this).remove(); 
                 });
-            }, 2000); 
-            },
-          });
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error('Error fetching data:', errorThrown);
-          alert('An error occurred while fetching form data. Please try again.');
-        },
-      });
-    };
-  });
-</script>
 
-{% schema %}
-{
-  "name": "Form Submission",
-  "target": "section",
-  "settings": [
-    { "type": "color", "id": "colour", "label": "Button Text Colour", "default": "#ff0000" },
-    { "type": "color", "id": "bgcolour", "label": "Button Background Colour", "default": "#ff0000" },
-    { "type": "text", "id": "formId", "label": "Form ID" }
-  ]
-}
-{% endschema %} {% endcomment %}
+                setTimeout(function () {
+                  $('#success-message').remove();
+                }, 2000);
+
+                $.ajax({
+                  url: 'http://localhost:4001/api/template',
+                  method: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({
+                    TemplateAll: matchingForm,
+                    email: formData.email,
+                  }),
+                  success: function (templateResponse) {
+                    console.log('Template data sent successfully:', templateResponse);
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('Error sending template data:', errorThrown);
+                  },
+                });
+
+                if (editorValue) {
+                  const editorValueDisplay = `<p>${editorValue}</p>`;
+                  const messageElement = $(editorValueDisplay);
+                  $('#formData-' + blockId).append(messageElement);
+
+                  successElement.hide();
+                  $('#formData-' + blockId).append(successElement);
+                } else {
+                  $('#formData-' + blockId).append(successElement);
+                }
+
+                if (submissionOption === 'Hide form and show thank you message') {
+                  $(
+                    '#formData-' +
+                      blockId +
+                      ' .form, #formData-' +
+                      blockId +
+                      ' input, #formData-' +
+                      blockId +
+                      ' textarea, #formData-' +
+                      blockId +
+                      ' select, #formData-' +
+                      blockId +
+                      ' button, #formData-' +
+                      blockId +
+                      ' label'
+                  ).hide();
+                } else if (thankYouTimer) {
+                  const timerDuration = parseInt(thankYouTimer) * 1000;
+                  setTimeout(() => {
+                    $('#formData-' + blockId + ' p').fadeOut();
+                  }, timerDuration);
+                }
+
+                if (formUrl && formUrl !== 'undefined') {
+                  window.open(formUrl);
+                } else {
+                  console.log('No valid form URL provided.');
+                }
+
+                $(
+                  '#formData-' + blockId + ' input, #formData-' + blockId + ' textarea, #formData-' + blockId + ' select'
+                ).val('');
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error submitting form:', {
+                  textStatus: textStatus,
+                  errorThrown: errorThrown,
+                  responseText: jqXHR.responseText,
+                });
+                const errorMessage = '<p>Error submitting form. Please try again.</p>';
+                const errorContainer = $('#formData-' + blockId);
+                errorContainer.append(errorMessage);
+                setTimeout(function() {
+                  errorContainer.find('p').fadeOut('slow', function() {
+                      $(this).remove();
+                  });
+              }, 2000);
+              },
+            });
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Error fetching data:', errorThrown);
+            alert('An error occurred while fetching form data. Please try again.');
+          },
+        });
+      };
+    });
+  </script>
+
+  {% schema %}
+  {
+    "name": "Form Submission",
+    "target": "section",
+    "settings": [
+      { "type": "color", "id": "colour", "label": "Button Text Colour", "default": "#ff0000" },
+      { "type": "color", "id": "bgcolour", "label": "Button Background Colour", "default": "#ff0000" },
+      { "type": "text", "id": "formId", "label": "Form ID" }
+    ]
+  }
+  {% endschema %}
+{% endcomment %}
