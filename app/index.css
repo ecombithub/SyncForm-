@@ -1,16 +1,16 @@
-*{
+/* *{
     font-family: Poppins;
-}
+} */
 
 .email-templates-wredd h1 {
     font-size: 40px !important;
-    line-height: 50px;
 }
+
 
 .email-templates-wredd h2 {
     font-size: 30px !important;
-    line-height: 40px;
 }
+
 .text-wraped a {
     text-decoration: none;
     color: black;
@@ -28,7 +28,7 @@
     margin: 0 !important;
 }
 
-.text-wraped h5{
+.text-wraped h5 {
     font-size: 15px !important;
     font-weight: 500 !important;
     margin: 0 !important;
@@ -55,6 +55,31 @@ button.action_btn {
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
+}
+
+.upload-area {
+    padding: 40px 10px;
+    border: 2px dashed #00ac4f;
+    text-align: center;
+    cursor: pointer;
+}
+
+.upload-area img {
+    width: 30%;
+}
+
+span.upload-btn {
+    font-size: 14px;
+    color: white;
+    background: #00ac4f;
+    padding: 6px 35px;
+    border-radius: 6px;
+}
+
+.upload-area p {
+    font-size: 16px;
+    color: #00ac4f !important;
+    margin-bottom: 10px;
 }
 
 .modal-costomer .loaddr img {
@@ -1981,7 +2006,7 @@ button.cancle-form-btn {
 
 .form_build_icon_search {
     position: absolute;
-    top:12px;
+    top: 12px;
     left: 10px;
 }
 
@@ -2399,13 +2424,14 @@ button.copy-btn.first {
     max-width: 80%;
 }
 
-.form_build_app_bottm.second .form_build_app_btn p{
+.form_build_app_bottm.second .form_build_app_btn p {
     color: #6FB0DF !important;
 }
 
 .form_build_app_bottm.third p {
     color: #46B7D3 !important;
 }
+
 .form_build_new_base .form_build_app_btn p {
     padding: 0;
     color: #869ECF;
@@ -3645,6 +3671,8 @@ button.btn-templates {
 
 .email-template-section .email-templete-search-bar span.name_build {
     display: flex;
+    gap: 4px;
+    align-items: center;
 }
 
 .email-template-section .email-templete-search-bar .form-builder-search-bar {
@@ -3772,9 +3800,9 @@ button.btn-templates {
     z-index: 9999;
 }
 
-.email-template-reviw-popup .form-builder-icon-deleted img{
-  position: fixed;
-} 
+.email-template-reviw-popup .form-builder-icon-deleted img {
+    position: fixed;
+}
 
 .email-template-section .form-builder-create.section-wrp {
     max-width: 100%;

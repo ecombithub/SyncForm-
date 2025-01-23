@@ -218,6 +218,8 @@ const emailTemplateSchema = new mongoose.Schema({
       headerbtncolor: { type: String, required: false },
       headingbtnPadding: { type: String, required: false },
       headingbtntopPadding: { type: String, required: false },
+      headingfamily: { type: String, required: false },
+      headingbtnweight: { type: String, required: false },
       headingbtnradious: { type: String, required: false },
       headingbtnFontSize: { type: String, required: false },
       headingbtnwidth: { type: String, required: false },
@@ -233,6 +235,7 @@ const emailTemplateSchema = new mongoose.Schema({
       editorContent: { type: String, required: false },
       headingUrl: { type: String, required: false },
       richTextAlign: { type: String, required: false },
+      buttonweight: { type: String, required: false },
       imageUrl: { type: String, required: false },
       headingFontSize: { type: String, required: false },
       headingLevel: { type: String, required: false },
@@ -242,6 +245,9 @@ const emailTemplateSchema = new mongoose.Schema({
       headingbg: { type: String, required: false },
       headingmargin: { type: String, required: false },
       subheadingColor: { type: String, required: false },
+      subheadingfamily: { type: String, required: false },
+      subheadingline: { type: String, required: false },
+      subheadingleter: { type: String, required: false },
       headingBorderColor: { type: String, required: false },
       headingBorderWidth: { type: String, required: false },
       headingbtnBorderWidth: { type: String, required: false },
@@ -250,6 +256,7 @@ const emailTemplateSchema = new mongoose.Schema({
       headingBorderStyle: { type: String, required: false },
       headingLetterSpacing: { type: String, required: false },
       headingPadding: { type: String, required: false },
+      headingline: { type: String, required: false },
       headingTextAlign: { type: String, required: false },
       headingText: { type: String, required: false },
 
@@ -299,7 +306,7 @@ const emailTemplateSchema = new mongoose.Schema({
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
-      htmlaline : { type: String, required: false },
+      htmlaline: { type: String, required: false },
       splitbg: { type: String, required: false },
       splitbtn: { type: String, required: false },
       splitbtnbg: { type: String, required: false },
@@ -310,6 +317,9 @@ const emailTemplateSchema = new mongoose.Schema({
       splitbtnurl: { type: String, required: false },
       splitbtnheight: { type: String, required: false },
       splitbtnwidth: { type: String, required: false },
+      splitletter: { type: String, required: false },
+      splitlineheight: { type: String, required: false },
+      splitfamily: { type: String, required: false },
       splitbtnradious: { type: String, required: false },
       splitheight: { type: String, required: false },
       add: { type: String, required: false },
@@ -342,6 +352,8 @@ const emailTemplateSchema = new mongoose.Schema({
       productBorderColor: { type: String, required: false },
       productFontSize: { type: String, required: false },
       productTextColor: { type: String, required: false },
+      productfamily: { type: String, required: false },
+      productline: { type: String, required: false },
       productWeight: { type: String, required: false },
       productLetterSpacing: { type: String, required: false },
       productbtnBorderColor: { type: String, required: false },
@@ -376,10 +388,15 @@ const emailTemplateSchema = new mongoose.Schema({
       Multibtncolor: { type: String, required: false },
       Multibtnradious: { type: String, required: false },
       Multibtnfont: { type: String, required: false },
+      MultiWeight: { type: String, required: false },
       splitBorderWidth: { type: String, required: false },
       splitBorderColor: { type: String, required: false },
+      splitbtnWeight: { type: String, required: false },
       splitBorderStyle: { type: String, required: false },
       richFontsize: { type: String, required: false },
+      richlineheight: { type: String, required: false },
+      richspace: { type: String, required: false },
+      richFontfamily: { type: String, required: false },
       richtopPadding: { type: String, required: false },
       richleftPadding: { type: String, required: false },
       richline: { type: String, required: false },
@@ -387,6 +404,9 @@ const emailTemplateSchema = new mongoose.Schema({
       richtextcolor: { type: String, required: false },
       MulticolumnPadding: { type: String, required: false },
       Multibtnlable: { type: String, required: false },
+      Multifamily: { type: String, required: false },
+      Multiheight: { type: String, required: false },
+      Multiletter: { type: String, required: false },
       Multiborderradious: { type: String, required: false },
       Multibtnbg: { type: String, required: false },
       Multibtnurl: { type: String, required: false },
@@ -459,6 +479,8 @@ const ShowTemplats = new mongoose.Schema({
       headerbtncolor: { type: String, required: false },
       headingbtnPadding: { type: String, required: false },
       headingbtntopPadding: { type: String, required: false },
+      headingfamily: { type: String, required: false },
+      headingbtnweight: { type: String, required: false },
       headingbtnradious: { type: String, required: false },
       headingbtnFontSize: { type: String, required: false },
       headingbtnwidth: { type: String, required: false },
@@ -474,6 +496,7 @@ const ShowTemplats = new mongoose.Schema({
       editorContent: { type: String, required: false },
       headingUrl: { type: String, required: false },
       richTextAlign: { type: String, required: false },
+      buttonweight: { type: String, required: false },
       imageUrl: { type: String, required: false },
       headingFontSize: { type: String, required: false },
       headingLevel: { type: String, required: false },
@@ -483,6 +506,9 @@ const ShowTemplats = new mongoose.Schema({
       headingbg: { type: String, required: false },
       headingmargin: { type: String, required: false },
       subheadingColor: { type: String, required: false },
+      subheadingfamily: { type: String, required: false },
+      subheadingleter: { type: String, required: false },
+      subheadingline: { type: String, required: false },
       headingBorderColor: { type: String, required: false },
       headingBorderWidth: { type: String, required: false },
       headingbtnBorderWidth: { type: String, required: false },
@@ -491,6 +517,7 @@ const ShowTemplats = new mongoose.Schema({
       headingBorderStyle: { type: String, required: false },
       headingLetterSpacing: { type: String, required: false },
       headingPadding: { type: String, required: false },
+      headingline: { type: String, required: false },
       headingTextAlign: { type: String, required: false },
       headingText: { type: String, required: false },
       headingbgImage: { type: Object, required: false },
@@ -540,7 +567,7 @@ const ShowTemplats = new mongoose.Schema({
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
-      htmlaline : { type: String, required: false },
+      htmlaline: { type: String, required: false },
       splitbg: { type: String, required: false },
       splitbtn: { type: String, required: false },
       splitbtnbg: { type: String, required: false },
@@ -551,6 +578,9 @@ const ShowTemplats = new mongoose.Schema({
       splitbtnurl: { type: String, required: false },
       splitbtnheight: { type: String, required: false },
       splitbtnwidth: { type: String, required: false },
+      splitletter: { type: String, required: false },
+      splitlineheight: { type: String, required: false },
+      splitfamily: { type: String, required: false },
       splitbtnradious: { type: String, required: false },
       splitheight: { type: String, required: false },
       add: { type: String, required: false },
@@ -583,6 +613,8 @@ const ShowTemplats = new mongoose.Schema({
       productBorderColor: { type: String, required: false },
       productFontSize: { type: String, required: false },
       productTextColor: { type: String, required: false },
+      productfamily: { type: String, required: false },
+      productline: { type: String, required: false },
       productWeight: { type: String, required: false },
       productLetterSpacing: { type: String, required: false },
       productbtnBorderColor: { type: String, required: false },
@@ -617,10 +649,15 @@ const ShowTemplats = new mongoose.Schema({
       Multibtncolor: { type: String, required: false },
       Multibtnradious: { type: String, required: false },
       Multibtnfont: { type: String, required: false },
+      MultiWeight: { type: String, required: false },
       splitBorderWidth: { type: String, required: false },
       splitBorderColor: { type: String, required: false },
+      splitbtnWeight: { type: String, required: false },
       splitBorderStyle: { type: String, required: false },
       richFontsize: { type: String, required: false },
+      richlineheight: { type: String, required: false },
+      richspace: { type: String, required: false },
+      richFontfamily: { type: String, required: false },
       richbgcolor: { type: String, required: false },
       richline: { type: String, required: false },
       richtopPadding: { type: String, required: false },
@@ -630,6 +667,9 @@ const ShowTemplats = new mongoose.Schema({
       Multibtnlable: { type: String, required: false },
       Multibtnurl: { type: String, required: false },
       Multiborderradious: { type: String, required: false },
+      Multifamily: { type: String, required: false },
+      Multiheight: { type: String, required: false },
+      Multiletter: { type: String, required: false },
       Multibtnbg: { type: String, required: false },
       icons: {
         facebook: {
@@ -843,17 +883,18 @@ const sendEmail = async (email, TemplateAll) => {
                ">
              <table role="presentation" width="100%" height="100%" style="height: 100%; width: 100%; border-collapse: collapse;">
                 <tr>
-            <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
+            <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle;  padding: ${field.headingPadding || '20px'}px;">
             <div style="width: 100%; text-align: ${field.headingTextAlign || 'center'};">
             <h1 style="font-size: ${field.headingFontSize || 30}px; 
               color: ${field.headingColor || '#000'}; 
               font-weight: ${field.headingFontWeight || 'bold'}; 
-              line-height: 48px; 
+              line-height: ${field.headingline}px; 
+              font-family:${field.headingfamily};
               letter-spacing: ${field.headingLetterSpacing || 0}px; 
               text-align: ${field.headingTextAlign || 'center'};">
               ${field.headingText || ''}
             </h1>
-            <div style="font-size: ${field.headingsubheading}px; color:${field.subheadingColor}; margin: 20px 0;">
+            <div style="font-size: ${field.headingsubheading}px; color:${field.subheadingColor}; font-family:${field.subheadingfamily}; line-height: ${field.subheadingline}px; letter-spacing:${field.subheadingleter}px;">
               ${updateeditorContent || ''}
             </div>
             
@@ -873,6 +914,8 @@ const sendEmail = async (email, TemplateAll) => {
                   padding-right: ${field.headingbtnPadding || '10px'}px;
                   padding-top: ${field.headingbtntopPadding || '10px'}px;
                   padding-bottom: ${field.headingbtntopPadding || '10px'}px;
+                  font-weight: ${field.headingbtnheight || 'bold'}; 
+                   margin-top :'20px';
                   cursor: pointer;
                 " class="show-bnt-product">
                   ${field.headerbtn || 'Buy Now'}
@@ -911,6 +954,9 @@ const sendEmail = async (email, TemplateAll) => {
                   display: flow-root;
                   text-decoration: ${field.richline || 'none'};
                   font-size: ${field.richFontsize || '16'}px;
+                  font-family:${field.richFontfamily};
+                  letter-spacing: ${field.richspace || 0}px; 
+                   line-height: ${field.richlineheight}px; 
                   background-color: ${field.richbgcolor || '#fff'};
                   padding-left: ${field.richleftPadding || '10'}px;
                   padding-right: ${field.richrightPadding || '10'}px;
@@ -939,6 +985,7 @@ const sendEmail = async (email, TemplateAll) => {
                         color: ${field.buttonTextColor || '#fff'};
                         cursor: pointer;
                         border-radius: ${field.buttonradious}px;
+                        font-weight: ${field.buttonweight || 'bold'}; 
                       ">
                         ${field.buttonLabel || 'Click Here'}
                       </button>
@@ -988,7 +1035,11 @@ const sendEmail = async (email, TemplateAll) => {
                     padding: ${field.MulticolumnPadding || '10'}px;
                     background-color: ${field.Multicolumnbgcolor || 'transparent'};
                     color: ${field.MultiColor || '#000'};
-                     border-radius: ${field.Multiborderradious || 0}px;
+                    border-radius: ${field.Multiborderradious || 0}px;
+                    font-family:${field.Multifamily};
+                    letter-spacing:${field.Multiletter}px;
+                     line-height: ${field.Multiheight}px; 
+      
                   ">
                      ${column.image ? `<img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />` : ''}
                     ${processedContent}
@@ -1006,6 +1057,7 @@ const sendEmail = async (email, TemplateAll) => {
                           color: ${field.Multibtncolor || '#000'};
                           border-radius: ${field.Multibtnradious || 0}px;
                           font-size: ${field.Multibtnfont || 14}px;
+                           font-weight: ${field.MultiWeight || 'bold'}; 
                           cursor: pointer;
                         ">
                           ${column.Multibtnlable || 'Click'}
@@ -1056,6 +1108,9 @@ const sendEmail = async (email, TemplateAll) => {
         float: inline-start;
         color: ${field.splitColor};
         font-size: ${field.splittextSize || 14}px;
+        line-height: ${field.splitlineheight}px; 
+        font-family:${field.splitfamily};
+        letter-spacing: ${field.splitletter || 0}px; 
       ">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
           width: 100%;
@@ -1087,6 +1142,7 @@ const sendEmail = async (email, TemplateAll) => {
                     border-style: ${field.splitBorderStyle || 'solid'};
                     border-color: ${field.splitBorderColor || '#000'};
                     cursor: pointer;
+                    font-weight: ${field.splitbtnWeight || 'bold'}; 
                   ">
                     ${field.splitbtn || 'Click Me'}
                   </button>
@@ -1115,6 +1171,8 @@ const sendEmail = async (email, TemplateAll) => {
                             border-color: ${field.productBorderColor};
                             font-size: ${field.productFontSize}px;
                             color: ${field.productTextColor};
+                            font-family:${field.productfamily};
+                            line-height:${field.productline}px;
                           ">
                             ${product.image ? `
                               <div class="images-gallery">
@@ -1169,7 +1227,11 @@ const sendEmail = async (email, TemplateAll) => {
               `;
 
             case 'divider':
-              return ` <div style = "background-color: ${field.dividerbgColor || 'transparent'}; width:100%;"> <hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'}%; height: ${field.dividerHeight || '1px'}; margin: auto " /> </div>`;
+              return `
+              <div style="background-color: ${field.dividerbgColor || 'transparent'}; width: 100%;">
+                <hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'}%; border-width: ${field.dividerHeight || '1px'}; margin: auto" />
+              </div>`;
+
             case 'html convert':
               return `<div style="text-align: ${field.htmlaline || 'left'};  color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
             case 'spacer':
@@ -1279,11 +1341,11 @@ const sendEmail = async (email, TemplateAll) => {
       
       h1{
           font-size: 40px !important;
-          line-height: 50px;
+
       }
           h2 {
          font-size: 30px !important;
-         line-height: 40px;
+        
        }
       h3 {
          font-size: 20px !important;

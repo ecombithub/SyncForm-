@@ -392,12 +392,13 @@ export default function EmailTemplate() {
                             letterSpacing: `${field.headingLetterSpacing}px`,
                             textAlign: field.headingTextAlign ? field.headingTextAlign : '',
                             fontWeight: field.headingFontWeight,
-                            lineHeight: '48px'
+                            fontFamily: field.headingfamily,
+                            lineHeight: `${field.headingline}px`,
                         }}>
                             {field.headingText}</h1>
 
                         {(field.editorContent) && (
-                            <div style={{ fontSize: `${field.headingsubheading}px`, color: field.subheadingColor, margin: '20px 0' }}
+                            <div style={{fontSize: `${field.headingsubheading}px`, fontFamily :field.subheadingfamily, lineHeight: `${field.subheadingline}px`, letterSpacing:`${field.subheadingleter}px`, color: field.subheadingColor, }}
                                 className="heading-editor-content"
                                 dangerouslySetInnerHTML={{
                                     __html: field.editorContent
@@ -421,6 +422,8 @@ export default function EmailTemplate() {
                                         borderWidth: `${field.headingbtnBorderWidth}px`,
                                         borderStyle: field.headingbtnBorderStyle,
                                         borderColor: field.headingbtnBorderColor,
+                                        fontWeight:field.headingbtnweight,
+                                         marginTop :'20px'
                                     }}
                                 >{field.headerbtn}</button>
                             </a>
@@ -448,8 +451,8 @@ export default function EmailTemplate() {
                     <div style={{ backgroundColor: field.dividerbgColor || 'transparent', width: '100%' }}>
                         <hr
                             style={{
-                                border: `1px solid ${field.dividerColor}`, width: `${field.dividerWidth}%`,
-                                height: `${field.dividerheight}px`,
+                                border: `${field.dividerheight}px solid ${field.dividerColor}`,
+                                width: `${field.dividerWidth}%`,
                                 margin: 'auto'
                             }}
                         />
@@ -472,7 +475,8 @@ export default function EmailTemplate() {
                                     borderStyle: field.buttonBorderStyle,
                                     borderColor: field.buttonBorderColor,
                                     letterSpacing: `${field.buttonLetterSpacing}px`,
-                                    borderRadius: `${field.buttonradious}px`
+                                    borderRadius: `${field.buttonradious}px`,
+                                    fontWeight:field.buttonweight
                                 }}
                             >
                                 {field.buttonLabel || ''}
@@ -496,7 +500,9 @@ export default function EmailTemplate() {
                                     borderStyle: field.productBorderStyle,
                                     borderColor: field.productBorderColor,
                                     fontSize: `${field.productFontSize}px`,
-                                    color: field.productTextColor
+                                    color: field.productTextColor,
+                                    fontFamily:field.productfamily,
+                                    lineHeight:`${field.productline}px`
                                 }}
                             >
                                 {field.products.map((product, index) => (
@@ -571,6 +577,8 @@ export default function EmailTemplate() {
                     <div style={{
                         textAlign: field.richTextAlign || '',
                         fontSize: `${field.richFontsize}px`,
+                        lineHeight:`${field.richlineheight}px`,
+                        letterSpacing: `${field.richspace}px`,
                         color: field.richtextcolor,
                         backgroundColor: field.richbgcolor,
                         paddingLeft: `${field.richleftPadding}px`,
@@ -579,6 +587,7 @@ export default function EmailTemplate() {
                         paddingBottom: `${field.richtopPadding}px`,
                         display: 'flow-root',
                         textDecoration: field.richline,
+                        fontFamily:field.richFontfamily,
                     }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
             case 'Multicolumn':
@@ -593,7 +602,8 @@ export default function EmailTemplate() {
                             padding: `${field.MultiPadding}px`,
                             textAlign: 'center',
                             backgroundColor: field.Multibgcolor,
-                            color: field.MultiColor
+                            color: field.MultiColor,
+                            
                         }}>
                             {field.columnData.map((column, index) => (
                                 <div
@@ -607,7 +617,10 @@ export default function EmailTemplate() {
                                         backgroundColor: field.Multicolumnbgcolor,
                                         textAlign: field.Multitext,
                                         color: field.MultiColor,
-                                        borderRadius: `${field.Multiborderradious}px`
+                                        borderRadius: `${field.Multiborderradious}px`,
+                                        fontFamily:field.Multifamily,
+                                        letterSpacing:`${field.Multiletter}px`,
+                                        lineHeight:`${field.Multiheight}px`
                                     }}
                                 >
                                     {column.image && (
@@ -627,7 +640,8 @@ export default function EmailTemplate() {
                                             height: `${field.Multibtnheight || '40'}px`,
                                             color: field.Multibtncolor,
                                             borderRadius: `${field.Multibtnradious}px`,
-                                            fontSize: `${field.Multibtnfont || '14'}px`
+                                            fontSize: `${field.Multibtnfont || '14'}px`,
+                                            fontWeight:field.MultiWeight
 
                                         }}
                                         >
@@ -668,7 +682,10 @@ export default function EmailTemplate() {
                             textAlign: field.splitTextAlin,
                             float: 'inline-start',
                             color: field.splitColor,
-                            fontSize: `${field.splittextSize}px`
+                            fontSize: `${field.splittextSize}px`,
+                            letterSpacing:`${field.splitletter}px`,
+                            lineHeight:`${field.splitlineheight}px`,
+                            fontFamily:field.splitfamily,
                         }}
                     >
                         {field.add === 'image' ? (
@@ -695,6 +712,7 @@ export default function EmailTemplate() {
                                                     borderWidth: `${field.splitBorderWidth}px`,
                                                     borderStyle: field.splitBorderStyle,
                                                     borderColor: field.splitBorderColor,
+                                                    fontWeight:field.splitbtnWeight,
                                                 }}>
                                                     {field.splitbtn}</button>
                                             </a>

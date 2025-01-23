@@ -32,6 +32,7 @@ import canclemail from '../images/canclemail1.png';
 import multimedia from '../images/multimedia0.png';
 import rich from '../images/rich0.png';
 import rm from '../images/rm.png';
+import file from '../images/file.png';
 import cancleimg from '../images/cancleimg.png';
 import bk from '../images/bk.png';
 import dlrm from '../images/dlrm.png';
@@ -362,10 +363,14 @@ const EmailTemplateCreate = () => {
             headingbtnFontSize: type === 'heading' ? 14 : undefined,
             headingbtnwidth: type === 'heading' ? '100' : undefined,
             headingbtnheight: type === 'heading' ? '35' : undefined,
+            headingbtnweight: type === 'heading' ? '300' : undefined,
             headerbtn: type === 'heading' ? 'Click Now' : undefined,
             headingsubheading: type === 'heading' ? '16' : undefined,
             headeropacity: type === 'heading' ? '1' : undefined,
             subheadingColor: type === 'heading' ? '#000000' : undefined,
+            subheadingleter: type === 'heading' ? '0' : undefined,
+            subheadingfamily: type === 'heading' ? '' : undefined,
+            subheadingline: type === 'heading' ? '50' : undefined,
             headingbtnBorderColor: type === 'heading' ? '#000000' : undefined,
             headingbtnBorderWidth: type === 'heading' ? '1' : undefined,
             headingbtnBorderStyle: type === 'heading' ? 'solid' : undefined,
@@ -374,9 +379,11 @@ const EmailTemplateCreate = () => {
             bannerImageTextAlign: type === 'heading' ? '' : undefined,
             headingText: type === 'heading' ? 'The Three Lions Collection' : undefined,
             headingLevel: type === 'heading' ? 'h1' : null,
+            headingfamily: type === 'heading' ? '' : undefined,
             headingFontSize: type === 'heading' ? '40' : undefined,
             headingLetterSpacing: type === 'heading' ? 0 : undefined,
             headingPadding: type === 'heading' ? 20 : undefined,
+            headingline: type === 'heading' ? 50 : undefined,
             headingTextAlign: type === 'heading' ? "" : undefined,
             headingColor: type === 'heading' ? '#000' : undefined,
             headingbg: type === 'heading' ? '#0000' : undefined,
@@ -411,6 +418,7 @@ const EmailTemplateCreate = () => {
             dividerWidth: type === 'divider' ? '100' : undefined,
             dividerheight: type === 'divider' ? '1' : undefined,
             buttonColor: type === 'button' ? '#007BFF' : undefined,
+            buttonweight: type === 'button' ? '300' : undefined,
             buttonbgColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonTextColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonFontSize: type === 'button' ? 16 : undefined,
@@ -451,7 +459,11 @@ const EmailTemplateCreate = () => {
             splitbtncolor: type === 'split' ? '#FFFFFF' : undefined,
             splitbtnurl: type === 'split' ? '' : undefined,
             splitbtnheight: type === 'split' ? '35' : undefined,
+            splitbtnWeight: type === 'split' ? '300' : undefined,
             splitbtnwidth: type === 'split' ? '80' : undefined,
+            splitletter: type === 'split' ? '0' : undefined,
+            splitlineheight: type === 'split' ? '20' : undefined,
+            splitfamily: type === 'split' ? '' : undefined,
             splitImage: type === 'split' ? '' : undefined,
             splitTextadd: type === 'split' ? '' : undefined,
             splitbtnradious: type === 'split' ? '2' : undefined,
@@ -476,6 +488,8 @@ const EmailTemplateCreate = () => {
             imgBorderWidth: type === 'images' ? '0' : undefined,
             imgBorderStyle: type === 'images' ? 'solid' : undefined,
             productPadding: type === 'product' ? 10 : undefined,
+            productfamily: type === 'product' ? '' : undefined,
+            productline: type === 'product' ? '10' : undefined,
             productbg: type === 'product' ? '#0000' : undefined,
             productBorderColor: type === 'product' ? '#000000' : undefined,
             productBorderWidth: type === 'product' ? '0' : undefined,
@@ -500,6 +514,9 @@ const EmailTemplateCreate = () => {
             richleftPadding: type === 'richtext' ? 10 : undefined,
             richtopPadding: type === 'richtext' ? 10 : undefined,
             richFontsize: type === 'richtext' ? "14" : undefined,
+            richlineheight: type === 'richtext' ? "30" : undefined,
+            richspace: type === 'richtext' ? "0" : undefined,
+            richFontfamily: type === 'richtext' ? "" : undefined,
             richbgcolor: type === 'richtext' ? "#FFFFFF" : undefined,
             richtextcolor: type === 'richtext' ? "#000" : undefined,
             richTextAlign: type === 'richtext' ? "" : undefined,
@@ -513,6 +530,9 @@ const EmailTemplateCreate = () => {
             Multicolumnbgcolor: type === 'Multicolumn' ? '#FFFFFF' : undefined,
             Multibgcolor: type === 'Multicolumn' ? '#FFFFFF' : '',
             Multitext: type === 'Multicolumn' ? 'center' : '',
+            Multifamily: type === 'Multicolumn' ? '' : '',
+            Multiletter: type === 'Multicolumn' ? '0' : '',
+            Multiheight: type === 'Multicolumn' ? '20' : '',
             Multigap: type === 'Multicolumn' ? '10' : '',
             MultiColor: type === 'Multicolumn' ? '#000000' : undefined,
             MultibtnBorderColor: type === 'Multicolumn' ? '#000000' : undefined,
@@ -521,6 +541,7 @@ const EmailTemplateCreate = () => {
             Multibtnheight: type === 'Multicolumn' ? '40' : undefined,
             Multibtnradious: type === 'Multicolumn' ? '2' : undefined,
             Multibtnweight: type === 'Multicolumn' ? '100' : undefined,
+            MultiWeight: type === 'Multicolumn' ? '300' : undefined,
             Multibtnbg: type === 'Multicolumn' ? '#007BFF' : 'undefined',
             Multibtnlable: type === 'Multicolumn' ? 'Click' : 'undefined',
             Multibtncolor: type === 'Multicolumn' ? '#0000' : undefined,
@@ -1160,16 +1181,22 @@ const EmailTemplateCreate = () => {
                 headingsubheading: field.headingsubheading || 16,
                 headingbtnFontSize: field.headingbtnFontSize || 16,
                 headingbtnheight: field.headingbtnheight || 40,
+                headingbtnweight: field.headingbtnweight,
                 headingbtnBorderWidth: field.headingbtnBorderWidth || 1,
                 headingbtnBorderStyle: field.headingbtnBorderStyle || 'solid',
                 headingbtnBorderColor: field.headingbtnBorderColor || '#000',
                 subheadingColor: field.subheadingColor || '',
+                subheadingleter: field.subheadingleter || '',
+                subheadingline: field.subheadingline || '',
                 bannerImageWidth: field.bannerImageWidth || '100',
                 bannerImageHeight: field.bannerImageHeight || '',
                 bannerImageTextAlign: field.bannerImageTextAlign || '',
                 richTextAlign: field.richTextAlign || '',
                 richFontsize: field.richFontsize || '',
+                richspace:field.richspace,
+                richlineheight:field.richlineheight,
                 richbgcolor: field.richbgcolor,
+                richFontfamily: field.richFontfamily,
                 richtextcolor: field.richtextcolor,
                 richline: field.richline,
                 richleftPadding: field.richleftPadding || 10,
@@ -1178,11 +1205,13 @@ const EmailTemplateCreate = () => {
                 headingColor: field.headingColor || '#000',
                 headingbg: field.headingbg || '#ffff',
                 headingPadding: field.headingPadding || 0,
+                headingline: field.headingline || 0,
                 headingbgImage: field.headingbgImage || '',
                 headingmargin: field.headingmargin || '',
                 headingLetterSpacing: field.headingLetterSpacing || 0,
                 headingTextAlign: field.headingTextAlign || '',
                 headingText: field.headingText,
+                headingfamily: field.headingfamily,
                 headingBorderWidth: field.headingBorderWidth || 1,
                 headingBorderStyle: field.headingBorderStyle || 'solid',
                 headingBorderColor: field.headingBorderColor || '#000',
@@ -1203,6 +1232,7 @@ const EmailTemplateCreate = () => {
                 dividerheight: field.dividerheight || '1',
                 buttonbgColor: field.buttonbgColor || '',
                 buttonColor: field.buttonColor || '#007BFF',
+                buttonweight:field.buttonweight,
                 buttonFontSize: field.buttonFontSize || 16,
                 buttonTextColor: field.buttonTextColor || '#fff',
                 buttonLetterSpacing: field.buttonLetterSpacing || 0,
@@ -1231,7 +1261,11 @@ const EmailTemplateCreate = () => {
                 splitbtncolor: field.splitbtncolor || '',
                 splitbtnurl: field.splitbtnurl || '',
                 splitbtnheight: field.splitbtnheight || '',
+                splitbtnWeight:field.splitbtnWeight,
                 splitbtnwidth: field.splitbtnwidth || '',
+                splitletter: field.splitletter || '',
+                splitlineheight: field.splitlineheight || '',
+                splitfamily: field.splitfamily || '',
                 splitbtnradious: field.splitbtnradious || '',
                 splitheight: field.splitheight || '',
                 width: field.width || '100%',
@@ -1252,6 +1286,8 @@ const EmailTemplateCreate = () => {
                 imgBorderStyle: field.imgBorderStyle || 'solid',
                 imgBorderColor: field.imgBorderColor || '#000',
                 productPadding: field.productPadding || 10,
+                productfamily: field.productfamily,
+                productline: field.productline,
                 productbg: field.productbg || '#ffff',
                 productBorderWidth: field.productBorderWidth || 0,
                 productBorderStyle: field.productBorderStyle || 'solid',
@@ -1276,11 +1312,15 @@ const EmailTemplateCreate = () => {
                 Multicolumnbgcolor: field.Multicolumnbgcolor || '',
                 Multibgcolor: field.Multibgcolor || '',
                 Multitext: field.Multitext || '',
+                Multifamily: field.Multifamily || '',
+                Multiletter: field.Multiletter,
+                Multiheight: field.Multiheight,
                 Multigap: field.Multigap || '',
                 Multibtnlable: field.Multibtnlable || '',
                 Multibtncolor: field.Multibtncolor || '',
                 Multibtnbg: field.Multibtnbg || '',
                 Multibtnweight: field.Multibtnweight || '',
+                MultiWeight:field.MultiWeight,
                 Multibtnheight: field.Multibtnheight || '',
                 Multibtnradious: field.Multibtnradious || '',
                 Multibtnfont: field.Multibtnfont || '',
@@ -2169,11 +2209,28 @@ const EmailTemplateCreate = () => {
 
                                                                     <div className='edit_setting_bg'>
                                                                         <label htmlFor="backgroundImage">Background Image:</label>
-                                                                        <input
-                                                                            type="file"
-                                                                            accept="image/*"
-                                                                            onChange={handleBackgroundImageUpload}
-                                                                        />
+                                                                        <div
+                                                                            className="upload-area"
+                                                                            onClick={() => document.getElementById('fileInput').click()}
+                                                                            onDragOver={(e) => e.preventDefault()}
+                                                                            onDrop={(e) => {
+                                                                                e.preventDefault();
+                                                                                handleBackgroundImageUpload(e);
+                                                                            }}
+                                                                        >
+                                                                            <img src={file} alt="" />
+                                                                            <p>Drag & Drop to Upload File</p>
+                                                                            <p>OR </p>
+                                                                            <span className='upload-btn'>Browse File</span>
+                                                                            <input
+                                                                                type="file"
+                                                                                accept="image/*"
+                                                                                onChange={handleBackgroundImageUpload}
+                                                                                style={{ display: 'none' }}
+                                                                                id="fileInput"
+                                                                            />
+                                                                        </div>
+
                                                                         {backgroundImage && (
                                                                             <button className='rm-btn bg-img'
                                                                                 type="button"
@@ -2307,14 +2364,16 @@ const EmailTemplateCreate = () => {
                                                                                         fontWeight: field.headingFontWeight,
                                                                                         fontSize: `${field.headingFontSize || 40}px`,
                                                                                         color: field.headingColor,
+                                                                                        fontFamily: field.headingfamily,
                                                                                         letterSpacing: `${field.headingLetterSpacing}px`,
-                                                                                        lineHeight: '48px'
+                                                                                        lineHeight: `${field.headingline}px`,
+
                                                                                     }
                                                                                 }, field.headingText || field.value)}
 
                                                                                 <div
                                                                                     className="heading-editor-content"
-                                                                                    style={{ fontSize: `${field.headingsubheading}px`, color: field.subheadingColor, margin: '20px 0' }}
+                                                                                    style={{ fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily, lineHeight: `${field.subheadingline}px`, color: field.subheadingColor, letterSpacing: `${field.subheadingleter}px` }}
                                                                                     dangerouslySetInnerHTML={{
                                                                                         __html: editorValue || field.editorContent || 'It’s a numbers game',
                                                                                     }}
@@ -2340,6 +2399,8 @@ const EmailTemplateCreate = () => {
                                                                                                 borderWidth: `${field.headingbtnBorderWidth}px`,
                                                                                                 borderStyle: field.headingbtnBorderStyle,
                                                                                                 borderColor: field.headingbtnBorderColor,
+                                                                                                fontWeight: field.headingbtnweight,
+                                                                                                 marginTop :'20px'
                                                                                             }}
                                                                                         >
                                                                                             {field.headerbtn}
@@ -2447,8 +2508,9 @@ const EmailTemplateCreate = () => {
                                                                     >
                                                                         <div style={{ backgroundColor: field.dividerbgColor, width: '100%' }}>
                                                                             <hr style={{
-                                                                                border: `1px solid ${field.dividerColor}`, width: `${field.dividerWidth}%`,
-                                                                                height: `${field.dividerheight}px`
+                                                                                border: `${field.dividerheight}px solid ${field.dividerColor}`,
+                                                                                width: `${field.dividerWidth}%`,
+                                                                                margin: 'auto'
                                                                             }} />
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
@@ -2481,8 +2543,10 @@ const EmailTemplateCreate = () => {
                                                                                 position: 'relative',
                                                                                 display: 'flex',
                                                                                 color: field.splitColor,
-                                                                                fontSize: `${field.splittextSize}px`
-
+                                                                                fontSize: `${field.splittextSize}px`,
+                                                                                letterSpacing: `${field.splitletter}px`,
+                                                                                lineHeight: `${field.splitlineheight}px`,
+                                                                                fontFamily: field.splitfamily,
                                                                             }}
                                                                         >
                                                                             {field.add === 'image' ? (
@@ -2509,6 +2573,8 @@ const EmailTemplateCreate = () => {
                                                                                                         borderWidth: `${field.splitBorderWidth}px`,
                                                                                                         borderStyle: field.splitBorderStyle,
                                                                                                         borderColor: field.splitBorderColor,
+                                                                                                        fontWeight:field.splitbtnWeight,
+                                                                                                       
                                                                                                     }}>
                                                                                                         {field.splitbtn}</button>
                                                                                                 </a>
@@ -2544,13 +2610,16 @@ const EmailTemplateCreate = () => {
                                                                             <div style={{
                                                                                 textAlign: field.richTextAlign || '',
                                                                                 fontSize: `${field.richFontsize}px`,
+                                                                                letterSpacing: `${field.richspace}px`,
                                                                                 color: field.richtextcolor,
+                                                                                lineHeight:`${field.richlineheight}px`,
                                                                                 backgroundColor: field.richbgcolor,
                                                                                 paddingLeft: `${field.richleftPadding}px`,
                                                                                 paddingRight: `${field.richleftPadding}px`,
                                                                                 paddingTop: `${field.richtopPadding}px`,
                                                                                 paddingBottom: `${field.richtopPadding}px`,
                                                                                 textDecoration: field.richline,
+                                                                                fontFamily: field.richFontfamily,
                                                                             }}
                                                                                 dangerouslySetInnerHTML={{ __html: editorValueed || field.content || 'Captivate customers with' }} />
                                                                             <div className='form-builder-radio-btn email'>
@@ -2661,7 +2730,8 @@ const EmailTemplateCreate = () => {
                                                                                         borderStyle: field.buttonBorderStyle,
                                                                                         borderColor: field.buttonBorderColor,
                                                                                         letterSpacing: `${field.buttonLetterSpacing}px`,
-                                                                                        borderRadius: `${field.buttonradious}px`
+                                                                                        borderRadius: `${field.buttonradious}px`,
+                                                                                        fontWeight:field.buttonweight
                                                                                     }}
                                                                                 >
                                                                                     {field.buttonLabel}
@@ -2734,7 +2804,10 @@ const EmailTemplateCreate = () => {
                                                                                             backgroundColor: field.Multicolumnbgcolor,
                                                                                             textAlign: field.Multitext,
                                                                                             color: field.MultiColor,
-                                                                                            borderRadius: `${field.Multiborderradious}px`
+                                                                                            borderRadius: `${field.Multiborderradious}px`,
+                                                                                            fontFamily: field.Multifamily,
+                                                                                            letterSpacing: `${field.Multiletter}px`,
+                                                                                            lineHeight: `${field.Multiheight}px`
                                                                                         }}
                                                                                         className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
                                                                                         onClick={(e) => handleColumnClick(field.id, index)}
@@ -2769,6 +2842,7 @@ const EmailTemplateCreate = () => {
                                                                                                         color: field.Multibtncolor,
                                                                                                         borderRadius: `${field.Multibtnradious}px`,
                                                                                                         fontSize: `${field.Multibtnfont || '14'}px`,
+                                                                                                        fontWeight:field.MultiWeight
                                                                                                     }}
                                                                                                 >
                                                                                                     {field.columnData[index].Multibtnlable}
@@ -2824,7 +2898,9 @@ const EmailTemplateCreate = () => {
                                                                                     borderColor: field.productBorderColor,
                                                                                     fontSize: `${field.productFontSize}px`,
                                                                                     color: field.productTextColor,
-                                                                                    width: '100%'
+                                                                                    width: '100%',
+                                                                                    fontFamily: field.productfamily,
+                                                                                    lineHeight: `${field.productline}px`
                                                                                 }}
                                                                             >
                                                                                 {field.products.map((product) => (
@@ -3148,6 +3224,20 @@ const EmailTemplateCreate = () => {
                                                                                     />
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap number' >
+                                                                                    <label> Font-Weight </label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.MultiWeight || '100'}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, MultiWeight: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number' >
                                                                                     <label> Height (px)</label>
                                                                                     <input
                                                                                         type="number"
@@ -3318,6 +3408,43 @@ const EmailTemplateCreate = () => {
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                            <div className="form-builder-chaneging-wrap number">
+                                                                                <label>Font-Family</label>
+                                                                                <select
+                                                                                    value={field.Multifamily}
+                                                                                    onChange={(e) => {
+                                                                                        setFields((prevFields) =>
+                                                                                            prevFields.map((f) =>
+                                                                                                f.id === field.id ? { ...f, Multifamily: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select Font-Family</option>
+                                                                                    <option value="Arial">Arial</option>
+                                                                                    <option value="Verdana">Verdana</option>
+                                                                                    <option value="Times New Roman">Times New Roman</option>
+                                                                                    <option value="Georgia">Georgia</option>
+                                                                                    <option value="Courier New">Courier New</option>
+                                                                                    <option value="Roboto">Roboto</option>
+                                                                                    <option value="Raleway">Raleway</option>
+                                                                                    <option value="Gotham">Gotham</option>
+                                                                                    <option value="Montserrat">Montserrat</option>
+                                                                                    <option value="Lato">Lato</option>
+                                                                                    <option value="Helvetica">Helvetica</option>
+                                                                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                                    <option value="Poppins">Poppins</option>
+                                                                                    <option value="Quicksand">Quicksand</option>
+                                                                                    <option value="Work Sans">Work Sans</option>
+                                                                                    <option value="Barlow">Barlow</option>
+                                                                                    <option value="Varela Round">Varela Round</option>
+                                                                                    <option value="Josefin Sans">Josefin Sans</option>
+                                                                                    <option value="Inter">Inter</option>
+                                                                                    <option value="Neutra Text ">NeutraText </option>
+                                                                                    <option value="Basilia Text ">Basilia Text </option>
+                                                                                    
+                                                                                </select>
+                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Align </label>
                                                                                 <select
@@ -3335,6 +3462,34 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="center">center</option>
                                                                                     <option value="right">right</option>
                                                                                 </select>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label> Letter Spacing (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.Multiletter || '0'}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, Multiletter: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label> Line Height (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.Multiheight || '20'}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, Multiheight: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number' >
                                                                                 <label> Coloum Padding (px)</label>
@@ -3549,6 +3704,71 @@ const EmailTemplateCreate = () => {
                                                                                     }}
                                                                                 />
                                                                             </div>
+                                                                            
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Letter Space (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.richspace}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, richspace: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Line-Height (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.richlineheight}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, richlineheight: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="form-builder-chaneging-wrap number">
+                                                                                <label>Font-Family</label>
+                                                                                <select
+                                                                                    value={field.richFontfamily}
+                                                                                    onChange={(e) => {
+                                                                                        setFields((prevFields) =>
+                                                                                            prevFields.map((f) =>
+                                                                                                f.id === field.id ? { ...f, richFontfamily: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select Font-Family</option>
+                                                                                    <option value="Arial">Arial</option>
+                                                                                    <option value="Verdana">Verdana</option>
+                                                                                    <option value="Times New Roman">Times New Roman</option>
+                                                                                    <option value="Georgia">Georgia</option>
+                                                                                    <option value="Courier New">Courier New</option>
+                                                                                    <option value="Roboto">Roboto</option>
+                                                                                    <option value="Raleway">Raleway</option>
+                                                                                    <option value="Gotham">Gotham</option>
+                                                                                    <option value="Montserrat">Montserrat</option>
+                                                                                    <option value="Lato">Lato</option>
+                                                                                    <option value="Helvetica">Helvetica</option>
+                                                                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                                    <option value="Poppins">Poppins</option>
+                                                                                    <option value="Quicksand">Quicksand</option>
+                                                                                    <option value="Work Sans">Work Sans</option>
+                                                                                    <option value="Barlow">Barlow</option>
+                                                                                    <option value="Varela Round">Varela Round</option>
+                                                                                    <option value="Josefin Sans">Josefin Sans</option>
+                                                                                    <option value="Inter">Inter</option>
+                                                                                      <option value="Neutra Text ">NeutraText </option>
+                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                </select>
+                                                                            </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Align </label>
                                                                                 <select
@@ -3567,6 +3787,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="right">right</option>
                                                                                 </select>
                                                                             </div>
+
                                                                             <div className="form-builder-chaneging-wrap-custom-checkbox">
                                                                                 <label>Crossed-out</label>
                                                                                 <div className="form-builder-costom custom-checkbox-form-build">
@@ -3666,6 +3887,56 @@ const EmailTemplateCreate = () => {
                                                                                         );
                                                                                     }}
                                                                                 />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number' >
+                                                                                <label>Line Height (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.productline}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, productline: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="form-builder-chaneging-wrap number">
+                                                                                <label>Font-Family</label>
+                                                                                <select
+                                                                                    value={field.productfamily}
+                                                                                    onChange={(e) => {
+                                                                                        setFields((prevFields) =>
+                                                                                            prevFields.map((f) =>
+                                                                                                f.id === field.id ? { ...f, productfamily: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select Font-Family</option>
+                                                                                    <option value="Arial">Arial</option>
+                                                                                    <option value="Verdana">Verdana</option>
+                                                                                    <option value="Times New Roman">Times New Roman</option>
+                                                                                    <option value="Georgia">Georgia</option>
+                                                                                    <option value="Courier New">Courier New</option>
+                                                                                    <option value="Roboto">Roboto</option>
+                                                                                    <option value="Raleway">Raleway</option>
+                                                                                    <option value="Gotham">Gotham</option>
+                                                                                    <option value="Montserrat">Montserrat</option>
+                                                                                    <option value="Lato">Lato</option>
+                                                                                    <option value="Helvetica">Helvetica</option>
+                                                                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                                    <option value="Poppins">Poppins</option>
+                                                                                    <option value="Quicksand">Quicksand</option>
+                                                                                    <option value="Work Sans">Work Sans</option>
+                                                                                    <option value="Barlow">Barlow</option>
+                                                                                    <option value="Varela Round">Varela Round</option>
+                                                                                    <option value="Josefin Sans">Josefin Sans</option>
+                                                                                    <option value="Inter">Inter</option>
+                                                                                      <option value="Neutra Text ">NeutraText </option>
+                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
@@ -4012,7 +4283,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="h6">H6</option>
                                                                                 </select>
                                                                             </div>
-                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                            {/* <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Heading Font Size:</label>
                                                                                 <input
                                                                                     type="number"
@@ -4026,8 +4297,43 @@ const EmailTemplateCreate = () => {
                                                                                     }}
                                                                                     placeholder="Font Size"
                                                                                 />
+                                                                            </div> */}
+                                                                            <div className="form-builder-chaneging-wrap number">
+                                                                                <label>Font-Family</label>
+                                                                                <select
+                                                                                    value={field.headingfamily}
+                                                                                    onChange={(e) => {
+                                                                                        setFields((prevFields) =>
+                                                                                            prevFields.map((f) =>
+                                                                                                f.id === field.id ? { ...f, headingfamily: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select Font-Family</option>
+                                                                                    <option value="Arial">Arial</option>
+                                                                                    <option value="Verdana">Verdana</option>
+                                                                                    <option value="Times New Roman">Times New Roman</option>
+                                                                                    <option value="Georgia">Georgia</option>
+                                                                                    <option value="Courier New">Courier New</option>
+                                                                                    <option value="Roboto">Roboto</option>
+                                                                                    <option value="Raleway">Raleway</option>
+                                                                                    <option value="Gotham">Gotham</option>
+                                                                                    <option value="Montserrat">Montserrat</option>
+                                                                                    <option value="Lato">Lato</option>
+                                                                                    <option value="Helvetica">Helvetica</option>
+                                                                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                                    <option value="Poppins">Poppins</option>
+                                                                                    <option value="Quicksand">Quicksand</option>
+                                                                                    <option value="Work Sans">Work Sans</option>
+                                                                                    <option value="Barlow">Barlow</option>
+                                                                                    <option value="Varela Round">Varela Round</option>
+                                                                                    <option value="Josefin Sans">Josefin Sans</option>
+                                                                                    <option value="Inter">Inter</option>
+                                                                                      <option value="Neutra Text ">NeutraText </option>
+                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                </select>
                                                                             </div>
-
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
                                                                                     <label> Text-color </label>
@@ -4066,6 +4372,72 @@ const EmailTemplateCreate = () => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
                                                                                                 f.id === field.id ? { ...f, headingsubheading: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Padding"
+                                                                                />
+                                                                            </div>
+                                                                            <div className="form-builder-chaneging-wrap number">
+                                                                                <label> Subheading Font-Family</label>
+                                                                                <select
+                                                                                    value={field.subheadingfamily}
+                                                                                    onChange={(e) => {
+                                                                                        setFields((prevFields) =>
+                                                                                            prevFields.map((f) =>
+                                                                                                f.id === field.id ? { ...f, subheadingfamily: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select Font-Family</option>
+                                                                                    <option value="Arial">Arial</option>
+                                                                                    <option value="Verdana">Verdana</option>
+                                                                                    <option value="Times New Roman">Times New Roman</option>
+                                                                                    <option value="Georgia">Georgia</option>
+                                                                                    <option value="Courier New">Courier New</option>
+                                                                                    <option value="Roboto">Roboto</option>
+                                                                                    <option value="Raleway">Raleway</option>
+                                                                                    <option value="Gotham">Gotham</option>
+                                                                                    <option value="Montserrat">Montserrat</option>
+                                                                                    <option value="Lato">Lato</option>
+                                                                                    <option value="Helvetica">Helvetica</option>
+                                                                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                                    <option value="Poppins">Poppins</option>
+                                                                                    <option value="Quicksand">Quicksand</option>
+                                                                                    <option value="Work Sans">Work Sans</option>
+                                                                                    <option value="Barlow">Barlow</option>
+                                                                                    <option value="Varela Round">Varela Round</option>
+                                                                                    <option value="Josefin Sans">Josefin Sans</option>
+                                                                                    <option value="Inter">Inter</option>
+                                                                                      <option value="Neutra Text ">NeutraText </option>
+                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label> Subheading Line-Height</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.subheadingline}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, subheadingline: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Padding"
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label> Subheading Letter Spacing</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.subheadingleter}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, subheadingleter: e.target.value } : f
                                                                                             )
                                                                                         );
                                                                                     }}
@@ -4240,6 +4612,21 @@ const EmailTemplateCreate = () => {
                                                                                         </div>
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
+                                                                                        <label>Button Font-Weight</label>
+                                                                                        <input
+                                                                                            type="number"
+                                                                                            value={field.headingbtnweight}
+                                                                                            onChange={(e) => {
+                                                                                                setFields(prevFields =>
+                                                                                                    prevFields.map(f =>
+                                                                                                        f.id === field.id ? { ...f, headingbtnweight: e.target.value } : f
+                                                                                                    )
+                                                                                                );
+                                                                                            }}
+                                                                                            placeholder="Padding"
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Button Radious</label>
                                                                                         <input
                                                                                             type="number"
@@ -4306,11 +4693,28 @@ const EmailTemplateCreate = () => {
 
                                                                             <div className='form-builder-chaneging-wrap image'>
                                                                                 <label>Background Image</label>
-                                                                                <input
-                                                                                    type="file"
-                                                                                    accept="image/*"
-                                                                                    onChange={(e) => handleFileChange(e, field.id)}
-                                                                                />
+
+                                                                                <div
+                                                                                    className="upload-area"
+                                                                                    onClick={() => document.getElementById('fileInput').click()}
+                                                                                    onDragOver={(e) => e.preventDefault()}
+                                                                                    onDrop={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        handleFileChange(e);
+                                                                                    }}
+                                                                                >
+                                                                                    <img src={file} alt="" />
+                                                                                    <p>Drag & Drop to Upload File</p>
+                                                                                    <p>OR </p>
+                                                                                    <span className='upload-btn'>Browse File</span>
+                                                                                    <input
+                                                                                        type="file"
+                                                                                        accept="image/*"
+                                                                                        onChange={(e) => handleFileChange(e, field.id)}
+                                                                                        style={{ display: 'none' }}
+                                                                                        id="fileInput"
+                                                                                    />
+                                                                                </div>
 
                                                                             </div>
                                                                             <div className="form-builder-chaneging-wrap preview img-heading">
@@ -4516,6 +4920,21 @@ const EmailTemplateCreate = () => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
                                                                                                 f.id === field.id ? { ...f, headingLetterSpacing: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder="Letter Spacing"
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Line Height</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.headingline}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, headingline: e.target.value } : f
                                                                                             )
                                                                                         );
                                                                                     }}
@@ -4747,13 +5166,31 @@ const EmailTemplateCreate = () => {
                                                                                 )}
 
                                                                                 {imageFieldId === field.id && (
-                                                                                    <input
-                                                                                        type="file"
-                                                                                        accept="image/*"
-                                                                                        onChange={(e) => handleImageUpload(e, field.id)}
-                                                                                    />
+                                                                                    <div
+                                                                                        className="upload-area"
+                                                                                        onClick={() => document.getElementById('fileInput').click()}
+                                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                                        onDrop={(e) => {
+                                                                                            e.preventDefault();
+                                                                                            handleImageUpload(e);
+                                                                                        }}
+                                                                                    >
+                                                                                        <img src={file} alt="" />
+                                                                                        <p>Drag & Drop to Upload File</p>
+                                                                                        <p>OR </p>
+                                                                                        <span className='upload-btn'>Browse File</span>
+                                                                                        <input
+                                                                                            type="file"
+                                                                                            accept="image/*"
+                                                                                            onChange={(e) => handleImageUpload(e, field.id)}
+                                                                                            style={{ display: 'none' }}
+                                                                                            id="fileInput"
+                                                                                        />
+                                                                                    </div>
                                                                                 )}
+
                                                                             </div>
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Width</label>
                                                                                 <input
@@ -4933,7 +5370,7 @@ const EmailTemplateCreate = () => {
                                                                                     value={field.dividerWidth}
                                                                                     onChange={(e) => {
                                                                                         const value = parseInt(e.target.value, 10);
-                                                                                        if (value <= 100) { 
+                                                                                        if (value <= 100) {
                                                                                             setFields(prevFields =>
                                                                                                 prevFields.map(f =>
                                                                                                     f.id === field.id ? { ...f, dividerWidth: value } : f
@@ -5109,26 +5546,54 @@ const EmailTemplateCreate = () => {
                                                                                     ) : (
                                                                                         <div className='form-builder-chaneging-wrap file'>
                                                                                             <label htmlFor="add">Upload Image </label>
-                                                                                            <input
-                                                                                                type="file"
-                                                                                                accept="image/*"
-                                                                                                onChange={(e) => {
-                                                                                                    const file = e.target.files[0];
+                                                                                            <div
+                                                                                                className="upload-area"
+                                                                                                onClick={() => document.getElementById('fileInput').click()}
+                                                                                                onDragOver={(e) => e.preventDefault()}
+                                                                                                onDrop={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const file = e.dataTransfer.files[0];
                                                                                                     if (file) {
                                                                                                         const reader = new FileReader();
                                                                                                         reader.onload = () => {
                                                                                                             setFields((prevFields) =>
                                                                                                                 prevFields.map((f) =>
-                                                                                                                    f.id === selectedFieldId
-                                                                                                                        ? { ...f, value: reader.result }
-                                                                                                                        : f
+                                                                                                                    f.id === selectedFieldId ? { ...f, value: reader.result } : f
                                                                                                                 )
                                                                                                             );
                                                                                                         };
                                                                                                         reader.readAsDataURL(file);
                                                                                                     }
                                                                                                 }}
-                                                                                            />
+                                                                                            >
+                                                                                                <img src={file} alt="" />
+                                                                                                <p>Drag & Drop to Upload File</p>
+                                                                                                <p>OR </p>
+                                                                                                <span className='upload-btn'>Browse File</span>
+                                                                                                <input
+                                                                                                    type="file"
+                                                                                                    accept="image/*"
+                                                                                                    onChange={(e) => {
+                                                                                                        const file = e.target.files[0];
+                                                                                                        if (file) {
+                                                                                                            const reader = new FileReader();
+                                                                                                            reader.onload = () => {
+                                                                                                                setFields((prevFields) =>
+                                                                                                                    prevFields.map((f) =>
+                                                                                                                        f.id === selectedFieldId
+                                                                                                                            ? { ...f, value: reader.result }
+                                                                                                                            : f
+                                                                                                                    )
+                                                                                                                );
+                                                                                                            };
+                                                                                                            reader.readAsDataURL(file);
+                                                                                                        }
+                                                                                                    }}
+                                                                                                    style={{ display: 'none' }}
+                                                                                                    id="fileInput"
+                                                                                                />
+                                                                                            </div>
+
 
                                                                                             {fields.find((f) => f.id === selectedFieldId)?.value && (
                                                                                                 <div style={{ marginTop: '10px' }}>
@@ -5196,6 +5661,71 @@ const EmailTemplateCreate = () => {
                                                                                         );
                                                                                     }}
                                                                                 />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Letter Spacing</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.splitletter}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, splitletter: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Line Height</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.splitlineheight}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, splitlineheight: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="form-builder-chaneging-wrap number">
+                                                                                <label>Font-Family</label>
+                                                                                <select
+                                                                                    value={field.splitfamily}
+                                                                                    onChange={(e) => {
+                                                                                        setFields((prevFields) =>
+                                                                                            prevFields.map((f) =>
+                                                                                                f.id === field.id ? { ...f, splitfamily: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <option value="">Select Font-Family</option>
+                                                                                    <option value="Arial">Arial</option>
+                                                                                    <option value="Verdana">Verdana</option>
+                                                                                    <option value="Times New Roman">Times New Roman</option>
+                                                                                    <option value="Georgia">Georgia</option>
+                                                                                    <option value="Courier New">Courier New</option>
+                                                                                    <option value="Roboto">Roboto</option>
+                                                                                    <option value="Raleway">Raleway</option>
+                                                                                    <option value="Gotham">Gotham</option>
+                                                                                    <option value="Montserrat">Montserrat</option>
+                                                                                    <option value="Lato">Lato</option>
+                                                                                    <option value="Helvetica">Helvetica</option>
+                                                                                    <option value="Source Sans Pro">Source Sans Pro</option>
+                                                                                    <option value="Poppins">Poppins</option>
+                                                                                    <option value="Quicksand">Quicksand</option>
+                                                                                    <option value="Work Sans">Work Sans</option>
+                                                                                    <option value="Barlow">Barlow</option>
+                                                                                    <option value="Varela Round">Varela Round</option>
+                                                                                    <option value="Josefin Sans">Josefin Sans</option>
+                                                                                    <option value="Inter">Inter</option>
+                                                                                    <option value="Neutra Text ">NeutraText </option>
+                                                                                    <option value="Basilia Text ">Basilia Text </option>
+                                                                                    
+                                                                                </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
                                                                                 <label>Text Style</label>
@@ -5355,6 +5885,20 @@ const EmailTemplateCreate = () => {
                                                                                             />
                                                                                         </div>
                                                                                     </div>
+                                                                                </div>
+                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                    <label>Font-Weight</label>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={field.splitbtnWeight}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, splitbtnWeight: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    />
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap number'>
                                                                                     <label>Height</label>
@@ -5773,6 +6317,21 @@ const EmailTemplateCreate = () => {
                                                                                 />
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Font Weight (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={field.buttonweight}
+                                                                                    onChange={(e) => {
+                                                                                        setFields(prevFields =>
+                                                                                            prevFields.map(f =>
+                                                                                                f.id === field.id ? { ...f, buttonweight: e.target.value } : f
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    placeholder=" Border-Radius"
+                                                                                />
+                                                                            </div>
+                                                                            <div className='form-builder-chaneging-wrap number'>
                                                                                 <label> Border-Radius (px)</label>
                                                                                 <input
                                                                                     type="number"
@@ -5914,12 +6473,29 @@ const EmailTemplateCreate = () => {
                                                                                     {showFileUpload && (
                                                                                         <div className='form-builder-chaneging-wrap file'>
                                                                                             <label>Uplaod Image</label>
-                                                                                            <input
-                                                                                                type="file"
-                                                                                                accept="image/*"
-                                                                                                onChange={handleCustomIconUpload}
-                                                                                                multiple
-                                                                                            />
+                                                                                            <div
+                                                                                                className="upload-area"
+                                                                                                onClick={() => document.getElementById('fileInput').click()}
+                                                                                                onDragOver={(e) => e.preventDefault()}
+                                                                                                onDrop={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    handleCustomIconUpload(e);
+                                                                                                }}
+                                                                                            >
+                                                                                                <img src={file} alt="" />
+                                                                                                <p>Drag & Drop to Upload File</p>
+                                                                                                <p>OR </p>
+                                                                                                <span className='upload-btn'>Browse File</span>
+                                                                                                <input
+                                                                                                    type="file"
+                                                                                                    accept="image/*"
+                                                                                                    onChange={handleCustomIconUpload}
+                                                                                                    multiple
+                                                                                                    style={{ display: 'none' }}
+                                                                                                    id="fileInput"
+                                                                                                />
+                                                                                            </div>
+                                                                                           
                                                                                         </div>
                                                                                     )}
                                                                                     {customIcons.length > 0 && (
@@ -6379,7 +6955,7 @@ const EmailTemplateCreate = () => {
                     </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </div >
     );
 };

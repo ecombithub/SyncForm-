@@ -36,6 +36,7 @@ import maximizesize from '../images/maximize-size.png';
 import vecter1 from '../images/vecter1.png';
 import cancleimg from '../images/cancleimg.png';
 import bk from '../images/bk.png';
+import file from '../images/file.png';
 import editicon from '../images/editicon.png';
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
@@ -372,7 +373,7 @@ const Formgenerated = () => {
             max: type === 'slider' ? 100 : undefined,
             step: type === 'slider' ? 10 : undefined,
             value: type === 'slider' ? (existingField ? existingField.value : 0) : undefined,
-       
+
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
@@ -879,7 +880,7 @@ const Formgenerated = () => {
                         buttonBorderWidth: field.buttonBorderWidth || 1,
                         buttonBorderStyle: field.buttonBorderStyle || 'solid',
                         buttonBorderColor: field.buttonBorderColor || '#000',
-                        buttontext:field.buttontext,
+                        buttontext: field.buttontext,
                         btncolor: field.btncolor || '#ffff',
                         btnradious: field.btnradious
                     };
@@ -1587,14 +1588,29 @@ const Formgenerated = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className='edit_setting_bg form'>
+                                                            <div className="edit_setting_bg form">
                                                                 <label>Upload Background Image:</label>
-                                                                <input
-                                                                    type="file"
-                                                                    accept="image/*"
-                                                                    onChange={handleFileChange}
-                                                                />
-
+                                                                <div
+                                                                    className="upload-area"
+                                                                    onClick={() => document.getElementById('fileInput').click()}
+                                                                    onDragOver={(e) => e.preventDefault()}
+                                                                    onDrop={(e) => {
+                                                                        e.preventDefault();
+                                                                        handleFileChange(e);
+                                                                    }}
+                                                                >
+                                                                    <img src={file} alt="" />
+                                                                    <p>Drag & Drop to Upload File</p>
+                                                                        <p>OR </p>
+                                                                        <span className='upload-btn'>Browse File</span>
+                                                                    <input
+                                                                        type="file"
+                                                                        accept="image/*"
+                                                                        onChange={handleFileChange}
+                                                                        style={{ display: 'none' }}
+                                                                        id="fileInput"
+                                                                    />
+                                                                </div>
                                                             </div>
                                                             {imageFile && (
                                                                 <button
@@ -2372,7 +2388,7 @@ const Formgenerated = () => {
                                                                             backgroundColor: inputBgColor,
                                                                         }}
                                                                         buttonStyle={{
-                                                                            borderRadius: `${inputRadious}px`, 
+                                                                            borderRadius: `${inputRadious}px`,
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2535,7 +2551,7 @@ const Formgenerated = () => {
                                                                         : 'transparent',
                                                             }}
                                                         >
-                                                            <div  className='form-build-toggle'
+                                                            <div className='form-build-toggle'
                                                                 style={{ width: '100%', opacity: field.opacity || 1 }}
                                                                 onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                 onMouseLeave={() => {
@@ -3340,7 +3356,7 @@ const Formgenerated = () => {
 
                                                             </>
                                                         )}
-                                                        { selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                        {selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
                                                             <label>Placeholder</label>
                                                             <input
                                                                 type="text"
@@ -3349,7 +3365,7 @@ const Formgenerated = () => {
                                                             />
                                                         </div>
                                                         )}
-                                                        {  selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Description</label>
                                                                 <input
@@ -3614,7 +3630,7 @@ const Formgenerated = () => {
                         </div>
                     </div>)}
             </div>
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </div>
     );
 };

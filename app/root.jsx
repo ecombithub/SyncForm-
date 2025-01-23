@@ -17,6 +17,8 @@ export default function App() {
           rel="stylesheet"
           href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
         />
+      <link href="https://fonts.cdnfonts.com/css/neutra-text-alt" rel="stylesheet"/>
+      <link href="https://fonts.cdnfonts.com/css/basilia-text" rel="stylesheet"/>
         <link
           rel="stylesheet"
           href="./index.css"
@@ -76,6 +78,7 @@ export default function App() {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap"
         />
+
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
