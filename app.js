@@ -72,6 +72,7 @@ const formCreateSchema = new mongoose.Schema({
     buttonHeight: { type: String, default: 'auto' },
     backgroundColor: { type: String, default: '#45a7f6' },
     inputPadding: { type: String, default: '10px' },
+    buttontext: { type: String, required: false },
     inputBorderRadious: { type: String, default: '4px' },
     buttonBorderColor: { type: String, required: false },
     buttonBorderWidth: { type: String, required: false },

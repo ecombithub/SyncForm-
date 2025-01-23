@@ -264,7 +264,7 @@ function Index() {
                   window.tidioChatApi?.open();
                 }}
               >
-                Contact us today
+               Book an appointment
               </button>
             </div>
             <div className="contact_img">
@@ -298,7 +298,7 @@ function Index() {
                 </div>
                 <div className="form_build_wrap_elements">
                   <h4>Add form to your store</h4>
-                  <p>Embed the form on your store by adding the form as an App Block or inserting a short code to your desired page.</p>
+                  <p>Embed the form on your store by adding it as an App Block or by inserting a shortcode on your desired page.</p>
                 </div>
               </div>
             </div>
@@ -306,7 +306,7 @@ function Index() {
           <div className="form_builder_theme_section">
             <div className="form_build_new_base">
               <h4>App embed</h4>
-              <p>Visit 'Theme customizer' and 'App embeds' section. Please enable the Form Builder HUB app in order to show your forms on your store.</p>
+              <p>Visit the 'Theme Customizer' and 'App Embeds' sections. Please enable the Form Builder HUB app to display your forms on your store.</p>
               <div className="form_build_app_bottm">
                 <div className="form_build_app_btn">
                   <a href={`https://${shop}/admin/themes/${activeThemeId}/editor/?context=apps`} target='_blank' rel="">
@@ -344,8 +344,8 @@ function Index() {
             </div>}
             <div className="form_build_new_base">
               <h4>Knowledge base</h4>
-              <p>Looking for help or do you just want to get to know Form Builder app a little more? Knowledge base is the right place for you.</p>
-              <div className="form_build_app_bottm ">
+              <p>Looking for help or want to learn more about the Form Builder app? The Knowledge Base is the right place for you.</p>
+              <div className="form_build_app_bottm third ">
                 <div className="form_build_app_btn">
                   <p>Knowledge base</p>
                 </div>
@@ -356,7 +356,9 @@ function Index() {
             </div>
 
           </div>
+          <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </div>
+        
       </div>
     </>
   );

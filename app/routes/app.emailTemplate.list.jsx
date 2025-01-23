@@ -22,7 +22,7 @@ import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
-    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;
 
@@ -101,12 +101,12 @@ export default function EmailTemplate() {
     //         setError(`Error fetching forms: ${error.message}`);
     //     }
     // };
-  
+
     const fetchForms = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`${apiUrl}/get/base64`);
-          
+
             const fetchedData = response.data.data || [];
             const filteredData = fetchedData.filter(form => form.shop === shop);
             const reversedData = filteredData.slice().reverse();
@@ -123,7 +123,7 @@ export default function EmailTemplate() {
             setSelectedForm(form);
             setPreviwPopup(!previwPopup);
 
-            const response = await axios.get(`${ apiUrl}/get/data`);
+            const response = await axios.get(`${apiUrl}/get/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -150,7 +150,7 @@ export default function EmailTemplate() {
             setSelectedForm(form);
             setPreviwPopup(!previwPopup);
 
-            const response = await axios.get(`${ apiUrl}/template/data` );
+            const response = await axios.get(`${apiUrl}/template/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -173,7 +173,7 @@ export default function EmailTemplate() {
     const handleEditClick = async (form) => {
         try {
 
-            const response = await axios.get( `${ apiUrl}/get/data`);
+            const response = await axios.get(`${apiUrl}/get/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -195,8 +195,8 @@ export default function EmailTemplate() {
 
     const tempalted = async () => {
         setLoading(true);
-        try { 
-            const response = await axios.get(`${ apiUrl}/template/image`);
+        try {
+            const response = await axios.get(`${apiUrl}/template/image`);
             const fetchedData = response.data.data || [];
             const reversedData = fetchedData.slice().reverse();
             setNewFormsData(reversedData);
@@ -211,7 +211,7 @@ export default function EmailTemplate() {
     const handleTemplate = async (form) => {
         try {
 
-            const response = await axios.get(`${ apiUrl}/get/data`);
+            const response = await axios.get(`${apiUrl}/get/data`);
             const fetchedData = response.data.data || [];
 
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
@@ -224,7 +224,7 @@ export default function EmailTemplate() {
                     shop,
                 };
 
-                const sendResponse = await axios.post(`${ apiUrl}/template/api`, payload);
+                const sendResponse = await axios.post(`${apiUrl}/template/api`, payload);
                 alert('Template copied successfully!');
                 console.log('Response from send API:', sendResponse.data);
             } else {
@@ -239,7 +239,7 @@ export default function EmailTemplate() {
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
         try {
-            const response = await axios.delete(`${ apiUrl}/delete/${formToDelete}`);
+            const response = await axios.delete(`${apiUrl}/delete/${formToDelete}`);
             console.log(response.data.message);
 
             setFormsData((prevForms) =>
@@ -268,8 +268,8 @@ export default function EmailTemplate() {
 
         try {
             const [base64Response, dataResponse] = await Promise.all([
-                axios.get(`${ apiUrl}/get/base64`),
-                axios.get(`${ apiUrl}/get/data`),
+                axios.get(`${apiUrl}/get/base64`),
+                axios.get(`${apiUrl}/get/data`),
             ]);
 
             const base64Forms = base64Response.data.data || [];
@@ -299,8 +299,8 @@ export default function EmailTemplate() {
                 };
 
                 delete copiedForm._id;
-                               
-                const response = await axios.post(`${ apiUrl}/copy-email`, copiedForm);
+
+                const response = await axios.post(`${apiUrl}/copy-email`, copiedForm);
 
                 console.log('Response from /copy-email API:', response);
 
@@ -378,7 +378,7 @@ export default function EmailTemplate() {
                     display: 'flex',
                     alignItems: 'center',
                     opacity: field.headeropacity || '',
-                    margin:`${field.headingmargin}px`
+                    margin: `${field.headingmargin}px`
                 }}>
                     <div style={{
 
@@ -448,10 +448,8 @@ export default function EmailTemplate() {
                     <div style={{ backgroundColor: field.dividerbgColor || 'transparent', width: '100%' }}>
                         <hr
                             style={{
-                                backgroundColor: field.dividerbgColor || 'transparent',
-                                borderColor: field.dividerColor || 'transparent',
-                                width: `${field.dividerWidth || 100}%`,
-                                height: `${field.dividerheight || 1}px`,
+                                border: `1px solid ${field.dividerColor}`, width: `${field.dividerWidth}%`,
+                                height: `${field.dividerheight}px`,
                                 margin: 'auto'
                             }}
                         />
@@ -609,7 +607,7 @@ export default function EmailTemplate() {
                                         backgroundColor: field.Multicolumnbgcolor,
                                         textAlign: field.Multitext,
                                         color: field.MultiColor,
-                                        borderRadius:`${field.Multiborderradious}px`
+                                        borderRadius: `${field.Multiborderradious}px`
                                     }}
                                 >
                                     {column.image && (
@@ -645,15 +643,15 @@ export default function EmailTemplate() {
 
             case 'html convert':
                 return <div style={{ padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
-            
+
             case 'spacer':
                 return (
                     <div
                         style={{
                             height: `${field.spacerHeight || 20}px`,
                             backgroundColor: field.spacerbg || '#EDEDED',
-                            width:'100%',
-                            display:'flex'
+                            width: '100%',
+                            display: 'flex'
                         }}
                     ></div>
                 );
@@ -670,7 +668,7 @@ export default function EmailTemplate() {
                             textAlign: field.splitTextAlin,
                             float: 'inline-start',
                             color: field.splitColor,
-                            fontSize:`${field.splittextSize}px`
+                            fontSize: `${field.splittextSize}px`
                         }}
                     >
                         {field.add === 'image' ? (
@@ -1030,7 +1028,7 @@ export default function EmailTemplate() {
                                                         <div>
                                                             {form.TemplateImage && (
                                                                 <img
-                                                                  src={form.TemplateImage}
+                                                                    src={form.TemplateImage}
                                                                     alt={`${form.title} preview`}
                                                                     style={{ width: "100%", height: "auto", objectFit: "contain" }}
                                                                 />
@@ -1187,7 +1185,9 @@ export default function EmailTemplate() {
                         </div>
                     )}
                 </div>
+                
             )}
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </>
     );
 }

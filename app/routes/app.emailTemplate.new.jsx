@@ -509,7 +509,7 @@ const EmailTemplateCreate = () => {
             MulticolumnbtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
             MulticolumnbtnBorderStyle: type === 'Multicolumn' ? 'solid' : undefined,
             MulticolumnPadding: type === 'Multicolumn' ? 10 : undefined,
-            MultiPadding: type === 'Multicolumn' ? 0 : undefined,
+            MultiPadding: type === 'Multicolumn' ? '0' : undefined,
             Multicolumnbgcolor: type === 'Multicolumn' ? '#FFFFFF' : undefined,
             Multibgcolor: type === 'Multicolumn' ? '#FFFFFF' : '',
             Multitext: type === 'Multicolumn' ? 'center' : '',
@@ -2160,6 +2160,7 @@ const EmailTemplateCreate = () => {
                                                                             value={textAlign}
                                                                             onChange={(e) => setTextAlign(e.target.value)}
                                                                         >
+                                                                            <option value="">Select text align</option>
                                                                             <option value="left">Left</option>
                                                                             <option value="center">Center</option>
                                                                             <option value="right">Right</option>
@@ -2347,7 +2348,7 @@ const EmailTemplateCreate = () => {
                                                                                 )}
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2384,7 +2385,7 @@ const EmailTemplateCreate = () => {
 
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2424,7 +2425,7 @@ const EmailTemplateCreate = () => {
                                                                         </div>
 
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2451,7 +2452,7 @@ const EmailTemplateCreate = () => {
                                                                             }} />
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2519,7 +2520,7 @@ const EmailTemplateCreate = () => {
                                                                             )}
 
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2553,7 +2554,7 @@ const EmailTemplateCreate = () => {
                                                                             }}
                                                                                 dangerouslySetInnerHTML={{ __html: editorValueed || field.content || 'Captivate customers with' }} />
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2579,7 +2580,7 @@ const EmailTemplateCreate = () => {
                                                                             <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2618,7 +2619,7 @@ const EmailTemplateCreate = () => {
                                                                             )}
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2669,7 +2670,7 @@ const EmailTemplateCreate = () => {
                                                                         </div>
 
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2697,7 +2698,7 @@ const EmailTemplateCreate = () => {
                                                                                     dangerouslySetInnerHTML={{ __html: field.value || field.htmltext }}
                                                                                 />
                                                                                 <div className='form-builder-radio-btn email'>
-                                                                                    <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
+                                                                                    <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                         <img src={editicon} alt="copy" />
                                                                                     </button>
                                                                                     <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2791,7 +2792,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                         </div>
                                                                         <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
                                                                             </button>
                                                                             <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2870,7 +2871,7 @@ const EmailTemplateCreate = () => {
                                                                                 ))}
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn edit-email " onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -2921,7 +2922,7 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                             </div>
                                                                             <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn edit-email" onClick={() => handleFieldClick(field.id)}>
+                                                                                <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
                                                                                 </button>
                                                                                 <button className='remove-btn' onClick={() => removeField(field.id)}>
@@ -3288,7 +3289,7 @@ const EmailTemplateCreate = () => {
                                                                                 <label> Padding (px)</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={field.MultiPadding}
+                                                                                    value={field.MultiPadding || '0'}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
@@ -3339,7 +3340,7 @@ const EmailTemplateCreate = () => {
                                                                                 <label> Coloum Padding (px)</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={field.MulticolumnPadding}
+                                                                                    value={field.MulticolumnPadding || '10'}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
@@ -3353,7 +3354,7 @@ const EmailTemplateCreate = () => {
                                                                                 <label>Coloum Gap</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={field.Multigap}
+                                                                                    value={field.Multigap || '10'}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
@@ -3368,7 +3369,7 @@ const EmailTemplateCreate = () => {
                                                                                 <label>Font-Size</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={field.fontsizeMulticolumn}
+                                                                                    value={field.fontsizeMulticolumn || '14'}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
@@ -3384,7 +3385,7 @@ const EmailTemplateCreate = () => {
                                                                                 <label> Border-Radius (px)</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={field.Multiborderradious}
+                                                                                    value={field.Multiborderradious || '2'}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
@@ -3418,7 +3419,7 @@ const EmailTemplateCreate = () => {
                                                                                 <label>Border Width (px)</label>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={field.MulticolumnbtnBorderWidth}
+                                                                                    value={field.MulticolumnbtnBorderWidth || '1'}
                                                                                     onChange={(e) => {
                                                                                         setFields(prevFields =>
                                                                                             prevFields.map(f =>
@@ -6378,7 +6379,7 @@ const EmailTemplateCreate = () => {
                     </div>
                 )}
             </div>
-
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </div >
     );
 };

@@ -414,9 +414,9 @@ function Customer() {
                             </div>
                             <div className='show_forms_all'>
                                 <span className='name_build'>
-                                    Short by :
+                                    Short by  :
                                     <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
-                                        Forms name <span className='form-short'><img src={down} alt="" /></span>
+                                         Forms name <span className='form-short'><img src={down} alt="" /></span>
                                     </span>
                                 </span>
                                 <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
@@ -458,7 +458,7 @@ function Customer() {
                                         </div>
                                         <div className='show_forms_all'>
                                             <span className='name_build'>
-                                                Sort by:
+                                                Sort by :
                                                 <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
                                                     Forms name <span className='form-short'><img src={down} alt="" /></span>
                                                 </span>
@@ -538,7 +538,7 @@ function Customer() {
                     <div className="form_customer_tables">
                         <div className="table-container">
                             <div className="table-header">
-                                <div> From Name</div>
+                                <div> Form Name</div>
                                 <div>Customer Email</div>
                                 <div className='phone-forms'>Phone</div>
                                 <div> Name</div>
@@ -619,6 +619,7 @@ function Customer() {
                         </nav>
                     </div>
                 </div>
+                <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
             </div>
         </div>
         )}

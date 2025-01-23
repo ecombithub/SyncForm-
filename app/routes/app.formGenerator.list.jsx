@@ -900,7 +900,10 @@ const Formdata = () => {
                                                         )}
                                                         {field.type === 'button' && <div><button style={{
                                                             backgroundColor: field.backgroundColor || '#45a7f6',
-                                                            fontSize: `${field.fontSize || '16'}px`, height: field.buttonHeight || 'auto', width: field.buttonWidth || 'auto', padding: field.padding || '10px',
+                                                            fontSize: `${field.buttontext || '16'}px`,
+                                                            height: field.buttonHeight || 'auto',
+                                                            width: field.buttonWidth || 'auto',
+                                                            padding: field.padding || '10px',
                                                             color: field.btncolor,
                                                             borderWidth: `${field.buttonBorderWidth}px`,
                                                             borderRadius: `${field.btnradious}px`,
@@ -971,6 +974,7 @@ const Formdata = () => {
                     </div>
                 </div >
             )}
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </>
     );
 };

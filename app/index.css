@@ -1,3 +1,7 @@
+*{
+    font-family: Poppins;
+}
+
 .email-templates-wredd h1 {
     font-size: 40px !important;
     line-height: 50px;
@@ -30,11 +34,17 @@
     margin: 0 !important;
 }
 
-
 .container {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
+}
+
+.form-builder-add-text-wraped {
+    padding: 50px;
+    text-align: center;
+    font-size: 15px;
+    color: gray;
 }
 
 button.action_btn {
@@ -1971,7 +1981,7 @@ button.cancle-form-btn {
 
 .form_build_icon_search {
     position: absolute;
-    top: 8px;
+    top:12px;
     left: 10px;
 }
 
@@ -2064,6 +2074,7 @@ button.cancle-form-btn {
 .form_builder_customer .form-builder-customer_title h2 {
     font-size: 24px;
     font-weight: 500;
+    color: #404B52;
 }
 
 .form_builder_customer .form-builder-customer_title {
@@ -2106,7 +2117,7 @@ button.cancle-form-btn {
 }
 
 .form-tota-customer-element h3 {
-    color: #333333;
+    color: #404B52;
     font-size: 30px;
     padding: 10px 0;
     font-weight: 600;
@@ -2130,6 +2141,7 @@ button.cancle-form-btn {
     font-size: 22px;
     font-weight: 600;
     margin-bottom: 10px;
+    color: #404B52;
 }
 
 .form_builder_show_all_forms .form_build_heading {
@@ -2159,6 +2171,7 @@ button.cancle-form-btn {
 .form_builder_show_all_forms .form_build_heading .form-build-customer-search span.name_build {
     display: flex;
     align-items: center;
+    gap: 4px;
 }
 
 .show_forms_all {
@@ -2167,6 +2180,7 @@ button.cancle-form-btn {
     padding: 4px 10px;
     font-size: 12px;
     position: relative;
+    display: flex;
 }
 
 span.name_build span {
@@ -2300,6 +2314,7 @@ span.name_build span {
     font-size: 13px;
     color: #00AC4F;
     margin-top: 20px;
+    font-weight: 550;
 }
 
 .form_build_contact {
@@ -2365,11 +2380,17 @@ span.name_build span {
     padding: 30px 30px;
     color: white;
     width: 33.3%;
+    border: 1px solid #6079AB;
+}
+
+button.copy-btn.first {
+    position: relative;
+    opacity: 0;
 }
 
 .form_build_new_base h4 {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 550;
 }
 
 .form_build_new_base p {
@@ -2378,6 +2399,13 @@ span.name_build span {
     max-width: 80%;
 }
 
+.form_build_app_bottm.second .form_build_app_btn p{
+    color: #6FB0DF !important;
+}
+
+.form_build_app_bottm.third p {
+    color: #46B7D3 !important;
+}
 .form_build_new_base .form_build_app_btn p {
     padding: 0;
     color: #869ECF;
@@ -2425,6 +2453,8 @@ span.name_build span {
     font-size: 12px;
     border-radius: 4px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .from_builder_pricing {
@@ -4414,7 +4444,7 @@ button.procduct-canclebtn {
 }
 
 span.text-content {
-    color: black;
+    color: #404B52;
 }
 
 .copied-message {
@@ -4826,6 +4856,11 @@ button.rm-btn.showfirst img {
         max-width: 1440px;
         margin: 0 auto;
         padding: 0 20px;
+    }
+
+    button.copy-btn.first {
+        position: relative;
+        opacity: 1 !important;
     }
 
     .form_builder_support .form-builder-wrap-popup-inputs .popup-content {

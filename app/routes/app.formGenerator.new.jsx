@@ -89,7 +89,11 @@ export const loader = async ({ request }) => {
 const toolbarOptions = [
     ['bold', 'italic', 'underline'], [{ color: [] }, { background: [] }], ['link', 'image'],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ indent: '-1' }, { indent: '+1' }],
+    [{ script: 'sub' }, { script: 'super' }], [{ font: [] }], [{ align: [] }],
+    [{ header: [] }], ['clean'],
+    [{ header: '1' }, { header: '2' }, { header: '3' }, { header: '4' }, { header: '5' }, { header: '6' }],
+
 ];
 
 const generateUniqueId = (length = 22) => {
@@ -348,10 +352,10 @@ const Formgenerated = () => {
             btnbackgroundcolor: '#0561AF',
             backgroundColor: existingField ? existingField.backgroundColor : '#45A7F6',
             buttonWidth: existingField?.buttonWidth || '130px',
-            buttonheight: existingField?.buttonheight || '40px',
+            buttonHeight: existingField?.buttonHeight || '40px',
             inputPadding: "10px",
             inputBorderRadious: "4",
-            fontSize: type === 'button' ? '16' : undefined,
+            buttontext: type === 'button' ? '16' : undefined,
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
@@ -368,7 +372,7 @@ const Formgenerated = () => {
             max: type === 'slider' ? 100 : undefined,
             step: type === 'slider' ? 10 : undefined,
             value: type === 'slider' ? (existingField ? existingField.value : 0) : undefined,
-
+       
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
@@ -875,6 +879,7 @@ const Formgenerated = () => {
                         buttonBorderWidth: field.buttonBorderWidth || 1,
                         buttonBorderStyle: field.buttonBorderStyle || 'solid',
                         buttonBorderColor: field.buttonBorderColor || '#000',
+                        buttontext:field.buttontext,
                         btncolor: field.btncolor || '#ffff',
                         btnradious: field.btnradious
                     };
@@ -2812,9 +2817,9 @@ const Formgenerated = () => {
                                                                     type="button"
                                                                     style={{
                                                                         width: field.buttonWidth,
-                                                                        height: field.buttonheight,
+                                                                        height: field.buttonHeight,
                                                                         backgroundColor: field.backgroundColor,
-                                                                        fontSize: `${field.fontSize}px`,
+                                                                        fontSize: `${field.buttontext || '16px'}px`,
                                                                         color: field.btncolor,
                                                                         padding: field.padding,
                                                                         borderRadius: `${field.btnradious}px`,
@@ -3080,12 +3085,12 @@ const Formgenerated = () => {
                                                                             <label>Font Size (px)</label>
                                                                             <input
                                                                                 type="number"
-                                                                                value={selectedField.fontSize }
-                                                                                onChange={(e) => updateFieldProperty('fontSize', e.target.value)}
+                                                                                value={selectedField.buttontext}
+                                                                                onChange={(e) => updateFieldProperty('buttontext', e.target.value)}
                                                                             />
                                                                         </div>
                                                                         <div className='checkbox-option bg-colors'>
-                                                                            <label> Color</label>
+                                                                            <label> Text-color</label>
                                                                             <div className="color-picker-container">
                                                                                 <span className="color-code">{selectedField.btncolor}</span>
                                                                                 <input
@@ -3127,8 +3132,8 @@ const Formgenerated = () => {
                                                                             <label>Height (px)</label>
                                                                             <input
                                                                                 type="number"
-                                                                                value={selectedField.buttonheight ? selectedField.buttonheight.replace('px', '') : '40'}
-                                                                                onChange={(e) => updateFieldProperty('buttonheight', `${e.target.value}px`)}
+                                                                                value={selectedField.buttonHeight ? selectedField.buttonHeight.replace('px', '') : '40'}
+                                                                                onChange={(e) => updateFieldProperty('buttonHeight', `${e.target.value}px`)}
                                                                                 placeholder="e.g., 40"
                                                                             />
                                                                         </div>
@@ -3216,6 +3221,7 @@ const Formgenerated = () => {
                                                                         value={linkaline}
                                                                         onChange={handleAlignChange}
                                                                     >
+                                                                        <option value="">Select text align</option>
                                                                         <option value="left">Left</option>
                                                                         <option value="center">Center</option>
                                                                         <option value="right">Right</option>
@@ -3269,6 +3275,7 @@ const Formgenerated = () => {
                                                                         value={textHeading}
                                                                         onChange={(e) => setTextHeading(e.target.value)}
                                                                     >
+                                                                        <option value="">Select text align</option>
                                                                         <option value="left">left</option>
                                                                         <option value="center">center</option>
                                                                         <option value="right">right</option>
@@ -3333,7 +3340,7 @@ const Formgenerated = () => {
 
                                                             </>
                                                         )}
-                                                        { selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                        { selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
                                                             <label>Placeholder</label>
                                                             <input
                                                                 type="text"
@@ -3342,7 +3349,7 @@ const Formgenerated = () => {
                                                             />
                                                         </div>
                                                         )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
+                                                        {  selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Description</label>
                                                                 <input
@@ -3607,7 +3614,7 @@ const Formgenerated = () => {
                         </div>
                     </div>)}
             </div>
-
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </div>
     );
 };
