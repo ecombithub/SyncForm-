@@ -253,7 +253,7 @@ function Index() {
       <div className="form_builder_dashboard">
         <div className="container">
           <div className="form-builder-customer_title">
-            <h2>sahil Builder HUB</h2>
+            <h2>Forms Builder HUB</h2>
           </div>
           <div className="form_build_contact">
             <div className="form_build_count">
