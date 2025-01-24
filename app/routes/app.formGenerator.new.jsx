@@ -456,31 +456,30 @@ const Formgenerated = () => {
 
     const addRadioOption = () => {
         const newOption = {
-            id: generateUniqueId(),
-            label: `Radio ${radioOptions.length + 1}`,
-            value: `Radio ${radioOptions.length + 1}`,
+          id: generateUniqueId(),
+          label: `Radio ${radioOptions.length + 1}`,
+          value: `Radio ${radioOptions.length + 1}`,
         };
-
-        console.log('Adding new radio option:', newOption);
-
-        setRadioOptions(prevOptions => {
-            const updatedOptions = [...prevOptions, newOption];
-            console.log('Updated radio options:', updatedOptions);
-            return updatedOptions;
-        });
-
+      
+        setRadioOptions((prevOptions) => [...prevOptions, newOption]);
+      
         if (selectedField?.id) {
-            setFields(prevFields =>
-                prevFields.map(field =>
-                    field.id === selectedField.id
-                        ? { ...field, options: [...field.options, newOption] }
-                        : field
-                )
-            );
+          const updatedFields = fields.map((field) =>
+            field.id === selectedField.id
+              ? { ...field, options: [...(field.options || []), newOption] }
+              : field
+          );
+          setFields(updatedFields);
+    
+          const updatedSelectedField = updatedFields.find(
+            (field) => field.id === selectedField.id
+          );
+          setSelectedField(updatedSelectedField);
         } else {
-            console.warn('No selectedField found, skipping field update');
+          console.warn('No selectedField found, skipping field update');
         }
-    };
+      };
+      
 
     const removeRadioOption = (id) => {
         setRadioOptions((prevOptions) => {
@@ -495,7 +494,6 @@ const Formgenerated = () => {
             return field;
         }));
     };
-
 
     const handleAddRadioOptions = () => {
         if (radioOptions.some(option => option.label.trim() === '')) {
@@ -603,25 +601,33 @@ const Formgenerated = () => {
             id: checkboxOptions.length + 1,
             name: `Checkbox${checkboxOptions.length + 1}`,
         };
-
-        setCheckboxOptions(prevOptions => {
+    
+        setCheckboxOptions((prevOptions) => {
             const updatedOptions = [...prevOptions, newOption];
             console.log('Updated checkbox options:', updatedOptions);
             return updatedOptions;
         });
-
+    
         if (selectedField?.id) {
-            setFields(prevFields =>
-                prevFields.map(field =>
+            setFields((prevFields) => {
+                const updatedFields = prevFields.map((field) =>
                     field.id === selectedField.id
-                        ? { ...field, options: [...field.options, newOption] }
+                        ? { ...field, options: [...(field.options || []), newOption] }
                         : field
-                )
-            );
+                );
+    
+                const updatedSelectedField = updatedFields.find(
+                    (field) => field.id === selectedField.id
+                );
+    
+                setSelectedField(updatedSelectedField);
+                return updatedFields;
+            });
         } else {
             console.warn('No selectedField found, skipping field update');
         }
     };
+    
 
     const removeCheckboxOption = (id) => {
         setCheckboxOptions((prevOptions) => {
@@ -685,29 +691,35 @@ const Formgenerated = () => {
     const addSelectOption = () => {
         const newOption = {
             id: generateUniqueId(),
-            id: selectOptions.length + 1,
             name: `Option${selectOptions.length + 1}`,
         };
-
-        setSelectOptions(prevOptions => {
+    
+        setSelectOptions((prevOptions) => {
             const updatedOptions = [...prevOptions, newOption];
             console.log('Updated select options:', updatedOptions);
             return updatedOptions;
         });
-
+    
         if (selectedField?.id) {
-            setFields(prevFields =>
-                prevFields.map(field =>
+            setFields((prevFields) => {
+                const updatedFields = prevFields.map((field) =>
                     field.id === selectedField.id
-                        ? { ...field, options: [...field.options, newOption] }
+                        ? { ...field, options: [...(field.options || []), newOption] }
                         : field
-                )
-            );
+                );
+    
+                const updatedSelectedField = updatedFields.find(
+                    (field) => field.id === selectedField.id
+                );
+    
+                setSelectedField(updatedSelectedField); 
+                return updatedFields;
+            });
         } else {
             console.warn('No selectedField found, skipping field update');
         }
     };
-
+    
     const handleAddSelectOptions = () => {
         if (selectOptions.some(option => option.name.trim() === '')) {
             alert('Option names cannot be empty!');
@@ -1012,7 +1024,6 @@ const Formgenerated = () => {
         } else {
             setIsPropertiesVisible(false);
         }
-
     };
 
     useEffect(() => {
@@ -1059,14 +1070,21 @@ const Formgenerated = () => {
 
     const updateFieldProperty = (property, value) => {
         if (selectedField) {
-            setFields((prevFields) =>
-                prevFields.map((field) =>
-                    field.id === selectedField.id ? { ...field, [property]: value } : field
-                )
-            );
-            setSelectedField((prevField) => ({ ...prevField, [property]: value }));
+          setFields((prevFields) =>
+            prevFields.map((field) =>
+              field.id === selectedField.id
+                ? { ...field, [property]: value }
+                : field
+            )
+          );
+      
+          setSelectedField((prevSelectedField) => ({
+            ...prevSelectedField,
+            [property]: value,
+          }));
         }
-    };
+      };
+      
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -2953,7 +2971,7 @@ const Formgenerated = () => {
                                                         <p>Qucick setup Settings</p>
                                                     </div>
                                                     <div className='form_build_propertities'>
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'link' && (
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' &&  selectedField.type !== 'link' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Label</label>
                                                                 <input
