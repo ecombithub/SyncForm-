@@ -855,79 +855,93 @@ const sendEmail = async (email, TemplateAll) => {
           switch (field.type) {
             case 'heading':
               const editorContent = field.editorContent || '';
-              const updateeditorContent = editorContent.replace(/<p><br><\/p>/g, '').replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
-                if (match.startsWith('data:image/png;base64,')) {
-                  const uniqueId = `image-${Date.now()}`;
-                  const imagePath = saveBase64Image(match, `${uniqueId}.png`);
-                  attachments.push({
-                    filename: `${uniqueId}.png`,
-                    path: imagePath,
-                    cid: uniqueId,
-                  });
+              const updatedEditorContent = editorContent
+                .replace(/<p><br><\/p>/g, '')
+                .replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
+                  if (match.startsWith('data:image/png;base64,')) {
+                    const uniqueId = `image-${Date.now()}`;
+                    const imagePath = saveBase64Image(match, `${uniqueId}.png`);
+                    attachments.push({
+                      filename: `${uniqueId}.png`,
+                      path: imagePath,
+                      cid: uniqueId,
+                    });
 
-                  return `cid:${uniqueId}`;
-                }
-                return match;
-              });
+                    return `cid:${uniqueId}`;
+                  }
+                  return match;
+                });
+
+              const headingStyle = `
+    background-image: url('${field.headingbgImage || ''}');
+    background-size: cover;
+    background-position: center;
+    border-width: ${field.headingBorderWidth || 1}px;
+    border-style: ${field.headingBorderStyle || 'solid'};
+    border-color: ${field.headingBorderColor || '#000'};
+    width: ${field.bannerImageWidth || 100}%;
+    height: ${field.bannerImageHeight || '400px'};
+    opacity: ${field.headeropacity || 1};
+    margin: ${field.headingmargin || '0'}px;
+  `;
+
+              const buttonStyle = `
+    font-size: ${field.headingbtnFontSize || 16}px;
+    width: ${field.headingbtnwidth || 'auto'}px;
+    height: ${field.headingbtnheight || 'auto'}px;
+    background-color: ${field.headerbtnbg || '#007bff'};
+    border-width: ${field.headingbtnBorderWidth || 1}px;
+    border-style: ${field.headingbtnBorderStyle || 'solid'};
+    border-color: ${field.headingbtnBorderColor || '#007bff'};
+    color: ${field.headerbtncolor || '#fff'};
+    border-radius: ${field.headingbtnradious || 4}px;
+    padding: ${field.headingbtnPadding || 10}px;
+    font-weight: ${field.headingbtnheight || 'bold'};
+    margin-top: 20px;
+    cursor: pointer;
+  `;
 
               return `
-             <div style="background-image:url('${field.headingbgImage || ''}'); 
-                background-size: cover; background-position: center;
-                border-width: ${field.headingBorderWidth || 1}px;
-                border-style: ${field.headingBorderStyle || 'solid'};
-                border-color: ${field.headingBorderColor || '#000'};
-                width: ${field.bannerImageWidth || 100}%;
-                height: ${field.bannerImageHeight || '400px'};
-                opacity:${field.headeropacity};
-                margin:${field.headingmargin};
-               ">
-             <table role="presentation" width="100%" height="100%" style="height: 100%; width: 100%; border-collapse: collapse;">
-                <tr>
-            <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle;  padding: ${field.headingPadding || '20px'}px;">
+    <div style="${headingStyle}">
+      <table role="presentation" width="100%" height="100%" style="height: 100%; width: 100%; border-collapse: collapse;">
+        <tr>
+          <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || 'center'}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
             <div style="width: 100%; text-align: ${field.headingTextAlign || 'center'};">
-            <h1 style="font-size: ${field.headingFontSize || 30}px; 
-              color: ${field.headingColor || '#000'}; 
-              font-weight: ${field.headingFontWeight || 'bold'}; 
-              line-height: ${field.headingline}px; 
-              font-family:${field.headingfamily};
-              letter-spacing: ${field.headingLetterSpacing || 0}px; 
-              text-align: ${field.headingTextAlign || 'center'};">
-              ${field.headingText || ''}
-            </h1>
-            <div style="font-size: ${field.headingsubheading}px; color:${field.subheadingColor}; font-family:${field.subheadingfamily}; line-height: ${field.subheadingline}px; letter-spacing:${field.subheadingleter}px;">
-              ${updateeditorContent || ''}
-            </div>
-            
-            ${field.headingUrl ? `
-              <a href="${field.headingUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                <button style="
-                  font-size: ${field.headingbtnFontSize || 16}px;
-                  width: ${field.headingbtnwidth || 'auto'}px;
-                  height: ${field.headingbtnheight || 'auto'}px;
-                  background-color: ${field.headerbtnbg || '#007bff'};
-                  border-width: ${field.headingbtnBorderWidth || 1}px;
-                  border-style: ${field.headingbtnBorderStyle || 'solid'};
-                  border-color: ${field.headingbtnBorderColor || '#007bff'};
-                  color: ${field.headerbtncolor || '#fff'};
-                  border-radius: ${field.headingbtnradious || 4}px;
-                  padding-left: ${field.headingbtnPadding || '10px'}px;
-                  padding-right: ${field.headingbtnPadding || '10px'}px;
-                  padding-top: ${field.headingbtntopPadding || '10px'}px;
-                  padding-bottom: ${field.headingbtntopPadding || '10px'}px;
-                  font-weight: ${field.headingbtnheight || 'bold'}; 
-                   margin-top :'20px';
-                  cursor: pointer;
-                " class="show-bnt-product">
-                  ${field.headerbtn || 'Buy Now'}
-                </button>
-              </a>
-            ` : ''}
-          </div>
-           </td>
-         </tr>
-        </table>
+              <h1 style="
+                font-size: ${field.headingFontSize || 30}px;
+                color: ${field.headingColor || '#000'};
+                font-weight: ${field.headingFontWeight || 'bold'};
+                line-height: ${field.headingline || 'normal'}px;
+                font-family: ${field.headingfamily || 'Arial, sans-serif'};
+                letter-spacing: ${field.headingLetterSpacing || 0}px;
+                text-align: ${field.headingTextAlign || 'center'};
+              ">
+                ${field.headingText || ''}
+              </h1>
+              <div style="
+                font-size: ${field.headingsubheading || 14}px;
+                color: ${field.subheadingColor || '#000'};
+                font-family: ${field.subheadingfamily || 'Arial, sans-serif'};
+                line-height: ${field.subheadingline || 'normal'}px;
+                letter-spacing: ${field.subheadingleter || 0}px;
+              ">
+                ${updatedEditorContent || ''}
               </div>
-            `;
+
+              ${field.headingUrl ? `
+                <a href="${field.headingUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                  <button style="${buttonStyle}" class="show-bnt-product">
+                    ${field.headerbtn || 'Buy Now'}
+                  </button>
+                </a>
+              ` : ''}
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+
             case 'richtext':
               const content = field.content || '';
               const updatedContent = content
@@ -956,12 +970,12 @@ const sendEmail = async (email, TemplateAll) => {
                   font-size: ${field.richFontsize || '16'}px;
                   font-family:${field.richFontfamily};
                   letter-spacing: ${field.richspace || 0}px; 
-                   line-height: ${field.richlineheight}px; 
+                  line-height: ${field.richlineheight || 20}px; 
                   background-color: ${field.richbgcolor || '#fff'};
                   padding-left: ${field.richleftPadding || '10'}px;
-                  padding-right: ${field.richrightPadding || '10'}px;
+                  padding-right: ${field.richleftPadding || '10'}px;
                   padding-top: ${field.richtopPadding || '10'}px;
-                  padding-bottom: ${field.richbottomPadding || '10'}px;">
+                  padding-bottom: ${field.richtopPadding || '10'}px;">
         ${updatedContent}
       </div>
     </div>
@@ -997,7 +1011,8 @@ const sendEmail = async (email, TemplateAll) => {
               let columnCount = 0;
               let result = `
                 <div style="color: ${field.MultiColor || '#000'}; padding: ${field.MultiPadding || '1px'}px; text-align: center; background-color: ${field.Multibgcolor || 'transparent'};">
-                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" >
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" 
+                   style="border-spacing: ${field.Multigap || 0}px;">
               `;
 
               field.columnData.forEach((column, index) => {
@@ -1026,7 +1041,8 @@ const sendEmail = async (email, TemplateAll) => {
 
                 result += `
                   <td style="
-                    width: calc(${100 / columnsPerRow}% - ${field.Multigap || 0}px); 
+                    vertical-align: top;
+                    width: ${100 / columnsPerRow}%; 
                     text-align: ${field.Multitext || 'center'};
                     font-size: ${field.fontsizeMulticolumn || 14}px;
                     border-width: ${field.MulticolumnbtnBorderWidth || 1}px;
@@ -1038,8 +1054,7 @@ const sendEmail = async (email, TemplateAll) => {
                     border-radius: ${field.Multiborderradious || 0}px;
                     font-family:${field.Multifamily};
                     letter-spacing:${field.Multiletter}px;
-                     line-height: ${field.Multiheight}px; 
-      
+                    line-height: ${field.Multiheight}px; 
                   ">
                      ${column.image ? `<img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />` : ''}
                     ${processedContent}
@@ -1080,6 +1095,7 @@ const sendEmail = async (email, TemplateAll) => {
             case 'images': {
               return `
                 <div style="
+                
                   text-align: ${field.imgTextAlign || 'center'};
                   background-color: ${field.imgbg || 'transparent'};
                   border-width: ${field.imgBorderWidth || 1}px;
@@ -1096,64 +1112,69 @@ const sendEmail = async (email, TemplateAll) => {
             }
             case 'split': {
               const value = field.value || '';
-              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');
-
+              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, (match) => '');
+          
               return `
-      <div style="
-        overflow: hidden;
-        background-color: ${field.splitbg || '#ffffff'};
-        width: ${field.width || '100%'};
-        height: ${field.splitheight || 'auto'}px;
-        padding: ${field.splitPadding || 0}px;
-        float: inline-start;
-        color: ${field.splitColor};
-        font-size: ${field.splittextSize || 14}px;
-        line-height: ${field.splitlineheight}px; 
-        font-family:${field.splitfamily};
-        letter-spacing: ${field.splitletter || 0}px; 
-      ">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
-          width: 100%;
-          height: 100%;
-          text-align: ${field.splitTextAlin || 'left'};
-          border-spacing: 0;
-          color: ${field.splitColor};
-        ">
-          <tr>
-            <td style="
-              vertical-align: ${field.splittext === 'end' ? 'bottom' : field.splittext === 'left' || !field.splittext ? 'top' : field.splittext};
-              text-align: ${field.splitTextAlin || 'left'};
-            ">
-              ${field.add === 'image' ?
-                  `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
-                  `<div>${updatedValue}</div>`
-                }
-              ${field.showbtnsplit ?
-                  `<a href="${field.splitbtnurl || '#'}" target="_blank" style="text-decoration: none;">
-                  <button style="
-                    margin-top: 20px;
-                    background-color: ${field.splitbtnbg || '#007BFF'};
-                    font-size: ${field.splitbtnfont || 14}px;
-                    color: ${field.splitbtncolor || '#FFF'};
-                    height: ${field.splitbtnheight || 40}px;
-                    width: ${field.splitbtnwidth || 100}px;
-                    border-radius: ${field.splitbtnradious || 0}px;
-                    border-width: ${field.splitBorderWidth || 2}px;
-                    border-style: ${field.splitBorderStyle || 'solid'};
-                    border-color: ${field.splitBorderColor || '#000'};
-                    cursor: pointer;
-                    font-weight: ${field.splitbtnWeight || 'bold'}; 
+                  <div style="
+                  overflow: hidden;
+                  background-color: ${field.splitbg || '#ffffff'};
+                  width: ${field.width || '100%'};
+                  height: ${field.splitheight || 'auto'}px;
+                  padding: ${field.splitPadding || 0}px;
+                  float: ${field.float || 'left'};
+                  color: ${field.splitColor || '#000'};
+                  font-size: ${field.splittextSize || 14}px;
+                  line-height: ${field.splitlineheight || 30}px; 
+                  font-family: ${field.splitfamily || 'Poppins'};
+                  letter-spacing: ${field.splitletter || 1}px; 
+                ">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
+                    width: 100%;
+                    height: 100%;
+                    text-align: ${field.splitTextAlin || 'left'};
+                    border-spacing: 0;
+                    color: ${field.splitColor || '#000'};
                   ">
-                    ${field.splitbtn || 'Click Me'}
-                  </button>
-                </a>` : ''
-                }
-            </td>
-          </tr>
-        </table>
-      </div>
-    `;
-            }
+                    <tr>
+                      <td style="
+                  vertical-align: ${['top', 'middle', 'bottom', 'center', 'end'].includes(field.splittext) 
+                        ? (field.splittext === 'center' ? 'middle' : field.splittext === 'end' ? 'bottom' : field.splittext) 
+              : 'top'};
+
+                        text-align: ${field.splitTextAlin || 'left'};
+                      ">
+                        ${field.add === 'image' && field.value ?
+                          `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
+                          `<div>${updatedValue}</div>`
+                        }
+                        ${field.showbtnsplit ?
+                          `<a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                            <button style="
+                              margin-top: 20px;
+                              background-color: ${field.splitbtnbg || '#007BFF'};
+                              font-size: ${field.splitbtnfont || 14}px;
+                              color: ${field.splitbtncolor || '#FFF'};
+                              height: ${field.splitbtnheight || 40}px;
+                              width: ${field.splitbtnwidth || 100}px;
+                              border-radius: ${field.splitbtnradious || 0}px;
+                              border-width: ${field.splitBorderWidth || 2}px;
+                              border-style: ${field.splitBorderStyle || 'solid'};
+                              border-color: ${field.splitBorderColor || '#000'};
+                              padding: 10px 20px;
+                              cursor: pointer;
+                              font-weight: ${field.splitbtnWeight || 'bold'}; 
+                            ">
+                              ${field.splitbtn || 'Click Me'}
+                            </button>
+                          </a>` : ''
+                        }
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              `;
+          }
+          
             case 'product':
               return `
                 <div>
@@ -1236,7 +1257,7 @@ const sendEmail = async (email, TemplateAll) => {
               return `<div style="text-align: ${field.htmlaline || 'left'};  color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
             case 'spacer':
               return `
-                      <div style="height: ${field.spacerHeight || '20px'}px; background-color: ${field.spacerbg || '#EDEDED'}; padding: ${field.splitPadding || '0'}px 0;">
+                      <div style="width: 100%; display: flex; height: ${field.spacerHeight || '20px'}px; background-color: ${field.spacerbg || '#EDEDED'}; padding: ${field.splitPadding || '0'}px 0;">
                       </div>
                     `;
             case 'socalicon':

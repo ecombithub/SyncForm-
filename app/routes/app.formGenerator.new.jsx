@@ -536,7 +536,6 @@ const Formgenerated = () => {
         setShowPopup(false);
     };
 
-
     const handleOptionNameChange = (index, value) => {
         setRadioOptions((prevOptions) => {
             const updatedOptions = [...prevOptions];

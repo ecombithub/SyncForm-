@@ -1846,7 +1846,7 @@ div#formBuilder .hover_lable_form {
 .edit_form_close h3 {
     color: #180000;
     margin: 0;
-    padding: 24px 10px;
+    padding: 24px 0px;
     text-transform: capitalize;
     font-weight: 500;
     font-size: 16px;

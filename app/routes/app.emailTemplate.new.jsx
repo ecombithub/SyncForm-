@@ -1193,8 +1193,8 @@ const EmailTemplateCreate = () => {
                 bannerImageTextAlign: field.bannerImageTextAlign || '',
                 richTextAlign: field.richTextAlign || '',
                 richFontsize: field.richFontsize || '',
-                richspace:field.richspace,
-                richlineheight:field.richlineheight,
+                richspace: field.richspace,
+                richlineheight: field.richlineheight,
                 richbgcolor: field.richbgcolor,
                 richFontfamily: field.richFontfamily,
                 richtextcolor: field.richtextcolor,
@@ -1232,7 +1232,7 @@ const EmailTemplateCreate = () => {
                 dividerheight: field.dividerheight || '1',
                 buttonbgColor: field.buttonbgColor || '',
                 buttonColor: field.buttonColor || '#007BFF',
-                buttonweight:field.buttonweight,
+                buttonweight: field.buttonweight,
                 buttonFontSize: field.buttonFontSize || 16,
                 buttonTextColor: field.buttonTextColor || '#fff',
                 buttonLetterSpacing: field.buttonLetterSpacing || 0,
@@ -1261,7 +1261,7 @@ const EmailTemplateCreate = () => {
                 splitbtncolor: field.splitbtncolor || '',
                 splitbtnurl: field.splitbtnurl || '',
                 splitbtnheight: field.splitbtnheight || '',
-                splitbtnWeight:field.splitbtnWeight,
+                splitbtnWeight: field.splitbtnWeight,
                 splitbtnwidth: field.splitbtnwidth || '',
                 splitletter: field.splitletter || '',
                 splitlineheight: field.splitlineheight || '',
@@ -1320,7 +1320,7 @@ const EmailTemplateCreate = () => {
                 Multibtncolor: field.Multibtncolor || '',
                 Multibtnbg: field.Multibtnbg || '',
                 Multibtnweight: field.Multibtnweight || '',
-                MultiWeight:field.MultiWeight,
+                MultiWeight: field.MultiWeight,
                 Multibtnheight: field.Multibtnheight || '',
                 Multibtnradious: field.Multibtnradious || '',
                 Multibtnfont: field.Multibtnfont || '',
@@ -1551,33 +1551,45 @@ const EmailTemplateCreate = () => {
     }, []);
 
     const handleWidthChange = (newWidth) => {
+        const parsedWidth = parseInt(newWidth, 10);
+    
         setFields((prevFields) => {
             const selectedIndex = prevFields.findIndex((f) => f.id === selectedFieldId);
-
-            if (selectedIndex !== -1 && selectedIndex % 2 === 0) {
-                return prevFields.map((f, index) => {
+            if (selectedIndex !== -1) {
+                
+                const newFields = prevFields.map((f, index) => {
                     if (index === selectedIndex) {
-                        return { ...f, width: newWidth };
+                        return { ...f, width: `${parsedWidth}%` }; 
                     }
-                    if (index === selectedIndex + 1) {
-                        return { ...f, width: `${100 - parseInt(newWidth)}%` };
+    
+                    if (index === selectedIndex + 1 || index === selectedIndex - 1) {
+                        return { ...f, width: `${100 - parsedWidth}%` }; 
                     }
+    
                     return f;
                 });
-            } else if (selectedIndex !== -1) {
-                return prevFields.map((f, index) => {
-                    if (index === selectedIndex) {
-                        return { ...f, width: newWidth };
-                    }
-                    if (index === selectedIndex - 1) {
-                        return { ...f, width: `${100 - parseInt(newWidth)}%` };
-                    }
-                    return f;
-                });
+    
+                const totalWidth = newFields.reduce((sum, field) => sum + parseInt(field.width, 10), 0);
+                const remainingFields = newFields.filter(f => !f.width);
+    
+                if (remainingFields.length > 0 && totalWidth < 100) {
+                    const remainingWidth = 100 - totalWidth;
+                    const equalWidth = remainingWidth / remainingFields.length;
+    
+                    newFields.forEach((f, index) => {
+                        if (!f.width) {
+                            newFields[index] = { ...f, width: `${equalWidth}%` };
+                        }
+                    });
+                }
+    
+                return newFields;
             }
+    
             return prevFields;
         });
     };
+    
 
     const handleVideoChange = (e, id) => {
         const updatedFields = fields.map(field => {
@@ -2400,7 +2412,7 @@ const EmailTemplateCreate = () => {
                                                                                                 borderStyle: field.headingbtnBorderStyle,
                                                                                                 borderColor: field.headingbtnBorderColor,
                                                                                                 fontWeight: field.headingbtnweight,
-                                                                                                 marginTop :'20px'
+                                                                                                marginTop: '20px'
                                                                                             }}
                                                                                         >
                                                                                             {field.headerbtn}
@@ -2464,7 +2476,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
                                                                         className={`email_field  ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex', justifyContent: 'center' }}
+                                                                        style={{ display: 'flex', justifyContent: 'center',  width:'100%' }}
                                                                         ref={emailFieldRef}
                                                                     >
                                                                         <div className='email_field-images'
@@ -2573,8 +2585,8 @@ const EmailTemplateCreate = () => {
                                                                                                         borderWidth: `${field.splitBorderWidth}px`,
                                                                                                         borderStyle: field.splitBorderStyle,
                                                                                                         borderColor: field.splitBorderColor,
-                                                                                                        fontWeight:field.splitbtnWeight,
-                                                                                                       
+                                                                                                        fontWeight: field.splitbtnWeight,
+
                                                                                                     }}>
                                                                                                         {field.splitbtn}</button>
                                                                                                 </a>
@@ -2612,7 +2624,7 @@ const EmailTemplateCreate = () => {
                                                                                 fontSize: `${field.richFontsize}px`,
                                                                                 letterSpacing: `${field.richspace}px`,
                                                                                 color: field.richtextcolor,
-                                                                                lineHeight:`${field.richlineheight}px`,
+                                                                                lineHeight: `${field.richlineheight}px`,
                                                                                 backgroundColor: field.richbgcolor,
                                                                                 paddingLeft: `${field.richleftPadding}px`,
                                                                                 paddingRight: `${field.richleftPadding}px`,
@@ -2731,7 +2743,7 @@ const EmailTemplateCreate = () => {
                                                                                         borderColor: field.buttonBorderColor,
                                                                                         letterSpacing: `${field.buttonLetterSpacing}px`,
                                                                                         borderRadius: `${field.buttonradious}px`,
-                                                                                        fontWeight:field.buttonweight
+                                                                                        fontWeight: field.buttonweight
                                                                                     }}
                                                                                 >
                                                                                     {field.buttonLabel}
@@ -2842,7 +2854,7 @@ const EmailTemplateCreate = () => {
                                                                                                         color: field.Multibtncolor,
                                                                                                         borderRadius: `${field.Multibtnradious}px`,
                                                                                                         fontSize: `${field.Multibtnfont || '14'}px`,
-                                                                                                        fontWeight:field.MultiWeight
+                                                                                                        fontWeight: field.MultiWeight
                                                                                                     }}
                                                                                                 >
                                                                                                     {field.columnData[index].Multibtnlable}
@@ -3442,7 +3454,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="Inter">Inter</option>
                                                                                     <option value="Neutra Text ">NeutraText </option>
                                                                                     <option value="Basilia Text ">Basilia Text </option>
-                                                                                    
+
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
@@ -3704,7 +3716,7 @@ const EmailTemplateCreate = () => {
                                                                                     }}
                                                                                 />
                                                                             </div>
-                                                                            
+
                                                                             <div className='form-builder-chaneging-wrap number'>
                                                                                 <label>Letter Space (px)</label>
                                                                                 <input
@@ -3765,8 +3777,8 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="Varela Round">Varela Round</option>
                                                                                     <option value="Josefin Sans">Josefin Sans</option>
                                                                                     <option value="Inter">Inter</option>
-                                                                                      <option value="Neutra Text ">NeutraText </option>
-                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                    <option value="Neutra Text ">NeutraText </option>
+                                                                                    <option value="Basilia Text ">Basilia Text </option>
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
@@ -3934,8 +3946,8 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="Varela Round">Varela Round</option>
                                                                                     <option value="Josefin Sans">Josefin Sans</option>
                                                                                     <option value="Inter">Inter</option>
-                                                                                      <option value="Neutra Text ">NeutraText </option>
-                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                    <option value="Neutra Text ">NeutraText </option>
+                                                                                    <option value="Basilia Text ">Basilia Text </option>
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
@@ -4330,8 +4342,8 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="Varela Round">Varela Round</option>
                                                                                     <option value="Josefin Sans">Josefin Sans</option>
                                                                                     <option value="Inter">Inter</option>
-                                                                                      <option value="Neutra Text ">NeutraText </option>
-                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                    <option value="Neutra Text ">NeutraText </option>
+                                                                                    <option value="Basilia Text ">Basilia Text </option>
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
@@ -4410,8 +4422,8 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="Varela Round">Varela Round</option>
                                                                                     <option value="Josefin Sans">Josefin Sans</option>
                                                                                     <option value="Inter">Inter</option>
-                                                                                      <option value="Neutra Text ">NeutraText </option>
-                                                                                      <option value="Basilia Text ">Basilia Text </option>
+                                                                                    <option value="Neutra Text ">NeutraText </option>
+                                                                                    <option value="Basilia Text ">Basilia Text </option>
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap number'>
@@ -5345,7 +5357,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
                                                                                 <div className='checkbox-option bg-colors'>
-                                                                                    <label>Divider Backgroundcolor</label>
+                                                                                    <label>Divider Background color</label>
                                                                                     <div className="color-picker-container">
                                                                                         <span className="color-code">{field.dividerbgColor}</span>
                                                                                         <input
@@ -5724,7 +5736,7 @@ const EmailTemplateCreate = () => {
                                                                                     <option value="Inter">Inter</option>
                                                                                     <option value="Neutra Text ">NeutraText </option>
                                                                                     <option value="Basilia Text ">Basilia Text </option>
-                                                                                    
+
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap'>
@@ -6495,7 +6507,7 @@ const EmailTemplateCreate = () => {
                                                                                                     id="fileInput"
                                                                                                 />
                                                                                             </div>
-                                                                                           
+
                                                                                         </div>
                                                                                     )}
                                                                                     {customIcons.length > 0 && (
