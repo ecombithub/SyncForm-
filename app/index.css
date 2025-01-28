@@ -4873,6 +4873,10 @@ button.rm-btn.showfirst img {
     margin-top: 70px;
 }
 
+
+
+
+
 @media screen and (max-width: 1440px) {
 
     .container {
@@ -5171,6 +5175,7 @@ button.rm-btn.showfirst img {
 
     .form_builder_plan_table.activee.bg p.form_builder_plan_btn {
         margin-top: 20px !important;
+        text-align: center;
     }
 
     .before-adding {
@@ -5703,6 +5708,10 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width: 768px) {
+    .email-templates {
+
+        height: 230px;
+    }
     .form_builder_support .form-builder-wrap-popup-inputs .popup-content {
         max-width: 90%;
     }
@@ -5812,6 +5821,10 @@ button.rm-btn.showfirst img {
         grid-template-columns: 26% 17% 22% 28% !important;
     }
 
+    .email-templates {
+        height: 200px;
+    }
+
     .form-builder-green-btn {
         width: 100%;
     }
@@ -5882,6 +5895,17 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width: 480px) {
+    .email-templates {
+        height: 170px;
+    }
+    .form_builder_plan_table h2 {
+        font-size: 22px !important;
+    }
+
+    .form_builder_plan_table.bg p span.strikethrough {
+        font-size: 15px;
+    }
+
     .servies-input {
         width: 100%;
     }

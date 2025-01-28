@@ -598,7 +598,7 @@ export default function EmailTemplate() {
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
-                            gap: `${field.Multigap}px`,
+                            gap: `${field.Multigap || 10}px`,
                             padding: `${field.MultiPadding}px`,
                             textAlign: 'center',
                             backgroundColor: field.Multibgcolor,
@@ -613,7 +613,7 @@ export default function EmailTemplate() {
                                         borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
                                         borderStyle: field.MulticolumnbtnBorderStyle,
                                         borderColor: field.MulticolumnbtnBorderColor,
-                                        padding: `${field.MulticolumnPadding}px`,
+                                        padding: `${field.MulticolumnPadding || 10}px`,
                                         backgroundColor: field.Multicolumnbgcolor,
                                         textAlign: field.Multitext,
                                         color: field.MultiColor,
