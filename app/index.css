@@ -11,6 +11,14 @@
     font-size: 30px !important;
 }
 
+.some .input-field {
+    width: 100% !important;
+}
+
+.some .input-field.small-width {
+    width: 50% !important; 
+}
+
 .text-wraped a {
     text-decoration: none;
     color: black;
@@ -1397,8 +1405,6 @@ button.cancel {
     scrollbar-color: #A3A3A3;
 }
 
-
-
 .builder-wrp .builder-wrp .controls h4 {
     color: #180000;
 }
@@ -1415,13 +1421,22 @@ button.cancel {
     font-size: 13px;
 }
 
-
-
 .builder_form_select_control h2 {
     font-size: 16px !important;
     font-weight: 600;
 }
+.form-build-checkbox-wrp-options .selected-files ul {
+    padding: 10px;
+}
 
+.form-build-checkbox-wrp-options .selected-files ul li {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #33cba2;
+    margin-bottom: 10px;
+    align-items: center;
+    padding: 5px;
+}
 .builder_form_select_control {
     display: flex;
     justify-content: center;
@@ -1645,10 +1660,10 @@ button.cancel {
 .form_builder_option_select .slider:before {
     position: absolute;
     content: "";
-    height: 13px;
-    width: 13px;
+    height: 12px;
+    width: 12px;
     border-radius: 50%;
-    left: 2px;
+    left: 4px;
     bottom: 4px;
     background-color: white;
     transition: .4s;
@@ -1829,6 +1844,13 @@ div#formBuilder .hover_lable_form {
     display: flex;
     gap: 12px;
     align-items: center;
+    padding: 10px;
+}
+.form_checkbox_flex{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px;
 }
 
 .hover_lable_form_toggle {
@@ -1931,7 +1953,7 @@ button.cancle-form-btn {
     -webkit-appearance: none;
     width: 35px;
     height: 35px;
-    border-radius: 13px;
+    border-radius: 4px;
     padding: 0;
     border: none;
     background-color: transparent;
@@ -2002,7 +2024,7 @@ button.cancle-form-btn {
 
 .form_build_icon_search {
     position: absolute;
-    top: 12px;
+    top: 9px;
     left: 10px;
 }
 
@@ -2417,7 +2439,7 @@ button.copy-btn.first {
 .form_build_new_base p {
     font-size: 13px;
     padding: 15px 0;
-    max-width: 80%;
+    max-width: 90%;
 }
 
 .form_build_app_bottm.second .form_build_app_btn p {
@@ -2560,7 +2582,7 @@ button.copy-btn.first {
 }
 
 .form_builder_plan_table {
-    width: 20%;
+    width: 25%;
 }
 
 
@@ -2696,7 +2718,7 @@ p.form_build_h2_four {
 }
 
 .form_builder_annually_plans .form_builder_plan_table {
-    width: 25%;
+    width: 38%;
 }
 
 .form_builder_annually_plans .form_builder_plan_table.heading h2 {
@@ -2860,7 +2882,7 @@ p.form_build_h2_four {
 }
 
 .form_build_help_show.rate p {
-    padding-bottom: 40px;
+    padding-bottom: 20px;
 }
 
 .form_builder_support .form_builder_reasons {
@@ -4473,7 +4495,7 @@ span.text-content {
 
 .copied-message {
     position: absolute;
-    right: -80px;
+    right: 0px;
 }
 
 .email-templete-use-add {
@@ -4581,8 +4603,8 @@ button.show-data-icon {
 .edit_form_close button.rm-btn {
     position: absolute;
     width: 15%;
-    background: red !important;
-    right: 4%;
+    background: transparent !important;
+    right: 2%;
 }
 
 .custom-range-slider {
@@ -4755,7 +4777,7 @@ button.rm-btn.showfirst img {
 }
 
 .skeleton-wrapper {
-    position: absolute;
+    position: fixed;
     height: 100vh;
     background: #ebebeb;
     top: 0;
@@ -4874,8 +4896,125 @@ button.rm-btn.showfirst img {
 }
 
 
+.toggle-checkboxed {
+    width: 50px;
+    height: 25px;
+    position: relative;
+    appearance: none;
+    background-color: #ccc;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-checkboxed:checked {
+    background-color: #4EAE51; 
+    border: 1px solid #19811C ;
+}
+
+.toggle-switched input#status-toggle {
+    width: 50px;
+    height: 22px;
+    border: 1px grey;
+}
+
+.toggle-checkboxed:before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.3s ease;
+}
+
+.toggle-checkboxed:checked:before {
+    transform: translateX(25px); 
+}
+
+.form_builder_setting_page .form_builder_complte_actions {
+    background: white;
+    border-radius: 20px;
+    margin-bottom: 40px;
+}
+
+.form_builder_comple_email p {
+    font-size: 18px;
+    font-weight: 650;
+    color: #191919;
+}
+
+.form_builder_comple_email {
+    padding: 25px 40px;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.form_builder_action_status {
+    padding: 25px 40px;
+    border-bottom: 1px solid #F0F0F0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form_builder_action_number input[type="number"] {
+    border: 1px solid #B5B7C0;
+    text-align: left;
+    padding: 10px;
+    width: 100%;
+    max-width: 100%;
+    background: #F6F6F6;
+    color: #B5B7C0;
+    border-radius: 4px;
+}
+
+.form_builder_action_number {
+    display: grid;
+    width: 9%;
+    font-size: 11px;
+}
+
+.form_builder_action_status p {
+    font-size: 18px;
+    color: #191919;
+    font-weight: 650;
+}
 
 
+.form_builder_complte_forms {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.form_builder_complte_forms .form_build_inputs input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #B5B7C0;
+    background: #F6F6F6;
+    font-size: 12px;
+}
+
+button.form_email_btn {
+    margin-top: 16px;
+    background: #45a7f6;
+    color: white;
+    border: 1px solid #45a7f6;
+    width: 120px;
+    height: 35px;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.form_builder_setting_page .form_builder_complte_actions form {
+    padding: 25px 40px;
+}
+
+.form_builder_complte_forms .form_build_inputs {
+    width: 100%;
+}
 
 @media screen and (max-width: 1440px) {
 
@@ -5066,8 +5205,8 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width: 1024px) {
-    .copied-message {
-        right: 30px;
+    .form_builder_action_number {
+        width: 14%;
     }
 
     .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content {
@@ -5578,10 +5717,10 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width: 840px) {
-    .copied-message {
-        right: -13px;
-    }
 
+    .form_builder_action_number {
+        width: 20%;
+    }
     .form-builder-form-id {
         display: none;
     }
@@ -5708,6 +5847,19 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width: 768px) {
+
+    .form_builder_action_status {
+        padding: 15px 20px;
+    }
+    .form_builder_comple_email {
+        padding: 15px 20px;
+       
+    }
+
+    .form_builder_setting_page .form_builder_complte_actions form {
+        padding: 15px 20px;
+    }
+    
     .email-templates {
 
         height: 230px;
@@ -5814,9 +5966,25 @@ button.rm-btn.showfirst img {
         font-size: 13px;
     }
 
+
+    .form_builder_action_status p {
+        font-size: 14px;
+    }
+
+    .form_builder_comple_email p {
+        font-size: 14px;
+    }
 }
 
 @media screen and (max-width:540px) {
+    .form_builder_action_number {
+        width: 30%;
+    }
+
+    .form_builder_action_status {
+        display: block;
+    }
+
     .form-main-wrp table tr {
         grid-template-columns: 26% 17% 22% 28% !important;
     }
@@ -5841,9 +6009,6 @@ button.rm-btn.showfirst img {
         width: 100%;
     }
 
-    .copied-message {
-        right: -29px;
-    }
 
     .from_builder_pricing .form_builder_plan_add .form_builders_plan_btn {
         width: 100%;
@@ -5895,6 +6060,14 @@ button.rm-btn.showfirst img {
 }
 
 @media screen and (max-width: 480px) {
+    .form_builder_action_number {
+        width: 40%;
+    }
+    .form_builder_complte_forms {
+        display: block;
+        line-height: 28px;
+    }
+    
     .email-templates {
         height: 170px;
     }
@@ -5911,7 +6084,6 @@ button.rm-btn.showfirst img {
     }
 
     .copied-message {
-        right: -23px;
         font-size: 12px;
     }
 
@@ -6239,9 +6411,19 @@ button.rm-btn.showfirst img {
     top: 1px !important;
     width: 40px;
     border-radius: 0 !important;
-    background: rgb(199, 199, 199) !important;
+    background: #e7f9f4 !important;
     color: black;
     left: 2px;
+}
+
+.input-field.phone-edit .selected-flag:hover,
+.input-field.phone-edit .selected-flag:focus {
+    background: #e7f9f4 !important;
+}
+
+
+.input-field.phone-edit .flag-dropdown.open .selected-flag.open {
+    background: #e7f9f4 !important;
 }
 
 .phone-edit .flag-dropdown {

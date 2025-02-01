@@ -4,6 +4,9 @@ import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { parse } from 'json2csv';
+import { Parser } from 'json2csv'; 
+
 dotenv.config();
 
 const app = express();
@@ -53,7 +56,7 @@ const formCreateSchema = new mongoose.Schema({
     type: {
       type: String,
       required: true,
-      enum: ['text', 'name', 'button', 'divider', 'heading', 'radio', 'file', 'number', 'date', 'datetime', 'images', 'link', 'checkbox', 'location', 'toggle', 'select', 'textarea', 'password', 'email', 'phone', 'time', 'description', 'url', 'slider']
+      enum: ['text', 'name', 'button', 'divider', 'heading', 'radio', 'file', 'multi-file', 'number', 'date', 'datetime', 'images', 'link', 'checkbox', 'location', 'toggle', 'select', 'textarea', 'password', 'email', 'phone', 'time', 'description', 'url', 'slider']
     },
     label: { type: String, required: true, default: function () { return this.name || 'Unnamed Field'; } },
     name: String,
@@ -73,6 +76,7 @@ const formCreateSchema = new mongoose.Schema({
     backgroundColor: { type: String, default: '#45a7f6' },
     inputPadding: { type: String, default: '10px' },
     buttontext: { type: String, required: false },
+    buttonaline: { type: String, required: false },
     inputBorderRadious: { type: String, default: '4px' },
     buttonBorderColor: { type: String, required: false },
     buttonBorderWidth: { type: String, required: false },
@@ -159,7 +163,7 @@ const formSchema = new mongoose.Schema({
   }]
 });
 
-const Form = mongoose.model('Form_costumers', formSchema);
+const Form = mongoose.model('costumer submitted datas', formSchema);
 
 const paymentDataSchema = new mongoose.Schema({
   shop: { type: String, required: true },
@@ -171,7 +175,7 @@ const paymentDataSchema = new mongoose.Schema({
   chargeId: { type: String, required: true, unique: true },
 });
 
-const Payment = mongoose.model('Payments', paymentDataSchema);
+const Payment = mongoose.model('payments', paymentDataSchema);
 
 const shopDetailsSchema = new mongoose.Schema({
   shop: { type: String, required: true, unique: true },
@@ -450,7 +454,7 @@ const emailTemplateSchema = new mongoose.Schema({
     templatePadding: { type: String, required: false }
   }
 });
-const Email = mongoose.model('EmailTemplats', emailTemplateSchema);
+const Email = mongoose.model('email Templates', emailTemplateSchema);
 
 const coloumtemplate = new mongoose.Schema({
   columnIndex: { type: Number, required: false },
@@ -465,6 +469,16 @@ const ShowTemplats = new mongoose.Schema({
   templateId: { type: String, required: true },
   title: { type: String, required: true },
   TemplateImage: { type: String, required: true },
+  form_ids: {
+    type: [String],
+    required: true,
+    validate: {
+      validator: function (value) {
+        return value.every(item => typeof item === 'string');
+      },
+      message: 'Each form_id must be a string',
+    },
+  },
   headingText: {
     text: { type: String, required: false },
     fontSize: { type: String, required: false }
@@ -835,11 +849,67 @@ const saveBase64Image = (base64Str, fileName) => {
   return filePath;
 };
 
+const SettingsSchema = new mongoose.Schema({
+  shop: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: {
+    type: String, required: true
+  },
+}, { timestamps: true });
+
+const Settings = mongoose.model('email_password(not show)s', SettingsSchema);
+
+app.post('/save-settings', async (req, res) => {
+  try {
+    const { shop, email, password } = req.body;
+
+    const existingSettings = await Settings.findOne({ shop });
+
+    if (existingSettings) {
+      existingSettings.email = email;
+      existingSettings.password = password;
+      await existingSettings.save();
+      res.status(200).json({ message: 'Settings updated successfully!' });
+    } else {
+
+      const settings = new Settings({ shop, email, password });
+      await settings.save();
+      res.status(200).json({ message: 'Settings saved successfully!' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get('/get-settings', async (req, res) => {
+  try {
+    const settings = await Settings.find();
+    res.status(200).json(settings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 const sendEmail = async (email, TemplateAll) => {
   try {
     console.log('Preparing to send email');
     console.log('Email:', email);
     console.log('TemplateAll:', TemplateAll);
+
+
+    const settings = await Settings.findOne({ shop: TemplateAll.shop });
+
+    let emailUser = 'sahil@hubsyntax.com';
+    let emailPass = 'wqnr gaom dgzq asyu';
+
+    if (settings && settings.email && settings.password) {
+      emailUser = settings.email;
+      emailPass = settings.password;
+      console.log('Using shop-specific email and password:', emailUser);
+    } else {
+      console.log('No shop-specific credentials found. Using default email.');
+    }
 
     const fields = TemplateAll.fields || [];
     if (fields.length > 0) {
@@ -1113,7 +1183,7 @@ const sendEmail = async (email, TemplateAll) => {
             case 'split': {
               const value = field.value || '';
               const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, (match) => '');
-          
+
               return `
                   <div style="
                   overflow: hidden;
@@ -1137,18 +1207,18 @@ const sendEmail = async (email, TemplateAll) => {
                   ">
                     <tr>
                       <td style="
-                  vertical-align: ${['top', 'middle', 'bottom', 'center', 'end'].includes(field.splittext) 
-                        ? (field.splittext === 'center' ? 'middle' : field.splittext === 'end' ? 'bottom' : field.splittext) 
-              : 'top'};
+                  vertical-align: ${['top', 'middle', 'bottom', 'center', 'end'].includes(field.splittext)
+                  ? (field.splittext === 'center' ? 'middle' : field.splittext === 'end' ? 'bottom' : field.splittext)
+                  : 'top'};
 
                         text-align: ${field.splitTextAlin || 'left'};
                       ">
                         ${field.add === 'image' && field.value ?
-                          `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
-                          `<div>${updatedValue}</div>`
-                        }
+                  `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
+                  `<div>${updatedValue}</div>`
+                }
                         ${field.showbtnsplit ?
-                          `<a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                  `<a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
                             <button style="
                               margin-top: 20px;
                               background-color: ${field.splitbtnbg || '#007BFF'};
@@ -1167,14 +1237,14 @@ const sendEmail = async (email, TemplateAll) => {
                               ${field.splitbtn || 'Click Me'}
                             </button>
                           </a>` : ''
-                        }
+                }
                       </td>
                     </tr>
                   </table>
                 </div>
               `;
-          }
-          
+            }
+
             case 'product':
               return `
                 <div>
@@ -1419,20 +1489,20 @@ const sendEmail = async (email, TemplateAll) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'sahil@hubsyntax.com',
-        pass: 'wqnr gaom dgzq asyu',
+        user: emailUser,
+        pass: emailPass,
       },
     });
 
     const adminMailOptions = {
-      from: 'sahil@hubsyntax.com',
+      from: emailUser,
       to: 'sahil@hubsyntax.com',
       subject: 'New Customer Query EcombitHub',
       html: adminHtmlContent,
     };
 
     const userMailOptions = {
-      from: 'sahil@hubsyntax.com',
+      from: emailUser,
       to: email,
       subject: 'Thank You for Your Query!',
       html: userHtmlContent,
@@ -1450,6 +1520,148 @@ const sendEmail = async (email, TemplateAll) => {
     console.error('');
   }
 };
+
+const costomerData = new mongoose.Schema({
+  status: {type: String,enum: ['active', 'disactive'], required: true
+  },
+  numberValue: {type: Number, required: true  },
+  shop: {type: String, required: true  },
+  shopData: {email: {type: String,required: true,}},
+
+});
+
+const CostomerAll = mongoose.model('Customer Datas', costomerData);
+
+let emailCheckIntervals = {}; 
+
+app.post('/user-email', async (req, res) => {
+  try {
+    const { status, numberValue, shop, shopData } = req.body;
+    console.log('Received numberValue:', numberValue);
+    console.log('Received shop:', shop);
+    console.log('Sending email to:', shopData.email);
+    console.log('Received status:', status);
+
+    const numberValueParsed = Number(numberValue);
+
+    const existingShop = await CostomerAll.findOne({ shop });
+
+    if (existingShop) {
+     
+      await CostomerAll.updateOne(
+        { shop },
+        { $set: { status, numberValue: numberValueParsed } }
+      );
+      console.log(`Shop data updated for ${shop}`);
+    } else {
+      
+      const newSetting = new CostomerAll({
+        status,
+        numberValue: numberValueParsed,
+        shop,
+        shopData,
+      });
+      await newSetting.save();
+      console.log(`New shop data added for ${shop}`);
+    }
+
+    async function checkAndSendEmail() {
+      const forms = await Form.find({ shop: shop });
+      console.log(`Checking forms for ${shop}. Current count: ${forms.length}, Required: ${numberValueParsed}`);
+
+      if (forms.length >= numberValueParsed && status === "active") {
+        console.log(`Form count matches or exceeds numberValue. Sending ${numberValueParsed} forms...`);
+
+        const selectedForms = forms.slice(0, numberValueParsed).map(form => ({
+          _id: form._id,
+          title: form.title,
+          id: form.id,
+          shop: form.shop,
+          currentUrl: form.currentUrl,
+          fields: JSON.stringify(form.fields),
+          timestamp: form.timestamp,
+          submissions: form.submissions.length,
+        }));
+
+        const csvParser = new Parser();
+        const csvData = csvParser.parse(selectedForms);
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'sahil@hubsyntax.com',
+            pass: 'wqnr gaom dgzq asyu',
+          },
+        });
+
+        const mailOptions = {
+          from: 'sahil@hubsyntax.com',
+          to: shopData.email,
+          subject: 'Form Data CSV',
+          text: `We’re excited to inform you that your form, has successfully reached ${numberValueParsed}  submissions! This milestone indicates growing engagement from your customers.
+Thank you for using our Form Builder HuB app to connect with your customer. If you have any questions or need further assistance, please feel free to reach out.`,
+          attachments: [
+            {
+              filename: 'formData.csv',
+              content: csvData,
+            },
+          ],
+        };
+
+        transporter.sendMail(mailOptions, async (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+          } else {
+            console.log('Email sent successfully:', info);
+            try {
+              await CostomerAll.updateOne({ shop: shop }, { status: 'disactive' });
+              console.log('Status updated to disactive for shop:', shop);
+
+              clearInterval(emailCheckIntervals[shop]);
+              delete emailCheckIntervals[shop];
+            } catch (updateError) {
+              console.error('Error updating status to disactive:', updateError);
+            }
+          }
+        });
+      }
+    }
+
+    if (!emailCheckIntervals[shop]) {
+      emailCheckIntervals[shop] = setInterval(checkAndSendEmail, 10000);
+      console.log(`Started checking for shop: ${shop}`);
+    }
+
+    res.status(201).json({ message: 'Data processed successfully. Email will be sent when form count matches.', data: { shop, status, numberValue: numberValueParsed } });
+
+  } catch (error) {
+    console.error('Error saving data or sending email:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+app.get('/get-status/:shop', async (req, res) => {
+  try {
+      const { shop } = req.params;
+      const shopData = await CostomerAll.findOne({ shop });
+      
+      if (shopData) {
+        const numberValue = shopData.numberValue;
+          
+          return res.json({ 
+              status: shopData.status,
+              numberValue: numberValue 
+          });
+      } else {
+          return res.status(404).json({ message: 'Shop not found' });
+      }
+  } catch (error) {
+      console.error("Error fetching status:", error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 app.get('/check-title/:title', async (req, res) => {
   try {
@@ -1562,7 +1774,6 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
     console.log('Uploaded File:', req.file);
 
     let { templateId, shop, TemplateImage, title, fields, createdAt, form_ids, styles } = req.body;
-
     const formIds = Array.isArray(form_ids) ? form_ids : [form_ids];
     const fieldsArray = Array.isArray(fields) ? fields : [fields];
 
@@ -1738,30 +1949,89 @@ app.get('/template/image', async (req, res) => {
   }
 });
 
-app.post('/template/api', upload.single('image'), async (req, res) => {
-  console.log('respose-data', req.body);
+app.post('/template/api', upload.single('file'), async (req, res) => {
   try {
-    const { templateId, TemplateImage, title, fields, createdAt, styles } = req.body;
-    const formData = new Templated({
-      templateId,
-      title,
-      TemplateImage,
-      fields,
-      createdAt,
-      styles,
+    console.log('Request Body:', req.body);
+    console.log('Uploaded File:', req.file);
+
+    let { templateId, shop, TemplateImage, title, fields, createdAt, form_ids, styles } = req.body;
+
+    const formIds = Array.isArray(form_ids) ? form_ids.map(id => String(id)) : [String(form_ids)];
+    const fieldsArray = Array.isArray(fields) ? fields : [fields];
+
+    if (TemplateImage && TemplateImage.startsWith('data:image')) {
+      const base64Data = TemplateImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `templateImage_${Date.now()}.png`;
+      const savedFilePath = saveBase64Image2(base64Data, fileName);
+      TemplateImage = savedFilePath;
+    }
+
+    if (styles && styles.backgroundImage && styles.backgroundImage.startsWith('data:image')) {
+      const base64Data = styles.backgroundImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `backgroundImage_${Date.now()}.png`;
+      styles.backgroundImage = saveBase64Image2(base64Data, fileName);
+    }
+
+    fieldsArray.forEach(field => {
+      let headingbgImage = field.headingbgImage;
+
+      if (headingbgImage && headingbgImage.startsWith('data:image')) {
+        const base64Data = headingbgImage.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+        const fileName = `headingbgImage_${Date.now()}.png`;
+        field.headingbgImage = saveBase64Image2(base64Data, fileName);
+      }
+
+      if (field.customIcons && Array.isArray(field.customIcons)) {
+        field.customIcons.forEach(icon => {
+          if (icon.src && typeof icon.src === 'string' && icon.src.startsWith('data:image')) {
+            const base64Data = icon.src.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const uniqueSuffix = Math.random().toString(36).substring(2, 15);
+            const fileName = `customIcon_${uniqueSuffix}.png`;
+            icon.src = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+
+      if (field.columnData && Array.isArray(field.columnData)) {
+        field.columnData.forEach(column => {
+          if (column.image && typeof column.image === 'string' && column.image.startsWith('data:image')) {
+            const base64Data = column.image.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const uniqueSuffix = Math.random().toString(36).substring(2, 15);
+            const fileName = `columnImage_${uniqueSuffix}.png`;
+            column.image = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
     });
 
-    if (req.file) {
-      formData.styles.backgroundImage = req.file.path;
-    }
+    fieldsArray.forEach(field => {
+      if (field.value && typeof field.value === 'string' && field.value.startsWith('data:image')) {
+        const base64Data = field.value.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+        const fileName = `field_image_${Date.now()}.png`;
+        field.value = saveBase64Image2(base64Data, fileName);
+      }
+    });
+
+    const formData = new Templated({
+      templateId,
+      shop,
+      TemplateImage,
+      title,
+      form_ids: formIds,
+      fields: fieldsArray,
+      createdAt,
+      styles
+    });
 
     const savedForm = await formData.save();
     res.status(201).json({ message: 'Form saved successfully', data: savedForm });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error saving form', error: error.message });
   }
 });
+
 
 app.delete('/delete/:id', async (req, res) => {
   const { id } = req.params;
@@ -1909,29 +2179,13 @@ app.post('/payment/confirm', async (req, res) => {
 app.get('/api/customer', async (req, res) => {
   try {
     const forms = await Form.find({});
-    const emailMap = new Map();
-
-    forms.forEach(form => {
-      const shop = form.shop;
-      form.fields.forEach(field => {
-        if (field.name === 'Email') {
-          const email = field.value;
-          if (!emailMap.has(email)) {
-            emailMap.set(email, []);
-          }
-
-          emailMap.get(email).push(shop);
-        }
-      });
-    });
-    const emailArray = [...emailMap].map(([email, shops]) => ({ email, shops }));
-
-    res.status(200).json(emailArray);
+    res.status(200).json(forms);
   } catch (error) {
     console.error('Error retrieving emails:', error);
     res.status(500).send({ error: 'Failed to retrieve emails' });
   }
 });
+
 
 app.get('/api/forms', async (req, res) => {
   try {
@@ -2060,9 +2314,15 @@ app.post('/form-data', upload.single('file'), async (req, res) => {
       existingForm = await FormModel.findOne({ title: newTitle });
       counter++;
     }
-
+    
     const { formId, shop, fields, createdAt, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
 
+    if (styles.backgroundImage && styles.backgroundImage.startsWith('url(data:image')) {
+      const base64Data = styles.backgroundImage.replace(/^url\((.*)\)$/, '$1').replace(/^data:image\/(?:png|jpeg);base64,/, '');  
+      const fileName = `templateImage_${Date.now()}.png`;
+      const imageUrl = saveBase64Image2(base64Data, fileName);
+      styles.backgroundImage = imageUrl;
+    }
     const newFormEntry = new FormModel({
       formId,
       shop,
@@ -2087,10 +2347,23 @@ app.post('/form-data', upload.single('file'), async (req, res) => {
   }
 });
 
-app.put('/update-form/:formId', async (req, res) => {
+app.put('/update-form/:formId', upload.single('file'), async (req, res) => {
   try {
     const { formId } = req.params;
-    const updatedForm = await FormModel.findOneAndUpdate({ formId }, req.body, { new: true });
+    const { title, fields, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
+
+    if (styles && styles.backgroundImage && styles.backgroundImage.startsWith('url(data:image')) {
+      const base64Data = styles.backgroundImage.replace(/^url\((.*)\)$/, '$1').replace(/^data:image\/(?:png|jpeg);base64,/, '');
+      const fileName = `templateImage_${Date.now()}.png`;
+      const imageUrl = saveBase64Image2(base64Data, fileName);
+      styles.backgroundImage = imageUrl;
+    }
+
+    const updatedForm = await FormModel.findOneAndUpdate(
+      { formId },
+      { title, fields, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status },
+      { new: true }
+    );
 
     if (!updatedForm) {
       return res.status(404).send('Form not found');
@@ -2102,6 +2375,7 @@ app.put('/update-form/:formId', async (req, res) => {
     console.error('Error:', error.message);
   }
 });
+
 
 app.delete('/delete-form/:formId', async (req, res) => {
   try {

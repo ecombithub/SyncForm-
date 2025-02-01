@@ -61,7 +61,7 @@ export default function App() {
         <Link to="/app" rel="home" onClick={handleLinkClick}>Home</Link>
         <Link to="/app/customer">Customers</Link>
         <Link to="/app/formGenerator/list">Forms</Link>
-        {/* <Link to="/app/setting" onClick={handleLinkClick}>Settings</Link> */}
+      <Link to="/app/setting" onClick={handleLinkClick}>Settings</Link> 
         <Link to="/app/pricing" onClick={handleLinkClick}>Pricing</Link>
         <Link to="/app/support" onClick={handleLinkClick}>Support</Link>
         <Link to="/app/emailTemplate/list">Email Template</Link>

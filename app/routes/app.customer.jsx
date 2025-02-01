@@ -18,7 +18,7 @@ import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
-    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
     const { shop, accessToken } = session;
 
     const response = {
@@ -63,17 +63,120 @@ function Customer() {
     const [createdForms, setCreatedForms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showFormNames, setShowFormNames] = useState(false);
+    const [showForm, setShowForm] = useState(false);
+    const [selectedForm, setSelectedForm] = useState('');
     const [selectedFormName, setSelectedFormName] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const formsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
     const [showpop, setShowpop] = useState(false);
     const [selectedForms, setSelectedForms] = useState(new Set());
-    const [updateForm, setUpateForms] = useState([]);
-    const [totalSubmissions, setTotalSubmissions] = useState(0);
+    const [uniqueEmailCount, setUniqueEmailCount] = useState(0);
+    const [totalSubmissionCount, setTotalSubmissionCount] = useState(0)
     const [percentage, setPercentage] = useState(0);
     const [percentage1, setPercentage1] = useState(0);
     const { shop, apiUrl } = useLoaderData() || {};
+
+
+    useEffect(() => {
+        const fetchForms = async () => {
+            try {
+                setLoading(true);
+                await new Promise((resolve) => setTimeout(resolve, 3000));
+                const response = await axios.get(`${apiUrl}/api/customer`);
+                const forms = response.data;
+
+                const matchedForms = forms.filter(form => form.shop === shop);
+
+                let totalSubmissions = 0;
+                let totalUniqueEmails = 0;
+
+                if (matchedForms.length > 0) {
+                    matchedForms.forEach((form) => {
+                        const seenEmails = new Set();
+
+                        form.submissions.forEach((submission) => {
+                            totalSubmissions += 1;
+
+                            submission.fields.forEach(field => {
+                                if (field.name === "Email" && !seenEmails.has(field.value)) {
+                                    seenEmails.add(field.value);
+                                }
+                            });
+                        });
+
+                        totalUniqueEmails += seenEmails.size;
+                    });
+
+                    setTotalSubmissionCount(totalSubmissions);
+                    setUniqueEmailCount(totalUniqueEmails);
+                } else {
+                    console.log("No matching forms found for the shop.");
+                }
+            } catch (error) {
+                console.error("Error fetching forms:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchForms();
+    }, [shop, apiUrl]);
+
+
+    useEffect(() => {
+        const fetchForms = async () => {
+            try {
+                setLoading(true);
+                await new Promise((resolve) => setTimeout(resolve, 3000));
+                const response = await axios.get(`${apiUrl}/api/forms`);
+                const filteredForms = response.data.filter(form => form.shop === shop);
+
+                if (filteredForms.length > 0) {
+                    const formsWithUniqueEmails = filteredForms.map(form => {
+                        const seenEmails = new Set();
+                        const uniqueSubmissions = form.submissions.filter(submission => {
+                            let isUniqueEmail = false;
+                            submission.fields.forEach(field => {
+                                if (field.name === "Email" && !seenEmails.has(field.value)) {
+                                    seenEmails.add(field.value);
+                                    isUniqueEmail = true;
+                                }
+                            });
+                            return isUniqueEmail;
+                        });
+
+                        return { ...form, uniqueSubmissions };
+                    });
+
+                    setCreatedForms(formsWithUniqueEmails);
+
+                    formsWithUniqueEmails.forEach(form => {
+                        console.log(`Form Title: ${form.title}, Form ID: ${form.id}`);
+                        form.uniqueSubmissions.forEach(submission => {
+                            const emailField = submission.fields.find(field => field.name === "Email");
+                            const timestamp = new Date(submission.timestamp);
+                            const formattedDate = format(timestamp, 'yyyy-MM-dd hh:mm:ss a');
+
+                            if (emailField) {
+                                console.log(`  Unique Email: ${emailField.value}, Date and Time: ${formattedDate}`);
+                            }
+                        });
+                    });
+                } else {
+                    setCreatedForms([]);
+                    console.log("No forms found for this shop");
+                }
+            } catch (error) {
+                console.error('Error fetching forms:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchForms();
+    }, [shop, apiUrl]);
+
 
     useEffect(() => {
         const animatedValue = { value: 0 };
@@ -87,7 +190,7 @@ function Customer() {
             ease: 'power1.out',
         });
     }, []);
-    
+
     useEffect(() => {
         const animatedValue = { value: 0 };
 
@@ -106,70 +209,13 @@ function Customer() {
         setSelectedForms(new Set());
     }
 
-    useEffect(() => {
-        const fetchForms = async () => {
-            try {
-                setLoading(true);
-                await new Promise((resolve) => setTimeout(resolve, 3000));
-                const response = await axios.get(`${apiUrl}/api/customer`);
-
-                if (!shop) {
-                    console.log('Shop not found');
-                    return;
-                }
-                const filteredData = response.data.filter(customer => customer.shops.includes(shop));
-
-                if (filteredData.length > 0) {
-                    setUpateForms(filteredData);
-                    console.log('Filtered Data:', filteredData);
-                } else {
-                    setUpateForms([]);
-                    console.log('No data found for this shop');
-                }
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchForms();
-    }, []);
-
-    useEffect(() => {
-        const fetchForms = async () => {
-            try {
-                setLoading(true);
-                await new Promise((resolve) => setTimeout(resolve, 3000));
-                const response = await axios.get(`${apiUrl}/api/forms`);
-                const filteredForms = response.data.filter(form => form.shop === shop);
-
-                if (filteredForms.length > 0) {
-                    setCreatedForms(filteredForms);
-                    const total = filteredForms.reduce((acc, form) => acc + (form.submissionCount || form.submissions.length || 0), 0);
-                    setTotalSubmissions(total);
-                    console.log('Form Data:', createdForms);
-
-                } else {
-                    setCreatedForms([]);
-                    setTotalSubmissions(0);
-                    console.log("No forms found for this shop");
-                }
-            } catch (error) {
-                console.error('Error fetching forms:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchForms();
-    }, []);
-
- 
 
     const handleToggleFormNames = () => {
-        setShowFormNames(!showFormNames);
+        setShowFormNames(prevState => !prevState);
+    };
+
+    const handleToggle = () => {
+        setShowForm(prevState => !prevState);
     };
 
     const handleSelectFormName = (title) => {
@@ -177,17 +223,22 @@ function Customer() {
         setShowFormNames(false);
     };
 
-    const getFieldValue = (fields, names) => {
-        for (const name of names) {
-            const field = fields.find(field => field.name === name);
-            if (field?.value) return field.value;
-        }
-        return 'N/A';
+    const handleSelectForm = (title) => {
+        setSelectedForm(title);
+        setShowForm(false);
     };
 
-    const filteredForms = createdForms.filter(form => {
-        const fullName = getFieldValue(form.fields, ['First name', 'Last name', 'Full name']).toLowerCase();
-        const email = getFieldValue(form.fields, ['Email']).toLowerCase();
+    const filteredForms = createdForms.flatMap(form => {
+        return form.uniqueSubmissions.map(submission => ({
+            ...form,
+            submission
+        }));
+    }).filter(item => {
+        const fullName = item.submission.fields.find(f => f.name === 'Full name')?.value ||
+            `${item.submission.fields.find(f => f.name === 'First name')?.value || ''} ${item.submission.fields.find(f => f.name === 'Last name')?.value || ''}`.trim().toLowerCase();
+
+        const email = item.submission.fields.find(f => f.name === 'Email')?.value.toLowerCase() || '';
+
         return fullName.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase());
     });
 
@@ -200,15 +251,16 @@ function Customer() {
 
     const handleCheckboxChange = (formId) => {
         setSelectedForms(prev => {
-            const newSelectedForms = new Set(prev);
-            if (newSelectedForms.has(formId)) {
-                newSelectedForms.delete(formId);
+            const updated = new Set(prev);
+            if (updated.has(formId)) {
+                updated.delete(formId);
             } else {
-                newSelectedForms.add(formId);
+                updated.add(formId);
             }
-            return newSelectedForms;
+            return updated;
         });
     };
+
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
@@ -220,14 +272,34 @@ function Customer() {
         }
     };
 
+    const [currentFormsed, setCurrentForms] = useState([]);
+
+    useEffect(() => {
+        const fetchForms = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/api/forms`);
+                setCurrentForms(response.data);
+            } catch (error) {
+                console.error('Error fetching forms:', error);
+            }
+        };
+
+        fetchForms();
+    }, []);
+
     const handleSelectAllForms = () => {
         setSelectedFormName(null);
-        setShowFormNames(false);
+        setShowFormNames(true);
+    };
+
+    const handleSelect = () => {
+        setSelectedForm(null);
+        setShowForm(true);
     };
 
     const downloadSelectedCSV = () => {
         const csvRows = [];
-        const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone'];
+        const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
         csvRows.push(headers.join(','));
 
         if (selectedForms.size === 0) {
@@ -238,12 +310,19 @@ function Customer() {
         const selectedFormsArray = Array.from(selectedForms);
 
         selectedFormsArray.forEach(formId => {
-            const form = createdForms.find(f => f.id === formId);
+            const form = currentFormsed.find(f => f.id === formId);
             if (form) {
                 form.submissions.forEach((submission, index) => {
                     const nameField = submission.fields.find(field => field.name === 'First name' || field.name === 'Full name') || { value: 'N/A' };
                     const emailField = submission.fields.find(field => field.name === 'Email') || { value: 'N/A' };
                     const phoneField = submission.fields.find(field => field.name === 'Phone' || field.name === 'Number') || { value: 'N/A' };
+
+                    const fieldDetails = Array.isArray(submission.fields)
+                        ? submission.fields.map(field => `${field.name}: ${field.value || 'N/A'}`).join('; ')
+                        : '';
+                    const shop = form.shop || 'N/A';
+                    const currentUrl = form.currentUrl || 'N/A';
+                    const timestamp = submission.timestamp || 'N/A';
 
                     const values = [
                         form.title || '',
@@ -251,7 +330,11 @@ function Customer() {
                         index + 1,
                         nameField.value,
                         emailField.value,
-                        phoneField.value
+                        phoneField.value,
+                        fieldDetails,
+                        shop,
+                        currentUrl,
+                        timestamp
                     ];
                     csvRows.push(values.join(','));
                 });
@@ -263,7 +346,7 @@ function Customer() {
         const a = document.createElement('a');
         a.setAttribute('hidden', '');
         a.setAttribute('href', url);
-        a.setAttribute('download', 'all_submissions.csv');
+        a.setAttribute('download', 'Customers Data.csv');
         setSelectedForms(new Set());
         document.body.appendChild(a);
         a.click();
@@ -272,8 +355,8 @@ function Customer() {
 
 
     const downloadAllCSV = () => {
-        const csvRows = [];
-        const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details'];
+        const csvRows = []; const
+            headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
         csvRows.push(headers.join(','));
 
         filteredForms.forEach(form => {
@@ -286,6 +369,11 @@ function Customer() {
                     ? submission.fields.map(field => `${field.name}: ${field.value || 'N/A'}`).join('; ')
                     : '';
 
+                const shop = form.shop || 'N/A';
+                const currentUrl = form.currentUrl || 'N/A';
+                const timestamp = submission.timestamp || 'N/A';
+
+
                 const values = [
                     form.title || '',
                     form.id || '',
@@ -293,7 +381,10 @@ function Customer() {
                     nameField.value,
                     emailField.value,
                     phoneField.value,
-                    fieldDetails
+                    fieldDetails,
+                    shop,
+                    currentUrl,
+                    timestamp
                 ];
 
                 csvRows.push(values.join(','));
@@ -313,318 +404,325 @@ function Customer() {
 
     return (
         <>
-        {loading ? (
-            <div className="skeleton-wrapper fade-in">
-                <div className="container skeleton-wred">
-                    <div className="skeleton-wrp">
-                        <div className="skeleton-wrp-left">
-                            <div className="skeleton skeleton-header"></div>
-                            <div className="skeleton-wrp-left-para">
-                                <div className="skeleton skeleton-paragraph"></div>
-                                <div className="skeleton skeleton-paragraph"></div>
-                            </div>
-                            <div className="skeleton-wrp-left-para">
-                                <div className="skeleton skeleton-paragraph"></div>
-                                <div className="skeleton skeleton-paragraph "></div>
-                            </div>
-                        </div>
-                        <div className="skeleton-wrp-right">
-                            <div className="skeleton-wrp-left-para right">
-                                <div className="skeleton skeleton-paragraph"></div>
-                                <div className="skeleton skeleton-paragraph two"></div>
-                            </div>
-                            <div className="skeleton-wrp-left-para right">
-                                <div className="skeleton skeleton-paragraph"></div>
-                                <div className="skeleton skeleton-paragraph two"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        ) : (
-        <div className='form_builder_customer'>
-            <div className='container'>
-                <div className="form-builder-customer_title">
-                    <h2>Forms Builder HUB</h2>
-                </div>
-                <div className="form-builder-customer-total">
-                    <div className="form-tota-customer">
-                        <div className="form-tota-customer-image">
-                            <img src={customer1} alt="" />
-                        </div>
-                        <div className="form-tota-customer-element">
-                            <p>Total customers</p>
-                            <h3>{updateForm.length}</h3>
-                            <span>
-                                <span style={{ color: "#00AC4F" }}> {percentage}%
-                                    <img src={arrow} alt="" /> <span className="text-content">this month</span>
-                                </span>
-                            </span>
-
-
-                        </div>
-                    </div>
-                    <div className="form-tota-customer">
-                        <div className="form-tota-customer-image">
-                            <img src={customer2} alt="" />
-                        </div>
-                        <div className="form-tota-customer-element">
-                            <p>Total forms</p>
-                            <h3>{createdForms.length}</h3>
-                        </div>
-                    </div>
-                    <div className="form-tota-customer">
-                        <div className="form-tota-customer-image">
-                            <img src={customer3} alt="" />
-                        </div>
-                        <div className="form-tota-customer-element">
-                            <p>Total forms submission</p>
-                            <h3>{totalSubmissions}</h3>
-                            <span>
-                                <span style={{ color: "#00AC4F" }}>
-                                    <img src={arrow} alt="" />  {percentage1}%
-                                </span> this month
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div className="form_builder_show_all_forms">
-                    <div className="form_build_heading">
-                        <div className="form_build_title">
-                            <h2>All Customers</h2>
-                        </div>
-                        <div className='form-build-customer-search'>
-                            <div className='form-builder-search-bar'>
-                                <input
-                                    id="search"
-                                    type="search"
-                                    placeholder='Search'
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                                <div className='form_build_icon_search'>
-                                    <img src={search12} alt="" />
+            {loading ? (
+                <div className="skeleton-wrapper fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph "></div>
                                 </div>
                             </div>
-                            <div className="form_builder_download" onClick={handleShowPop}>
-                                <p>Download all CSV</p>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
                             </div>
-                            <div className="form_builder_download icon" onClick={handleShowPop}>
-                                <img src={dropicon} alt="" />
-                            </div>
-                            <div className='show_forms_all'>
-                                <span className='name_build'>
-                                    Short by  :
-                                    <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
-                                         Forms name <span className='form-short'><img src={down} alt="" /></span>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className='form_builder_customer'>
+                    <div className='container'>
+                        <div className="form-builder-customer_title">
+                            <h2>Forms Builder HUB</h2>
+                        </div>
+                        <div className="form-builder-customer-total">
+                            <div className="form-tota-customer">
+                                <div className="form-tota-customer-image">
+                                    <img src={customer1} alt="" />
+                                </div>
+                                <div className="form-tota-customer-element">
+                                    <p>Total customers</p>
+                                    <h3>{uniqueEmailCount}</h3>
+
+                                    <span>
+                                        <span style={{ color: "#00AC4F" }}> {percentage}%
+                                            <img src={arrow} alt="" /> <span className="text-content">this month</span>
+                                        </span>
                                     </span>
-                                </span>
-                                <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
-                                    <div onClick={handleSelectAllForms}>All Forms</div>
-                                    {createdForms.map(form => (
-                                        <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
-                                            {form.title}
-                                        </div>
-                                    ))}
+
+
+                                </div>
+                            </div>
+                            <div className="form-tota-customer">
+                                <div className="form-tota-customer-image">
+                                    <img src={customer2} alt="" />
+                                </div>
+                                <div className="form-tota-customer-element">
+                                    <p>Total forms</p>
+                                    <h3>{createdForms.length}</h3>
+                                </div>
+                            </div>
+                            <div className="form-tota-customer">
+                                <div className="form-tota-customer-image">
+                                    <img src={customer3} alt="" />
+                                </div>
+                                <div className="form-tota-customer-element">
+                                    <p>Total forms submission</p>
+                                    <h3>{totalSubmissionCount}</h3>
+                                    <span>
+                                        <span style={{ color: "#00AC4F" }}>
+                                            <img src={arrow} alt="" />  {percentage1}%
+                                        </span> this month
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {showpop && (
-                        <div className='form_builder_popup_forms'>
-                            <div className='form_building_popupshow'>
-                                <div className="form_build_heading">
-                                    <div className="form_build_title">
-                                        <h2>Select form for download</h2>
+                        <div className="form_builder_show_all_forms">
+                            <div className="form_build_heading">
+                                <div className="form_build_title">
+                                    <h2>All Customers</h2>
+                                </div>
+                                <div className='form-build-customer-search'>
+                                    <div className='form-builder-search-bar'>
+                                        <input
+                                            id="search"
+                                            type="search"
+                                            placeholder='Search'
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                        <div className='form_build_icon_search'>
+                                            <img src={search12} alt="" />
+                                        </div>
                                     </div>
-                                    <div className='form-build-customer-search'>
-                                        <div className='form-builder-search-bar'>
-                                            <input
-                                                id="search"
-                                                type="search"
-                                                placeholder='Search'
-                                                value={searchTerm}
-                                                onChange={(e) => setSearchTerm(e.target.value)}
-                                            />
-                                            <div className='form_build_icon_search'>
-                                                <img src={search12} alt="" />
-                                            </div>
-                                        </div>
-                                        <div className="form_builder_download" onClick={downloadAllCSV}>
-                                            <p>Download all CSV</p>
-                                        </div>
-                                        <div className="form_builder_download icon" onClick={handleShowPop}>
-                                            <img src={dropicon} alt="" />
-                                        </div>
-                                        <div className='show_forms_all'>
-                                            <span className='name_build'>
-                                                Sort by :
-                                                <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
-                                                    Forms name <span className='form-short'><img src={down} alt="" /></span>
-                                                </span>
+                                    <div className="form_builder_download" onClick={handleShowPop}>
+                                        <p>Download all CSV</p>
+                                    </div>
+                                    <div className="form_builder_download icon" onClick={handleShowPop}>
+                                        <img src={dropicon} alt="" />
+                                    </div>
+                                    <div className='show_forms_all'>
+                                        <span className='name_build'>
+                                            Short by  :
+                                            <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
+                                                Forms name <span className='form-short'><img src={down} alt="" /></span>
                                             </span>
-                                            <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
-                                                <div onClick={handleSelectAllForms}>All Forms</div>
-                                                {createdForms.map(form => (
-                                                    <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
-                                                        {form.title}
+                                        </span>
+                                        <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
+                                            <div onClick={handleSelectAllForms}>All Forms</div>
+                                            {createdForms.map(form => (
+                                                <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
+                                                    {form.title}
+                                                </div>
+                                            ))}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {showpop && (
+                                <div className='form_builder_popup_forms'>
+                                    <div className='form_building_popupshow'>
+                                        <div className="form_build_heading">
+                                            <div className="form_build_title">
+                                                <h2>Select form for download</h2>
+                                            </div>
+                                            <div className='form-build-customer-search'>
+                                                <div className='form-builder-search-bar'>
+                                                    <input
+                                                        id="search"
+                                                        type="search"
+                                                        placeholder='Search'
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                    />
+                                                    <div className='form_build_icon_search'>
+                                                        <img src={search12} alt="" />
                                                     </div>
-                                                ))}
+                                                </div>
+                                                <div className="form_builder_download" onClick={downloadAllCSV}>
+                                                    <p>Download all CSV</p>
+                                                </div>
+                                                <div className="form_builder_download icon" onClick={handleShowPop}>
+                                                    <img src={dropicon} alt="" />
+                                                </div>
+                                                <div className='show_forms_all'>
+                                                    <span className='name_build'>
+                                                        Sort by :
+                                                        <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggle}>
+                                                            Forms name <span className='form-short'><img src={down} alt="" /></span>
+                                                        </span>
+                                                    </span>
+                                                    <div className={`form-names-list ${showForm ? 'show' : ''}`}>
+                                                        <div onClick={handleSelect}>All Forms</div>
+                                                        {currentFormsed.map(form => {
+                                                            console.log(form.title);
+                                                            return (
+                                                                <div key={form.id} onClick={() => handleSelectForm(form.title)}>
+                                                                    {form.title}
+                                                                </div>
+                                                            );
+                                                        })}
+
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="form_builder_select_optoion">
-                                    <div className='form_select_check data_forms'>
-                                        <input type="checkbox" onChange={handleSelectAll} />
-                                        <div className='form_select_check test'>
-                                            <p>Select All Forms Data </p>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div className="form_customer_tables">
-                                    <div className="table-container">
-                                        <div className="table-header">
-                                            <div></div>
-                                            <div> Form Name </div>
-                                            <div> id</div>
-                                            <div className='phone-forms'>Response</div>
-                                            <div> Date and time</div>
+                                        <div className="form_builder_select_optoion">
+                                            <div className='form_select_check data_forms'>
+                                                <input type="checkbox" onChange={handleSelectAll} />
+                                                <div className='form_select_check test'>
+                                                    <p>Select All Forms Data </p>
+                                                </div>
+                                            </div>
 
                                         </div>
-                                        <div className="table-row-popup">
-                                            {currentForms.length > 0 ? (
-                                                currentForms
-                                                    .filter(form => selectedFormName ? form.title === selectedFormName : true)
-                                                    .map(form => (
-                                                        <div key={form.id} className="table-row-data">
-                                                            <div className="data_forms">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={selectedForms.has(form.id)}
-                                                                    onChange={() => handleCheckboxChange(form.id)}
-                                                                    id={`checkbox-${form.id}`}
-                                                                />
-                                                                <label htmlFor={`checkbox-${form.id}`}></label>
-                                                            </div>
-                                                            <div className="data_forms">{form.title}</div>
+                                        <div className="form_customer_tables">
+                                            <div className="table-container">
+                                                <div className="table-header">
+                                                    <div></div>
+                                                    <div> Form Name </div>
+                                                    <div> id</div>
+                                                    <div className='phone-forms'>Response</div>
+                                                    <div> Date and time</div>
 
-                                                            <div className="data_forms">
-                                                                {form.id}
-                                                            </div>
+                                                </div>
+                                                <div className="table-row-popup">
+                                                    {currentFormsed.length > 0 ? (
+                                                        currentFormsed
+                                                            .filter(form => selectedForm ? form.title === selectedForm : true)
+                                                            .map(form => (
+                                                                <div key={form.id} className="table-row-data">
+                                                                    <div className="data_forms">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={selectedForms.has(form.id)}
+                                                                            onChange={() => handleCheckboxChange(form.id)}
+                                                                            id={`checkbox-${form.id}`}
+                                                                        />
+                                                                        <label htmlFor={`checkbox-${form.id}`}></label>
+                                                                    </div>
+                                                                    <div className="data_forms">{form.title}</div>
+                                                                    <div className="data_forms">{form.id}</div>
+                                                                    <div className="data_forms phone-forms">
+                                                                        {form.submissionCount || form.submissions.length || 0}
+                                                                    </div>
+                                                                    <div className="data_forms">
+                                                                        {format(new Date(form.timestamp), 'yyyy-MM-dd hh:mm:ss a')}
+                                                                    </div>
+                                                                </div>
+                                                            ))
+                                                    ) : (
+                                                        <div>No forms found</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className='form_build_cancle_option' style={{ cursor: "pointer" }} onClick={handleShowPop}><img src={cancleimg} alt="" /> </div>
+                                        <div className="form_build_download_btn" onClick={downloadSelectedCSV}>
+                                            Download
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="form_customer_tables">
+                                <div className="table-container">
+                                    <div className="table-header">
+                                        <div>Form Name</div>
+                                        <div>Customer Email</div>
+                                        <div className='phone-forms'>Phone</div>
+                                        <div>Name</div>
+                                        <div className='phone-forms'>Country</div>
+                                        <div className='phone-forms'>Status</div>
+                                    </div>
+                                    <div className="table-row">
+                                        {currentForms.length > 0 ? (
+                                            currentForms
+                                                .filter(item => selectedFormName ? item.title === selectedFormName : true)
+                                                .map((item, index) => {
+                                                    const email = item.submission.fields.find(f => f.name === 'Email')?.value || 'N/A';
+                                                    const phone = item.submission.fields.find(f => f.name === 'Phone')?.value || 'N/A';
+                                                    const fullName = item.submission.fields.find(f => f.name === 'Full name')?.value ||
+                                                        `${item.submission.fields.find(f => f.name === 'First name')?.value || ''} 
+                                                      ${item.submission.fields.find(f => f.name === 'Last name')?.value || ''}`.trim() || 'N/A';
+                                                    const country = item.submission.fields.find(f => f.name === 'Country')?.value || 'N/A';
+                                                    const formTitle = item.formTitle || item.title;
+
+                                                    return (
+                                                        <div key={index} className="table-row-data">
+                                                            <div className="data_forms">{formTitle}</div>
+                                                            <div className="data_forms">{email}</div>
+                                                            <div className="data_forms phone-forms">{phone}</div>
+                                                            <div className="data_forms">{fullName}</div>
+                                                            <div className="data_forms phone-forms">{country}</div>
                                                             <div className="data_forms phone-forms">
-                                                                {form.submissionCount || form.submissions.length || 0}
-                                                            </div>
-                                                            <div className="data_forms">
-                                                                {format(new Date(form.timestamp), 'yyyy-MM-dd hh:mm:ss a')}
+                                                                <div className="form-detail-status">
+                                                                    <span>Active</span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    ))
-                                            ) : (
-                                                <div>No forms found</div>
-                                            )}
-                                        </div>
+                                                    );
+                                                })
+                                        ) : (
+                                            <div>No forms found</div>
+                                        )}
                                     </div>
-                                </div>
-                                <div className='form_build_cancle_option' style={{ cursor: "pointer" }} onClick={handleShowPop}><img src={cancleimg} alt="" /> </div>
-                                <div className="form_build_download_btn" onClick={downloadSelectedCSV}>
-                                    Download
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
-                    <div className="form_customer_tables">
-                        <div className="table-container">
-                            <div className="table-header">
-                                <div> Form Name</div>
-                                <div>Customer Email</div>
-                                <div className='phone-forms'>Phone</div>
-                                <div> Name</div>
-                                <div className='phone-forms'>Country</div>
-                                <div className='phone-forms'>Status</div>
-                            </div>
-                            <div className="table-row">
-                                {currentForms.length > 0 ? (
-                                    currentForms
-                                        .filter(form => selectedFormName ? form.title === selectedFormName : true)
-                                        
-                                        .map(form => (
-                                            <div key={form.id} className="table-row-data">
-                                                <div className="data_forms">{form.title}</div>
-                                                <div className="data_forms">
-                                                    {getFieldValue(form.fields, ['Email'])}
-                                                </div>
-                                                <div className="data_forms phone-forms">
-                                                    {getFieldValue(form.fields, ['Phone', 'Number'])}
-                                                </div>
-
-                                                <div className="data_forms">
-                                                    {getFieldValue(form.fields, ['First name', 'Last name', 'Full name'])}
-                                                </div>
-                                                <div className="data_forms phone-forms">N/A</div>
-                                                <div className="data_forms phone-forms">
-                                                    <div className='form-detail-status'>
-                                                        <span>Active</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))
-                                ) : (
-                                    <div>No forms found</div>
-                                )}
+                                </div>
                             </div>
 
                         </div>
+                        <div className='form_build_last_pages'>
+                            <div className='form-builder-show-totle-form'>
+                                Showing  {uniqueEmailCount} customer
+                            </div>
+                            <div className="pagination">
+                                <nav>
+                                    <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={currentPage === 1}
+                                                onClick={() => handlePageChange(currentPage - 1)}
+                                            >
+                                                <img src={left} alt="Previous" />
+                                            </button>
+                                        </li>
+                                        {Array.from({ length: totalPages }, (_, index) => (
+                                            <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handlePageChange(index + 1)}
+                                                    className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            </li>
+                                        ))}
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={currentPage === totalPages}
+                                                onClick={() => handlePageChange(currentPage + 1)}
+                                            >
+                                                <img src={right} alt="Next" />
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
                     </div>
                 </div>
-                <div className='form_build_last_pages'>
-                    <div className='form-builder-show-totle-form'>
-                        Showing  {currentForms.length} customer
-                    </div>
-                    <div className="pagination">
-                        <nav>
-                            <ul className="xs:mt-0 mt-2 inline-flex items-center -space-x-px">
-                                <li>
-                                    <button
-                                        type="button"
-                                        disabled={currentPage === 1}
-                                        onClick={() => handlePageChange(currentPage - 1)}
-                                    >
-                                        <img src={left} alt="Previous" />
-                                    </button>
-                                </li>
-                                {Array.from({ length: totalPages }, (_, index) => (
-                                    <li key={index + 1} aria-current={currentPage === index + 1 ? 'page' : undefined}>
-                                        <button
-                                            type="button"
-                                            onClick={() => handlePageChange(index + 1)}
-                                            className={`${currentPage === index + 1 ? 'active' : 'inactive'}`}
-                                        >
-                                            {index + 1}
-                                        </button>
-                                    </li>
-                                ))}
-                                <li>
-                                    <button
-                                        type="button"
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                    >
-                                        <img src={right} alt="Next" />
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-                <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
-            </div>
-        </div>
-        )}
+            )}
         </>
     );
 }
 
 export default Customer;
+

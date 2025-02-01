@@ -112,8 +112,8 @@ export default function Support() {
                 </div>
                 <div className='form_builder_help_support'>
                     <div className="form_build_help_show">
-                        <h4>Contact support</h4>
-                        <p>Need Assistance? Our live chat support is ready to assist you in real-time. Connect with us now and experience speedy solutions to all your questions and concerns!</p>
+                        <h4>Contact Support</h4>
+                        <p>Need assistance or have any questions? Our live support team is available to resolve issues, answer queries, and provide solutions to ensure your form creation and integration run smoothly.</p>
                         <div className="form_builder_support_btn">
                             <div className="form_builder_support_btn_first" onClick={() => {
                                 window.tidioChatApi?.open();
@@ -128,20 +128,20 @@ export default function Support() {
                     </div>
 
                     <div className="form_build_help_show know">
-                        <h4>Knowledge base & roadmap</h4>
+                        <h4>Knowledge base</h4>
                         <p>In case you have any questions or difficulties setting up the app, you can check our Knowledge base.</p>
                         <div className="form_builder_support_btn">
                             <div className="form_builder_support_btn_first">
                                 <p>Knowledge base</p>
                             </div>
-                            <div className="form_builder_support_btn_second">
+                            {/* <div className="form_builder_support_btn_second">
                                 <p>Roadmap</p>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className="form_build_help_show rate">
-                        <h4>Rate our app</h4>
-                        <p>We want to hear from you! Share your experience today and let's create something extraordinary together!</p>
+                        <h4>Rate Our App</h4>
+                        <p>Provide feedback on your experience with the app.Your suggestions and ratings help us identify areas for improvement and ensure we continue to offer excellent service.</p>
                         <div className="form_builder_support_btn">
                             <div className="form_builder_support_btn_first">
                                 <p>Leave review</p>

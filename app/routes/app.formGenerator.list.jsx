@@ -229,7 +229,8 @@ const Formdata = () => {
                     toggleStatus: form.toggleStatus,
                     url: form.url,
                     editorValue: form.editorValue,
-                    thankYouTimer: form.thankYouTimer
+                    thankYouTimer: form.thankYouTimer,
+                    submissionOption:form.submissionOption
                 },
             });
             setThankYouTimer(thankYouTimer);
@@ -237,6 +238,7 @@ const Formdata = () => {
             setUrl(url);
             setIsActive(isActive);
             setEditingFormId(formId);
+            setSubmissionOption(submissionOption);
             setFormWidth(form.styles.width);
             setBackgroundImage(form.styles.backgroundImage);
             setBorderColor(form.styles.borderColor);
@@ -432,12 +434,12 @@ const Formdata = () => {
 
         const copiedForm = {
             ...formToCopy,
-            formId: generateUniqueFormId(),
+            formId: generateUniqueId(),
             title: `Copy of ${formToCopy.title}`,
             createdAt: timestamp,
             fields: formToCopy.fields.map((field) => ({
                 ...field,
-                id: generateUniqueFormId(),
+                id: generateUniqueId(),
             })),
             status: 'live',
         };
@@ -472,10 +474,16 @@ const Formdata = () => {
             setIsLoading(false);
         }
     };
-    const generateUniqueFormId = () => {
-        return 'Form' + Math.random().toString(36).substring(2, 15);
+  
+    const generateUniqueId = (length = 21) => {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let uniqueId = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            uniqueId += charset[randomIndex];
+        }
+        return uniqueId;
     };
-
 
     return (
         <>
@@ -657,7 +665,7 @@ const Formdata = () => {
 
                                                                             {copiedFormId === form.formId && (
                                                                                 <div className="copied-message" style={{ color: 'green' }}>
-                                                                                    Copied to clipboard!
+                                                                                    Copied !
                                                                                 </div>
                                                                             )}
                                                                         </div>
@@ -808,11 +816,11 @@ const Formdata = () => {
                         )}
 
                         {isPopupVisible && currentFormId && (
-                            <div className="form-builder-create section-wrp">
+                            <div className="form-builder-create section-wrp some">
                                 <div className='form-builder-create-wrped'>
                                     {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
                                         form.formId === currentFormId && (
-                                            <div key={form.formId} style={{ ...form.styles, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover', backgroundPosition: 'center' }} className="form-details">
+                                            <div key={form.formId} style={{ ...form.styles,  backgroundImage: `url(${form.styles.backgroundImage})`, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover', backgroundPosition: 'center' }} className="form-details">
                                                 {form.fields.map(field => (
                                                     <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
                                                         {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
@@ -834,6 +842,7 @@ const Formdata = () => {
                                                         )}
                                                         {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</h1>}
                                                         {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                        {field.type === 'multi-file' && <input type="file" placeholder={field.placeholder}   multiple style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                         {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                         {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                         {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
@@ -882,6 +891,7 @@ const Formdata = () => {
                                                             />
                                                         )}
                                                         {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                        {field.type === 'multi-image' && <input type="file" placeholder={field.placeholder} multiple style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                         {field.type === 'slider' && (
                                                             <input
                                                                 type="range"
@@ -898,7 +908,7 @@ const Formdata = () => {
                                                                 }}
                                                             />
                                                         )}
-                                                        {field.type === 'button' && <div><button style={{
+                                                        {field.type === 'button' && <div style={{textAlign:field.buttonaline}}><button style={{
                                                             backgroundColor: field.backgroundColor || '#45a7f6',
                                                             fontSize: `${field.buttontext || '16'}px`,
                                                             height: field.buttonHeight || 'auto',
@@ -915,10 +925,9 @@ const Formdata = () => {
                                                             <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
                                                         )}
                                                         {field.type === 'radio' && (
-                                                            <div>
-
+                                                            <div style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
                                                                 {field.options.map(option => (
-                                                                    <div key={option.id} className='form_radio_flex'>
+                                                                    <div key={option.id} className='form_radio_flex' >
                                                                         <input
                                                                             type="radio"
                                                                             name={field.name}
@@ -926,12 +935,13 @@ const Formdata = () => {
                                                                         />
                                                                         <label>{option.label}</label>
                                                                     </div>
+                                                                    
                                                                 ))}
                                                                 <div className='description'>{field.description}</div>
                                                             </div>
                                                         )}
                                                         {field.type === 'checkbox' && (
-                                                            <div>
+                                                            <div  style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
                                                                 {field.options.map(option => (
                                                                     <div key={option.id} className='form_checkbox_flex'>
                                                                         <input

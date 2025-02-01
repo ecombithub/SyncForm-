@@ -49,7 +49,7 @@ export const action = async ({ request }) => {
         const chargeData = selectedPlan === 'free' ? null : {
             recurring_application_charge: {
                 name: selectedPlan === 'pro' ? 'Form Builder Pro Plan' : selectedPlan === 'pro_plus' ? 'Form Builder Pro Plus Plan' : 'Form Builder Pro Yearly Plan',
-                price: selectedPlan === 'pro' ? 10.00 : selectedPlan === 'pro_plus' ? 20.00 : 99.90,
+                price: selectedPlan === 'pro' ? 9.90 : selectedPlan === 'pro_plus' ? 19.90 : 99.90,
                 return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
                 trial_days: 7,
                 test: true,
@@ -351,9 +351,9 @@ export default function Pricing() {
 
                                     <p>Pro</p>
                                     <div className='before-adding'>
-                                        <h2>$10.00<span className='monthly-number'>/mo</span></h2>
+                                        <h2>$9.90<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>$20.00</span><span className='monthly-number'>/mo</span>
+                                            <span className='strikethrough'>$19.90</span><span className='monthly-number'>/mo</span>
 
                                         </p>
                                     </div>
@@ -415,9 +415,9 @@ export default function Pricing() {
 
                                     <p>Pro +</p>
                                     <div className='before-adding'>
-                                        <h2>$20.00<span className='monthly-number'>/mo</span></h2>
+                                        <h2>$19.90<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>$30.00</span><span className='monthly-number'>/mo</span>
+                                            <span className='strikethrough'>$29.90</span><span className='monthly-number'>/mo</span>
                                         </p>
                                     </div>
 
@@ -473,7 +473,7 @@ export default function Pricing() {
                                         <img className="show-img" src={pricing3} alt="Unlimited Forms" />
                                     </div>
                                 </div>
-                                <div className="form_builder_plan_table activee bg four">
+                                {/* <div className="form_builder_plan_table activee bg four">
                                     <p>New Global Plan</p>
                                     <div className='before-adding'>
                                         <h2>$525.00<span className='monthly-number'>/mo</span></h2>
@@ -487,14 +487,14 @@ export default function Pricing() {
                                         Monthly
                                     </div>
 
-                                </div>
+                                </div> */}
                             </div>
                             <div className='form_table_pricing'>
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
                                         <span>Unlimited forms</span>
                                     </div>
-                                    {[pricing1, pricing2, pricing3, pricing4].map((src, index) => (
+                                    {[pricing1, pricing2, pricing3].map((src, index) => (
                                         <div key={index} className="form_builder_plan_table">
                                             <img src={src} alt={`Pricing feature ${index + 1}`} />
                                         </div>
@@ -504,7 +504,7 @@ export default function Pricing() {
                                     <div className="form_builder_plan_table heading">
                                         <span>Unlimited forms</span>
                                     </div>
-                                    {[pricing1, pricing2, pricing3, pricing4].map((src, index) => (
+                                    {[pricing1, pricing2, pricing3].map((src, index) => (
                                         <div key={index} className="form_builder_plan_table">
                                             <img src={src} alt={`Pricing feature ${index + 1}`} />
                                         </div>
@@ -648,7 +648,7 @@ export default function Pricing() {
 
 
                                 </div>
-                                <div className="form_builder_plan_table activee bg third">
+                                {/* <div className="form_builder_plan_table activee bg third">
                                     <p>Pro +</p>
                                     <div className='before-adding'>
                                         <h2>$199.90<span className='monthly-number'>/year</span></h2>
@@ -662,14 +662,14 @@ export default function Pricing() {
                                         Yearly
                                     </div>
 
-                                </div>
+                                </div> */}
                             </div>
                             <div className='form_table_pricing'>
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
                                         <span>Unlimited forms</span>
                                     </div>
-                                    {[pricing1, pricing6, pricing5].map((src, index) => (
+                                    {[pricing1, pricing6].map((src, index) => (
                                         <div key={index} className="form_builder_plan_table">
                                             <img src={src} alt={`Annual pricing feature ${index + 1}`} />
                                         </div>
@@ -680,7 +680,7 @@ export default function Pricing() {
                                     <div className="form_builder_plan_table heading">
                                         <span>Unlimited forms</span>
                                     </div>
-                                    {[pricing1, pricing6, pricing5].map((src, index) => (
+                                    {[pricing1, pricing6].map((src, index) => (
                                         <div key={index} className="form_builder_plan_table">
                                             <img src={src} alt={`Annual pricing feature ${index + 1}`} />
                                         </div>

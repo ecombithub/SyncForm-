@@ -1,7 +1,7 @@
 import '../index.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from '@remix-run/react';
 import search12 from '../images/search12.png';
 import down from '../images/down.png';
 import left from '../images/left.png';
@@ -17,6 +17,7 @@ import instagram from '../images/instagram.png';
 import twitter from '../images/twitter.png';
 import plusicon from '../images/plusicon.png';
 import copyeddd from '../images/copyeddd.png';
+import cancleimg from '../images/cancleimg.png';
 
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
@@ -88,35 +89,56 @@ export default function EmailTemplate() {
     const [isLoading, setIsLoading] = useState(false);
     const [matchedData, setMatchedData] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    // const fetchForms = async () => {
-    //     try {
-    //         const response = await axios.get('http://localhost:4001/get/data');
-    //         const fetchedData = response.data.data || [];
-    //         // const filteredData = fetchedData.filter(form => form.shop === shop);
-
-    //         setFormsData(fetchedData);
-    //         console.log("Filtered data", fetchedData);
-    //     } catch (error) {
-    //         setError(`Error fetching forms: ${error.message}`);
-    //     }
-    // };
-
+    const [userPlan, setUserPlan] = useState(null);
+    const [upgradePopup, setUphradePopup] = useState(false);
+   
     const fetchForms = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const response = await axios.get(`${apiUrl}/get/base64`);
+            let fetchedData = response.data.data || [];
+            
+            fetchedData = fetchedData.filter(form => form.shop === shop);
+    
+            fetchedData = fetchedData.slice().reverse();
+            
+            const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
+            setUserPlan(planResponse.data);
+            console.log("User Plan:", planResponse.data);
+    
+            if (planResponse.data?.plan === "free" && planResponse.data.status === "active") {
+                if (fetchedData.length > 2) {
+                    const formsToDelete = fetchedData.slice(2); 
 
-            const fetchedData = response.data.data || [];
-            const filteredData = fetchedData.filter(form => form.shop === shop);
-            const reversedData = filteredData.slice().reverse();
-            setFormsData(reversedData);
-            console.log("Filtered data", reversedData);
+                    console.log("Forms to delete:", formsToDelete);
+
+                    await Promise.all(formsToDelete.map(async (form) => {
+                        const idToDelete = form.formId || form.templateId || form._id;
+                        if (idToDelete) {
+                            console.log("Deleting Form ID:", idToDelete);
+                            try {
+                                await axios.delete(`${apiUrl}/delete/${idToDelete}`);
+                            } catch (err) {
+                                console.error(`Failed to delete form ID ${idToDelete}:`, err);
+                            }
+                        } else {
+                            console.error("Skipping deletion. Missing valid ID for:", form);
+                        }
+                    }));
+                }
+    
+                fetchedData = fetchedData.slice(0, 2);
+            }
+    
+            setFormsData(fetchedData);
+            console.log("Final templates:", fetchedData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
-
+    
     const handlePreviw1 = async (form) => {
         try {
             setLoading(true);
@@ -211,9 +233,10 @@ export default function EmailTemplate() {
     const handleTemplate = async (form) => {
         try {
 
-            const response = await axios.get(`${apiUrl}/get/data`);
+            const response = await axios.get(`${apiUrl}/template/data`);
             const fetchedData = response.data.data || [];
 
+            console.log('Fetched Data:', fetchedData);
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
 
             if (matchedData) {
@@ -224,7 +247,7 @@ export default function EmailTemplate() {
                     shop,
                 };
 
-                const sendResponse = await axios.post(`${apiUrl}/template/api`, payload);
+                const sendResponse = await axios.post(`${apiUrl}/send/api`, payload);
                 alert('Template copied successfully!');
                 console.log('Response from send API:', sendResponse.data);
             } else {
@@ -323,8 +346,6 @@ export default function EmailTemplate() {
         }
     };
 
-
-
     useEffect(() => {
         fetchForms();
     }, []);
@@ -398,7 +419,7 @@ export default function EmailTemplate() {
                             {field.headingText}</h1>
 
                         {(field.editorContent) && (
-                            <div style={{fontSize: `${field.headingsubheading}px`, fontFamily :field.subheadingfamily, lineHeight: `${field.subheadingline}px`, letterSpacing:`${field.subheadingleter}px`, color: field.subheadingColor, }}
+                            <div style={{ fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily, lineHeight: `${field.subheadingline}px`, letterSpacing: `${field.subheadingleter}px`, color: field.subheadingColor, }}
                                 className="heading-editor-content"
                                 dangerouslySetInnerHTML={{
                                     __html: field.editorContent
@@ -422,8 +443,8 @@ export default function EmailTemplate() {
                                         borderWidth: `${field.headingbtnBorderWidth}px`,
                                         borderStyle: field.headingbtnBorderStyle,
                                         borderColor: field.headingbtnBorderColor,
-                                        fontWeight:field.headingbtnweight,
-                                         marginTop :'20px'
+                                        fontWeight: field.headingbtnweight,
+                                        marginTop: '20px'
                                     }}
                                 >{field.headerbtn}</button>
                             </a>
@@ -476,7 +497,7 @@ export default function EmailTemplate() {
                                     borderColor: field.buttonBorderColor,
                                     letterSpacing: `${field.buttonLetterSpacing}px`,
                                     borderRadius: `${field.buttonradious}px`,
-                                    fontWeight:field.buttonweight
+                                    fontWeight: field.buttonweight
                                 }}
                             >
                                 {field.buttonLabel || ''}
@@ -501,8 +522,8 @@ export default function EmailTemplate() {
                                     borderColor: field.productBorderColor,
                                     fontSize: `${field.productFontSize}px`,
                                     color: field.productTextColor,
-                                    fontFamily:field.productfamily,
-                                    lineHeight:`${field.productline}px`
+                                    fontFamily: field.productfamily,
+                                    lineHeight: `${field.productline}px`
                                 }}
                             >
                                 {field.products.map((product, index) => (
@@ -577,7 +598,7 @@ export default function EmailTemplate() {
                     <div style={{
                         textAlign: field.richTextAlign || '',
                         fontSize: `${field.richFontsize}px`,
-                        lineHeight:`${field.richlineheight}px`,
+                        lineHeight: `${field.richlineheight}px`,
                         letterSpacing: `${field.richspace}px`,
                         color: field.richtextcolor,
                         backgroundColor: field.richbgcolor,
@@ -587,7 +608,7 @@ export default function EmailTemplate() {
                         paddingBottom: `${field.richtopPadding}px`,
                         display: 'flow-root',
                         textDecoration: field.richline,
-                        fontFamily:field.richFontfamily,
+                        fontFamily: field.richFontfamily,
                     }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
             case 'Multicolumn':
@@ -603,7 +624,7 @@ export default function EmailTemplate() {
                             textAlign: 'center',
                             backgroundColor: field.Multibgcolor,
                             color: field.MultiColor,
-                            
+
                         }}>
                             {field.columnData.map((column, index) => (
                                 <div
@@ -618,9 +639,9 @@ export default function EmailTemplate() {
                                         textAlign: field.Multitext,
                                         color: field.MultiColor,
                                         borderRadius: `${field.Multiborderradious}px`,
-                                        fontFamily:field.Multifamily,
-                                        letterSpacing:`${field.Multiletter}px`,
-                                        lineHeight:`${field.Multiheight}px`
+                                        fontFamily: field.Multifamily,
+                                        letterSpacing: `${field.Multiletter}px`,
+                                        lineHeight: `${field.Multiheight}px`
                                     }}
                                 >
                                     {column.image && (
@@ -641,7 +662,7 @@ export default function EmailTemplate() {
                                             color: field.Multibtncolor,
                                             borderRadius: `${field.Multibtnradious}px`,
                                             fontSize: `${field.Multibtnfont || '14'}px`,
-                                            fontWeight:field.MultiWeight
+                                            fontWeight: field.MultiWeight
 
                                         }}
                                         >
@@ -683,9 +704,9 @@ export default function EmailTemplate() {
                             float: 'inline-start',
                             color: field.splitColor,
                             fontSize: `${field.splittextSize}px`,
-                            letterSpacing:`${field.splitletter}px`,
-                            lineHeight:`${field.splitlineheight}px`,
-                            fontFamily:field.splitfamily,
+                            letterSpacing: `${field.splitletter}px`,
+                            lineHeight: `${field.splitlineheight}px`,
+                            fontFamily: field.splitfamily,
                         }}
                     >
                         {field.add === 'image' ? (
@@ -712,7 +733,7 @@ export default function EmailTemplate() {
                                                     borderWidth: `${field.splitBorderWidth}px`,
                                                     borderStyle: field.splitBorderStyle,
                                                     borderColor: field.splitBorderColor,
-                                                    fontWeight:field.splitbtnWeight,
+                                                    fontWeight: field.splitbtnWeight,
                                                 }}>
                                                     {field.splitbtn}</button>
                                             </a>
@@ -800,12 +821,43 @@ export default function EmailTemplate() {
         setShowTemplate(false);
     };
 
-    const handleCreateTemplate = () => {
+    const handleCancle = () => {
+        setUphradePopup(false);
+    }
+
+    const handleUpgrade = () => {
+        navigate('/app/pricing');
+    }
+
+    const handleCreateTemplate = async () => {
         setIsLoading(true);
-        setTimeout(() => {
-            navigate('/app/emailTemplate/new');
-        }, 1000);
+        try {
+        
+            const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
+            const userPlan = planResponse.data;
+    
+            if (userPlan?.plan === "free" && userPlan.status === "active") {
+             
+                const templatesResponse = await axios.get(`${apiUrl}/get/base64`);
+                const fetchedData = templatesResponse.data.data || [];
+    
+                if (fetchedData.length >= 2) {
+                    setUphradePopup(true);
+                    setIsLoading(false);  
+                    return;                
+                }
+            }
+    
+            setTimeout(() => {
+                navigate('/app/emailTemplate/new'); 
+            }, 1000);
+    
+        } catch (error) {
+            console.error("Error checking plan or templates:", error);
+            alert("Something went wrong while checking your plan or templates.");
+        }
     };
+    
 
     return (
         <>
@@ -880,6 +932,15 @@ export default function EmailTemplate() {
                                         <img src={plusicon} alt="" />
                                         <p>Create blank email</p>
                                     </div>
+                                    {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                                        <div className='form_builder_plan_upgrade_popup_wrapp'>
+                                            <p>Need to Upgrade Your Plan To Create More Form</p>
+                                            <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
+                                            <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
+                                                <img src={cancleimg} alt="" />
+                                            </div>
+                                        </div>
+                                    </div>}
                                     <div className="form-builder-search-bar">
                                         <input id="search" type="search" placeholder="Search" value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)} />
@@ -935,9 +996,7 @@ export default function EmailTemplate() {
                                                         </div>
                                                         <div className='email-templete-icon-wrp'>
                                                             <div className="email-template-icons-all">
-                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleTemplate(form)}>
-                                                                    <img src={copyeddd} alt="" />
-                                                                </div>
+                                                              
                                                                 <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
                                                                     <img src={copy12} alt="" />
                                                                 </div>
@@ -1058,9 +1117,9 @@ export default function EmailTemplate() {
                                                         </div>
                                                         <div className='email-templete-icon-wrp'>
                                                             <div className="email-template-icons-all" >
-                                                                {/* <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleTemplate(form)}>
+                                                                <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleTemplate(form)}>
                                                                     <img src={copyeddd} alt="" />
-                                                                </div> */}
+                                                                </div>
                                                                 <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw(form)}>
                                                                     <img src={yplus} alt="" />
                                                                 </div>
@@ -1191,7 +1250,7 @@ export default function EmailTemplate() {
                                     <div className='form-builder-icon-deleted' onClick={() => setPreviwPopup(false)}>
                                         <img src={cancle1} alt="" />
                                     </div>
-                                    <div>
+                                    <div style={{ height: '100%' }}>
                                         {matchedData?.fields?.map((field) => (
                                             <div className='form-builder-template-email' key={field.name}>
                                                 {renderField(field)}
@@ -1203,9 +1262,9 @@ export default function EmailTemplate() {
                         </div>
                     )}
                 </div>
-                
+
             )}
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </>
     );
 }

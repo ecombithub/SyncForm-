@@ -76,7 +76,7 @@ export const loader = async ({ request }) => {
 };
 
 function Index() {
-  const { activeThemeId, shop, apiUrl, accessToken} = useLoaderData() || {};
+  const { activeThemeId, shop, apiUrl, accessToken } = useLoaderData() || {};
   const [dataSent, setDataSent] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [userPlan, setUserPlan] = useState(null);
@@ -257,15 +257,12 @@ function Index() {
           </div>
           <div className="form_build_contact">
             <div className="form_build_count">
-              <p style={{ fontWeight: 800 }}>Contact with us</p>
-              <p>for fast installation</p>
-              <button style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  window.tidioChatApi?.open();
-                }}
-              >
-               Book an appointment
-              </button>
+              <p style={{ fontWeight: 800 }}>Reach Out to Us!</p>
+              <p>Expert Installation Support</p>
+              <a target='_blank' href="https://calendly.com/ecom-support/shopify-expert">
+                <button style={{ cursor: 'pointer' }}>
+                  Book an appointment
+                </button></a>
             </div>
             <div className="contact_img">
               <img src={user} alt="" />
@@ -279,8 +276,8 @@ function Index() {
                   <img src={dash1} alt="" />
                 </div>
                 <div className="form_build_wrap_elements">
-                  <h4>Enable the app</h4>
-                  <p>Go to Theme Customizer, App Embeds, and enable Form Builder HUB App.</p>
+                  <h4>Create the Form </h4>
+                  <p>Go to the form page and create a new form.</p>
                 </div>
               </div>
               <div className="form_build_wrap_apps">
@@ -288,8 +285,8 @@ function Index() {
                   <img src={dash2} alt="" />
                 </div>
                 <div className="form_build_wrap_elements">
-                  <h4>Create a form</h4>
-                  <p> Go to the Forms page and create your first form.</p>
+                  <h4>Enable the App</h4>
+                  <p> Go to the Theme customization>App embeds and enable the app.</p>
                 </div>
               </div>
               <div className="form_build_wrap_apps">
@@ -297,32 +294,16 @@ function Index() {
                   <img src={dash3} alt="" />
                 </div>
                 <div className="form_build_wrap_elements">
-                  <h4>Add form to your store</h4>
-                  <p>Embed the form on your store by adding it as an App Block or by inserting a shortcode on your desired page.</p>
+                  <h4>Integrate the Form</h4>
+                  <p>Integrate the form to your store by pasting the copied Form ID on your desired page.</p>
                 </div>
               </div>
             </div>
           </div>
           <div className="form_builder_theme_section">
             <div className="form_build_new_base">
-              <h4>App embed</h4>
-              <p>Visit the 'Theme Customizer' and 'App Embeds' sections. Please enable the Form Builder HUB app to display your forms on your store.</p>
-              <div className="form_build_app_bottm">
-                <div className="form_build_app_btn">
-                  <a href={`https://${shop}/admin/themes/${activeThemeId}/editor/?context=apps`} target='_blank' rel="">
-                    <div className="form_build_app_btn">
-                      <p>Theme editor</p>
-                    </div>
-                  </a>
-                </div>
-                <div className="form_build_app_img">
-                  <img src={Vector1} alt="" />
-                </div>
-              </div>
-            </div>
-            <div className="form_build_new_base">
-              <h4>Create new form</h4>
-              <p>Creating a new form with our app is easy and super-fun. Give it a try and make your store stand out!</p>
+              <h4>Create New Form</h4>
+              <p>Creating a new form is a straightforward process. Simply select and customize fields to suit your needs, and launch your form in minutes.</p>
               <div className="form_build_app_bottm second">
                 <div className="form_build_app_btn" style={{ cursor: "pointer" }} onClick={handleCreateForm}>
                   <p>New Form</p>
@@ -343,9 +324,26 @@ function Index() {
               </div>
             </div>}
             <div className="form_build_new_base">
-              <h4>Knowledge base</h4>
-              <p>Looking for help or want to learn more about the Form Builder app? The Knowledge Base is the right place for you.</p>
-              <div className="form_build_app_bottm third ">
+              <h4>Integration</h4>
+              <p>Easily connect form with your Shopify store to enhance functionality. Sync responses with databases, trigger notifications, and seamless data management.</p>
+              <div className="form_build_app_bottm second">
+                <div className="form_build_app_btn">
+                  <a href={`https://${shop}/admin/themes/${activeThemeId}/editor/?context=apps`} target='_blank' rel="">
+                    <div className="form_build_app_btn">
+                      <p>Theme editor</p>
+                    </div>
+                  </a>
+                </div>
+                <div className="form_build_app_img">
+                  <img src={Vector1} alt="" />
+                </div>
+              </div>
+            </div>
+
+            <div className="form_build_new_base">
+              <h4>Knowledgebase</h4>
+              <p>A resource hub provides detailed guides, troubleshooting steps and support to help users for form creation and integration.</p>
+              <div className="form_build_app_bottm second ">
                 <div className="form_build_app_btn">
                   <p>Knowledge base</p>
                 </div>
@@ -356,9 +354,9 @@ function Index() {
             </div>
 
           </div>
-          <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+          <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </div>
-        
+
       </div>
     </>
   );

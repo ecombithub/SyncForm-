@@ -70,6 +70,114 @@ document.addEventListener('click', function (event) {
   }
 });
 
+function displayFileNames(event, fieldId) {
+  const fileInput = event.target;
+  const fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
+  
+  fileNamesList.innerHTML = '';
+
+  Array.from(fileInput.files).forEach((file, index) => {
+      const li = document.createElement('li');
+  
+      li.style.border = '1px solid #ddd'; 
+      li.style.padding = '8px';
+      li.style.marginBottom = '5px';
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      li.style.alignItems = 'center';
+
+      const fileName = document.createElement('span');
+      fileName.textContent = file.name;
+      fileName.style.flex = '1';  
+
+      const removeButton = document.createElement('button');
+      removeButton.style.padding = '0';
+      removeButton.style.border = 'none';
+      removeButton.style.background = 'none';
+
+      const removeImage = document.createElement('img');
+      removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
+      removeImage.alt = 'Remove';
+      removeImage.style.width = '20px'; 
+      removeImage.style.height = '20px'; 
+      removeImage.style.cursor = 'pointer';
+      
+      removeButton.appendChild(removeImage);
+
+      removeButton.onclick = () => removeFile(index, fileInput, fileNamesList, li);
+
+      li.appendChild(fileName);
+      li.appendChild(removeButton);
+      
+      fileNamesList.appendChild(li);
+  });
+}
+
+function removeFile(index, fileInput, fileNamesList, li) {
+  const filesArray = Array.from(fileInput.files);
+  filesArray.splice(index, 1); 
+  
+  const dataTransfer = new DataTransfer();
+  filesArray.forEach(file => dataTransfer.items.add(file));
+  fileInput.files = dataTransfer.files;
+  
+  fileNamesList.removeChild(li);
+}
+
+function displayimage(event, fieldId) {
+  const fileInput = event.target;
+  const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
+  
+  fileNamesList.innerHTML = '';
+
+  Array.from(fileInput.files).forEach((file, index) => {
+      const li = document.createElement('li');
+  
+      li.style.border = '1px solid #ddd'; 
+      li.style.padding = '8px';
+      li.style.marginBottom = '5px';
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      li.style.alignItems = 'center';
+
+      const fileName = document.createElement('span');
+      fileName.textContent = file.name;
+      fileName.style.flex = '1';  
+
+      const removeButton = document.createElement('button');
+      removeButton.style.padding = '0';
+      removeButton.style.border = 'none';
+      removeButton.style.background = 'none';
+
+      const removeImage = document.createElement('img');
+      removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
+      removeImage.alt = 'Remove';
+      removeImage.style.width = '20px'; 
+      removeImage.style.height = '20px'; 
+      removeImage.style.cursor = 'pointer';
+      
+      removeButton.appendChild(removeImage);
+
+      removeButton.onclick = () => removeFile(index, fileInput, fileNamesList, li);
+
+      li.appendChild(fileName);
+      li.appendChild(removeButton);
+      
+      fileNamesList.appendChild(li);
+  });
+}
+
+function removeFile(index, fileInput, fileNamesList, li) {
+  const filesArray = Array.from(fileInput.files);
+  filesArray.splice(index, 1); 
+  
+  const dataTransfer = new DataTransfer();
+  filesArray.forEach(file => dataTransfer.items.add(file));
+  fileInput.files = dataTransfer.files;
+  
+  fileNamesList.removeChild(li);
+}
+
   $(document).ready(function () {
     const formId = '{{ block.settings.formId }}';
     console.log('Form ID:', formId);
@@ -82,10 +190,16 @@ document.addEventListener('click', function (event) {
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `http://localhost:4001/get-form/${id}`,
+        url: `https://hubsyntax.online/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
+
+          if (data.status === 'draft') {
+            $('#formData-{{ block.id }}').append('<p>Form is in draft  and cannot be displayed.</p>');
+            return;  
+        }
+
           displayFormData(data);
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -111,7 +225,7 @@ document.addEventListener('click', function (event) {
         container.css({
           backgroundSize: 'cover',
           backgroundColor: formData.styles.backgroundColor || '',
-          backgroundImage: formData.styles.backgroundImage || 'none',
+          backgroundImage: formData.styles.backgroundImage ? `url(${formData.styles.backgroundImage})` : 'none',
           backgroundRepeat: formData.styles.backgroundRepeat || 'no-repeat',
           boxShadow: formData.styles.boxShadow || '',
           width: formData.styles.width || '100%',
@@ -182,9 +296,15 @@ document.addEventListener('click', function (event) {
                   `;
           container.append(fieldHtml);
         });
-        $('.input-gap').css('padding', '5px');
-        $('.input-gap').css('display', 'flow-root');
-        $('.iti').css('width', '100%');
+
+        $('.input-gap').css({
+          'padding': '5px',
+          'display': 'flow-root',
+          'width': '100%' 
+      });
+      $('.input-gap.small-width').css('width', '50%');
+      $('.iti').css('width', '100%');
+
       } else {
         container.append('<p>No fields available.</p>');
       }
@@ -261,11 +381,11 @@ document.addEventListener('click', function (event) {
           </textarea>`;
         case 'checkbox':
           return `
-                <div>
+                <div style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
                     .map(
                       (option) => `
-                    <div class="form_checkbox_flex">
+                   <div class="form_checkbox_flex" style="display: flex; gap: 10px; align-items: center; padding: 10px;">
                       <input type="checkbox" id="${option.id}" name="${field.name}" value="${option.value}" ${
                         field.required ? 'required' : ''
                       } ${field.readonly ? 'readonly' : ''}/>
@@ -277,13 +397,13 @@ document.addEventListener('click', function (event) {
                  ${field.description}
                 </div>
               `;
-        case 'radio':
-          return `
-                <div>
+           case 'radio':
+            return `
+                  <div style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
                     .map(
                       (option) => `
-                    <div class="form_radio_flex">
+                    <div class="form_radio_flex" style="display: flex; gap: 10px; align-items: center; padding: 10px;">
                       <input type="radio" id="${option.id}" name="${field.name}" value="${option.value}" ${
                         option.checked ? 'checked' : ''
                       } aria-label="${field.label || 'Radio Input'}"/>
@@ -352,6 +472,20 @@ document.addEventListener('click', function (event) {
           return `<input type="file" placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
+          case 'multi-file':
+          return `
+              <div style="display: flex; flex-direction: column;">
+                  <input 
+                      type="file" 
+                      placeholder="${field.placeholder || ''}" 
+                      style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle};" 
+                      multiple 
+                      onchange="displayFileNames(event, '${field.id}')" 
+                  />
+                  <ul id="file-names-list-${field.id}" style="margin-top: 8px;"></ul>
+                  ${field.description ? `<span style="margin-top: 8px;">${field.description}</span>` : ''}
+              </div>
+          `;
         case 'email':
           return `<input type="email" placeholder="${
             field.placeholder || ''
@@ -429,7 +563,23 @@ document.addEventListener('click', function (event) {
           return `<input type="file" multiple placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-        case 'slider':
+         
+          case 'multi-image':
+          return `
+              <div style="display: flex; flex-direction: column;">
+                  <input 
+                      type="file" 
+                      placeholder="${field.placeholder || ''}" 
+                      style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle};" 
+                      multiple 
+                      onchange="displayimage(event, '${field.id}')" 
+                  />
+                  <ul id="image-names-list-${field.id}" style="margin-top: 8px;"></ul>
+                  ${field.description ? `<span style="margin-top: 8px;">${field.description}</span>` : ''}
+              </div>
+          `;
+
+          case 'slider':
           return `<input 
                     type="range" 
                     placeholder="${field.placeholder || ''}" 
@@ -440,7 +590,7 @@ document.addEventListener('click', function (event) {
                     /> ${field.description}`;
         case 'button':
           return `
-              <div>
+              <div style= "text-align:${field.buttonaline}">
                 <button
                   style="background-color: ${
                     field.backgroundColor || '#007bff'
@@ -536,14 +686,17 @@ document.addEventListener('click', function (event) {
               fieldValue.push($(this).val());
             });
           fieldValue = fieldValue.join(', ');
+        }else if (input.attr('type') === 'file') {
+          fieldValue = [];
+          
+          Array.from($(this).find('input[type="file"]')[0].files).forEach(file => {
+            fieldValue.push(file.name); 
+          });
+          fieldValue = fieldValue.join(', '); 
+          $(this).find('input[type="file"]').val('');
+         
         } else {
           fieldValue = input.val();
-        }
-
-        if (input.attr('required') !== undefined && fieldValue.trim() === '') {
-          alert(`Please fill out the ${fieldName}`);
-          isValid = false;
-          return false;
         }
 
         if (fieldValue !== undefined && fieldValue.trim() !== '') {
@@ -561,20 +714,27 @@ document.addEventListener('click', function (event) {
       console.log('Form Data:', JSON.stringify(formData));
 
       $.ajax({
-        url: 'http://localhost:4001/api/forms',
+        url: 'https://hubsyntax.online/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
           console.log('Form submitted successfully:', response);
           alert('Form submitted successfully!');
-
+          $(this).find('ul').empty();
+          $('#formData-' + blockId + ' .input-field input[type="file"]').val('');
+          $('#formData-' + blockId + ' .input-field ul').empty();
+          $('#formData-' + blockId + ' .input-field input[type="radio"]').prop('checked', false);
+          $('#formData-' + blockId + ' .input-field input[type="checkbox"]').prop('checked', false);
+        
+          $('#formData-' + blockId + ' .custom-select-box span:first-child').text('Select an option'); 
+      
           console.log('Form ID:', formData.id);
 
           console.log('Form ID:', formData.id);
           if (formData.id) {
             $.ajax({
-              url: 'http://localhost:4001/get/data',
+              url: 'https://hubsyntax.online/get/data',
               method: 'GET',
               success: function (data) {
                 console.log('Fetched data:', data);
@@ -585,7 +745,7 @@ document.addEventListener('click', function (event) {
                   console.log('Matched form data:', matchingForm);
 
                   $.ajax({
-                    url: 'http://localhost:4001/api/template',
+                    url: 'https://hubsyntax.online/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -635,29 +795,40 @@ document.addEventListener('click', function (event) {
           }
 
           if (submissionOption === 'Hide form and show thank you message') {
-            $(
-              '#formData-' +
-                blockId +
-                ' .form, #formData-' +
-                blockId +
-                ' input, #formData-' +
-                blockId +
-                ' textarea, ' +
-                '#formData-' +
-                blockId +
-                ' select, #formData-' +
-                blockId +
-                ' button, #formData-' +
-                blockId +
-                ' label'
-            ).hide();
+            $('#formData-' + blockId + ' .form, #formData-' + blockId + ' input, #formData-' + blockId + ' textarea, ' +
+              '#formData-' + blockId + ' select, #formData-' + blockId + ' button, #formData-' + blockId + ' label, ' +
+              '#formData-' + blockId + ' .custom-select-container, #formData-' + blockId + ' .custom-select-dropdown, ' +
+              '#formData-' + blockId + ' h1, #formData-' + blockId + ' p')
+              .each(function() {
+                console.log($(this)); 
+                $(this).hide(); 
+              });
+          
+            $('#formData-' + blockId).hide();
+          
+            const container = $('#formData-' + blockId);
+            container.css({
+              backgroundSize: 'cover',
+              backgroundColor: formData.styles.backgroundColor || '',
+              backgroundImage: formData.styles.backgroundImage ? `url(${formData.styles.backgroundImage})` : 'none',
+              backgroundRepeat: formData.styles.backgroundRepeat || 'no-repeat',
+              boxShadow: formData.styles.boxShadow || '',
+              width: formData.styles.width || '100%',
+              padding: formData.styles.padding || '20px',
+              borderColor: formData.styles.borderColor || '',
+              borderWidth: formData.styles.borderWidth || '',
+              borderStyle: formData.styles.borderStyle || '',
+              opacity: formData.styles.opacityForm || '',
+              borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
+              margin: 'auto',
+            });
           } else if (thankYouTimer) {
             const timerDuration = parseInt(thankYouTimer) * 1000;
             setTimeout(() => {
               $('#formData-' + blockId + ' p').fadeOut();
             }, timerDuration);
           }
-
+          
           if (formUrl && formUrl !== 'undefined') {
             window.open(formUrl);
           } else {
@@ -701,6 +872,10 @@ document.addEventListener('click', function (event) {
 }
 {% endschema %}
 
+
+
+
+
 {% comment %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -721,7 +896,7 @@ document.addEventListener('click', function (event) {
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `http://localhost:4001/get-form/${id}`,
+          url: `https://hubsyntax.online/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -820,7 +995,7 @@ document.addEventListener('click', function (event) {
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: `http://localhost:4001/get/data`,
+          url: `https://hubsyntax.online/get/data`,
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -883,7 +1058,7 @@ document.addEventListener('click', function (event) {
               console.log('Form Data:', JSON.stringify(formData));
 
               $.ajax({
-                url: 'http://localhost:4001/api/forms',
+                url: 'https://hubsyntax.online/api/forms',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
@@ -901,7 +1076,7 @@ document.addEventListener('click', function (event) {
                   });
 
                   $.ajax({
-                    url: 'http://localhost:4001/api/template',
+                    url: 'https://hubsyntax.online/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -990,7 +1165,7 @@ document.addEventListener('click', function (event) {
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `http://localhost:4001/get-form/${id}`,
+          url: `https://hubsyntax.online/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -1355,7 +1530,7 @@ document.addEventListener('click', function (event) {
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: 'http://localhost:4001/get/data',
+          url: 'https://hubsyntax.online/get/data',
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -1415,7 +1590,7 @@ document.addEventListener('click', function (event) {
             console.log('Form Data:', JSON.stringify(formData));
 
             $.ajax({
-              url: 'http://localhost:4001/api/forms',
+              url: 'https://hubsyntax.online/api/forms',
               method: 'POST',
               contentType: 'application/json',
               data: JSON.stringify(formData),
@@ -1437,7 +1612,7 @@ document.addEventListener('click', function (event) {
                 }, 2000);
 
                 $.ajax({
-                  url: 'http://localhost:4001/api/template',
+                  url: 'https://hubsyntax.online/api/template',
                   method: 'POST',
                   contentType: 'application/json',
                   data: JSON.stringify({
