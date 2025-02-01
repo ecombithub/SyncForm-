@@ -948,7 +948,7 @@ const Formgenerated = () => {
                 textHeading,
                 colorHeading,
             },
-            submissionOption: submissionOption,
+            submissionOption: submissionOption || "defaultOption",
             thankYouTimer: thankYouTimer || 0,
             editorValue: sanitizedContent,
             url: url || "",

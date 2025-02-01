@@ -190,7 +190,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `https://hubsyntax.online/get-form/${id}`,
+        url: `http://localhost:4001/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -714,7 +714,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
       console.log('Form Data:', JSON.stringify(formData));
 
       $.ajax({
-        url: 'https://hubsyntax.online/api/forms',
+        url: 'http://localhost:4001/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -734,7 +734,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
           console.log('Form ID:', formData.id);
           if (formData.id) {
             $.ajax({
-              url: 'https://hubsyntax.online/get/data',
+              url: 'http://localhost:4001/get/data',
               method: 'GET',
               success: function (data) {
                 console.log('Fetched data:', data);
@@ -745,7 +745,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
                   console.log('Matched form data:', matchingForm);
 
                   $.ajax({
-                    url: 'https://hubsyntax.online/api/template',
+                    url: 'http://localhost:4001/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -896,7 +896,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `https://hubsyntax.online/get-form/${id}`,
+          url: `http://localhost:4001/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -995,7 +995,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: `https://hubsyntax.online/get/data`,
+          url: `http://localhost:4001/get/data`,
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -1058,7 +1058,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
               console.log('Form Data:', JSON.stringify(formData));
 
               $.ajax({
-                url: 'https://hubsyntax.online/api/forms',
+                url: 'http://localhost:4001/api/forms',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
@@ -1076,7 +1076,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
                   });
 
                   $.ajax({
-                    url: 'https://hubsyntax.online/api/template',
+                    url: 'http://localhost:4001/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -1165,7 +1165,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
         $('#formData-{{ block.id }}').empty();
 
         $.ajax({
-          url: `https://hubsyntax.online/get-form/${id}`,
+          url: `http://localhost:4001/get-form/${id}`,
           method: 'GET',
           success: function (data) {
             console.log('Fetched form data:', data);
@@ -1530,7 +1530,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
         console.log('Email:', formData.email);
 
         $.ajax({
-          url: 'https://hubsyntax.online/get/data',
+          url: 'http://localhost:4001/get/data',
           method: 'GET',
           data: { formId: formData.id },
           success: function (response) {
@@ -1590,7 +1590,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
             console.log('Form Data:', JSON.stringify(formData));
 
             $.ajax({
-              url: 'https://hubsyntax.online/api/forms',
+              url: 'http://localhost:4001/api/forms',
               method: 'POST',
               contentType: 'application/json',
               data: JSON.stringify(formData),
@@ -1612,7 +1612,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
                 }, 2000);
 
                 $.ajax({
-                  url: 'https://hubsyntax.online/api/template',
+                  url: 'http://localhost:4001/api/template',
                   method: 'POST',
                   contentType: 'application/json',
                   data: JSON.stringify({

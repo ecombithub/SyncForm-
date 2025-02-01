@@ -726,7 +726,7 @@ const ShowTemplats = new mongoose.Schema({
   }
 });
 
-const Templated = mongoose.model('saveTempaltes', ShowTemplats);
+const Templated = mongoose.model('save Templates', ShowTemplats);
 
 const templateSchema = new mongoose.Schema({
   TemplateAll: { type: Object, required: false },
