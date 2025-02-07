@@ -91,24 +91,24 @@ export default function EmailTemplate() {
     const [loading, setLoading] = useState(false);
     const [userPlan, setUserPlan] = useState(null);
     const [upgradePopup, setUphradePopup] = useState(false);
-   
+
     const fetchForms = async () => {
         setLoading(true);
         try {
             const response = await axios.get(`${apiUrl}/get/base64`);
             let fetchedData = response.data.data || [];
-            
+
             fetchedData = fetchedData.filter(form => form.shop === shop);
-    
+
             fetchedData = fetchedData.slice().reverse();
-            
+
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             setUserPlan(planResponse.data);
             console.log("User Plan:", planResponse.data);
-    
+
             if (planResponse.data?.plan === "free" && planResponse.data.status === "active") {
-                if (fetchedData.length > 2) {
-                    const formsToDelete = fetchedData.slice(2); 
+                if (fetchedData.length > 1) {
+                    const formsToDelete = fetchedData.slice(1);
 
                     console.log("Forms to delete:", formsToDelete);
 
@@ -126,10 +126,10 @@ export default function EmailTemplate() {
                         }
                     }));
                 }
-    
+
                 fetchedData = fetchedData.slice(0, 2);
             }
-    
+
             setFormsData(fetchedData);
             console.log("Final templates:", fetchedData);
         } catch (error) {
@@ -138,7 +138,7 @@ export default function EmailTemplate() {
             setLoading(false);
         }
     };
-    
+
     const handlePreviw1 = async (form) => {
         try {
             setLoading(true);
@@ -206,7 +206,7 @@ export default function EmailTemplate() {
                     ...matchedData,
                 };
 
-                navigate('/app/emailTemplate/new', { state: { formData: updatedForm } });
+                navigate('/app/email-template/new', { state: { formData: updatedForm } });
             } else {
                 console.error(`No matching template found for templateId: ${form.templateId}`);
             }
@@ -231,8 +231,12 @@ export default function EmailTemplate() {
     };
 
     const handleTemplate = async (form) => {
+        if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+            setUphradePopup(true);
+            return;
+        }
         try {
-
+            setLoading(true);
             const response = await axios.get(`${apiUrl}/template/data`);
             const fetchedData = response.data.data || [];
 
@@ -248,7 +252,9 @@ export default function EmailTemplate() {
                 };
 
                 const sendResponse = await axios.post(`${apiUrl}/send/api`, payload);
-                alert('Template copied successfully!');
+
+                window.location.reload();
+
                 console.log('Response from send API:', sendResponse.data);
             } else {
                 console.log('No matching data found for templateId:', form.templateId);
@@ -256,24 +262,32 @@ export default function EmailTemplate() {
         } catch (error) {
             console.error('Error sending template data:', error.message);
             alert('Error sending template');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
-        try {
-            const response = await axios.delete(`${apiUrl}/delete/${formToDelete}`);
-            console.log(response.data.message);
 
-            setFormsData((prevForms) =>
-                prevForms.filter((form) => form.templateId !== formToDelete)
-            );
-        } catch (error) {
-            console.error('Error deleting form:', error);
-            setError('Failed to delete form. Please try again later.');
-        } finally {
-            closeDeletePopup();
-        }
+        setLoading(true);
+
+        setTimeout(async () => {
+            try {
+                const response = await axios.delete(`${apiUrl}/delete/${formToDelete}`);
+                console.log(response.data.message);
+
+                setFormsData((prevForms) =>
+                    prevForms.filter((form) => form.templateId !== formToDelete)
+                );
+            } catch (error) {
+                console.error('Error deleting form:', error);
+                setError('Failed to delete form. Please try again later.');
+            } finally {
+                closeDeletePopup();
+                setLoading(false);
+            }
+        }, 2000);
     };
 
     const openDeletePopup = (templateId) => {
@@ -287,7 +301,13 @@ export default function EmailTemplate() {
     };
 
     const handleCopyTemplate = async (template) => {
+        if (userPlan?.plan === 'free' && userPlan.status === 'active') {
+            setUphradePopup(true);
+            return;
+        }
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
+
+        setLoading(true);
 
         try {
             const [base64Response, dataResponse] = await Promise.all([
@@ -329,7 +349,6 @@ export default function EmailTemplate() {
 
                 if (response.status === 201) {
                     setFormsData((prevForms) => [...prevForms, response.data]);
-                    alert('Template copied successfully!');
                 }
             } else {
                 if (!base64Form) {
@@ -338,13 +357,15 @@ export default function EmailTemplate() {
                 if (!dataForm) {
                     console.error('Template ID not found in data response.');
                 }
-                alert('No matching template found in both responses.');
             }
         } catch (error) {
             console.error('Error copying template:', error.message);
-            alert('Failed to copy template.');
+            setError('Failed to copy template. Please try again later.');
+        } finally {
+            setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchForms();
@@ -388,9 +409,6 @@ export default function EmailTemplate() {
         switch (field.type) {
             case 'heading':
                 return <div style={{
-                    backgroundImage: field.headingbgImage ? `url(${field.headingbgImage})` : 'none',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundSize: 'cover',
                     borderWidth: `${field.headingBorderWidth}px`,
                     borderStyle: field.headingBorderStyle,
                     borderColor: field.headingBorderColor,
@@ -398,28 +416,44 @@ export default function EmailTemplate() {
                     height: field.bannerImageHeight || '400px',
                     display: 'flex',
                     alignItems: 'center',
-                    opacity: field.headeropacity || '',
-                    margin: `${field.headingmargin}px`
+                    margin: `${field.headingmargin}px`,
+                    position: 'relative',
                 }}>
                     <div style={{
+                        backgroundImage: field.headingbgImage ? `url(${field.headingbgImage})` : 'none',
+                        backgroundColor: field.headingbg,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
+                        borderWidth: `${field.headingBorderWidth}px`,
+                        borderStyle: field.headingBorderStyle,
+                        borderColor: field.headingBorderColor,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        opacity: field.headeropacity || 1,
 
+                    }} />
+                    <div style={{
+                        zIndex: 99,
                         width: '100%',
                         textAlign: field.headingTextAlign || '',
                         padding: `${field.headingPadding}px`,
                     }}>
                         <h1 style={{
                             fontSize: `${field.headingFontSize}px`,
-                            color: field.headingColor, backgroundColor: field.headingbg,
+                            color: field.headingColor,
                             letterSpacing: `${field.headingLetterSpacing}px`,
                             textAlign: field.headingTextAlign ? field.headingTextAlign : '',
                             fontWeight: field.headingFontWeight,
                             fontFamily: field.headingfamily,
-                            lineHeight: `${field.headingline}px`,
+                           
                         }}>
                             {field.headingText}</h1>
 
                         {(field.editorContent) && (
-                            <div style={{ fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily, lineHeight: `${field.subheadingline}px`, letterSpacing: `${field.subheadingleter}px`, color: field.subheadingColor, }}
+                            <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' , fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily,  letterSpacing: `${field.subheadingleter}px`, color: field.subheadingColor, }}
                                 className="heading-editor-content"
                                 dangerouslySetInnerHTML={{
                                     __html: field.editorContent
@@ -598,7 +632,6 @@ export default function EmailTemplate() {
                     <div style={{
                         textAlign: field.richTextAlign || '',
                         fontSize: `${field.richFontsize}px`,
-                        lineHeight: `${field.richlineheight}px`,
                         letterSpacing: `${field.richspace}px`,
                         color: field.richtextcolor,
                         backgroundColor: field.richbgcolor,
@@ -609,6 +642,7 @@ export default function EmailTemplate() {
                         display: 'flow-root',
                         textDecoration: field.richline,
                         fontFamily: field.richFontfamily,
+                        whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%'
                     }} dangerouslySetInnerHTML={{ __html: field.content }} />
                 </div>;
             case 'Multicolumn':
@@ -616,41 +650,46 @@ export default function EmailTemplate() {
                 const columnsPerRow = field.columnsPerRow || 1;
                 return (
                     <div style={{ display: 'flow-root', width: '100%' }}>
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: `repeat(${columnsPerRow}, 1fr)`,
-                            gap: `${field.Multigap || 10}px`,
-                            padding: `${field.MultiPadding}px`,
-                            textAlign: 'center',
-                            backgroundColor: field.Multibgcolor,
-                            color: field.MultiColor,
+                    <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: `${field.Multigap || 10}px`,
+                        padding: `${field.MultiPadding}px`,
+                        textAlign: 'center',
+                        backgroundColor: field.Multibgcolor,
+                        color: field.MultiColor,
+                        justifyContent: 'space-between' 
+                    }}>
+                        {field.columnData.map((column, index) => (
+                            <div
+                                key={column._id}
+                                style={{
+                                    flex: `1 1 calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`,
+                                    maxWidth: `calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`, 
+                                    fontSize: `${field.fontsizeMulticolumn}px`,
+                                    borderWidth: `${field.MulticolumnbtnBorderWidth || 1}px`,
+                                    borderStyle: field.MulticolumnbtnBorderStyle || 'solid',
+                                    borderColor: field.MulticolumnbtnBorderColor || 'black',
+                                    padding: `${field.MulticolumnPadding || 10}px`,
+                                    backgroundColor: field.Multicolumnbgcolor,
+                                    textAlign: field.Multitext,
+                                    color: field.MultiColor,
+                                    borderRadius: `${field.Multiborderradious}px`,
+                                    fontFamily: field.Multifamily,
+                                    letterSpacing: `${field.Multiletter}px`,
 
-                        }}>
-                            {field.columnData.map((column, index) => (
+                                }}
+                            >
+                                {column.image && (
+                                    <img src={column.image} alt={`Column ${index}`} style={{ width: `${field.Multiimgwidth || 100}%`, height: 'auto' }} />
+                                )}
+                
                                 <div
-                                    key={column._id}
-                                    style={{
-                                        fontSize: `${field.fontsizeMulticolumn}px`,
-                                        borderWidth: `${field.MulticolumnbtnBorderWidth}px`,
-                                        borderStyle: field.MulticolumnbtnBorderStyle,
-                                        borderColor: field.MulticolumnbtnBorderColor,
-                                        padding: `${field.MulticolumnPadding || 10}px`,
-                                        backgroundColor: field.Multicolumnbgcolor,
-                                        textAlign: field.Multitext,
-                                        color: field.MultiColor,
-                                        borderRadius: `${field.Multiborderradious}px`,
-                                        fontFamily: field.Multifamily,
-                                        letterSpacing: `${field.Multiletter}px`,
-                                        lineHeight: `${field.Multiheight}px`
-                                    }}
-                                >
-                                    {column.image && (
-                                        <img src={column.image} alt={`Column ${index}`} style={{ width: '100%', height: 'auto' }} />
-                                    )}
-
-                                    <div dangerouslySetInnerHTML={{ __html: column.content }} />
-
-                                    {column.isVisible && <a href={column.Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }}
+                                 dangerouslySetInnerHTML={{ __html: column.content }} />
+                
+                                {column.isVisible && (
+                                    <a href={column.Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
                                         <button style={{
                                             marginTop: "20px",
                                             backgroundColor: field.Multibtnbg,
@@ -663,21 +702,20 @@ export default function EmailTemplate() {
                                             borderRadius: `${field.Multibtnradious}px`,
                                             fontSize: `${field.Multibtnfont || '14'}px`,
                                             fontWeight: field.MultiWeight
-
-                                        }}
-                                        >
-                                            {column.Multibtnlable || 'Click'} </button>
-                                    </a>}
-
-                                </div>
-
-                            ))}
-                        </div>
+                                        }}>
+                                            {column.Multibtnlable || 'Click'}
+                                        </button>
+                                    </a>
+                                )}
+                            </div>
+                        ))}
                     </div>
+                </div>
+                
                 );
 
             case 'html convert':
-                return <div style={{ padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
+                return <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' ,  padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
 
             case 'spacer':
                 return (
@@ -705,7 +743,6 @@ export default function EmailTemplate() {
                             color: field.splitColor,
                             fontSize: `${field.splittextSize}px`,
                             letterSpacing: `${field.splitletter}px`,
-                            lineHeight: `${field.splitlineheight}px`,
                             fontFamily: field.splitfamily,
                         }}
                     >
@@ -718,7 +755,7 @@ export default function EmailTemplate() {
                         ) : (
                             <div style={{ width: '100%', display: 'flex', alignItems: field.splittext === 'left' ? 'flex-start' : field.splittext === 'center' ? 'center' : 'flex-end' }}>
                                 <div style={{ width: '100%' }}>
-                                    <div style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value }} />
+                                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value }} />
                                     <div >
                                         {field.showbtnsplit && (
                                             <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
@@ -832,32 +869,32 @@ export default function EmailTemplate() {
     const handleCreateTemplate = async () => {
         setIsLoading(true);
         try {
-        
+
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             const userPlan = planResponse.data;
-    
+
             if (userPlan?.plan === "free" && userPlan.status === "active") {
-             
+
                 const templatesResponse = await axios.get(`${apiUrl}/get/base64`);
                 const fetchedData = templatesResponse.data.data || [];
-    
+
                 if (fetchedData.length >= 2) {
                     setUphradePopup(true);
-                    setIsLoading(false);  
-                    return;                
+                    setIsLoading(false);
+                    return;
                 }
             }
-    
+
             setTimeout(() => {
-                navigate('/app/emailTemplate/new'); 
+                navigate('/app/email-template/new');
             }, 1000);
-    
+
         } catch (error) {
             console.error("Error checking plan or templates:", error);
             alert("Something went wrong while checking your plan or templates.");
         }
     };
-    
+
 
     return (
         <>
@@ -996,7 +1033,7 @@ export default function EmailTemplate() {
                                                         </div>
                                                         <div className='email-templete-icon-wrp'>
                                                             <div className="email-template-icons-all">
-                                                              
+
                                                                 <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
                                                                     <img src={copy12} alt="" />
                                                                 </div>

@@ -84,6 +84,8 @@ function Index() {
   const [error, setError] = useState(null);
   const [upgradePopup, setUpgradePopup] = useState(false);
   const navigator = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   useEffect(() => {
     const saveShopDetails = async () => {
@@ -118,7 +120,7 @@ function Index() {
       try {
         const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
 
-
+        setIsSubmitting(true);
         if (planResponse.data.status === 'active') {
           const paymentData = {
             chargeId: `free-plan-${shop}`,
@@ -129,7 +131,6 @@ function Index() {
             status: "active",
             billingOn: new Date().toISOString(),
           };
-
 
           const response = await axios.post(`${apiUrl}payment/confirm`, paymentData);
           console.log("Payment data saved response:", response.data);
@@ -237,7 +238,7 @@ function Index() {
       return;
     }
 
-    navigator('/app/formGenerator/new');
+    navigator('/app/forms/new');
   };
 
   const handleCancle = () => {

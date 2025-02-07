@@ -41,6 +41,7 @@ import single from '../images/multi.png';
 import multi from '../images/single.png';
 import editicon from '../images/editicon.png';
 import singleimage from '../images/singleimage.png';
+import cross from '../images/cross.png';
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
 import { authenticate, apiVersion } from "../shopify.server";
@@ -135,7 +136,7 @@ const Formgenerated = () => {
 
         if (!isVisible) return null;
         const onConfirmto = () => {
-            navigator('/app/formGenerator/list');
+            navigator('/app/forms/list');
         };
 
         return (
@@ -182,9 +183,12 @@ const Formgenerated = () => {
     const [confirmationPopupType, setConfirmationPopupType] = useState('');
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
     const [showCancelPopup, setShowCancelPopup] = useState(false);
-    const [radioOptions, setRadioOptions] = useState([{ id: generateUniqueId(), label: 'Radio 1', value: 'Radio 1' }]);
-    const [checkboxOptions, setCheckboxOptions] = useState([{ id: 1, name: 'Checkbox1' }]);
-    const [selectOptions, setSelectOptions] = useState([{ id: 1, name: 'Option1' }]);
+    const [radioOptions, setRadioOptions] = useState([
+        { id: generateUniqueId(), label: 'Radio 1', value: 'Radio 1' },
+        { id: generateUniqueId(), label: 'Radio 2', value: 'Radio 2' },
+      ]);
+    const [checkboxOptions, setCheckboxOptions] = useState([{ id: 1, name: 'Checkbox1' },{ id: 2, name: 'Checkbox2' }]);
+    const [selectOptions, setSelectOptions] = useState([{ id: 1, name: 'Option1' },{ id: 2, name: 'Option2' }]);
     const [showCheckboxPopup, setShowCheckboxPopup] = useState(false);
     const [headingLevel, setHeadingLevel] = useState('h1');
     const [headingText, setHeadingText] = useState('');
@@ -204,7 +208,7 @@ const Formgenerated = () => {
     const [currentEditingFieldIndex, setCurrentEditingFieldIndex] = useState(null);
     const [activeFieldIndex, setActiveFieldIndex] = useState(null);
     const [border, setBorder] = useState('none');
-    const [borderWidth, setBorderWidth] = useState('');
+    const [borderWidth, setBorderWidth] = useState('1px');
     const [borderStyle, setBorderStyle] = useState('solid');
     const [isFormBuilderVisible, setIsFormBuilderVisible] = useState(false);
     const [submissionOption, setSubmissionOption] = useState('');
@@ -219,7 +223,7 @@ const Formgenerated = () => {
     const [inputRadious, setInputRadious] = useState('4');
     const [inputwidth, setInputWidth] = useState('1');
     const [inputborderColor, setInputBorderColor] = useState('#B5B7C0');
-    const [inputBgColor, setInputBgColor] = useState('transparent');
+    const [inputBgColor, setInputBgColor] = useState('Transparent');
     const [inputColorcode, setInputColorcode] = useState('#B5B7C0');
     const [inputstyle, setInputStyle] = useState('solid');
     const [labelColor, setLableColor] = useState('#000');
@@ -237,7 +241,7 @@ const Formgenerated = () => {
     const [enabledFields, setEnabledFields] = useState({});
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [selectedimage, setSelectedimage] = useState([]);
-
+    const [userPlan, setUserPlan] = useState(null);
 
 
     useEffect(() => {
@@ -252,29 +256,39 @@ const Formgenerated = () => {
 
     useEffect(() => {
         const formBuilder = document.getElementById('bg_change');
+        const backgroundDiv = document.getElementById('bg_change_background');
+
         if (formBuilder) {
-            formBuilder.style.backgroundColor = backgroundColor;
-            formBuilder.style.backgroundImage = imageFile ? `url(${imageFile})` : backgroundImage || 'none';
-            formBuilder.style.backgroundSize = 'cover';
-            formBuilder.style.backgroundRepeat = 'no-repeat';
-            formBuilder.style.backgroundPosition = 'center';
-            formBuilder.style.boxShadow = boxShadow;
+           backgroundDiv.style.backgroundColor = backgroundColor;
             formBuilder.style.width = formWidth;
             formBuilder.style.padding = `${padding}px`;
             formBuilder.style.borderRadius = `${borderRadius}px`;
-            formBuilder.style.opacity = opacityForm;
-
+            formBuilder.style.boxShadow = boxShadow;
+    
             if (/^\d+px$/.test(borderWidth)) {
                 formBuilder.style.border = `${borderWidth} ${borderStyle} ${borderColor}`;
             } else {
                 formBuilder.style.border = 'none';
             }
-
         }
-
+    
+        if (backgroundDiv) {
+            backgroundDiv.style.backgroundColor = backgroundColor;
+            backgroundDiv.style.backgroundImage = imageFile ? `url(${imageFile})` : (backgroundImage ? `url(${backgroundImage})` : 'none');
+            backgroundDiv.style.backgroundSize = 'cover';
+            backgroundDiv.style.backgroundRepeat = 'no-repeat';
+            backgroundDiv.style.backgroundPosition = 'center';
+            backgroundDiv.style.opacity = opacityForm;  
+    
+            backgroundDiv.style.position = 'absolute';  
+            backgroundDiv.style.top = 0;
+            backgroundDiv.style.left = 0;
+            backgroundDiv.style.right = 0;
+            backgroundDiv.style.bottom = 0;
+        }
+    
     }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth, padding, borderRadius, boxShadow, fields.length]);
-
-
+    
     useEffect(() => {
         const formBuilder = document.getElementById('bg_image');
         if (formBuilder) {
@@ -360,7 +374,7 @@ const Formgenerated = () => {
             dividerColor: '#000',
             btnbackgroundcolor: '#0561AF',
             backgroundColor: existingField ? existingField.backgroundColor : '#45A7F6',
-            buttonWidth: existingField?.buttonWidth || '130px',
+            btnwidth: type === 'button' ? '150' : undefined,
             buttonHeight: existingField?.buttonHeight || '40px',
             inputPadding: "10px",
             inputBorderRadious: "4",
@@ -403,13 +417,22 @@ const Formgenerated = () => {
     const addInputField = (type) => {
         let newField = createInputField(type);
         if (type === 'radio') {
-            newField = createInputField(type);
+            newField = {
+                ...newField,
+                options: radioOptions,
+            };
             setFields((prevFields) => [...prevFields, newField]);
-        } else if (type === 'select') {
-            newField = createInputField(type);
+        }  else if (type === 'select') {
+            newField = {
+                ...newField,
+                options: selectOptions,
+            };
             setFields((prevFields) => [...prevFields, newField]);
         } else if (type === 'checkbox') {
-            newField = createInputField(type);
+            newField = {
+                ...newField,
+                options: checkboxOptions,
+            };
             setFields((prevFields) => [...prevFields, newField]);
         } else if (type === 'heading') {
             newField = createInputField(type);
@@ -476,29 +499,27 @@ const Formgenerated = () => {
 
     const addRadioOption = () => {
         const newOption = {
-            id: generateUniqueId(),
-            label: `Radio ${radioOptions.length + 1}`,
+          id: generateUniqueId(),
+          label: `Radio ${radioOptions.length + 1}`,
+          value: `Radio ${radioOptions.length + 1}`,
         };
-
-
+    
         setRadioOptions((prevOptions) => [...prevOptions, newOption]);
-
+    
         if (selectedField?.id) {
-            const updatedFields = fields.map((field) =>
-                field.id === selectedField.id
-                    ? { ...field, options: [...(field.options || []), newOption] }
-                    : field
-            );
-            setFields(updatedFields);
-
-            const updatedSelectedField = updatedFields.find(
-                (field) => field.id === selectedField.id
-            );
-            setSelectedField(updatedSelectedField);
+          const updatedFields = fields.map((field) =>
+            field.id === selectedField.id
+              ? { ...field, options: [...(field.options || []), newOption] }
+              : field
+          );
+          setFields(updatedFields);
+    
+          const updatedSelectedField = updatedFields.find((field) => field.id === selectedField.id);
+          setSelectedField(updatedSelectedField);
         } else {
-            console.warn('No selectedField found, skipping field update');
+          console.warn('No selectedField found, skipping field update');
         }
-    };
+      };
 
 
     const removeRadioOption = (id) => {
@@ -817,6 +838,12 @@ const Formgenerated = () => {
 
         console.log('Form status:', status);
 
+        console.log('Fields:', fields);
+        if (fields.length === 0) {
+            alert('Please add at least one field before saving the form.');
+            return;
+        }
+
         if (status !== 'live' && status !== 'draft') {
             alert('Invalid status. Please choose either "live" or "draft".');
             return;
@@ -844,6 +871,14 @@ const Formgenerated = () => {
             title: formTitle,
             shop,
             fields: fields.map(field => {
+                if (field.type === 'toggle') {
+                    return {
+                        ...field,
+                        onValue: field.onValue || 'On',
+                        offValue: field.offValue || 'Off',
+                    };
+                }
+
                 if (field.type === 'slider') {
                     return {
                         ...field,
@@ -905,7 +940,7 @@ const Formgenerated = () => {
                         padding: field.padding,
                         color: field.color,
                         fontSize: field.fontSize,
-                        width: field.buttonWidth,
+                        width: field.btnwidth,
                         height: field.buttonHeight,
                         backgroundColor: field.backgroundColor,
                         buttonBorderWidth: field.buttonBorderWidth || 1,
@@ -956,7 +991,6 @@ const Formgenerated = () => {
 
         console.log('New form object:', JSON.stringify(newForm, null, 2));
 
-
         const request = isEditing
             ? axios.put(`${apiUrl}/update-form/${editingFormId}`, newForm, {
                 headers: { 'Content-Type': 'application/json' }
@@ -974,7 +1008,7 @@ const Formgenerated = () => {
 
                 setCreatedForms(updatedForms);
                 setCurrentFormId(newForm.formId);
-                navigator('/app/formGenerator/list');
+                navigator('/app/forms/list');
             })
             .catch(error => {
                 if (error.response && error.response.status === 400) {
@@ -1141,6 +1175,27 @@ const Formgenerated = () => {
             return () => sortable.destroy();
         }
     }, [fields]);
+
+    useEffect(() => {
+        const formBuilder = document.getElementById('formBuilder');
+
+        if (formBuilder && fields.length > 0) {
+            const sortable = Sortable.create(formBuilder, {
+                animation: 150,
+                ghostClass: 'dragging',
+                handle: '.form-builder-drag-drop',
+                onEnd: (event) => {
+                    const updatedFields = [...fields];
+                    const [movedItem] = updatedFields.splice(event.oldIndex, 1);
+                    updatedFields.splice(event.newIndex, 0, movedItem);
+                    setFields(updatedFields);
+                },
+            });
+
+            return () => sortable.destroy();
+        }
+    }, [fields]);
+
 
     const handleClickOutside = (event) => {
         if (formRef.current && !formRef.current.contains(event.target)) {
@@ -1433,6 +1488,43 @@ const Formgenerated = () => {
         setSelectedimage(prevFiles => prevFiles.filter((_, i) => i !== index));
     };
 
+    const handleChange = (key, value) => {
+        setSelectedField(prev => ({
+            ...prev,
+            [key]: value || ''
+        }));
+    };
+
+    const handleSetValue = (key) => {
+        setSelectedField(prev => ({
+            ...prev,
+            [key]: prev[key] === 'active' ? '' : 'active'
+        }));
+    };
+
+
+    const fetchPaymentPlan = async () => {
+        try {
+            console.log("Fetching payment plan...");
+
+            const shop = "dev-himanshu.myshopify.com";
+            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+
+            console.log("Response data:", response.data);
+            setUserPlan(response.data);
+            console.log("User plan set:", response.data);
+
+            console.log("Forms fetched successfully with user plan data.");
+        } catch (error) {
+            console.error("Error fetching payment plan:", error);
+
+        }
+    };
+
+    useEffect(() => {
+        fetchPaymentPlan();
+    }, []);
+
     return (
         <div>
             {isLoading && (
@@ -1464,7 +1556,7 @@ const Formgenerated = () => {
                     </div>
                 </div>
             )}
-            <div className="builder-container">
+            <div className="builder-container text">
                 <h3>Forms</h3>
                 <div className='builder_form_name'>
                     <h1>Form Name</h1>
@@ -1474,6 +1566,14 @@ const Formgenerated = () => {
                         onChange={(e) => setFormTitle(e.target.value)}
                         placeholder="Enter Name"
                     />
+                    <div className='btn_form_bulider'>
+                        <div className="form-submission-wrp">
+                            <button className="cancle-form-btn" onClick={handlelistForm}>Cancel</button>
+                        </div>
+                        <div className="form-submission-wrp">
+                            <button className="create-form-btn action_btn" onClick={handleCreate}>{isEditing ? 'Update' : 'Save'}</button>
+                        </div>
+                    </div>
                 </div>
                 <div className='form-Elements-btn email' onClick={handleFieldInput}>Form Elements</div>
                 <div className='builder-forms_rapp'>
@@ -1511,38 +1611,38 @@ const Formgenerated = () => {
 
                                         </div>
                                         {showFields ? (
-                                            <div className='build_form_btns'>
+                                            <div className='build_form_btns form-scroll-bar'>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('name')}><span className='form_builder_field_img'><img src={text} alt="" /></span> <span><h4>Name</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('text')}><span className='form_builder_field_img'><img src={text} alt="" /></span> <span><h4>Text Input</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('heading')}><span className='form_builder_field_img'><img src={heading} alt="" /></span> <span><h4>Heading</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('description')}><span className='form_builder_field_img'><img src={font} alt="" /></span> <span><h4>Description</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('radio')}><span className='form_builder_field_img'><img src={radio} alt="" /></span> <span><h4>Radio Button</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('checkbox')}><span className='form_builder_field_img'><img src={checkbox} alt="" /></span> <span><h4>Checkbox</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('select')}><span className='form_builder_field_img'><img src={selection} alt="" /></span> <span><h4>Select Box</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('radio')}><span className='form_builder_field_img'><img src={radio} alt="" /></span> <span><h4>Radio Button</h4></span> </button>  </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('checkbox')} ><span className='form_builder_field_img'><img src={checkbox} alt="" /></span> <span><h4>Checkbox</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('select')} ><span className='form_builder_field_img'><img src={selection} alt="" /></span> <span><h4>Select Box</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('textarea')}><span className='form_builder_field_img'><img src={text1} alt="" /></span> <span><h4>Textarea</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('file')}><span className='form_builder_field_img'><img src={single} alt="" /></span> <span><h4>File Upload</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('multi-file')}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('file')} ><span className='form_builder_field_img'><img src={single} alt="" /></span> <span><h4>File Upload</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-file')} disabled={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('number')}><span className='form_builder_field_img'><img src={number} alt="" /></span> <span><h4>Number Input</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('email')}><span className='form_builder_field_img'><img src={email} alt="" /></span> <span><h4>Email address</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('phone')}><span className='form_builder_field_img'><img src={phone} alt="" /></span> <span><h4>Phone number</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('phone')}><span className='form_builder_field_img'><img src={phone} alt="" /></span> <span><h4>Phone number</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('password')}><span className='form_builder_field_img'><img src={password1} alt="" /></span> <span><h4>Password</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('url')}><span className='form_builder_field_img'><img src={url1} alt="" /></span> <span><h4>Url</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('location')}><span className='form_builder_field_img'><img src={location1} alt="" /></span> <span><h4>Location</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('toggle')}><span className='form_builder_field_img'><img src={toggle} alt="" /></span> <span><h4>Toggle</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('date')}><span className='form_builder_field_img'><img src={date} alt="" /></span> <span><h4>Date</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('datetime')}><span className='form_builder_field_img'><img src={detetime} alt="" /></span> <span><h4>Datetime</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('time')}><span className='form_builder_field_img'><img src={time} alt="" /></span> <span><h4>Time</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('slider')}><span className='form_builder_field_img'><img src={slider} alt="" /></span> <span><h4>Slider</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={singleimage} alt="" /></span> <span><h4>Images</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('multi-image')}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('url')}><span className='form_builder_field_img'><img src={url1} alt="" /></span> <span><h4>Url</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('location')}><span className='form_builder_field_img'><img src={location1} alt="" /></span> <span><h4>Location</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('toggle')}><span className='form_builder_field_img'><img src={toggle} alt="" /></span> <span><h4>Toggle</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('date')}><span className='form_builder_field_img'><img src={date} alt="" /></span> <span><h4>Date</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('datetime')}><span className='form_builder_field_img'><img src={detetime} alt="" /></span> <span><h4>Datetime</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('time')}><span className='form_builder_field_img'><img src={time} alt="" /></span> <span><h4>Time</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('slider')}><span className='form_builder_field_img'><img src={slider} alt="" /></span> <span><h4>Slider</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={singleimage} alt="" /></span> <span><h4>Images</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-image')} disabled={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button></div>
-                                                <div className='builderr_field_wrpp'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button> </div>
                                             </div>
                                         ) : (
-                                            <div>
+                                            <div className='form-scroll-bar'>
                                                 <div className='edit_form_close'>
-                                                    <div className='edit-formwrap'>
+                                                    <div className='edit-formwrap '>
                                                         <h3>Edit Form Properties</h3>
                                                         <div className='form_builder_submission'>
                                                             <h2> Form Submission</h2>
@@ -1618,22 +1718,23 @@ const Formgenerated = () => {
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <div className="edit_setting_bg current-url inherit-class">
-                                                            <label htmlFor="boxShadowSelect">Current URL:</label>
-                                                            <div className="toggle-container">
-                                                                <label htmlFor="toggleSwitch" className="switch">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id="toggleSwitch"
-                                                                        checked={isActive}
-                                                                        onChange={handleToggleChange}
-                                                                    />
-                                                                    <span className="slider"></span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
+
 
                                                         <div className='edit-form-options form'>
+                                                            <div className="edit_setting_bg current-url inherit-class">
+                                                                <label htmlFor="boxShadowSelect">Collect URL:</label>
+                                                                <div className="toggle-container">
+                                                                    <label htmlFor="toggleSwitch" className="switch">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            id="toggleSwitch"
+                                                                            checked={isActive}
+                                                                            onChange={handleToggleChange}
+                                                                        />
+                                                                        <span className="slider"></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
                                                             <div className='edit_setting_bg form'>
                                                                 <div className='checkbox-option bg-colors'>
                                                                     <label>  Background Color:</label>
@@ -1647,72 +1748,63 @@ const Formgenerated = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="edit_setting_bg form">
+                                                            <div className="edit_setting_bg form bg-img">
                                                                 <label>Upload Background Image:</label>
+
+                                                                {!imageFile && !backgroundImage && (
+                                                                    <div
+                                                                        className="upload-area"
+                                                                        onClick={() => document.getElementById('fileInput').click()}
+                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                        onDrop={(e) => {
+                                                                            e.preventDefault();
+                                                                            handleFileChange(e);
+                                                                        }}
+                                                                    >
+                                                                        <img src={file} alt="" />
+                                                                        <p>Drag & Drop to Upload File</p>
+                                                                        <p>OR</p>
+                                                                        <span className='upload-btn'>Browse File</span>
+                                                                        <input
+                                                                            type="file"
+                                                                            accept="image/*"
+                                                                            onChange={handleFileChange}
+                                                                            style={{ display: 'none' }}
+                                                                            id="fileInput"
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {(imageFile || backgroundImage) && (
                                                                 <div
-                                                                    className="upload-area"
-                                                                    onClick={() => document.getElementById('fileInput').click()}
-                                                                    onDragOver={(e) => e.preventDefault()}
-                                                                    onDrop={(e) => {
-                                                                        e.preventDefault();
-                                                                        handleFileChange(e);
+                                                                    className="edit_setting_bg form"
+                                                                    style={{
+                                                                        backgroundImage: `url(${imageFile || backgroundImage})`,
+                                                                        backgroundRepeat: 'no-repeat',
+                                                                        backgroundSize: 'contain',
+                                                                        backgroundPosition: 'center',
+                                                                        height: '150px',
+                                                                        width: '100%',
+                                                                        border: '1px solid #ddd',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center',
                                                                     }}
                                                                 >
-                                                                    <img src={file} alt="" />
-                                                                    <p>Drag & Drop to Upload File</p>
-                                                                    <p>OR </p>
-                                                                    <span className='upload-btn'>Browse File</span>
-                                                                    <input
-                                                                        type="file"
-                                                                        accept="image/*"
-                                                                        onChange={handleFileChange}
-                                                                        style={{ display: 'none' }}
-                                                                        id="fileInput"
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            {imageFile && (
-                                                                <button
-                                                                    className='rm-btn'
-                                                                    type="button"
-                                                                    onClick={handleRemoveBackgroundImage}
-                                                                >
-                                                                    <img src={bk} alt="" />
-                                                                </button>
-                                                            )}
-                                                            {backgroundImage && (
-                                                                <button
-                                                                    className='rm-btn'
-                                                                    type="button"
-                                                                    onClick={handleRemoveBackgroundImage}
-                                                                >
-                                                                    <img src={bk} alt="" />
-                                                                </button>
-                                                            )}
-                                                            <div
-                                                                className="edit_setting_bg form"
-                                                                style={{
-
-                                                                    backgroundImage: imageFile ? `url(${imageFile})` : (backgroundImage ? `url(${backgroundImage})` : `url(${bgim1})`),
-                                                                    backgroundRepeat: 'no-repeat',
-                                                                    backgroundSize: 'contain',
-                                                                    backgroundPosition: 'center',
-                                                                    height: '150px',
-                                                                    width: '100%',
-                                                                    border: '1px solid #ddd',
-                                                                    display: 'flex',
-                                                                    justifyContent: 'center',
-                                                                }}
-                                                            >
-
-                                                                {imageFile && (
                                                                     <img
-                                                                        src={imageFile || bgim1}
+                                                                        src={imageFile || backgroundImage}
                                                                         alt="Uploaded Background Preview"
                                                                         style={{ padding: '10px', maxWidth: '100%', height: '150px' }}
                                                                     />
-                                                                )}
-                                                            </div>
+                                                                    <button
+                                                                        className='rm-btn remove-btn-img'
+                                                                        type="button"
+                                                                        onClick={handleRemoveBackgroundImage}
+                                                                    >
+                                                                        <img src={bk} alt="Remove" />
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Opacity:</label>
                                                                 <input
@@ -1837,11 +1929,12 @@ const Formgenerated = () => {
                                                                     <option value="solid">Solid</option>
                                                                     <option value="dotted">Dotted</option>
                                                                     <option value="dashed">Dashed</option>
+                                                                    <option value="double">Double</option>
                                                                 </select>
                                                             </div>
 
                                                             <div className='edit_setting_bg form'>
-                                                                <label>Input Border radius :</label>
+                                                                <label>Input Border Radius :</label>
                                                                 <input
                                                                     type='text'
                                                                     value={inputRadious}
@@ -1880,6 +1973,7 @@ const Formgenerated = () => {
                                                                     <option value="solid">Solid</option>
                                                                     <option value="dashed">Dashed</option>
                                                                     <option value="dotted">Dotted</option>
+                                                                    <option value="double">Double</option>d
 
                                                                 </select>
                                                             </div>
@@ -1917,8 +2011,9 @@ const Formgenerated = () => {
                             </div>)}
 
                             <div className='form_builder_build some'>
-                                <div id='bg_change' style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none', }} className="form-builder-wrp" >
-                                    <div id="formBuilder" className="form-builder" >
+                            <div id='bg_change' className="form-builder-wrp" style={{ position: 'relative' }}>
+                            <div id="bg_change_background" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}></div>
+                                    <div id="formBuilder" className="form-builder forms-wrapping" >
                                         {fields.length > 0 ? (fields.map((field, index) => {
                                             if (!field) {
                                                 console.error(`Field at index ${index} is undefined`);
@@ -2122,10 +2217,15 @@ const Formgenerated = () => {
                                                                     backgroundColor: inputBgColor, opacity: field.opacity || 1
                                                                 }}
                                                                 >
-                                                                    {field.options.length > 0 ? (
-                                                                        field.options.map((option, index) => (
+                                                                    {field.options.map((option, index) => (
                                                                             <div key={option.id || index} className='form_radio_flex'>
                                                                                 <input
+                                                                                    style={{
+                                                                                        padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                        borderStyle: inputstyle,
+                                                                                        borderColor: inputborderColor,
+                                                                                        backgroundColor: inputBgColor, opacity: field.opacity || 1,
+                                                                                    }}
                                                                                     type="radio"
                                                                                     name={field.name}
                                                                                     value={option.name}
@@ -2135,11 +2235,7 @@ const Formgenerated = () => {
                                                                                 <label>{option.label}</label>
                                                                             </div>
                                                                         ))
-                                                                    ) : (
-                                                                        <div className="form_radio_flex">
-                                                                            <label>Add Radio Button</label>
-                                                                        </div>
-                                                                    )}
+ }
                                                                     <div className='description'>
                                                                         {field.description}
                                                                     </div>
@@ -2168,10 +2264,15 @@ const Formgenerated = () => {
                                                                     backgroundColor: inputBgColor, opacity: field.opacity || 1
                                                                 }}
                                                                 >
-                                                                    {field.options.length > 0 ? (
-                                                                        field.options.map(option => (
+                                                                    {field.options.map(option => (
                                                                             <div key={option.id} className='form_radio_flex'>
                                                                                 <input
+                                                                                    style={{
+                                                                                        padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                        borderStyle: inputstyle,
+                                                                                        borderColor: inputborderColor,
+                                                                                        backgroundColor: inputBgColor, opacity: field.opacity || 1,
+                                                                                    }}
                                                                                     type="checkbox"
                                                                                     name={field.name}
                                                                                     disabled={field.disabled}
@@ -2180,11 +2281,7 @@ const Formgenerated = () => {
                                                                                 <span>{option.name}</span>
                                                                             </div>
                                                                         ))
-                                                                    ) : (
-                                                                        <div className="form_radio_flex">
-                                                                            <label>Add Checkbox Button</label>
-                                                                        </div>
-                                                                    )}
+                                                                    }
 
                                                                     <div className='description'>{field.description}</div>
                                                                 </div>
@@ -2270,6 +2367,7 @@ const Formgenerated = () => {
                                                                         name={field.name}
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
+                                                                        name="w3review" rows="4" cols="50"
                                                                     />
                                                                 </label>
                                                                 <div className='description'>
@@ -2724,6 +2822,7 @@ const Formgenerated = () => {
                                                                     }
                                                                 }}
                                                             >
+                                                                <div style={{ marginBottom: '5px', color: labelColor }}>{field.label || "Toggle"}</div>
                                                                 <label className="toggle-switch" style={{ color: labelColor }}>
                                                                     <input
                                                                         type="checkbox"
@@ -2733,7 +2832,10 @@ const Formgenerated = () => {
                                                                     />
                                                                     <span className="slider"></span>
                                                                 </label>
-                                                                <div style={{ marginBottom: '5px' }}>{field.label || "Toggle"}</div>
+                                                                {/* <div style={{ marginBottom: '5px', fontWeight: 'bold', color: '#33cba2' }}>
+                                                                    {enabledFields[field.id] ? field.onValue || "On" : field.offValue || "Off"}
+                                                                </div> */}
+
                                                                 <div className="description">
                                                                     {field.description}
                                                                 </div>
@@ -3052,11 +3154,11 @@ const Formgenerated = () => {
                                                                     }
                                                                 }}
                                                             >
-                                                                <div className='fom-bilder-wred-btn' style={{textAlign:field.buttonaline}}>
+                                                                <div className='fom-bilder-wred-btn' style={{ textAlign: field.buttonaline }}>
                                                                     <button
                                                                         type="button"
                                                                         style={{
-                                                                            width: field.buttonWidth,
+                                                                            width: `${field.btnwidth}px`,
                                                                             height: field.buttonHeight,
                                                                             backgroundColor: field.backgroundColor,
                                                                             fontSize: `${field.buttontext || '16px'}px`,
@@ -3146,11 +3248,18 @@ const Formgenerated = () => {
                                                                     <img src={maximizesize} alt="copy" />
                                                                 </button>
                                                             </div>
-                                                            <div className='form-builder-drag-drop'>
-                                                                <img src={drop} alt="" />
-                                                            </div>
+                                                            { field.type !== 'button' &&  field.type !== 'link' &&  field.type !== 'divider' && field.type !== 'description' && field.type !== 'heading' &&(
+                                                                <div id='form-drag' className='form-builder-drag-drop'>
+                                                                    <img src={drop} alt="" />
+                                                                </div>
+                                                            )}
+                                                            
+                                                            {(field.type === 'button' || field.type === 'link' || field.type === 'divider' || field.type === 'heading' || field.type === 'description') && (
+                                                                <div id='form-drag' className='form-builder-drag-drop drag'>
+                                                                    <img src={drop} alt="" />
+                                                                </div>
+                                                            )}
                                                         </div>
-
                                                     )}
                                                 </div>
                                             );
@@ -3178,7 +3287,8 @@ const Formgenerated = () => {
                                                     <div className='form_qucik'>
                                                         <p>Quick setup Settings</p>
                                                     </div>
-                                                    <div className='form_build_propertities'>
+
+                                                    <div className='form_build_propertities forms'>
                                                         {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'link' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Label</label>
@@ -3244,7 +3354,7 @@ const Formgenerated = () => {
                                                                                 placeholder={`Enter option name`}
                                                                             />
                                                                         </label>
-                                                                        <button onClick={() => removeSelectOption(option.id)} className="remove-options"> <img src={removee} alt="" /></button>
+                                                                        <button onClick={() => removeSelectOption(option.id)} className="remove-options"> <img src={cross} alt="" /></button>
                                                                     </div>
                                                                 ))}
                                                                 <button className='btn-design' onClick={addSelectOption}>Add Select Input</button>
@@ -3263,7 +3373,7 @@ const Formgenerated = () => {
                                                                                 placeholder={`Enter option name`}
                                                                             />
                                                                         </label>
-                                                                        <button onClick={() => removeRadioOption(option.id)} className="remove-options"><img src={removee} alt="" /></button>
+                                                                        <button onClick={() => removeRadioOption(option.id)} className="remove-options"><img src={cross} alt="" /></button>
                                                                     </div>
                                                                 ))}
                                                                 <button className='btn-design' onClick={addRadioOption}>Add Radio Button</button>
@@ -3286,7 +3396,7 @@ const Formgenerated = () => {
                                                                                 />
 
                                                                             </label>
-                                                                            <button onClick={() => removeCheckboxOption(option.id)} className="remove-options"><img src={removee} alt="" /></button>
+                                                                            <button onClick={() => removeCheckboxOption(option.id)} className="remove-options"><img src={cross} alt="" /></button>
                                                                         </div>
                                                                     ))}
                                                                     <button className='btn-design' onClick={addCheckboxOption}>Add Checkbox Button</button>
@@ -3307,6 +3417,7 @@ const Formgenerated = () => {
                                                                 </div>
                                                             </div>
                                                         )}
+
 
                                                         {selectedField.type === 'button' && (
                                                             <>
@@ -3363,7 +3474,7 @@ const Formgenerated = () => {
                                                                             />
                                                                         </div>
                                                                         <div className='checkbox-option'>
-                                                                            <label>Button Radious (px)</label>
+                                                                            <label>Button Radius (px)</label>
                                                                             <input
                                                                                 type="text"
                                                                                 value={selectedField.btnradious}
@@ -3375,8 +3486,8 @@ const Formgenerated = () => {
                                                                             <label>Width (px)</label>
                                                                             <input
                                                                                 type="number"
-                                                                                value={selectedField.buttonWidth ? selectedField.buttonWidth.replace('px', '') : '130'}
-                                                                                onChange={(e) => updateFieldProperty('buttonWidth', `${e.target.value}px`)}
+                                                                                value={selectedField.btnwidth}
+                                                                                onChange={(e) => updateFieldProperty('btnwidth', e.target.value)}
                                                                                 placeholder="e.g., 150"
                                                                             />
                                                                         </div>
@@ -3433,6 +3544,7 @@ const Formgenerated = () => {
                                                                                 <option value="solid">Solid</option>
                                                                                 <option value="dashed">Dashed</option>
                                                                                 <option value="dotted">Dotted</option>
+                                                                                <option value="double ">Double </option>
                                                                             </select>
                                                                         </div>
 
@@ -3592,7 +3704,7 @@ const Formgenerated = () => {
 
                                                             </>
                                                         )}
-                                                        {selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                        {selectedField.type !== 'multi-image' && selectedField.type !== 'multi-file' && selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
                                                             <label>Placeholder</label>
                                                             <input
                                                                 type="text"
@@ -3633,7 +3745,45 @@ const Formgenerated = () => {
                                                                 onChange={(e) => updateFieldProperty('customClass', e.target.value)}
                                                             />
                                                         </div>
+                                                        {selectedField.type === 'toggle' && (
+                                                            <div className="form-builder-chaneging-wrap">
+                                                                <label>Values</label>
+                                                                <div className="toggle-values">
+                                                                    <div className='toggle-buttons-wrap'>
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="On Value"
+                                                                            value={selectedField.onValue || ''}
+                                                                            onChange={(e) => handleChange('onValue', e.target.value)}
+                                                                        />
+                                                                        <button
+                                                                            className={`toogle-btn-wraped ${selectedField.onActive === 'active' ? 'active' : ''}`}
+                                                                            type="button"
+                                                                            onClick={() => handleSetValue('onActive')}
+                                                                        >
+                                                                            On
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className='toggle-buttons-wrap'>
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Off Value"
+                                                                            value={selectedField.offValue || ''}
+                                                                            onChange={(e) => handleChange('offValue', e.target.value)}
+                                                                        />
+                                                                        <button
+                                                                            className={`toogle-btn-wraped ${selectedField.offActive === 'active' ? 'active' : ''}`}
+                                                                            type="button"
+                                                                            onClick={() => handleSetValue('offActive')}
+                                                                        >
+                                                                            Off
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
+
                                                     {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
                                                         <div className='form_builder_option_select'>
                                                             <h3>Options</h3>
@@ -3675,6 +3825,8 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
 
+
+
                                                 </div>
                                             </div>
                                         )}
@@ -3696,14 +3848,7 @@ const Formgenerated = () => {
 
                     </div>
                 </div>
-                <div className='btn_form_bulider'>
-                    <div className="form-submission-wrp">
-                        <button className="cancle-form-btn" onClick={handlelistForm}>Cancel</button>
-                    </div>
-                    <div className="form-submission-wrp">
-                        <button className="create-form-btn action_btn" onClick={handleCreate}>{isEditing ? 'Update Form' : 'Save'}</button>
-                    </div>
-                </div>
+
             </div>
 
             <div className='form-builder-wrap-popup-inputs'>

@@ -76,7 +76,22 @@ function Customer() {
     const [percentage, setPercentage] = useState(0);
     const [percentage1, setPercentage1] = useState(0);
     const { shop, apiUrl } = useLoaderData() || {};
+    const [currentFormsed, setCurrentForms] = useState([]);
 
+    useEffect(() => {
+        const fetchForms = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/api/forms`);
+                const forms = response.data;
+                const matchedForms = forms.filter(form => form.shop === shop);
+                setCurrentForms(matchedForms);
+            } catch (error) {
+                console.error('Error fetching forms:', error);
+            }
+        };
+
+        fetchForms();
+    }, []);
 
     useEffect(() => {
         const fetchForms = async () => {
@@ -122,7 +137,6 @@ function Customer() {
 
         fetchForms();
     }, [shop, apiUrl]);
-
 
     useEffect(() => {
         const fetchForms = async () => {
@@ -177,7 +191,6 @@ function Customer() {
         fetchForms();
     }, [shop, apiUrl]);
 
-
     useEffect(() => {
         const animatedValue = { value: 0 };
 
@@ -208,7 +221,6 @@ function Customer() {
         setShowpop(!showpop);
         setSelectedForms(new Set());
     }
-
 
     const handleToggleFormNames = () => {
         setShowFormNames(prevState => !prevState);
@@ -272,20 +284,7 @@ function Customer() {
         }
     };
 
-    const [currentFormsed, setCurrentForms] = useState([]);
 
-    useEffect(() => {
-        const fetchForms = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}/api/forms`);
-                setCurrentForms(response.data);
-            } catch (error) {
-                console.error('Error fetching forms:', error);
-            }
-        };
-
-        fetchForms();
-    }, []);
 
     const handleSelectAllForms = () => {
         setSelectedFormName(null);
@@ -306,7 +305,6 @@ function Customer() {
             alert('Please select at least one form to download.');
             return;
         }
-
         const selectedFormsArray = Array.from(selectedForms);
 
         selectedFormsArray.forEach(formId => {
@@ -353,27 +351,24 @@ function Customer() {
         document.body.removeChild(a);
     };
 
-
     const downloadAllCSV = () => {
-        const csvRows = []; const
-            headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
+        const csvRows = [];
+        const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
         csvRows.push(headers.join(','));
-
-        filteredForms.forEach(form => {
+    
+        currentFormsed.forEach(form => {
             form.submissions.forEach((submission, index) => {
                 const nameField = submission.fields.find(field => field.name === 'First name' || field.name === 'Full name') || { value: 'N/A' };
                 const emailField = submission.fields.find(field => field.name === 'Email') || { value: 'N/A' };
                 const phoneField = submission.fields.find(field => field.name === 'Phone' || field.name === 'Number') || { value: 'N/A' };
-
+    
                 const fieldDetails = Array.isArray(submission.fields)
                     ? submission.fields.map(field => `${field.name}: ${field.value || 'N/A'}`).join('; ')
                     : '';
-
                 const shop = form.shop || 'N/A';
                 const currentUrl = form.currentUrl || 'N/A';
                 const timestamp = submission.timestamp || 'N/A';
-
-
+    
                 const values = [
                     form.title || '',
                     form.id || '',
@@ -386,11 +381,10 @@ function Customer() {
                     currentUrl,
                     timestamp
                 ];
-
                 csvRows.push(values.join(','));
             });
         });
-
+    
         const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -401,7 +395,8 @@ function Customer() {
         a.click();
         document.body.removeChild(a);
     };
-
+    
+    
     return (
         <>
             {loading ? (
@@ -587,7 +582,7 @@ function Customer() {
                                                     <div> Form Name </div>
                                                     <div> id</div>
                                                     <div className='phone-forms'>Response</div>
-                                                    <div> Date and time</div>
+                                                    <div className='form-date'> Date and time</div>
 
                                                 </div>
                                                 <div className="table-row-popup">
@@ -610,7 +605,7 @@ function Customer() {
                                                                     <div className="data_forms phone-forms">
                                                                         {form.submissionCount || form.submissions.length || 0}
                                                                     </div>
-                                                                    <div className="data_forms">
+                                                                    <div className="data_forms form-date">
                                                                         {format(new Date(form.timestamp), 'yyyy-MM-dd hh:mm:ss a')}
                                                                     </div>
                                                                 </div>

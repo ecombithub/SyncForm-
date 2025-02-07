@@ -4,8 +4,7 @@ import cors from 'cors';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { parse } from 'json2csv';
-import { Parser } from 'json2csv'; 
+import { Parser } from 'json2csv';
 
 dotenv.config();
 
@@ -62,6 +61,8 @@ const formCreateSchema = new mongoose.Schema({
     name: String,
     required: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
+    onValue: { type: String, default: 'On' },
+    offValue: { type: String, default: 'Off' },
     width: { type: String, default: '100%' },
     text: { type: String, default: '' },
     description: { type: String, default: '' },
@@ -71,7 +72,7 @@ const formCreateSchema = new mongoose.Schema({
     padding: { type: String, default: '10px' },
     color: { type: String, default: '#45a7f6' },
     dividerColor: { type: String, default: '#000' },
-    buttonWidth: { type: String, default: 'auto' },
+    btnwidth: { type: String, default: 'auto' },
     buttonHeight: { type: String, default: 'auto' },
     backgroundColor: { type: String, default: '#45a7f6' },
     inputPadding: { type: String, default: '10px' },
@@ -310,6 +311,7 @@ const emailTemplateSchema = new mongoose.Schema({
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
+      htmllineheight: { type: String, required: false },
       htmlaline: { type: String, required: false },
       splitbg: { type: String, required: false },
       splitbtn: { type: String, required: false },
@@ -374,6 +376,7 @@ const emailTemplateSchema = new mongoose.Schema({
       showbtnn: { type: Boolean, default: false },
       showbtnsplit: { type: Boolean, default: false },
       showbtnmulti: { type: Boolean, default: false },
+      imageWidth: { type: String, required: false },
       fontsizeMulticolumn: { type: String, required: false },
       Multicolumnbgcolor: { type: String, required: false },
       Multibgcolor: { type: String, required: false },
@@ -412,6 +415,7 @@ const emailTemplateSchema = new mongoose.Schema({
       Multiheight: { type: String, required: false },
       Multiletter: { type: String, required: false },
       Multiborderradious: { type: String, required: false },
+      Multiimgwidth: { type: String, required: false },
       Multibtnbg: { type: String, required: false },
       Multibtnurl: { type: String, required: false },
       icons: {
@@ -581,6 +585,7 @@ const ShowTemplats = new mongoose.Schema({
       htmlFontSize: { type: String, required: false },
       htmlPadding: { type: String, required: false },
       htmlColor: { type: String, required: false },
+      htmllineheight: { type: String, required: false },
       htmlaline: { type: String, required: false },
       splitbg: { type: String, required: false },
       splitbtn: { type: String, required: false },
@@ -645,6 +650,7 @@ const ShowTemplats = new mongoose.Schema({
       showbtnn: { type: Boolean, default: false },
       showbtnsplit: { type: Boolean, default: false },
       showbtnmulti: { type: Boolean, default: false },
+      imageWidth: { type: String, required: false },
       fontsizeMulticolumn: { type: String, required: false },
       Multicolumnbgcolor: { type: String, required: false },
       Multibgcolor: { type: String, required: false },
@@ -681,6 +687,7 @@ const ShowTemplats = new mongoose.Schema({
       Multibtnlable: { type: String, required: false },
       Multibtnurl: { type: String, required: false },
       Multiborderradious: { type: String, required: false },
+      Multiimgwidth: { type: String, required: false },
       Multifamily: { type: String, required: false },
       Multiheight: { type: String, required: false },
       Multiletter: { type: String, required: false },
@@ -897,7 +904,6 @@ const sendEmail = async (email, TemplateAll) => {
     console.log('Email:', email);
     console.log('TemplateAll:', TemplateAll);
 
-
     const settings = await Settings.findOne({ shop: TemplateAll.shop });
 
     let emailUser = 'sahil@hubsyntax.com';
@@ -942,18 +948,20 @@ const sendEmail = async (email, TemplateAll) => {
                   return match;
                 });
 
+
               const headingStyle = `
-    background-image: url('${field.headingbgImage || ''}');
-    background-size: cover;
-    background-position: center;
-    border-width: ${field.headingBorderWidth || 1}px;
-    border-style: ${field.headingBorderStyle || 'solid'};
-    border-color: ${field.headingBorderColor || '#000'};
-    width: ${field.bannerImageWidth || 100}%;
-    height: ${field.bannerImageHeight || '400px'};
-    opacity: ${field.headeropacity || 1};
-    margin: ${field.headingmargin || '0'}px;
-  `;
+  background: linear-gradient(rgba(0, 0, 0, ${field.headeropacity || 1}), rgba(0, 0, 0, ${field.headeropacity || 1})),
+               url('${field.headingbgImage || ''}');
+  background-size: cover;
+  background-position: center;
+  background-color:${field.headingbg || '#ffff'}px;
+  border-width: ${field.headingBorderWidth || 1}px;
+  border-style: ${field.headingBorderStyle || 'solid'};
+  border-color: ${field.headingBorderColor || '#000'};
+  width: ${field.bannerImageWidth || 100}%;
+  height: ${field.bannerImageHeight || '400px'};
+  margin: ${field.headingmargin || '0'}px;
+`;
 
               const buttonStyle = `
     font-size: ${field.headingbtnFontSize || 16}px;
@@ -981,8 +989,7 @@ const sendEmail = async (email, TemplateAll) => {
                 font-size: ${field.headingFontSize || 30}px;
                 color: ${field.headingColor || '#000'};
                 font-weight: ${field.headingFontWeight || 'bold'};
-                line-height: ${field.headingline || 'normal'}px;
-                font-family: ${field.headingfamily || 'Arial, sans-serif'};
+                font-family: ${field.headingfamily || '"Poppins", sans-serif'};
                 letter-spacing: ${field.headingLetterSpacing || 0}px;
                 text-align: ${field.headingTextAlign || 'center'};
               ">
@@ -992,7 +999,6 @@ const sendEmail = async (email, TemplateAll) => {
                 font-size: ${field.headingsubheading || 14}px;
                 color: ${field.subheadingColor || '#000'};
                 font-family: ${field.subheadingfamily || 'Arial, sans-serif'};
-                line-height: ${field.subheadingline || 'normal'}px;
                 letter-spacing: ${field.subheadingleter || 0}px;
               ">
                 ${updatedEditorContent || ''}
@@ -1040,7 +1046,6 @@ const sendEmail = async (email, TemplateAll) => {
                   font-size: ${field.richFontsize || '16'}px;
                   font-family:${field.richFontfamily};
                   letter-spacing: ${field.richspace || 0}px; 
-                  line-height: ${field.richlineheight || 20}px; 
                   background-color: ${field.richbgcolor || '#fff'};
                   padding-left: ${field.richleftPadding || '10'}px;
                   padding-right: ${field.richleftPadding || '10'}px;
@@ -1082,7 +1087,7 @@ const sendEmail = async (email, TemplateAll) => {
               let result = `
                 <div style="color: ${field.MultiColor || '#000'}; padding: ${field.MultiPadding || '1px'}px; text-align: center; background-color: ${field.Multibgcolor || 'transparent'};">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" 
-                   style="border-spacing: ${field.Multigap || 0}px;">
+                   style="border-spacing: ${field.Multigap || 10}px;">
               `;
 
               field.columnData.forEach((column, index) => {
@@ -1110,45 +1115,43 @@ const sendEmail = async (email, TemplateAll) => {
                 );
 
                 result += `
-                  <td style="
-                    vertical-align: top;
-                    width: ${100 / columnsPerRow}%; 
+                   <td style="
+                    width: ${100 / columnsPerRow}%;
                     text-align: ${field.Multitext || 'center'};
                     font-size: ${field.fontsizeMulticolumn || 14}px;
                     border-width: ${field.MulticolumnbtnBorderWidth || 1}px;
                     border-style: ${field.MulticolumnbtnBorderStyle || 'solid'};
                     border-color: ${field.MulticolumnbtnBorderColor || '#000'};
-                    padding: ${field.MulticolumnPadding || '10'}px;
+                    padding: ${field.MulticolumnPadding || '10px'}px;
                     background-color: ${field.Multicolumnbgcolor || 'transparent'};
                     color: ${field.MultiColor || '#000'};
                     border-radius: ${field.Multiborderradious || 0}px;
-                    font-family:${field.Multifamily};
-                    letter-spacing:${field.Multiletter}px;
-                    line-height: ${field.Multiheight}px; 
+                    font-family:${field.Multifamily || 'Poppins'};
+                    letter-spacing:${field.Multiletter || 0}px;
                   ">
-                     ${column.image ? `<img src="${column.image}" alt="Column ${index}" style="width: 100%; height: auto;" />` : ''}
-                    ${processedContent}
-                    ${column.isVisible
+                  ${column.image ? `<img src="${column.image}" alt="Column ${index}" style="width: ${field.Multiimgwidth || 100}%; height: auto;" />` : ''}
+                  ${processedContent}
+                  ${column.isVisible
                     ? `
-                      <a href="${column.Multibtnurl || '#'}" target="_blank" style="text-decoration: none;">
-                        <button style="
-                          margin-top: 20px;
-                          background-color: ${field.Multibtnbg || '#007BFF'};
-                          border-width: ${field.MultibtnBorderWidth || 2}px;
-                          border-style: ${field.MultibtnBorderStyle || 'solid'};
-                          border-color: ${field.MultibtnBorderColor || '#000'};
-                          width: ${field.Multibtnweight || 100}px;
-                          height: ${field.Multibtnheight || 40}px;
-                          color: ${field.Multibtncolor || '#000'};
-                          border-radius: ${field.Multibtnradious || 0}px;
-                          font-size: ${field.Multibtnfont || 14}px;
-                           font-weight: ${field.MultiWeight || 'bold'}; 
-                          cursor: pointer;
-                        ">
-                          ${column.Multibtnlable || 'Click'}
-                        </button>
-                      </a>
-                    `
+                    <a href="${column.Multibtnurl || '#'}" target="_blank" style="text-decoration: none;">
+                      <button style="
+                        margin-top: 20px;
+                        background-color: ${field.Multibtnbg || '#007BFF'};
+                        border-width: ${field.MultibtnBorderWidth || 2}px;
+                        border-style: ${field.MultibtnBorderStyle || 'solid'};
+                        border-color: ${field.MultibtnBorderColor || '#000'};
+                        width: ${field.Multibtnweight || 100}px;
+                        height: ${field.Multibtnheight || 40}px;
+                        color: ${field.Multibtncolor || '#000'};
+                        border-radius: ${field.Multibtnradious || 0}px;
+                        font-size: ${field.Multibtnfont || 14}px;
+                         font-weight: ${field.MultiWeight || 'bold'}; 
+                        cursor: pointer;
+                      ">
+                        ${column.Multibtnlable || 'Click'}
+                      </button>
+                    </a>
+                  `
                     : ''
                   }
                   </td>
@@ -1162,6 +1165,7 @@ const sendEmail = async (email, TemplateAll) => {
 
               return result;
             }
+
             case 'images': {
               return `
                 <div style="
@@ -1194,7 +1198,6 @@ const sendEmail = async (email, TemplateAll) => {
                   float: ${field.float || 'left'};
                   color: ${field.splitColor || '#000'};
                   font-size: ${field.splittextSize || 14}px;
-                  line-height: ${field.splitlineheight || 30}px; 
                   font-family: ${field.splitfamily || 'Poppins'};
                   letter-spacing: ${field.splitletter || 1}px; 
                 ">
@@ -1324,7 +1327,7 @@ const sendEmail = async (email, TemplateAll) => {
               </div>`;
 
             case 'html convert':
-              return `<div style="text-align: ${field.htmlaline || 'left'};  color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
+              return `<div style="text-align: ${field.htmlaline || 'left'}; color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
             case 'spacer':
               return `
                       <div style="width: 100%; display: flex; height: ${field.spacerHeight || '20px'}px; background-color: ${field.spacerbg || '#EDEDED'}; padding: ${field.splitPadding || '0'}px 0;">
@@ -1423,11 +1426,32 @@ const sendEmail = async (email, TemplateAll) => {
 
     <html>
      <head>
+      <link href="https://fonts.googleapis.com/css2?family=Arial&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Verdana&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Georgia&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Courier+New&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Gotham&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Helvetica&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Barlow&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Neutra+Text&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Baskerville&display=swap" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <style>
-
-   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
-  
-      * {
+   *{
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -1435,22 +1459,31 @@ const sendEmail = async (email, TemplateAll) => {
       
       h1{
           font-size: 40px !important;
+          line-height: 50px;
 
       }
-          h2 {
+      h2{
          font-size: 30px !important;
+           line-height: 40px;
         
        }
-      h3 {
+      h3{
          font-size: 20px !important;
+            line-height: 30px;
       }
          
        h4{
        font-size: 18px important;
+      line-height: 25px;
        }
 
        h5{
        font-size: 15px important;
+         line-height: 20px;
+       }
+
+       p{
+        line-height: 20px;
        }
         
      a {
@@ -1465,7 +1498,7 @@ const sendEmail = async (email, TemplateAll) => {
        border-radius: ${TemplateAll.styles.borderRadious || '0'}px;
         text-align: ${TemplateAll.styles.textAlign || 'left'};
         padding: ${TemplateAll.styles.templatePadding || '0'}px;
-        font-family: ${TemplateAll.styles.fontFamily || 'Arial'};
+        font-family: ${TemplateAll.styles.fontFamily || '"Poppins", sans-serif'};
         margin:auto;
         background-image: url('${TemplateAll.styles.backgroundImage}');
         background-repeat: no-repeat;
@@ -1496,7 +1529,7 @@ const sendEmail = async (email, TemplateAll) => {
 
     const adminMailOptions = {
       from: emailUser,
-      to: 'sahil@hubsyntax.com',
+      to: emailUser,
       subject: 'New Customer Query EcombitHub',
       html: adminHtmlContent,
     };
@@ -1509,7 +1542,7 @@ const sendEmail = async (email, TemplateAll) => {
       attachments,
     };
 
-    console.log('Sending admin email to sahil@hubsyntax.com');
+    console.log(`Sending admin email to ${emailUser}`);
     await transporter.sendMail(adminMailOptions);
 
     console.log('Sending user email to:', email);
@@ -1522,17 +1555,18 @@ const sendEmail = async (email, TemplateAll) => {
 };
 
 const costomerData = new mongoose.Schema({
-  status: {type: String,enum: ['active', 'disactive'], required: true
+  status: {
+    type: String, enum: ['active', 'disactive'], required: true
   },
-  numberValue: {type: Number, required: true  },
-  shop: {type: String, required: true  },
-  shopData: {email: {type: String,required: true,}},
+  numberValue: { type: Number, required: true },
+  shop: { type: String, required: true },
+  shopData: { email: { type: String, required: true, } },
 
 });
 
 const CostomerAll = mongoose.model('Customer Datas', costomerData);
 
-let emailCheckIntervals = {}; 
+let emailCheckIntervals = {};
 
 app.post('/user-email', async (req, res) => {
   try {
@@ -1547,14 +1581,14 @@ app.post('/user-email', async (req, res) => {
     const existingShop = await CostomerAll.findOne({ shop });
 
     if (existingShop) {
-     
+
       await CostomerAll.updateOne(
         { shop },
         { $set: { status, numberValue: numberValueParsed } }
       );
       console.log(`Shop data updated for ${shop}`);
     } else {
-      
+
       const newSetting = new CostomerAll({
         status,
         numberValue: numberValueParsed,
@@ -1643,22 +1677,22 @@ Thank you for using our Form Builder HuB app to connect with your customer. If y
 
 app.get('/get-status/:shop', async (req, res) => {
   try {
-      const { shop } = req.params;
-      const shopData = await CostomerAll.findOne({ shop });
-      
-      if (shopData) {
-        const numberValue = shopData.numberValue;
-          
-          return res.json({ 
-              status: shopData.status,
-              numberValue: numberValue 
-          });
-      } else {
-          return res.status(404).json({ message: 'Shop not found' });
-      }
+    const { shop } = req.params;
+    const shopData = await CostomerAll.findOne({ shop });
+
+    if (shopData) {
+      const numberValue = shopData.numberValue;
+
+      return res.json({
+        status: shopData.status,
+        numberValue: numberValue
+      });
+    } else {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
   } catch (error) {
-      console.error("Error fetching status:", error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching status:", error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -2080,7 +2114,6 @@ app.get('/payment/plan', async (req, res) => {
   try {
     const paymentPlan = await Payment.findOne({ shop });
 
-
     if (!paymentPlan) {
       return res.status(404).json({ error: 'Payment plan not found' });
     }
@@ -2098,6 +2131,25 @@ app.get('/payment/plan', async (req, res) => {
   } catch (error) {
     console.error('Error retrieving payment plan:', error);
     res.status(500).json({ error: 'Failed to retrieve payment plan' });
+  }
+});
+
+app.get('/payment/active-plan', async (req, res) => {
+  try {
+    const { shop } = req.query;
+    if (!shop) {
+      return res.status(400).json({ error: "Shop parameter is required" });
+    }
+
+    const activePlan = await Payment.findOne({ shop, status: 'active' });
+    if (!activePlan) {
+      return res.status(404).json({ error: "No active plan found" });
+    }
+
+    res.json({ success: true, activePlan });
+  } catch (error) {
+    console.error('Error fetching active plan:', error.message);
+    res.status(500).json({ error: 'Error fetching active plan' });
   }
 });
 
@@ -2314,11 +2366,11 @@ app.post('/form-data', upload.single('file'), async (req, res) => {
       existingForm = await FormModel.findOne({ title: newTitle });
       counter++;
     }
-    
+
     const { formId, shop, fields, createdAt, styles, submissionOption, toggleStatus, thankYouTimer, editorValue, url, status } = req.body;
 
     if (styles.backgroundImage && styles.backgroundImage.startsWith('url(data:image')) {
-      const base64Data = styles.backgroundImage.replace(/^url\((.*)\)$/, '$1').replace(/^data:image\/(?:png|jpeg);base64,/, '');  
+      const base64Data = styles.backgroundImage.replace(/^url\((.*)\)$/, '$1').replace(/^data:image\/(?:png|jpeg);base64,/, '');
       const fileName = `templateImage_${Date.now()}.png`;
       const imageUrl = saveBase64Image2(base64Data, fileName);
       styles.backgroundImage = imageUrl;

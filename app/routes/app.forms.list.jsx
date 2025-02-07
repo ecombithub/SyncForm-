@@ -219,7 +219,7 @@ const Formdata = () => {
         });
 
         if (form) {
-            navigator('/app/formGenerator/new', {
+            navigator('/app/forms/new', {
                 state: {
                     formTitle: form.title,
                     fields: form.fields,
@@ -405,7 +405,7 @@ const Formdata = () => {
         }
 
         setIsLoading(true);
-        navigator('/app/formGenerator/new');
+        navigator('/app/forms/new');
     };
 
 
@@ -820,24 +820,50 @@ const Formdata = () => {
                                 <div className='form-builder-create-wrped'>
                                     {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
                                         form.formId === currentFormId && (
-                                            <div key={form.formId} style={{ ...form.styles,  backgroundImage: `url(${form.styles.backgroundImage})`, opacity: form.styles.opacityForm, borderRadius: `${form.styles.borderRadius}px`, padding: `${form.styles.padding}px`, backgroundSize: 'cover', backgroundPosition: 'center' }} className="form-details">
+                                            <div
+                                            key={form.formId}
+                                            style={{
+                                              ...form.styles,
+                                              position: 'relative', 
+                                              borderRadius: `${form.styles.borderRadius}px`,
+                                              padding: `${form.styles.padding}px`,
+                                              backgroundColor: 'transparent', 
+                                            }}
+                                            className="form-details"
+                                          >
+                                            <div
+                                              style={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                backgroundImage: `url(${form.styles.backgroundImage})`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                                opacity: form.styles.opacityForm, 
+                                                borderRadius: `${form.styles.borderRadius}px`,
+                                                backgroundColor: form.styles.backgroundColor , 
+                                              }}
+                                            ></div>
+                                                <div className='form-builder-create-wrapping-forms'>
                                                 {form.fields.map(field => (
                                                     <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
                                                         {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
                                                         {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                         {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}></textarea>}
+                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
                                                         {field.type === 'description' && <p style={{ fontSize: `${field.textSize}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
                                                         {field.type === 'toggle' && (
                                                             <div className='form-build-toggle'>
+                                                                 <div style={{ color: form.styles.labelColor }}>
+                                                                    {field.label}
+                                                                </div>
                                                                 <label className="custom-toggle">
                                                                     <input type="checkbox" aria-label={field.label} />
                                                                     <span className="slider"></span>
                                                                 </label>
-                                                                <div>
-                                                                    {field.label}
-
-                                                                </div>
+                                                              
                                                             </div>
                                                         )}
                                                         {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</h1>}
@@ -912,7 +938,7 @@ const Formdata = () => {
                                                             backgroundColor: field.backgroundColor || '#45a7f6',
                                                             fontSize: `${field.buttontext || '16'}px`,
                                                             height: field.buttonHeight || 'auto',
-                                                            width: field.buttonWidth || 'auto',
+                                                             width: `${field.btnwidth}px`,
                                                             padding: field.padding || '10px',
                                                             color: field.btncolor,
                                                             borderWidth: `${field.buttonBorderWidth}px`,
@@ -971,6 +997,7 @@ const Formdata = () => {
 
                                                     </div>
                                                 ))}
+                                                </div>
                                                 <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
                                                     <img src={cancle1} alt="" />
                                                 </div>

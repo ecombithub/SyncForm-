@@ -7,79 +7,130 @@
 </div>
 
 <script>
+  function toggleDropdown(event, fieldName) {
+    event.preventDefault();
 
-function toggleDropdown(event, fieldName) {
-  event.preventDefault();
+    const dropdown = document.getElementById(`dropdown-${fieldName}`);
+    const selectBox = dropdown.previousElementSibling;
+    const arrowSpan = selectBox.querySelector('span:last-child');
 
-  const dropdown = document.getElementById(`dropdown-${fieldName}`);
-  const selectBox = dropdown.previousElementSibling; 
-  const arrowSpan = selectBox.querySelector('span:last-child'); 
+    const isVisible = dropdown.style.display === 'block';
+    dropdown.style.display = isVisible ? 'none' : 'block';
+    arrowSpan.textContent = isVisible ? '▼' : '▲';
+  }
 
-  const isVisible = dropdown.style.display === 'block';
-  dropdown.style.display = isVisible ? 'none' : 'block';
-  arrowSpan.textContent = isVisible ? '▼' : '▲'; 
-}
+  document.addEventListener('click', function (event) {
+    const selectContainers = document.querySelectorAll('.custom-select-container');
 
-document.addEventListener('click', function (event) {
-  const selectContainers = document.querySelectorAll('.custom-select-container');
+    selectContainers.forEach((container) => {
+      if (!container.contains(event.target)) {
+        const dropdown = container.querySelector('.custom-select-dropdown');
+        if (dropdown) {
+          dropdown.style.display = 'none';
 
-  selectContainers.forEach((container) => {
-    if (!container.contains(event.target)) {
-      const dropdown = container.querySelector('.custom-select-dropdown');
-      if (dropdown) {
-        dropdown.style.display = 'none';
-
-        const selectBox = container.querySelector('.custom-select-box');
-        const arrowSpan = selectBox.querySelector('span:last-child');
-        arrowSpan.textContent = '▼';
+          const selectBox = container.querySelector('.custom-select-box');
+          const arrowSpan = selectBox.querySelector('span:last-child');
+          arrowSpan.textContent = '▼';
+        }
       }
+    });
+  });
+
+  function filterOptions(event, fieldName) {
+    const searchInput = event.target.value.toLowerCase();
+    const optionsContainer = document.querySelector(`#dropdown-${fieldName} .options-container`);
+    const options = optionsContainer.querySelectorAll('.custom-select-option');
+
+    options.forEach((option) => {
+      const text = option.textContent.toLowerCase();
+      option.style.display = text.includes(searchInput) ? 'block' : 'none';
+    });
+  }
+
+  document.addEventListener('click', function (event) {
+    if (event.target.classList.contains('custom-select-option')) {
+      const selectedValue = event.target.getAttribute('data-value');
+      const selectedLabel = event.target.textContent;
+
+      const selectBox = event.target
+        .closest('.custom-select-container')
+        .querySelector('.custom-select-box span:first-child');
+      selectBox.textContent = selectedLabel;
+
+      const dropdown = event.target.closest('.custom-select-dropdown');
+      dropdown.style.display = 'none';
+
+      const arrowSpan = selectBox.nextElementSibling;
+      arrowSpan.textContent = '▼';
+
+      console.log('Selected Value:', selectedValue);
     }
   });
-});
 
-function filterOptions(event, fieldName) {
-  const searchInput = event.target.value.toLowerCase();
-  const optionsContainer = document.querySelector(
-    `#dropdown-${fieldName} .options-container`
-  );
-  const options = optionsContainer.querySelectorAll('.custom-select-option');
+  function displayFileNames(event, fieldId) {
+    const fileInput = event.target;
+    const fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
 
-  options.forEach((option) => {
-    const text = option.textContent.toLowerCase();
-    option.style.display = text.includes(searchInput) ? 'block' : 'none';
-  });
-}
+    fileNamesList.innerHTML = '';
 
-document.addEventListener('click', function (event) {
-  if (event.target.classList.contains('custom-select-option')) {
-    const selectedValue = event.target.getAttribute('data-value');
-    const selectedLabel = event.target.textContent;
+    Array.from(fileInput.files).forEach((file, index) => {
+      const li = document.createElement('li');
 
-    const selectBox = event.target
-      .closest('.custom-select-container')
-      .querySelector('.custom-select-box span:first-child');
-    selectBox.textContent = selectedLabel;
+      li.style.border = '1px solid #ddd';
+      li.style.padding = '8px';
+      li.style.marginBottom = '5px';
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      li.style.alignItems = 'center';
 
-    const dropdown = event.target.closest('.custom-select-dropdown');
-    dropdown.style.display = 'none';
+      const fileName = document.createElement('span');
+      fileName.textContent = file.name;
+      fileName.style.flex = '1';
 
-    const arrowSpan = selectBox.nextElementSibling;
-    arrowSpan.textContent = '▼';
+      const removeButton = document.createElement('button');
+      removeButton.style.padding = '0';
+      removeButton.style.border = 'none';
+      removeButton.style.background = 'none';
 
-    console.log('Selected Value:', selectedValue);
+      const removeImage = document.createElement('img');
+      removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
+      removeImage.alt = 'Remove';
+      removeImage.style.width = '20px';
+      removeImage.style.height = '20px';
+      removeImage.style.cursor = 'pointer';
+
+      removeButton.appendChild(removeImage);
+
+      removeButton.onclick = () => removeFile(index, fileInput, fileNamesList, li);
+
+      li.appendChild(fileName);
+      li.appendChild(removeButton);
+
+      fileNamesList.appendChild(li);
+    });
   }
-});
 
-function displayFileNames(event, fieldId) {
-  const fileInput = event.target;
-  const fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
-  
-  fileNamesList.innerHTML = '';
+  function removeFile(index, fileInput, fileNamesList, li) {
+    const filesArray = Array.from(fileInput.files);
+    filesArray.splice(index, 1);
 
-  Array.from(fileInput.files).forEach((file, index) => {
+    const dataTransfer = new DataTransfer();
+    filesArray.forEach((file) => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+
+    fileNamesList.removeChild(li);
+  }
+
+  function displayimage(event, fieldId) {
+    const fileInput = event.target;
+    const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
+
+    fileNamesList.innerHTML = '';
+
+    Array.from(fileInput.files).forEach((file, index) => {
       const li = document.createElement('li');
-  
-      li.style.border = '1px solid #ddd'; 
+
+      li.style.border = '1px solid #ddd';
       li.style.padding = '8px';
       li.style.marginBottom = '5px';
       li.style.display = 'flex';
@@ -88,7 +139,7 @@ function displayFileNames(event, fieldId) {
 
       const fileName = document.createElement('span');
       fileName.textContent = file.name;
-      fileName.style.flex = '1';  
+      fileName.style.flex = '1';
 
       const removeButton = document.createElement('button');
       removeButton.style.padding = '0';
@@ -98,85 +149,31 @@ function displayFileNames(event, fieldId) {
       const removeImage = document.createElement('img');
       removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
       removeImage.alt = 'Remove';
-      removeImage.style.width = '20px'; 
-      removeImage.style.height = '20px'; 
+      removeImage.style.width = '20px';
+      removeImage.style.height = '20px';
       removeImage.style.cursor = 'pointer';
-      
+
       removeButton.appendChild(removeImage);
 
       removeButton.onclick = () => removeFile(index, fileInput, fileNamesList, li);
 
       li.appendChild(fileName);
       li.appendChild(removeButton);
-      
+
       fileNamesList.appendChild(li);
-  });
-}
+    });
+  }
 
-function removeFile(index, fileInput, fileNamesList, li) {
-  const filesArray = Array.from(fileInput.files);
-  filesArray.splice(index, 1); 
-  
-  const dataTransfer = new DataTransfer();
-  filesArray.forEach(file => dataTransfer.items.add(file));
-  fileInput.files = dataTransfer.files;
-  
-  fileNamesList.removeChild(li);
-}
+  function removeFile(index, fileInput, fileNamesList, li) {
+    const filesArray = Array.from(fileInput.files);
+    filesArray.splice(index, 1);
 
-function displayimage(event, fieldId) {
-  const fileInput = event.target;
-  const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
-  
-  fileNamesList.innerHTML = '';
+    const dataTransfer = new DataTransfer();
+    filesArray.forEach((file) => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
 
-  Array.from(fileInput.files).forEach((file, index) => {
-      const li = document.createElement('li');
-  
-      li.style.border = '1px solid #ddd'; 
-      li.style.padding = '8px';
-      li.style.marginBottom = '5px';
-      li.style.display = 'flex';
-      li.style.justifyContent = 'space-between';
-      li.style.alignItems = 'center';
-
-      const fileName = document.createElement('span');
-      fileName.textContent = file.name;
-      fileName.style.flex = '1';  
-
-      const removeButton = document.createElement('button');
-      removeButton.style.padding = '0';
-      removeButton.style.border = 'none';
-      removeButton.style.background = 'none';
-
-      const removeImage = document.createElement('img');
-      removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
-      removeImage.alt = 'Remove';
-      removeImage.style.width = '20px'; 
-      removeImage.style.height = '20px'; 
-      removeImage.style.cursor = 'pointer';
-      
-      removeButton.appendChild(removeImage);
-
-      removeButton.onclick = () => removeFile(index, fileInput, fileNamesList, li);
-
-      li.appendChild(fileName);
-      li.appendChild(removeButton);
-      
-      fileNamesList.appendChild(li);
-  });
-}
-
-function removeFile(index, fileInput, fileNamesList, li) {
-  const filesArray = Array.from(fileInput.files);
-  filesArray.splice(index, 1); 
-  
-  const dataTransfer = new DataTransfer();
-  filesArray.forEach(file => dataTransfer.items.add(file));
-  fileInput.files = dataTransfer.files;
-  
-  fileNamesList.removeChild(li);
-}
+    fileNamesList.removeChild(li);
+  }
 
   $(document).ready(function () {
     const formId = '{{ block.settings.formId }}';
@@ -197,8 +194,8 @@ function removeFile(index, fileInput, fileNamesList, li) {
 
           if (data.status === 'draft') {
             $('#formData-{{ block.id }}').append('<p>Form is in draft  and cannot be displayed.</p>');
-            return;  
-        }
+            return;
+          }
 
           displayFormData(data);
         },
@@ -221,19 +218,30 @@ function removeFile(index, fileInput, fileNamesList, li) {
 
       if (formData.styles) {
         console.log('Form styles:', formData.styles);
-
-        container.css({
+    
+        const backgroundOverlay = $('<div class="background-overlay"></div>');
+        backgroundOverlay.css({
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           backgroundSize: 'cover',
           backgroundColor: formData.styles.backgroundColor || '',
           backgroundImage: formData.styles.backgroundImage ? `url(${formData.styles.backgroundImage})` : 'none',
           backgroundRepeat: formData.styles.backgroundRepeat || 'no-repeat',
-          boxShadow: formData.styles.boxShadow || '',
-          width: formData.styles.width || '100%',
+          opacity: formData.styles.opacityForm || 1,  
+          zIndex: -1,
+        });
+    
+        container.append(backgroundOverlay);
+    
+        container.css({
+          position: 'relative',
           padding: formData.styles.padding || '20px',
           borderColor: formData.styles.borderColor || '',
           borderWidth: formData.styles.borderWidth || '',
           borderStyle: formData.styles.borderStyle || '',
-          opacity: formData.styles.opacityForm || '',
           borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
           margin: 'auto',
         });
@@ -246,7 +254,30 @@ function removeFile(index, fileInput, fileNamesList, li) {
       if (formData.fields && formData.fields.length > 0) {
         formData.fields.forEach((field) => {
           const floatStyle =
-            (field.type === 'text' || field.type === 'name') && parseFloat(field.width) <= 50
+            (field.type === 'text' ||
+              field.type === 'name' ||
+              field.type === 'email' ||
+              field.type === 'slider' ||
+              field.type === 'number' ||
+              field.type === 'file' ||
+              field.type === 'phone ' ||
+              field.type === 'datetime' ||
+              field.type === 'location' ||
+              field.type === 'multi-file' ||
+              field.type === 'multi-image' ||
+              field.type === 'password' ||
+              field.type === 'images' ||
+              field.type === 'select' ||
+              field.type === 'radio' ||
+              field.type === 'checkbox' ||
+              field.type === 'textarea' ||
+              field.type === 'date' ||
+              field.type === 'time' ||
+              field.type === 'url') &&
+            (parseFloat(field.width) <= 50 ||
+              parseFloat(field.width) === 25 ||
+              parseFloat(field.width) === 50 ||
+              parseFloat(field.width) === 75)
               ? 'float: inline-start;'
               : '';
           const inputGap = formData.styles.inputGap || '0px';
@@ -269,7 +300,6 @@ function removeFile(index, fileInput, fileNamesList, li) {
                         field.type !== 'heading' &&
                         field.type !== 'description' &&
                         field.type !== 'button' &&
-                        field.type !== 'toggle' &&
                         field.type !== 'link' &&
                         field.type !== 'divider'
                           ? `<label style="color: ${labelColor};">${field.label}</label>`
@@ -298,13 +328,13 @@ function removeFile(index, fileInput, fileNamesList, li) {
         });
 
         $('.input-gap').css({
-          'padding': '5px',
-          'display': 'flow-root',
-          'width': '100%' 
-      });
-      $('.input-gap.small-width').css('width', '50%');
-      $('.iti').css('width', '100%');
+          padding: '5px',
+          display: 'flow-root',
+        });
 
+        $('.iti').css('width', '100%');
+
+        $('label').css('display', 'block');
       } else {
         container.append('<p>No fields available.</p>');
       }
@@ -328,6 +358,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
       headingaline
     ) {
       const uniqueId = field.id || generateUniqueId();
+
       switch (field.type) {
         case 'name':
           return `<input type="text" placeholder="${
@@ -344,8 +375,10 @@ function removeFile(index, fileInput, fileNamesList, li) {
                 type="checkbox" 
                 style="display: none;" 
                 aria-label="${field.label || 'Toggle'}" 
-                onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
-                          this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';" 
+                 onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
+                  this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)'; 
+                  togglevalue = this.checked ? '${field.onValue}' : '${field.offValue}';
+                   console.log('Toggle Value:', togglevalue); "
               />
               ${field.description || ''}
               <span style="
@@ -376,12 +409,14 @@ function removeFile(index, fileInput, fileNamesList, li) {
         case 'textarea':
           return `<textarea placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}">
+          }" name="w3review" rows="4" cols="50" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}">
            ${field.description}
           </textarea>`;
         case 'checkbox':
           return `
-                <div style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
+                <div style="width: ${
+                  field.width || '100%'
+                };padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
                     .map(
                       (option) => `
@@ -397,9 +432,11 @@ function removeFile(index, fileInput, fileNamesList, li) {
                  ${field.description}
                 </div>
               `;
-           case 'radio':
-            return `
-                  <div style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
+        case 'radio':
+          return `
+                  <div style="width: ${
+                    field.width || '100%'
+                  };padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
                     .map(
                       (option) => `
@@ -415,15 +452,12 @@ function removeFile(index, fileInput, fileNamesList, li) {
                      ${field.description}
                 </div>
               `;
-              case 'select':
-              const options = field.options
-                .map(
-                  (option) =>
-                    `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
-                )
-                .join('');
-            
-              return `
+        case 'select':
+          const options = field.options
+            .map((option) => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`)
+            .join('');
+
+          return `
                 <div class="custom-select-container" style="position: relative;">
                   <div class="custom-select-box" style="width: ${
                     field.width || 'auto'
@@ -472,13 +506,15 @@ function removeFile(index, fileInput, fileNamesList, li) {
           return `<input type="file" placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> ${field.description}`;
-          case 'multi-file':
+        case 'multi-file':
           return `
               <div style="display: flex; flex-direction: column;">
                   <input 
                       type="file" 
                       placeholder="${field.placeholder || ''}" 
-                      style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle};" 
+                      style= "width: 100%; padding: ${
+                        field.inputPadding
+                      }; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle};" 
                       multiple 
                       onchange="displayFileNames(event, '${field.id}')" 
                   />
@@ -489,7 +525,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
         case 'email':
           return `<input type="email" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  ${field.description}`;
+          }" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  ${field.description}`;
         case 'phone':
           const phoneInputHtml = `
           <input type="tel" id="phone-${uniqueId}" placeholder="${field.placeholder || ''}" 
@@ -563,14 +599,16 @@ function removeFile(index, fileInput, fileNamesList, li) {
           return `<input type="file" multiple placeholder="${
             field.placeholder || ''
           }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />`;
-         
-          case 'multi-image':
+
+        case 'multi-image':
           return `
               <div style="display: flex; flex-direction: column;">
                   <input 
                       type="file" 
                       placeholder="${field.placeholder || ''}" 
-                      style="width: ${field.width || '100%'}; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle};" 
+                      style="width: ${
+                        field.width || '100%'
+                      }; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle};" 
                       multiple 
                       onchange="displayimage(event, '${field.id}')" 
                   />
@@ -579,7 +617,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
               </div>
           `;
 
-          case 'slider':
+        case 'slider':
           return `<input 
                     type="range" 
                     placeholder="${field.placeholder || ''}" 
@@ -594,8 +632,9 @@ function removeFile(index, fileInput, fileNamesList, li) {
                 <button
                   style="background-color: ${
                     field.backgroundColor || '#007bff'
-                  }; height: ${field.buttonHeight || '40px'}; width: ${field.buttonWidth || '150px'};
-                   font-size: ${field.buttontext}px;
+                  }; height: ${field.buttonHeight || '40px'}; 
+                    width: ${field.btnwidth}px;
+                    font-size: ${field.buttontext}px;
                     padding: ${field.padding || '10px'};
                     border-width: ${field.buttonBorderWidth}px;
                     border-style: ${field.buttonBorderStyle || 'solid'};
@@ -621,7 +660,6 @@ function removeFile(index, fileInput, fileNamesList, li) {
     }
 
     const currentTimestamp = new Date().toISOString();
-
     window.submitFormData = function (
       blockId,
       button,
@@ -670,12 +708,12 @@ function removeFile(index, fileInput, fileNamesList, li) {
       $('#formData-' + blockId + ' .input-field').each(function () {
         const fieldName = $(this).find('label').text().trim();
         const input = $(this).find('input, select, textarea');
-        const dropdown = $(this).find('.custom-select-box span:first-child'); 
+        const dropdown = $(this).find('.custom-select-box span:first-child');
         const fieldId = input.attr('id') || generateUniqueId();
 
         let fieldValue;
         if (dropdown.length > 0) {
-          fieldValue = dropdown.text().trim(); 
+          fieldValue = dropdown.text().trim();
         } else if (input.is(':radio')) {
           fieldValue = $('input[name="' + input.attr('name') + '"]:checked').val();
         } else if (input.is(':checkbox')) {
@@ -686,15 +724,14 @@ function removeFile(index, fileInput, fileNamesList, li) {
               fieldValue.push($(this).val());
             });
           fieldValue = fieldValue.join(', ');
-        }else if (input.attr('type') === 'file') {
+        } else if (input.attr('type') === 'file') {
           fieldValue = [];
-          
-          Array.from($(this).find('input[type="file"]')[0].files).forEach(file => {
-            fieldValue.push(file.name); 
+
+          Array.from($(this).find('input[type="file"]')[0].files).forEach((file) => {
+            fieldValue.push(file.name);
           });
-          fieldValue = fieldValue.join(', '); 
+          fieldValue = fieldValue.join(', ');
           $(this).find('input[type="file"]').val('');
-         
         } else {
           fieldValue = input.val();
         }
@@ -722,13 +759,18 @@ function removeFile(index, fileInput, fileNamesList, li) {
           console.log('Form submitted successfully:', response);
           alert('Form submitted successfully!');
           $(this).find('ul').empty();
+          const toggleInput = $('#formData-' + blockId + ' input[type="checkbox"]');
+          toggleInput.prop('checked', false);
+          toggleInput.next().css('backgroundColor', '#cccccc');
+          toggleInput.next().next().css('transform', 'translateX(0)');
+
           $('#formData-' + blockId + ' .input-field input[type="file"]').val('');
           $('#formData-' + blockId + ' .input-field ul').empty();
           $('#formData-' + blockId + ' .input-field input[type="radio"]').prop('checked', false);
           $('#formData-' + blockId + ' .input-field input[type="checkbox"]').prop('checked', false);
-        
-          $('#formData-' + blockId + ' .custom-select-box span:first-child').text('Select an option'); 
-      
+
+          $('#formData-' + blockId + ' .custom-select-box span:first-child').text('Select an option');
+
           console.log('Form ID:', formData.id);
 
           console.log('Form ID:', formData.id);
@@ -787,25 +829,54 @@ function removeFile(index, fileInput, fileNamesList, li) {
             const editorValueDisplay = `<p>${editorValue}</p>`;
             const messageElement = $(editorValueDisplay);
             $('#formData-' + blockId).append(messageElement);
-
+        
             successElement.hide();
             $('#formData-' + blockId).append(successElement);
-          } else {
+        
+            setTimeout(function() {
+                messageElement.remove(); 
+            }, 3000);
+        } else {
             $('#formData-' + blockId).append(successElement);
-          }
-
+        
+            setTimeout(function() {
+                successElement.remove(); 
+            }, 3000);
+        }
+        
           if (submissionOption === 'Hide form and show thank you message') {
-            $('#formData-' + blockId + ' .form, #formData-' + blockId + ' input, #formData-' + blockId + ' textarea, ' +
-              '#formData-' + blockId + ' select, #formData-' + blockId + ' button, #formData-' + blockId + ' label, ' +
-              '#formData-' + blockId + ' .custom-select-container, #formData-' + blockId + ' .custom-select-dropdown, ' +
-              '#formData-' + blockId + ' h1, #formData-' + blockId + ' p')
-              .each(function() {
-                console.log($(this)); 
-                $(this).hide(); 
-              });
-          
+            $(
+              '#formData-' +
+                blockId +
+                ' .form, #formData-' +
+                blockId +
+                ' input, #formData-' +
+                blockId +
+                ' textarea, ' +
+                '#formData-' +
+                blockId +
+                ' select, #formData-' +
+                blockId +
+                ' button, #formData-' +
+                blockId +
+                ' label, ' +
+                '#formData-' +
+                blockId +
+                ' .custom-select-container, #formData-' +
+                blockId +
+                ' .custom-select-dropdown, ' +
+                '#formData-' +
+                blockId +
+                ' h1, #formData-' +
+                blockId +
+                ' p'
+            ).each(function () {
+              console.log($(this));
+              $(this).hide();
+            });
+
             $('#formData-' + blockId).hide();
-          
+
             const container = $('#formData-' + blockId);
             container.css({
               backgroundSize: 'cover',
@@ -828,7 +899,7 @@ function removeFile(index, fileInput, fileNamesList, li) {
               $('#formData-' + blockId + ' p').fadeOut();
             }, timerDuration);
           }
-          
+
           if (formUrl && formUrl !== 'undefined') {
             window.open(formUrl);
           } else {
@@ -871,10 +942,6 @@ function removeFile(index, fileInput, fileNamesList, li) {
   ]
 }
 {% endschema %}
-
-
-
-
 
 {% comment %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
