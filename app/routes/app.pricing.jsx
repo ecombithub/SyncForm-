@@ -18,7 +18,7 @@ import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
-    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL; 
+    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
     const { shop, accessToken } = session;
     console.log('Access Token:', accessToken);
     console.log('Shop:', shop);
@@ -252,7 +252,7 @@ export default function Pricing() {
                             <p className='currentplan-show'>Plans</p>
                             <p className='choose-your-plan'>Choose Your Plan</p>
                         </div>
-                        <div className="form_builders_plan_btn">
+                        <div className= {`form_builders_plan_btn ${selectedPlanadd === 'monthly' ? 'active' : ''}`}>
                             <div
                                 className={`form_builders_plan_monthly ${selectedPlanadd === 'monthly' ? 'active' : ''}`}
                                 onClick={() => handleTogglePlans('monthly')}
@@ -263,9 +263,10 @@ export default function Pricing() {
                                 className={`form_builders_plan_annually ${selectedPlanadd === 'annually' ? 'active' : ''}`}
                                 onClick={() => handleTogglePlans('annually')}
                             >
-                                <div className='form_annualy_plans'>
+                                <div className={`form_annualy_plans ${selectedPlanadd === 'annually' ? '_plans' : ''}`}>
                                     <p>Annually</p>
                                 </div>
+
                                 <div className='enjoy_paln'>
                                     <span style={{ background: "#45A7F6", color: "white" }}>
                                         Enjoy <span>up to 17% off</span>
@@ -361,7 +362,7 @@ export default function Pricing() {
                                     {activePlan && activePlan.name === 'Form Builder Pro Plan' ? (
                                         <div>
                                             <img src={proplan} />
-                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#33AADE', color: 'white', border:'1px solid white' }}>Current Plan</p>
+                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#33AADE', color: 'white', border: '1px solid white' }}>Current Plan</p>
                                         </div>
                                     ) : (
                                         <p className='form_builder_plan_btn' onClick={() => handleChoosePlan('pro')}>
@@ -424,7 +425,7 @@ export default function Pricing() {
                                     {activePlan && activePlan.name === 'Form Builder Pro Plus Plan' ? (
                                         <div>
                                             <img src={proplan} />
-                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#EE8208', color: 'white',border:'1px solid white' }}>Current Plan</p>
+                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#EE8208', color: 'white', border: '1px solid white' }}>Current Plan</p>
                                         </div>
                                     ) : (
                                         <p className='form_builder_plan_btn'
@@ -595,7 +596,7 @@ export default function Pricing() {
                                     {activePlan && activePlan.name === 'Form Builder Pro Yearly Plan' ? (
                                         <div>
                                             <img src={proplan} />
-                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#9929AB', color: 'white',border:'1px solid white' }}>Current Plan</p>
+                                            <p className='form_builder_plan_btn' style={{ backgroundColor: '#9929AB', color: 'white', border: '1px solid white' }}>Current Plan</p>
                                         </div>
                                     ) : (
                                         <p className='form_builder_plan_btn'
@@ -608,7 +609,7 @@ export default function Pricing() {
                                     <div className='monthly-wrap'>
                                         Yearly
                                     </div>
-                                      <button className="show-data-icon" onClick={toggleViewMore4}>
+                                    <button className="show-data-icon" onClick={toggleViewMore4}>
                                         {fourViewMore ? (
                                             <img
                                                 className="show-img1"

@@ -22,13 +22,15 @@ import toggle from '../images/toggle0.png';
 import url1 from '../images/url10.png';
 import date from '../images/date0.png';
 import slider from '../images/slider0.png';
+import multifile12 from '../images/multifile12.png';
+import multifile1 from '../images/multifile1.png';
 import image from '../images/image-0.png';
 import link1 from '../images/link10.png';
 import time from '../images/time0.png';
 import detetime from '../images/time0.png';
 import divider2 from '../images/divider0.png';
 import btn from '../images/btn0.png';
-import drop from '../images/drop.png';
+import drop from '../images/slideicon.png';
 import bgim1 from '../images/bgim1.png';
 import removee from '../images/removee.png';
 import delete1 from '../images/delete.png';
@@ -41,6 +43,11 @@ import single from '../images/multi.png';
 import multi from '../images/single.png';
 import editicon from '../images/editicon.png';
 import singleimage from '../images/singleimage.png';
+import singlefile from '../images/singlefile.png';
+import singleimage0 from '../images/singleimage0.png';
+import singleimage1 from '../images/singleimage1.png';
+import multiimg from '../images/multiimg.png';
+import multiimg1 from '../images/multiimg1.png';
 import cross from '../images/cross.png';
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
@@ -92,14 +99,13 @@ export const loader = async ({ request }) => {
 };
 
 const toolbarOptions = [
-    ['bold', 'italic', 'underline'], [{ color: [] }, { background: [] }], ['link', 'image'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ indent: '-1' }, { indent: '+1' }],
-    [{ script: 'sub' }, { script: 'super' }], [{ font: [] }], [{ align: [] }],
-    [{ header: [] }], ['clean'],
-    [{ header: '1' }, { header: '2' }, { header: '3' }, { header: '4' }, { header: '5' }, { header: '6' }],
-
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ['bold', 'italic', 'underline'],
+    ['link'],
+    [{ color: [] }, { background: [] }],
+    ['clean'],
 ];
+
 
 const generateUniqueId = (length = 22) => {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -166,14 +172,14 @@ const Formgenerated = () => {
     const [editingFormId, setEditingFormId] = useState(null);
     const [selectedField, setSelectedField] = useState(null);
     const [editMode, setEditMode] = useState(false);
-    const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+    const [backgroundColor, setBackgroundColor] = useState('');
     const [backgroundImage, setBackgroundImage] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [boxShadow, setBoxShadow] = useState('');
     const [formWidth, setFormWidth] = useState('1200px');
     const [padding, setPadding] = useState('20');
     const [borderRadius, setBorderRadius] = useState('0');
-    const [borderColor, setBorderColor] = useState('#ffffff');
+    const [borderColor, setBorderColor] = useState('#000000');
     const [borderColorcode, setBorderColorcode] = useState('#ffffff');
     const formRef = useRef(null);
     const [isFieldEnabled, setIsFieldEnabled] = useState(false);
@@ -186,9 +192,9 @@ const Formgenerated = () => {
     const [radioOptions, setRadioOptions] = useState([
         { id: generateUniqueId(), label: 'Radio 1', value: 'Radio 1' },
         { id: generateUniqueId(), label: 'Radio 2', value: 'Radio 2' },
-      ]);
-    const [checkboxOptions, setCheckboxOptions] = useState([{ id: 1, name: 'Checkbox1' },{ id: 2, name: 'Checkbox2' }]);
-    const [selectOptions, setSelectOptions] = useState([{ id: 1, name: 'Option1' },{ id: 2, name: 'Option2' }]);
+    ]);
+    const [checkboxOptions, setCheckboxOptions] = useState([{ id: 1, name: 'Checkbox1' }, { id: 2, name: 'Checkbox2' }]);
+    const [selectOptions, setSelectOptions] = useState([{ id: 1, name: 'Option1' }, { id: 2, name: 'Option2' }]);
     const [showCheckboxPopup, setShowCheckboxPopup] = useState(false);
     const [headingLevel, setHeadingLevel] = useState('h1');
     const [headingText, setHeadingText] = useState('');
@@ -208,7 +214,7 @@ const Formgenerated = () => {
     const [currentEditingFieldIndex, setCurrentEditingFieldIndex] = useState(null);
     const [activeFieldIndex, setActiveFieldIndex] = useState(null);
     const [border, setBorder] = useState('none');
-    const [borderWidth, setBorderWidth] = useState('1px');
+    const [borderWidth, setBorderWidth] = useState('0px');
     const [borderStyle, setBorderStyle] = useState('solid');
     const [isFormBuilderVisible, setIsFormBuilderVisible] = useState(false);
     const [submissionOption, setSubmissionOption] = useState('');
@@ -228,21 +234,138 @@ const Formgenerated = () => {
     const [inputstyle, setInputStyle] = useState('solid');
     const [labelColor, setLableColor] = useState('#000');
     const [lableCode, setLableCode] = useState('#ffffff');
-    const [inputGap, setInputGap] = useState('10')
+    const [inputGap, setInputGap] = useState('0')
     const [colorCode, setColorCode] = useState('#ffffff');
     const [opacityForm, setOpacityForm] = useState('1');
-    const [textHeading, setTextHeading] = useState('left');
+    const [textHeading, setTextHeading] = useState('');
     const [colorHeading, setColorHeading] = useState('#000');
     const [colorHeadingcode, setColorHeadingcode] = useState('#000');
-    const [linkaline, setLinkaline] = useState('left');
-    const [linkTarget, setLinkTarget] = useState('_self');
     const [isActive, setIsActive] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [enabledFields, setEnabledFields] = useState({});
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [selectedimage, setSelectedimage] = useState([]);
     const [userPlan, setUserPlan] = useState(null);
+    const [sliderValue, setSliderValue] = useState(0);
+    const [subject, setSubject] = useState('');
+    const [passwordStatus, setPasswordStatus] = useState("off");
+    const [fileOptions, setFileOptions] = useState({});
+    const [multiOptions, setMultiOptions] = useState({});
+    const [imageOptions, setImageOptions] = useState({});
+    const [multiimagesOptions, setMultiimagesOptions] = useState({});
+    const [maxDescriptionHeight, setMaxDescriptionHeight] = useState(0);
 
+    const handleMultiImagesOptionChange = (fieldId, option) => {
+        setMultiimagesOptions(prevState => {
+            const newState = {
+                ...prevState,
+                [fieldId]: option,
+            };
+
+            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
+            console.log('Updated multiimagesOptions:', newState);
+
+            return newState;
+        });
+    };
+
+    const handleFileOptionChange = (fieldId, option) => {
+        setFileOptions(prevState => {
+            const newState = {
+                ...prevState,
+                [fieldId]: option,
+            };
+
+            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
+            console.log('Updated fileOptions:', newState);
+
+            return newState;
+        });
+    };
+
+    const handleMultiOptionChange = (fieldId, option) => {
+        setMultiOptions(prevState => {
+            const newState = {
+                ...prevState,
+                [fieldId]: option,
+            };
+
+            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
+            console.log('Updated multiOptions:', newState);
+
+            return newState;
+        });
+    };
+
+    const handleImageOptionChange = (fieldId, option) => {
+        setImageOptions(prevState => {
+            const newState = {
+                ...prevState,
+                [fieldId]: option,
+            };
+
+            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
+            console.log('Updated imageOptions:', newState);
+
+            return newState;
+        });
+    };
+
+    useEffect(() => {
+        setMultiimagesOptions((prevState) => {
+            const updatedState = { ...prevState };
+
+            fields.forEach(field => {
+                if (field.type === 'multi-image' && !updatedState[field.id]) {
+                    updatedState[field.id] = 'option1';
+                }
+            });
+
+            return updatedState;
+        });
+    }, [fields]);
+
+    useEffect(() => {
+        setImageOptions((prevState) => {
+            const updatedState = { ...prevState };
+
+            fields.forEach(field => {
+                if (field.type === 'images' && !updatedState[field.id]) {
+                    updatedState[field.id] = 'option1';
+                }
+            });
+
+            return updatedState;
+        });
+    }, [fields]);
+
+    useEffect(() => {
+        setFileOptions((prevState) => {
+            const updatedState = { ...prevState };
+
+            fields.forEach(field => {
+                if (field.type === 'file' && !updatedState[field.id]) {
+                    updatedState[field.id] = 'option1';
+                }
+            });
+
+            return updatedState;
+        });
+    }, [fields]);
+
+    useEffect(() => {
+        setMultiOptions((prevState) => {
+            const updatedState = { ...prevState };
+
+            fields.forEach(field => {
+                if (field.type === 'multi-file' && !updatedState[field.id]) {
+                    updatedState[field.id] = 'option1';
+                }
+            });
+
+            return updatedState;
+        });
+    }, [fields]);
 
     useEffect(() => {
 
@@ -257,38 +380,50 @@ const Formgenerated = () => {
     useEffect(() => {
         const formBuilder = document.getElementById('bg_change');
         const backgroundDiv = document.getElementById('bg_change_background');
+        const builderBlockBlank = document.querySelector('.builder_block_blank');
 
         if (formBuilder) {
-           backgroundDiv.style.backgroundColor = backgroundColor;
             formBuilder.style.width = formWidth;
             formBuilder.style.padding = `${padding}px`;
-            formBuilder.style.borderRadius = `${borderRadius}px`;
-            formBuilder.style.boxShadow = boxShadow;
-    
-            if (/^\d+px$/.test(borderWidth)) {
-                formBuilder.style.border = `${borderWidth} ${borderStyle} ${borderColor}`;
-            } else {
-                formBuilder.style.border = 'none';
-            }
         }
-    
+
         if (backgroundDiv) {
+            const borderWidthWithUnit = /^\d+$/.test(borderWidth) ? `${borderWidth}px` : borderWidth;
             backgroundDiv.style.backgroundColor = backgroundColor;
             backgroundDiv.style.backgroundImage = imageFile ? `url(${imageFile})` : (backgroundImage ? `url(${backgroundImage})` : 'none');
             backgroundDiv.style.backgroundSize = 'cover';
             backgroundDiv.style.backgroundRepeat = 'no-repeat';
             backgroundDiv.style.backgroundPosition = 'center';
-            backgroundDiv.style.opacity = opacityForm;  
-    
-            backgroundDiv.style.position = 'absolute';  
+            backgroundDiv.style.opacity = opacityForm;
+
+            backgroundDiv.style.position = 'absolute';
             backgroundDiv.style.top = 0;
             backgroundDiv.style.left = 0;
             backgroundDiv.style.right = 0;
             backgroundDiv.style.bottom = 0;
+            backgroundDiv.style.backgroundColor = backgroundColor;
+
+            backgroundDiv.style.borderRadius = `${borderRadius}px`;
+            backgroundDiv.style.boxShadow = boxShadow;
+
+            if (/^\d+px$/.test(borderWidth)) {
+                backgroundDiv.style.border = `${borderWidthWithUnit} ${borderStyle} ${borderColor}`;
+            } else {
+                backgroundDiv.style.border = 'none';
+            }
+
         }
-    
+
+        if (builderBlockBlank) {
+            if (backgroundColor || imageFile || backgroundImage) {
+                builderBlockBlank.style.display = 'none';
+            } else {
+                builderBlockBlank.style.display = 'block';
+            }
+        }
+
     }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth, padding, borderRadius, boxShadow, fields.length]);
-    
+
     useEffect(() => {
         const formBuilder = document.getElementById('bg_image');
         if (formBuilder) {
@@ -309,7 +444,7 @@ const Formgenerated = () => {
             setBackgroundColor(styles.backgroundColor);
             setBackgroundImage(styles.backgroundImage);
             setBoxShadow(styles.boxShadow || '');
-            setFormWidth(styles.width || '100%');
+            setFormWidth(styles.width || '1200px');
             setPadding(styles.padding || '20px');
             setBorderRadius(styles.borderRadius || '0');
             setBorder(styles.border || '1px');
@@ -339,14 +474,51 @@ const Formgenerated = () => {
             console.log(styles.backgroundImage);
             setThankYouTimer(thankYouTimer);
             console.log('Updated Thank You Timer:', thankYouTimer);
-            setIsActive(toggleStatus);
+            setIsActive(toggleStatus === "Enabled");
+            console.log('Toggle Status:', toggleStatus);
             setEditorValue(editorValue);
             setSubmissionOption(submissionOption)
             console.log('Location State:', location.state);
+            setSubject(styles.subject);
+
+            if (fields && fields.length > 0) {
+                const passwordField = fields.find(field => field.type === 'password');
+                if (passwordField) {
+                    setPasswordStatus(passwordField.passwordStatus || 'off');
+                }
+            }
+
+            if (fields && fields.length > 0) {
+                const fileOptions = fields.find(field => field.type === 'file');
+                if (fileOptions) {
+                    setFileOptions(fileOptions.fileOptions || '');
+                }
+            }
+
+            if (fields && fields.length > 0) {
+                const multiOptions = fields.find(field => field.type === 'multi-file');
+                if (multiOptions) {
+                    setMultiOptions(multiOptions.multiOptions || '');
+                }
+            }
+
+            if (fields && fields.length > 0) {
+                const imageOptions = fields.find(field => field.type === 'images');
+                if (imageOptions) {
+                    setImageOptions(imageOptions.imageOptions || '');
+                }
+            }
+
+            if (fields && fields.length > 0) {
+                const multiimagesOptions = fields.find(field => field.type === 'multi-image');
+                if (multiimagesOptions) {
+                    setMultiimagesOptions(multiimagesOptions.multiimagesOptions || '');
+                }
+            }
+
 
         }
     }, [location.state]);
-
 
     const createInputField = (type, options = [], isFieldEnabled = true, existingField = null) => {
         const baseField = {
@@ -367,10 +539,10 @@ const Formgenerated = () => {
             level: type === 'heading' ? headingLevel : undefined,
             fontSize: type === 'heading' ? '40px' : undefined,
             level: 'h1',
-            fontSize: '16px',
+            fontSize: '',
             customClass: '',
             color: '#DF0404',
-            padding: '10px',
+            padding: '10',
             dividerColor: '#000',
             btnbackgroundcolor: '#0561AF',
             backgroundColor: existingField ? existingField.backgroundColor : '#45A7F6',
@@ -383,12 +555,13 @@ const Formgenerated = () => {
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
             buttonaline: type === 'button' ? '' : undefined,
-            btncolor: type === 'button' ? '#fff' : undefined,
+            btncolor: type === 'button' ? '#FFFFFF' : undefined,
             btnradious: type === 'button' ? '4' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
             textSize: type === 'description' ? '16' : undefined,
-            textAline: type === 'description' ? 'left' : undefined,
+            textAline: type === 'description' ? '' : undefined,
             textColor: type === 'description' ? '#000000' : undefined,
+            textlineheight: type === 'description' ? '20' : undefined,
             headingText: type === 'heading' ? 'Add Heading' : undefined,
             linktext: type === 'link' ? 'Link' : undefined,
             linkUrl: type === 'link' ? '' : undefined,
@@ -396,18 +569,17 @@ const Formgenerated = () => {
             max: type === 'slider' ? 100 : undefined,
             step: type === 'slider' ? 10 : undefined,
             value: type === 'slider' ? (existingField ? existingField.value : 0) : undefined,
-
+            passwordCharacter: type === 'password' ? '6' : undefined,
+            linkaline: type === 'link' ? '' : undefined,
+            linkTarget: type === 'link' ? '_self' : undefined,
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
     };
 
-    const handleAlignChange = (e) => {
-        setLinkaline(e.target.value);
-    };
-
-    const handleTargetChange = (e) => {
-        setLinkTarget(e.target.value);
+    const handleToggle = (status) => {
+        setPasswordStatus(status);
+        console.log("Password Status:", status);
     };
 
     const handleToggleChange = () => {
@@ -422,7 +594,7 @@ const Formgenerated = () => {
                 options: radioOptions,
             };
             setFields((prevFields) => [...prevFields, newField]);
-        }  else if (type === 'select') {
+        } else if (type === 'select') {
             newField = {
                 ...newField,
                 options: selectOptions,
@@ -499,27 +671,27 @@ const Formgenerated = () => {
 
     const addRadioOption = () => {
         const newOption = {
-          id: generateUniqueId(),
-          label: `Radio ${radioOptions.length + 1}`,
-          value: `Radio ${radioOptions.length + 1}`,
+            id: generateUniqueId(),
+            label: `Radio ${radioOptions.length + 1}`,
+            value: `Radio ${radioOptions.length + 1}`,
         };
-    
+
         setRadioOptions((prevOptions) => [...prevOptions, newOption]);
-    
+
         if (selectedField?.id) {
-          const updatedFields = fields.map((field) =>
-            field.id === selectedField.id
-              ? { ...field, options: [...(field.options || []), newOption] }
-              : field
-          );
-          setFields(updatedFields);
-    
-          const updatedSelectedField = updatedFields.find((field) => field.id === selectedField.id);
-          setSelectedField(updatedSelectedField);
+            const updatedFields = fields.map((field) =>
+                field.id === selectedField.id
+                    ? { ...field, options: [...(field.options || []), newOption] }
+                    : field
+            );
+            setFields(updatedFields);
+
+            const updatedSelectedField = updatedFields.find((field) => field.id === selectedField.id);
+            setSelectedField(updatedSelectedField);
         } else {
-          console.warn('No selectedField found, skipping field update');
+            console.warn('No selectedField found, skipping field update');
         }
-      };
+    };
 
 
     const removeRadioOption = (id) => {
@@ -802,16 +974,16 @@ const Formgenerated = () => {
         setFields((prevFields) => {
             const newFields = prevFields.filter(field => field && field.id !== id);
 
-            if (newFields.length === 0) {
-                setBackgroundImage('');
-                setBackgroundColor('#ffffff');
-                setImageFile(null);
-                setBoxShadow('');
-                setFormWidth('100%');
-                setPadding('20px');
-                setBorderColor('#ffffff');
-                setBorderRadius('0');
-            }
+            // if (newFields.length === 0) {
+            //     setBackgroundImage('');
+            //     setBackgroundColor('#ffffff');
+            //     setImageFile(null);
+            //     setBoxShadow('');
+            //     setFormWidth('1200px');
+            //     setPadding('20px');
+            //     setBorderColor('#ffffff');
+            //     setBorderRadius('0');
+            // }
 
             if (selectedField && selectedField.id === id) {
                 setSelectedField(null);
@@ -871,11 +1043,40 @@ const Formgenerated = () => {
             title: formTitle,
             shop,
             fields: fields.map(field => {
+
                 if (field.type === 'toggle') {
                     return {
                         ...field,
                         onValue: field.onValue || 'On',
                         offValue: field.offValue || 'Off',
+                    };
+                }
+
+                if (field.type === 'file') {
+                    return {
+                        ...field,
+                        fileOptions: fileOptions
+                    };
+                }
+
+                if (field.type === 'multi-file') {
+                    return {
+                        ...field,
+                        multiOptions: multiOptions
+                    };
+                }
+
+                if (field.type === 'images') {
+                    return {
+                        ...field,
+                        imageOptions: imageOptions
+                    };
+                }
+
+                if (field.type === 'multi-image') {
+                    return {
+                        ...field,
+                        multiimagesOptions: multiimagesOptions
                     };
                 }
 
@@ -892,8 +1093,16 @@ const Formgenerated = () => {
                         ...field,
                         linktext: field.linktext || '',
                         linkUrl: field.linkUrl || '',
-                        linkTarget: linkTarget || '_self',
-                        linkaline: linkaline || ''
+                        linkTarget: field.linkTarget || '_self',
+                        linkaline: field.linkaline || ''
+
+                    };
+                }
+                if (field.type === 'password') {
+                    return {
+                        ...field,
+                        passwordCharacter: field.passwordCharacter || '',
+                        passwordStatus: passwordStatus
 
                     };
                 }
@@ -982,6 +1191,8 @@ const Formgenerated = () => {
                 borderStyle: borderStyle,
                 textHeading,
                 colorHeading,
+                subject,
+                maxDescriptionHeight
             },
             submissionOption: submissionOption || "defaultOption",
             thankYouTimer: thankYouTimer || 0,
@@ -1023,7 +1234,7 @@ const Formgenerated = () => {
         setView('live');
         setIsEditing(false);
         setEditingFormId(null);
-        setFormWidth('100%');
+        setFormWidth('1200px');
         setBackgroundImage(null);
         setImageFile('');
         setBorderColor('');
@@ -1229,6 +1440,16 @@ const Formgenerated = () => {
         }
     };
 
+    const handleBackgroundFileDrop = (e) => {
+        e.preventDefault();
+
+        if (e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            const event = { target: { files: [file] } };
+            handleFileChange(event);
+        }
+    };
+
     const handleBoxShadowChange = (e) => {
         const selectedShadow = e.target.value;
         setBoxShadow(selectedShadow);
@@ -1253,14 +1474,15 @@ const Formgenerated = () => {
             formBuilder.style.opacityForm = opacityForm;
         }
     }
+    const updatePadding = (newPadding) => {
+        const paddingValue = Math.min(Math.max(Number(newPadding), 0), 30);
+        setPadding(paddingValue);
 
-    const updatePadding = (padding) => {
-        setPadding(padding);
         const formBuilder = document.getElementById('bg_change');
         if (formBuilder) {
-            formBuilder.style.padding = `${padding}px`;
+            formBuilder.style.padding = `${paddingValue}px`;
         }
-    }
+    };
 
     const handleBorderColorChange = (e) => {
         const newColor = e.target.value;
@@ -1274,9 +1496,17 @@ const Formgenerated = () => {
     };
 
     const handleBorderWidthChange = (e) => {
-        const value = e.target.value;
-        setBorderWidth(value);
+        let value = e.target.value;
+
+        if (value < 0) {
+            value = 0;
+        } else if (value > 30) {
+            value = 30;
+        }
+
+        setBorderWidth(`${value}px`);
     };
+
 
     const handleBorderStyleChange = (e) => {
         setBorderStyle(e.target.value);
@@ -1525,6 +1755,38 @@ const Formgenerated = () => {
         fetchPaymentPlan();
     }, []);
 
+    const handleSliderChange = (e) => {
+        const newValue = e.target.value;
+        console.log("Slider changed to:", newValue);
+        setSliderValue(newValue);
+        updateFieldProperty('sliderValue', newValue);
+    };
+
+    useEffect(() => {
+        const descriptions = document.querySelectorAll('.description');
+        let maxHeight = 0;
+
+        descriptions.forEach(desc => {
+            const height = desc.scrollHeight;
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+        });
+
+        setMaxDescriptionHeight(maxHeight);
+    }, [fields]);
+
+
+    const handleCopyField = (fieldId) => {
+        const fieldToCopy = fields.find(field => field.id === fieldId);
+        const copiedField = {
+            ...fieldToCopy,
+            id: generateUniqueId(), 
+        };
+        setFields(prevFields => [...prevFields, copiedField]);
+    };
+
+
     return (
         <div>
             {isLoading && (
@@ -1557,7 +1819,9 @@ const Formgenerated = () => {
                 </div>
             )}
             <div className="builder-container text">
-                <h3>Forms</h3>
+                <div className='builder-contain-h3'>
+                    <h3>Forms</h3>
+                </div>
                 <div className='builder_form_name'>
                     <h1>Form Name</h1>
                     <input
@@ -1621,11 +1885,11 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('select')} ><span className='form_builder_field_img'><img src={selection} alt="" /></span> <span><h4>Select Box</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('textarea')}><span className='form_builder_field_img'><img src={text1} alt="" /></span> <span><h4>Textarea</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('file')} ><span className='form_builder_field_img'><img src={single} alt="" /></span> <span><h4>File Upload</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-file')} disabled={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-file')} disabled={!['pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('number')}><span className='form_builder_field_img'><img src={number} alt="" /></span> <span><h4>Number Input</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('email')}><span className='form_builder_field_img'><img src={email} alt="" /></span> <span><h4>Email address</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('phone')}><span className='form_builder_field_img'><img src={phone} alt="" /></span> <span><h4>Phone number</h4></span></button></div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('password')}><span className='form_builder_field_img'><img src={password1} alt="" /></span> <span><h4>Password</h4></span></button></div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('phone')}><span className='form_builder_field_img'><img src={phone} alt="" /></span> <span><h4>Phone number</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('url')}><span className='form_builder_field_img'><img src={url1} alt="" /></span> <span><h4>Url</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('location')}><span className='form_builder_field_img'><img src={location1} alt="" /></span> <span><h4>Location</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('toggle')}><span className='form_builder_field_img'><img src={toggle} alt="" /></span> <span><h4>Toggle</h4></span></button> </div>
@@ -1634,7 +1898,7 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('time')}><span className='form_builder_field_img'><img src={time} alt="" /></span> <span><h4>Time</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('slider')}><span className='form_builder_field_img'><img src={slider} alt="" /></span> <span><h4>Slider</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={singleimage} alt="" /></span> <span><h4>Images</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-image')} disabled={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro', 'pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-image')} disabled={!['pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button> </div>
@@ -1718,7 +1982,12 @@ const Formgenerated = () => {
                                                                 )}
                                                             </div>
                                                         </div>
-
+                                                        <div className="edit_setting_bg subject">
+                                                            <label>Email Subject:</label>
+                                                            <div className="toggle-container">
+                                                                <input type="text" name="" id="" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                                                            </div>
+                                                        </div>
 
                                                         <div className='edit-form-options form'>
                                                             <div className="edit_setting_bg current-url inherit-class">
@@ -1739,10 +2008,10 @@ const Formgenerated = () => {
                                                                 <div className='checkbox-option bg-colors'>
                                                                     <label>  Background Color:</label>
                                                                     <div className="color-picker-container">
-                                                                        <span className="color-code">{backgroundColor}</span>
+                                                                        <span className="color-code">{backgroundColor || ' #ffffff'}</span>
                                                                         <input
                                                                             type="color"
-                                                                            value={backgroundColor}
+                                                                            value={backgroundColor || "#ffffff"}
                                                                             onChange={(e) => setBackgroundColor(e.target.value)}
                                                                         />
                                                                     </div>
@@ -1756,10 +2025,7 @@ const Formgenerated = () => {
                                                                         className="upload-area"
                                                                         onClick={() => document.getElementById('fileInput').click()}
                                                                         onDragOver={(e) => e.preventDefault()}
-                                                                        onDrop={(e) => {
-                                                                            e.preventDefault();
-                                                                            handleFileChange(e);
-                                                                        }}
+                                                                        onDrop={(e) => handleBackgroundFileDrop(e)}
                                                                     >
                                                                         <img src={file} alt="" />
                                                                         <p>Drag & Drop to Upload File</p>
@@ -1776,6 +2042,7 @@ const Formgenerated = () => {
                                                                 )}
                                                             </div>
 
+
                                                             {(imageFile || backgroundImage) && (
                                                                 <div
                                                                     className="edit_setting_bg form"
@@ -1791,11 +2058,7 @@ const Formgenerated = () => {
                                                                         justifyContent: 'center',
                                                                     }}
                                                                 >
-                                                                    <img
-                                                                        src={imageFile || backgroundImage}
-                                                                        alt="Uploaded Background Preview"
-                                                                        style={{ padding: '10px', maxWidth: '100%', height: '150px' }}
-                                                                    />
+
                                                                     <button
                                                                         className='rm-btn remove-btn-img'
                                                                         type="button"
@@ -1839,7 +2102,7 @@ const Formgenerated = () => {
                                                                         style={{
                                                                             width: '100%',
                                                                             height: '33px',
-                                                                            background: `linear-gradient(to right, #404B52 0%, #404B52 ${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 100}%, #ddd ${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 100}%, #ddd 100%)`,
+                                                                            background: `linear-gradient(to right, #00ac4f 0%, #00ac4f ${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 100}%, #e7f9f4 ${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 100}%, #e7f9f4 100%)`,
                                                                         }}
                                                                     >
                                                                         <div
@@ -1849,27 +2112,32 @@ const Formgenerated = () => {
                                                                                 left: `calc(${(parseInt(formWidth.replace('px', '')) - min) / (max - min) * 97}%)`,
                                                                             }}
                                                                         />
-                                                                        <span className='custom-range-text'>{formWidth}</span>
+                                                                        <span
+                                                                            className={`custom-range-text ${parseInt(formWidth.replace('px', '')) > 600 ? 'high-width' : ''}`}
+                                                                        >
+                                                                            {formWidth}
+                                                                        </span>
                                                                     </div>
-
                                                                 </div>
                                                             </div>
-
 
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Padding:</label>
                                                                 <input
-                                                                    type='text'
+                                                                    type='number'
                                                                     value={padding}
                                                                     onChange={(e) => updatePadding(e.target.value)}
+                                                                    min={0}
+                                                                    max={30}
                                                                 />
                                                             </div>
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Gap</label>
                                                                 <input
-                                                                    type='text'
+                                                                    type='number'
                                                                     value={inputGap}
                                                                     onChange={(e) => setInputGap(e.target.value)}
+                                                                    min={0}
                                                                 />
                                                             </div>
                                                             <div className='edit_setting_bg form'>
@@ -1889,9 +2157,10 @@ const Formgenerated = () => {
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Input Border:</label>
                                                                 <input
-                                                                    type='text'
+                                                                    type='number'
                                                                     value={inputwidth}
                                                                     onChange={(e) => setInputWidth(e.target.value)}
+                                                                    min={0}
                                                                 />
                                                             </div>
                                                             <div className='edit_setting_bg form'>
@@ -1936,9 +2205,10 @@ const Formgenerated = () => {
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Input Border Radius :</label>
                                                                 <input
-                                                                    type='text'
+                                                                    type='number'
                                                                     value={inputRadious}
                                                                     onChange={(e) => setInputRadious(e.target.value)}
+                                                                    min={0}
                                                                 />
                                                             </div>
 
@@ -1960,10 +2230,11 @@ const Formgenerated = () => {
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Border Width:</label>
                                                                 <input
-                                                                    type='text'
-                                                                    value={borderWidth}
+                                                                    type='number'
+                                                                    value={parseInt(borderWidth) || 0}
                                                                     onChange={handleBorderWidthChange}
                                                                     placeholder="e.g., 1px"
+
                                                                 />
 
                                                             </div>
@@ -1994,9 +2265,10 @@ const Formgenerated = () => {
                                                             <div className='edit_setting_bg form'>
                                                                 <label>Border-Radius:</label>
                                                                 <input
-                                                                    type='text'
+                                                                    type='number'
                                                                     value={borderRadius}
                                                                     onChange={(e) => updateBorderRadius(e.target.value)}
+                                                                    min={0}
                                                                 />
                                                             </div>
                                                         </div>
@@ -2011,8 +2283,9 @@ const Formgenerated = () => {
                             </div>)}
 
                             <div className='form_builder_build some'>
-                            <div id='bg_change' className="form-builder-wrp" style={{ position: 'relative' }}>
-                            <div id="bg_change_background" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}></div>
+                                <div id='bg_change' className="form-builder-wrp" style={{ position: 'relative' }}>
+                                    <div id="bg_change_background" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}></div>
+
                                     <div id="formBuilder" className="form-builder forms-wrapping" >
                                         {fields.length > 0 ? (fields.map((field, index) => {
                                             if (!field) {
@@ -2023,7 +2296,7 @@ const Formgenerated = () => {
                                                 <div
                                                     key={field.id}
                                                     className={`input-field input-gap ${parseFloat(field.width || '100') <= 50 ? 'small-width' : ''}`}
-                                                    style={{ width: field.width || '100%', marginBottom: `${inputGap}px` }}
+                                                    style={{ width: field.width || '100%', marginBottom: `${inputGap}px`, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}
                                                     onClick={() => handleFieldClick(field, index)}
                                                 >
                                                     {field.type === 'name' && (
@@ -2044,6 +2317,7 @@ const Formgenerated = () => {
                                                                     setHoveredFieldId(null);
                                                                 }
                                                             }} >
+
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
                                                                     {field.label || "Name"}
@@ -2076,9 +2350,14 @@ const Formgenerated = () => {
 
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2122,9 +2401,14 @@ const Formgenerated = () => {
 
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2132,6 +2416,8 @@ const Formgenerated = () => {
                                                     {field.type === 'heading' && (
                                                         <div className={`input-field ${field.customClass || ''}`} style={{
                                                             width: "100%",
+                                                            minHeight: `${field.fontSize * 1.5 || 20}px`,
+                                                            display: 'flex',
                                                             border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                 ? '1px solid #33cba2'
                                                                 : '1px solid transparent',
@@ -2148,25 +2434,40 @@ const Formgenerated = () => {
                                                                 }
 
                                                             }}>
-                                                            <div className='form_builder_heading_hover'>
+                                                            <div className='form_builder_heading_hover email-templates-wredd' style={{ width: '100%' }}>
                                                                 <label>
                                                                     <div style={{
-                                                                        fontSize: field.fontSize || '16px', width: field.width, opacity: field.opacity || 1,
+                                                                        fontSize: `${field.fontSize || ''}px`, width: field.width, opacity: field.opacity || 1,
                                                                         textAlign: textHeading, color: colorHeading,
                                                                     }}>
                                                                         {React.createElement(
                                                                             field.level || 'h1',
+                                                                            {
+                                                                                style: {
+                                                                                    display: "inline-block",
+                                                                                    width: "100%",
+                                                                                    fontSize: `${field.fontSize || ''}px`,
+                                                                                }
+                                                                            },
                                                                             null,
                                                                             field.headingText || field.text
                                                                         )}
                                                                     </div>
                                                                 </label>
                                                             </div>
+                                                            {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                <div id='form-drag' className='form-builder-drag-drop'>
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                     {field.type === 'description' && (
                                                         <div className={`input-field ${field.customClass || ''}`} style={{
-                                                            width: field.width || '100%', border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                            width: field.width || '100%',
+                                                            minHeight: `${field.textSize * 1.5 || 20}px`,
+                                                            display: 'flex',
+                                                            border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                 ? '1px solid #33cba2'
                                                                 : '1px solid transparent',
                                                             backgroundColor: selectedField && selectedField.id === field.id
@@ -2181,14 +2482,19 @@ const Formgenerated = () => {
                                                                     setHoveredFieldId(null);
                                                                 }
                                                             }}>
-                                                            <div className='form_builder_heading_hover'>
+                                                            <div className='form_builder_heading_hover' style={{ width: '100%' }}>
                                                                 <label>
-                                                                    <div className="description-field" style={{ fontSize: `${field.textSize}px`, color: field.textColor, textAlign: field.textAline, width: field.width, opacity: field.opacity || 1 }}
+                                                                    <div className="description-field" style={{ fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline, width: field.width, opacity: field.opacity || 1 }}
                                                                     >
                                                                         <p>{field.text}</p>
                                                                     </div>
                                                                 </label>
                                                             </div>
+                                                            {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                <div id='form-drag' className='form-builder-drag-drop'>
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                     <div className='form-build-radio-wrp-options'>
@@ -2218,28 +2524,34 @@ const Formgenerated = () => {
                                                                 }}
                                                                 >
                                                                     {field.options.map((option, index) => (
-                                                                            <div key={option.id || index} className='form_radio_flex'>
-                                                                                <input
-                                                                                    style={{
-                                                                                        padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                                        borderStyle: inputstyle,
-                                                                                        borderColor: inputborderColor,
-                                                                                        backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                                    }}
-                                                                                    type="radio"
-                                                                                    name={field.name}
-                                                                                    value={option.name}
-                                                                                    disabled={field.disabled}
-                                                                                    readOnly={field.readonly}
-                                                                                />
-                                                                                <label>{option.label}</label>
-                                                                            </div>
-                                                                        ))
- }
-                                                                    <div className='description'>
+                                                                        <div key={option.id || index} className='form_radio_flex'>
+                                                                            <input
+                                                                                style={{
+                                                                                    padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                    borderStyle: inputstyle,
+                                                                                    borderColor: inputborderColor,
+                                                                                    backgroundColor: inputBgColor, opacity: field.opacity || 1,
+                                                                                }}
+                                                                                type="radio"
+                                                                                name={field.name}
+                                                                                value={option.name}
+                                                                                disabled={field.disabled}
+                                                                                readOnly={field.readonly}
+                                                                            />
+                                                                            <label>{option.label}</label>
+                                                                        </div>
+                                                                    ))
+                                                                    }
+                                                                   
+                                                                </div>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
@@ -2265,26 +2577,33 @@ const Formgenerated = () => {
                                                                 }}
                                                                 >
                                                                     {field.options.map(option => (
-                                                                            <div key={option.id} className='form_radio_flex'>
-                                                                                <input
-                                                                                    style={{
-                                                                                        padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                                        borderStyle: inputstyle,
-                                                                                        borderColor: inputborderColor,
-                                                                                        backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                                    }}
-                                                                                    type="checkbox"
-                                                                                    name={field.name}
-                                                                                    disabled={field.disabled}
-                                                                                    readOnly={field.readonly}
-                                                                                />
-                                                                                <span>{option.name}</span>
-                                                                            </div>
-                                                                        ))
+                                                                        <div key={option.id} className='form_radio_flex'>
+                                                                            <input
+                                                                                style={{
+                                                                                    padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                    borderStyle: inputstyle,
+                                                                                    borderColor: inputborderColor,
+                                                                                    backgroundColor: inputBgColor, opacity: field.opacity || 1,
+                                                                                }}
+                                                                                type="checkbox"
+                                                                                name={field.name}
+                                                                                disabled={field.disabled}
+                                                                                readOnly={field.readonly}
+                                                                            />
+                                                                            <label>{option.name}</label>
+                                                                        </div>
+                                                                    ))
                                                                     }
-
-                                                                    <div className='description'>{field.description}</div>
+                                                                    
                                                                 </div>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
+                                                                        {field.description}
+                                                                    </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
@@ -2324,9 +2643,14 @@ const Formgenerated = () => {
                                                                         ))}
                                                                     </select>
 
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -2356,6 +2680,7 @@ const Formgenerated = () => {
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
                                                                             backgroundColor: inputBgColor, opacity: field.opacity || 1,
+                                                                            resize: 'vertical'
                                                                         }}
                                                                         onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => {
@@ -2370,10 +2695,14 @@ const Formgenerated = () => {
                                                                         name="w3review" rows="4" cols="50"
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
@@ -2391,31 +2720,79 @@ const Formgenerated = () => {
                                                             }}>
                                                                 <div>
                                                                     <label style={{ color: labelColor }}>
+                                                                        {field.label || 'Upload file:'}
+                                                                        {fileOptions[field.id] === 'option1' ? (
+                                                                            <input
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    padding: field.inputPadding,
+                                                                                    borderRadius: `${inputRadious}px`,
+                                                                                    borderWidth: `${inputwidth}px`,
+                                                                                    borderStyle: inputstyle,
+                                                                                    borderColor: inputborderColor,
+                                                                                    backgroundColor: inputBgColor,
+                                                                                    opacity: field.opacity || 1,
+                                                                                }}
+                                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                                onMouseLeave={() => {
+                                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                                        setHoveredFieldId(null);
+                                                                                    }
+                                                                                }}
+                                                                                type="file"
+                                                                                name={field.name}
+                                                                                disabled={field.disabled}
+                                                                                readOnly={field.readonly}
+                                                                                onClick={(e) => e.preventDefault()}
+                                                                            />
+                                                                        ) : fileOptions[field.id] === 'option2' ? (
 
-                                                                        {field.label || "Upload file:"}
-                                                                        <input
-                                                                            style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                                borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
-                                                                            }}
-                                                                            type="file"
-                                                                            name={field.name}
-                                                                            disabled={field.disabled}
-                                                                            readOnly={field.readonly}
 
-                                                                        />
+                                                                            <div className="drag-and-drop-text third" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped'>
+                                                                                        <img src={singlefile} alt="" />
+                                                                                        <div className='email-files drop'>
+                                                                                            <p>Drag & Drop your files here</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : fileOptions[field.id] === 'option3' ? (
+                                                                            <div className="drag-and-drop-text first" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                        <img src={file} alt="" style={{ width: field.width === '25%' ? '50px' : undefined }} />
+                                                                                        <div className="email-files drop"
+                                                                                            style={{
+                                                                                                width: field.width === '25%' ? '100%' :
+                                                                                                    field.width === '50%' ? '100%' :
+                                                                                                        field.width === '75%' ? '38%' :
+                                                                                                            field.width === '100%' ? '26%' :
+                                                                                                                field.width || '60%',
+                                                                                            }}
+                                                                                        >
+                                                                                            <p style={{
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                            }}>Drop Files Here or <span>browse for files.</span></p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : null}
+
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -2435,30 +2812,93 @@ const Formgenerated = () => {
                                                                 <div>
                                                                     <label style={{ color: labelColor }}>
                                                                         {field.label || "Upload file:"}
-                                                                        <input
-                                                                            style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                                borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
-                                                                            }}
-                                                                            type="file"
-                                                                            name={field.name}
-                                                                            disabled={field.disabled}
-                                                                            readOnly={field.readonly}
-                                                                            multiple
-                                                                            onChange={handleFileChange5}
-                                                                        />
+                                                                        {multiOptions[field.id] === 'option1' ? (
+                                                                            <input
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    padding: field.inputPadding,
+                                                                                    borderRadius: `${inputRadious}px`,
+                                                                                    borderWidth: `${inputwidth}px`,
+                                                                                    borderStyle: inputstyle,
+                                                                                    borderColor: inputborderColor,
+                                                                                    backgroundColor: inputBgColor,
+                                                                                    opacity: field.opacity || 1,
+                                                                                }}
+                                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                                onMouseLeave={() => {
+                                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                                        setHoveredFieldId(null);
+                                                                                    }
+                                                                                }}
+                                                                                type="file"
+                                                                                name={field.name}
+                                                                                disabled={field.disabled}
+                                                                                readOnly={field.readonly}
+                                                                                multiple
+                                                                                onChange={handleFileChange5}
+                                                                                onClick={(e) => e.preventDefault()}
+                                                                            />
+                                                                        ) : multiOptions[field.id] === 'option2' ? (
+                                                                            <div className="drag-and-drop-text third  multifile-second" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file multifile1 '>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, textAlign: field.width === '25%' ? 'center' : undefined, }}>
+                                                                                        <img src={multifile1} alt="" />
+                                                                                        <div className="email-files drop">
+                                                                                            <h2 style={{
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                            }}> Drag & Drop <span style={{ color: "#09ae54" }}>images,</span></h2>
+                                                                                            <h2 style={{
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                            }}><span style={{ color: "#09ae54" }}>videos,</span> or any <span style={{ color: "#09ae54" }}>file</span></h2>
+                                                                                        </div>
+                                                                                        <span className='form-builder-changes-file-button' style={{
+                                                                                            fontSize: field.width === '25%' ? '12px' : undefined,
+                                                                                        }}>Upload</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : multiOptions[field.id] === 'option3' ? (
+                                                                            <div className="drag-and-drop-text third multifile-second" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined }}>
+                                                                                        <img src={multifile12} alt="" />
+                                                                                        <div className='email-files drop'>
+                                                                                            <h3 style={{
+                                                                                                color: "#404b52",
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                            }}>Drag & drop files or <span style={{ color: '#79c27c', textDecoration: 'underline' }}>Browse</span></h3>
+                                                                                            <p style={{
+                                                                                                color: '#676767',
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                                maxWidth: field.width === '25%' ? '100%' : undefined,
+                                                                                                marginBottom: field.width === '25%' ? '30px' : undefined,
+                                                                                            }}>Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, Al, Word, PPT</p>
+                                                                                            <span className='form-builder-changes-file-button'
+                                                                                                style={{
+                                                                                                    fontSize: field.width === '25%' ? '12px' : undefined,
+                                                                                                    padding: field.width === '25%' ? '10px 20px' : undefined,
+                                                                                                }}
+                                                                                            >Upload files</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : null}
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
 
                                                                 {selectedFiles.length > 0 && (
@@ -2518,9 +2958,9 @@ const Formgenerated = () => {
                                                                         />
                                                                     </div>
 
-                                                                    <div className='description'>
-                                                                        {field.description}
-                                                                    </div>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
+                                                                    {field.description}
+                                                                </div>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -2552,19 +2992,29 @@ const Formgenerated = () => {
                                                                                 setHoveredFieldId(null);
                                                                             }
                                                                         }}
-                                                                        type="number"
+                                                                        type="text"
                                                                         className="name"
                                                                         name={field.name}
                                                                         placeholder={field.placeholder}
                                                                         required={field.required}
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
-                                                                        onChange={(e) => updateFieldProperty('Number', e.target.value, field.id)}
+                                                                        onInput={(e) => {
+                                                                            const sanitizedValue = e.target.value.replace(/[a-zA-Z]/g, '');
+                                                                            e.target.value = sanitizedValue;
+                                                                            updateFieldProperty('Number', sanitizedValue, field.id);
+                                                                        }}
                                                                     />
+
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2606,9 +3056,14 @@ const Formgenerated = () => {
                                                                         onChange={(e) => updateFieldProperty('email', e.target.value, field.id)}
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2628,7 +3083,7 @@ const Formgenerated = () => {
                                                                     {field.label || "Phone Number"}
                                                                     <PhoneInput
                                                                         country={'us'}
-                                                                        value={field.value}
+                                                                        value={field.value || ''}
                                                                         onChange={(value) => updateFieldProperty('phone', value, field.id)}
                                                                         inputProps={{
                                                                             name: field.name,
@@ -2661,9 +3116,14 @@ const Formgenerated = () => {
                                                                     />
                                                                 </label>
 
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2705,9 +3165,14 @@ const Formgenerated = () => {
                                                                         onChange={(e) => updateFieldProperty('password', e.target.value, field.id)}
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2748,9 +3213,14 @@ const Formgenerated = () => {
                                                                         onChange={(e) => updateFieldProperty('url', e.target.value, field.id)}
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2792,9 +3262,14 @@ const Formgenerated = () => {
                                                                         onChange={(e) => updateFieldProperty('location', e.target.value, field.id)}
                                                                     />
                                                                 </label>
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2836,9 +3311,14 @@ const Formgenerated = () => {
                                                                     {enabledFields[field.id] ? field.onValue || "On" : field.offValue || "Off"}
                                                                 </div> */}
 
-                                                                <div className="description">
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -2882,9 +3362,14 @@ const Formgenerated = () => {
                                                                             onChange={(e) => updateFieldProperty('date', e.target.value, field.id)}
                                                                         />
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -2928,9 +3413,14 @@ const Formgenerated = () => {
                                                                             onChange={(e) => updateFieldProperty('datetime', e.target.value, field.id)}
                                                                         />
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -2974,9 +3464,14 @@ const Formgenerated = () => {
                                                                             onChange={(e) => updateFieldProperty('time', e.target.value, field.id)}
                                                                         />
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -3015,19 +3510,24 @@ const Formgenerated = () => {
                                                                                 min={field.min}
                                                                                 max={field.max}
                                                                                 step={field.step}
-                                                                                value={field.value || 0}
+                                                                                value={sliderValue}
                                                                                 name={field.name}
                                                                                 placeholder={field.placeholder}
                                                                                 required={field.required}
                                                                                 disabled={field.disabled}
                                                                                 readOnly={field.readonly}
-                                                                                onChange={(e) => updateFieldProperty('slider', e.target.value, field.id)}
+                                                                                onChange={handleSliderChange}
                                                                             />
                                                                         </div>
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -3048,28 +3548,80 @@ const Formgenerated = () => {
                                                                     <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Images"}
-                                                                        <input
-                                                                            style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                                borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
-                                                                            }}
-                                                                            type="file"
-                                                                            name={field.name}
-                                                                            disabled={field.disabled}
-                                                                            readOnly={field.readonly}
-                                                                        />
+                                                                        {imageOptions[field.id] === 'option1' ? (
+                                                                            <input
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    padding: field.inputPadding,
+                                                                                    borderRadius: `${inputRadious}px`,
+                                                                                    borderWidth: `${inputwidth}px`,
+                                                                                    borderStyle: inputstyle,
+                                                                                    borderColor: inputborderColor,
+                                                                                    backgroundColor: inputBgColor,
+                                                                                    opacity: field.opacity || 1,
+                                                                                }}
+                                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                                onMouseLeave={() => {
+                                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                                        setHoveredFieldId(null);
+                                                                                    }
+                                                                                }}
+                                                                                type="file"
+                                                                                name={field.name}
+                                                                                disabled={field.disabled}
+                                                                                readOnly={field.readonly}
+                                                                                onClick={(e) => e.preventDefault()}
+                                                                            />
+                                                                        ) : imageOptions[field.id] === 'option2' ? (
+
+                                                                            <div className="drag-and-drop-text third" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped'>
+                                                                                        <img src={singleimage0} alt="" />
+                                                                                        <div className='email-files drop'>
+                                                                                            <p style={{ color: "#676767" }}>Drag & Drop your image here</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : imageOptions[field.id] === 'option3' ? (
+                                                                            <div className="drag-and-drop-text first singleimages" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                        <img src={singleimage1} style={{ width: field.width === '25%' ? '50px' : undefined }} />
+                                                                                        <div className='email-files drop'
+                                                                                            style={{
+                                                                                                width: field.width === '25%' ? '100%' :
+                                                                                                    field.width === '50%' ? '100%' :
+                                                                                                        field.width === '75%' ? '38%' :
+                                                                                                            field.width === '100%' ? '27%' :
+                                                                                                                field.width || '60%',
+                                                                                            }}
+                                                                                        >
+                                                                                            <h2 style={{
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                            }}>Drop image Here</h2>
+                                                                                            <h2 style={{
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                            }}>or <span style={{ color: "#00ac4f" }}>browse for image.</span></h2>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : null}
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -3090,30 +3642,79 @@ const Formgenerated = () => {
                                                                     <label style={{ color: labelColor }}>
 
                                                                         {field.label || "Images"}
-                                                                        <input
-                                                                            style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
-                                                                                borderStyle: inputstyle,
-                                                                                borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
-                                                                            }}
-                                                                            type="file"
-                                                                            name={field.name}
-                                                                            disabled={field.disabled}
-                                                                            readOnly={field.readonly}
-                                                                            multiple
-                                                                            onChange={handleFileChange6}
-                                                                        />
+                                                                        {multiimagesOptions[field.id] === 'option1' ? (
+                                                                            <input
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    padding: field.inputPadding,
+                                                                                    borderRadius: `${inputRadious}px`,
+                                                                                    borderWidth: `${inputwidth}px`,
+                                                                                    borderStyle: inputstyle,
+                                                                                    borderColor: inputborderColor,
+                                                                                    backgroundColor: inputBgColor,
+                                                                                    opacity: field.opacity || 1,
+                                                                                }}
+                                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                                onMouseLeave={() => {
+                                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                                        setHoveredFieldId(null);
+                                                                                    }
+                                                                                }}
+                                                                                type="file"
+                                                                                name={field.name}
+                                                                                disabled={field.disabled}
+                                                                                readOnly={field.readonly}
+                                                                                multiple
+                                                                                onChange={handleFileChange6}
+                                                                                onClick={(e) => e.preventDefault()}
+                                                                            />
+                                                                        ) : multiimagesOptions[field.id] === 'option2' ? (
+                                                                            <div className="drag-and-drop-text third  multifile-second multi-image" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file '>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                        <img src={multiimg1} alt="" />
+                                                                                        <div className='email-files drop'>
+                                                                                            <h2 style={{
+                                                                                                color: "#404b52",
+                                                                                                fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '20px' : undefined,
+                                                                                            }}>Drop your images here</h2>
+                                                                                            <span><span style={{
+                                                                                                color: "#9ed29f", fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                            }}>Browse file </span>  from your computer </span>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : multiimagesOptions[field.id] === 'option3' ? (
+                                                                            <div className="drag-and-drop-text third multifile-second multi" onClick={(e) => e.preventDefault()}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                        <img src={multiimg} alt="" style={{ width: field.width === '25%' ? '50px' : undefined }} />
+                                                                                        <div className='email-files drop'>
+                                                                                            <h3 style={{ color: "#404b52", fontSize: field.width === '25%' ? '16px' : undefined, lineHeight: field.width === '25%' ? '16px' : undefined, }}>Drag & Drop  <span style={{ color: '#00ac4f', lineHeight: field.width === '25%' ? '16px' : undefined, fontSize: field.width === '25%' ? '16px' : undefined, }}>images,</span></h3>
+                                                                                            <span style={{
+                                                                                                fontSize: field.width === '25%' ? '12px' : undefined,
+
+                                                                                            }} className='form-builder-changes-file-button'>Upload</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : null}
                                                                     </label>
-                                                                    <div className='description'>
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
+                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                        <div id='form-drag' className='form-builder-drag-drop'>
+                                                                            <img src={drop} alt="Drag" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                                 {selectedimage.length > 0 && (
                                                                     <div className="selected-files">
@@ -3158,12 +3759,12 @@ const Formgenerated = () => {
                                                                     <button
                                                                         type="button"
                                                                         style={{
-                                                                            width: `${field.btnwidth}px`,
+                                                                            minWidth: `${field.btnwidth}px`,
                                                                             height: field.buttonHeight,
                                                                             backgroundColor: field.backgroundColor,
                                                                             fontSize: `${field.buttontext || '16px'}px`,
                                                                             color: field.btncolor,
-                                                                            padding: field.padding,
+                                                                            padding: `${field.padding}px`,
                                                                             borderRadius: `${field.btnradious}px`,
                                                                             borderWidth: `${field.buttonBorderWidth}px`,
                                                                             borderStyle: field.buttonBorderStyle || 'solid',
@@ -3175,9 +3776,14 @@ const Formgenerated = () => {
                                                                     </button>
                                                                 </div>
 
-                                                                <div className='description'>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
@@ -3199,12 +3805,21 @@ const Formgenerated = () => {
                                                                         setHoveredFieldId(null);
                                                                     }
                                                                 }}>
+                                                                <label style={{ color: labelColor }}>
 
-                                                                <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: '100%' }} />
-                                                                <div className='description'>
-                                                                    {field.description}
-                                                                </div>
+                                                                    {field.label || "divider"}
+                                                                    <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: '100%' }} />
+                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
+                                                                        {field.description}
+                                                                    </div>
+                                                                </label>
+                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
+                                                                )}
                                                             </div>
+
                                                         )}
                                                     </div>
 
@@ -3219,14 +3834,19 @@ const Formgenerated = () => {
                                                                     ? '#e7f9f4'
                                                                     : 'transparent',
                                                         }}>
-                                                            <div style={{ textAlign: linkaline }}>
-                                                                <a href={field.linkUrl} target={linkTarget} rel="noopener noreferrer">
+                                                            <div style={{ textAlign: field.linkaline }}>
+                                                                <a href={field.linkUrl} target={field.linkTarget} rel="noopener noreferrer">
                                                                     <div onClick={(e) => e.preventDefault()} dangerouslySetInnerHTML={{ __html: field.linktext }} />
                                                                 </a>
                                                             </div>
-                                                            <div className='description'>
+                                                            <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                 {field.description}
                                                             </div>
+                                                            {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
+                                                                <div id='form-drag' className='form-builder-drag-drop'>
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
 
@@ -3244,21 +3864,12 @@ const Formgenerated = () => {
                                                                     }}>
                                                                     <img src={delete1} alt="delete" />
                                                                 </button>
-                                                                <button className="copy-btn " onClick={() => addInputField(field.type)}>
+                                                                <button className="copy-btn " onClick={() => handleCopyField(field.id)}>
                                                                     <img src={maximizesize} alt="copy" />
                                                                 </button>
                                                             </div>
-                                                            { field.type !== 'button' &&  field.type !== 'link' &&  field.type !== 'divider' && field.type !== 'description' && field.type !== 'heading' &&(
-                                                                <div id='form-drag' className='form-builder-drag-drop'>
-                                                                    <img src={drop} alt="" />
-                                                                </div>
-                                                            )}
-                                                            
-                                                            {(field.type === 'button' || field.type === 'link' || field.type === 'divider' || field.type === 'heading' || field.type === 'description') && (
-                                                                <div id='form-drag' className='form-builder-drag-drop drag'>
-                                                                    <img src={drop} alt="" />
-                                                                </div>
-                                                            )}
+
+
                                                         </div>
                                                     )}
                                                 </div>
@@ -3289,7 +3900,7 @@ const Formgenerated = () => {
                                                     </div>
 
                                                     <div className='form_build_propertities forms'>
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'link' && (
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && selectedField.type !== 'link' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Label</label>
                                                                 <input
@@ -3330,6 +3941,7 @@ const Formgenerated = () => {
                                                                 </div>
                                                             </div>
                                                         )}
+
                                                         {selectedField.type === 'name' && (
                                                             <div className='form_build_name_custom'>
                                                                 <select onChange={(e) => {
@@ -3439,6 +4051,7 @@ const Formgenerated = () => {
                                                                                 type="number"
                                                                                 value={selectedField.buttontext}
                                                                                 onChange={(e) => updateFieldProperty('buttontext', e.target.value)}
+                                                                                min={0}
                                                                             />
                                                                         </div>
                                                                         <div className='checkbox-option bg-colors'>
@@ -3458,6 +4071,7 @@ const Formgenerated = () => {
                                                                                 value={selectedField.buttonaline}
                                                                                 onChange={(e) => updateFieldProperty('buttonaline', e.target.value, selectedField.id)}
                                                                             >
+                                                                                <option value="">Select text align</option>
                                                                                 <option value="left">left</option>
                                                                                 <option value="center">center</option>
                                                                                 <option value="right">right</option>
@@ -3467,19 +4081,21 @@ const Formgenerated = () => {
                                                                         <div className='checkbox-option'>
                                                                             <label>Button Padding (px)</label>
                                                                             <input
-                                                                                type="text"
+                                                                                type="number"
                                                                                 value={selectedField.padding}
                                                                                 onChange={(e) => updateFieldProperty('padding', e.target.value)}
                                                                                 placeholder="e.g., 10px"
+                                                                                min={0}
                                                                             />
                                                                         </div>
                                                                         <div className='checkbox-option'>
                                                                             <label>Button Radius (px)</label>
                                                                             <input
-                                                                                type="text"
+                                                                                type="number"
                                                                                 value={selectedField.btnradious}
                                                                                 onChange={(e) => updateFieldProperty('btnradious', e.target.value)}
                                                                                 placeholder="e.g., 4px"
+                                                                                min={0}
                                                                             />
                                                                         </div>
                                                                         <div className='checkbox-option'>
@@ -3489,6 +4105,7 @@ const Formgenerated = () => {
                                                                                 value={selectedField.btnwidth}
                                                                                 onChange={(e) => updateFieldProperty('btnwidth', e.target.value)}
                                                                                 placeholder="e.g., 150"
+                                                                                min={0}
                                                                             />
                                                                         </div>
                                                                         <div className='checkbox-option'>
@@ -3498,6 +4115,7 @@ const Formgenerated = () => {
                                                                                 value={selectedField.buttonHeight ? selectedField.buttonHeight.replace('px', '') : '40'}
                                                                                 onChange={(e) => updateFieldProperty('buttonHeight', `${e.target.value}px`)}
                                                                                 placeholder="e.g., 40"
+                                                                                min={0}
                                                                             />
                                                                         </div>
                                                                         <div className="checkbox-option bg-colors">
@@ -3527,11 +4145,12 @@ const Formgenerated = () => {
                                                                         <div className='form-builder-chaneging-wrap number'>
                                                                             <label>Border Width (px)</label>
                                                                             <input
-                                                                                type="text"
+                                                                                type="number"
                                                                                 value={selectedField.buttonBorderWidth}
                                                                                 onChange={(e) => {
                                                                                     updateFieldProperty('buttonBorderWidth', `${e.target.value}`);
                                                                                 }}
+                                                                                min={0}
                                                                             />
                                                                         </div>
 
@@ -3554,7 +4173,7 @@ const Formgenerated = () => {
                                                         )}
                                                         {selectedField.type === 'link' && (
                                                             <div className="form-builder-chaneging-wrap">
-                                                                <div className='form-builder-chaneging-wrap'>
+                                                                <div className='form-builder-chaneging-wrap ' style={{ color: 'black' }}>
                                                                     <label>Link text</label>
                                                                     <ReactQuill
                                                                         value={selectedField.linktext}
@@ -3582,8 +4201,8 @@ const Formgenerated = () => {
                                                                     <select
                                                                         name="textAlign"
                                                                         id="textAlign"
-                                                                        value={linkaline}
-                                                                        onChange={handleAlignChange}
+                                                                        value={selectedField.linkaline}
+                                                                        onChange={(e) => updateFieldProperty('linkaline', e.target.value, selectedField.id)}
                                                                     >
                                                                         <option value="">Select text align</option>
                                                                         <option value="left">Left</option>
@@ -3596,8 +4215,8 @@ const Formgenerated = () => {
                                                                     <select
                                                                         name="linkTarget"
                                                                         id="linkTarget"
-                                                                        value={linkTarget}
-                                                                        onChange={handleTargetChange}
+                                                                        value={selectedField.linkTarget}
+                                                                        onChange={(e) => updateFieldProperty('linkTarget', e.target.value, selectedField.id)}
                                                                     >
                                                                         <option value="_self">Same Tab</option>
                                                                         <option value="_blank">New Tab</option>
@@ -3624,14 +4243,17 @@ const Formgenerated = () => {
                                                                         value={headingText}
                                                                         onChange={(e) => setHeadingText(e.target.value)}
                                                                     />
-                                                                    <label>
-                                                                        Font Size (px):
-                                                                        <input
-                                                                            type="text"
-                                                                            value={headingFontSize}
-                                                                            onChange={(e) => setHeadingFontSize(e.target.value)}
-                                                                        />
-                                                                    </label>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label>
+                                                                            Font Size (px):
+                                                                            <input
+                                                                                type="number"
+                                                                                value={headingFontSize} px
+                                                                                onChange={(e) => setHeadingFontSize(e.target.value)}
+                                                                                min={0}
+                                                                            />
+                                                                        </label>
+                                                                    </div>
                                                                 </div>
                                                                 <div className="form-builder-chaneging-wrap">
                                                                     <label>Text Align </label>
@@ -3664,17 +4286,27 @@ const Formgenerated = () => {
                                                                 <div className="form-builder-chaneging-wrap">
                                                                     <label>Description Text</label>
                                                                     <textarea
+                                                                        style={{ resize: 'vertical' }}
                                                                         value={descriptionText}
                                                                         onChange={(e) => setDescriptionText(e.target.value)}
                                                                     />
                                                                 </div>
-                                                                <div className="form-builder-chaneging-wrap">
+                                                                <div className="form-builder-chaneging-wrap number">
                                                                     <label>Font-Size:</label>
                                                                     <input
-                                                                        type="text"
+                                                                        type="number"
                                                                         value={selectedField.textSize}
                                                                         onChange={(e) => updateFieldProperty('textSize', e.target.value, selectedField.id)}
-
+                                                                        min='0'
+                                                                    />
+                                                                </div>
+                                                                <div className="form-builder-chaneging-wrap number">
+                                                                    <label>Line-Height:</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={selectedField.textlineheight}
+                                                                        onChange={(e) => updateFieldProperty('textlineheight', e.target.value, selectedField.id)}
+                                                                        min='0'
                                                                     />
                                                                 </div>
 
@@ -3696,6 +4328,7 @@ const Formgenerated = () => {
                                                                         value={selectedField.textAline}
                                                                         onChange={(e) => updateFieldProperty('textAline', e.target.value, selectedField.id)}
                                                                     >
+                                                                        <option value="">Select text align</option>
                                                                         <option value="left">left</option>
                                                                         <option value="center">center</option>
                                                                         <option value="right">right</option>
@@ -3716,10 +4349,10 @@ const Formgenerated = () => {
                                                         {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
                                                             <div className="form-builder-chaneging-wrap">
                                                                 <label>Description</label>
-                                                                <input
-                                                                    type="text"
+                                                                <textarea
                                                                     value={selectedField.description}
                                                                     onChange={(e) => updateFieldProperty('description', e.target.value)}
+                                                                    style={{ wordBreak: 'break-word', width: '100%', minHeight: '50px', resize: 'vertical' }}
                                                                 />
                                                             </div>
                                                         )}
@@ -3779,6 +4412,162 @@ const Formgenerated = () => {
                                                                             Off
                                                                         </button>
                                                                     </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {selectedField.type === 'password' && (
+                                                            <>
+                                                                <div className="form-builder-chaneging-wrap number">
+                                                                    <label>Minimum Character Password</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        min="6"
+                                                                        value={selectedField.passwordCharacter}
+                                                                        onChange={(e) => {
+                                                                            const newValue = parseInt(e.target.value, 10);
+
+                                                                            if (newValue < 6) {
+                                                                                alert("Minimum password length should be 6 characters.");
+                                                                                updateFieldProperty('passwordCharacter', "6");
+                                                                            } else {
+                                                                                updateFieldProperty('passwordCharacter', `${newValue}`);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <div className="form-builder-chaneging-wrap number">
+                                                                    <label>Strong Password</label>
+                                                                    <div className='form-builder-chaneging-addbtn-pass'>
+                                                                        <div className='form-builder-storng-btn'>
+                                                                            <button
+                                                                                className={`form-builder-storng-btn-wrap ${passwordStatus === 'on' ? 'active' : ''}`}
+                                                                                onClick={() => handleToggle('on')}
+                                                                            >
+                                                                                On
+                                                                            </button>
+                                                                            <button
+                                                                                className={`form-builder-storng-btn-wrap ${passwordStatus === 'off' ? 'active' : ''}`}
+                                                                                onClick={() => handleToggle('off')}
+                                                                            >
+                                                                                Off
+                                                                            </button>
+                                                                        </div>
+                                                                        <div className='form-builder-storng-pass'>
+                                                                            <input type="text" placeholder='AxvNEn@9' disabled />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </>
+                                                        )}
+                                                        {selectedField.type === 'file' && (
+                                                            <div className="form-builder-chaneging-wrap number">
+                                                                <label htmlFor="">Choose your style</label>
+                                                                <div className='form-builder-chaneging-file-options'>
+                                                                    <span
+                                                                        className={`file-option basic ${fileOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                        onClick={() => handleFileOptionChange(selectedField.id, 'option1')}
+                                                                    >
+                                                                        Basic
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro ${fileOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                        onClick={() => handleFileOptionChange(selectedField.id, 'option2')}
+                                                                    >
+                                                                        Pro
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro-plus ${fileOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                        onClick={() => handleFileOptionChange(selectedField.id, 'option3')}
+                                                                    >
+                                                                        Pro +
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {selectedField.type === 'multi-file' && (
+                                                            <div className="form-builder-chaneging-wrap number">
+                                                                <label htmlFor="">Choose your style</label>
+                                                                <div className='form-builder-chaneging-file-options'>
+                                                                    <span
+                                                                        className={`file-option basic ${multiOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                        onClick={() => handleMultiOptionChange(selectedField.id, 'option1')}
+                                                                    >
+                                                                        Basic
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro ${multiOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                        onClick={() => handleMultiOptionChange(selectedField.id, 'option2')}
+                                                                    >
+                                                                        Pro
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro-plus ${multiOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                        onClick={() => handleMultiOptionChange(selectedField.id, 'option3')}
+                                                                    >
+                                                                        Pro +
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {selectedField.type === 'images' && (
+                                                            <div className="form-builder-chaneging-wrap number">
+                                                                <label htmlFor="">Choose your style</label>
+                                                                <div className='form-builder-chaneging-file-options'>
+                                                                    <span
+                                                                        className={`file-option basic ${imageOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                        onClick={() => handleImageOptionChange(selectedField.id, 'option1')}
+                                                                    >
+                                                                        Basic
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro ${imageOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                        onClick={() => handleImageOptionChange(selectedField.id, 'option2')}
+                                                                    >
+                                                                        Pro
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro-plus ${imageOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                        onClick={() => handleImageOptionChange(selectedField.id, 'option3')}
+                                                                    >
+                                                                        Pro +
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {selectedField.type === 'multi-image' && (
+                                                            <div className="form-builder-chaneging-wrap number">
+                                                                <label htmlFor="">Choose your style</label>
+                                                                <div className='form-builder-chaneging-file-options'>
+                                                                    <span
+                                                                        className={`file-option basic ${multiimagesOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                        onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option1')}
+                                                                    >
+                                                                        Basic
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro ${multiimagesOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                        onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option2')}
+                                                                    >
+                                                                        Pro
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`file-option pro-plus ${multiimagesOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                        onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option3')}
+                                                                    >
+                                                                        Pro +
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         )}

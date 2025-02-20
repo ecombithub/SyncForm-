@@ -65,6 +65,7 @@ export default function App() {
         <Link to="/app/pricing" onClick={handleLinkClick}>Pricing</Link>
         <Link to="/app/support" onClick={handleLinkClick}>Support</Link>
         <Link to="/app/email-template/list">Email Template</Link>
+  
         <ul>
           <li><Link to="/app/forms/new">Create</Link></li>
           <li><Link to="/app/email-template/new">EmailTemplate</Link></li>

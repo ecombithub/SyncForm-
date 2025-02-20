@@ -195,7 +195,7 @@ function Customer() {
         const animatedValue = { value: 0 };
 
         gsap.to(animatedValue, {
-            duration: 2,
+            duration: 6,
             value: 16,
             onUpdate: () => {
                 setPercentage(Math.round(animatedValue.value));
@@ -208,7 +208,7 @@ function Customer() {
         const animatedValue = { value: 0 };
 
         gsap.to(animatedValue, {
-            duration: 2,
+            duration: 6,
             value: 22,
             onUpdate: () => {
                 setPercentage1(Math.round(animatedValue.value));

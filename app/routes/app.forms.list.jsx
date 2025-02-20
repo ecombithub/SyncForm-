@@ -10,7 +10,15 @@ import left from '../images/left.png';
 import search12 from '../images/search12.png'
 import copy22 from '../images/copy222.png'
 import cancle1 from '../images/cancle1.png'
+import multifile12 from '../images/multifile12.png';
+import multifile1 from '../images/multifile1.png';
+import multiimg from '../images/multiimg.png';
+import multiimg1 from '../images/multiimg1.png';
+import singleimage0 from '../images/singleimage0.png';
+import singleimage1 from '../images/singleimage1.png';
 import copy12 from '../images/copy12.png'
+import file from '../images/file.png';
+import singlefile from '../images/singlefile.png';
 import cancleimg from '../images/cancleimg.png';
 import '../index.css';
 import { format } from 'date-fns';
@@ -145,7 +153,6 @@ const Formdata = () => {
     };
 
     const [selectedOption, setSelectedOption] = useState(null);
-
     const navigator = useNavigate();
     const [createdForms, setCreatedForms] = useState([]);
     const [view, setView] = useState('live');
@@ -230,7 +237,8 @@ const Formdata = () => {
                     url: form.url,
                     editorValue: form.editorValue,
                     thankYouTimer: form.thankYouTimer,
-                    submissionOption:form.submissionOption
+                    submissionOption: form.submissionOption,
+                    subject: form.subject
                 },
             });
             setThankYouTimer(thankYouTimer);
@@ -244,6 +252,7 @@ const Formdata = () => {
             setBorderColor(form.styles.borderColor);
             setPadding(form.styles.padding);
             setBorderRadius(form.styles.borderRadius);
+            setSubject(subject);
         } else {
             alert('Form not found.');
         }
@@ -474,7 +483,7 @@ const Formdata = () => {
             setIsLoading(false);
         }
     };
-  
+
     const generateUniqueId = (length = 21) => {
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let uniqueId = '';
@@ -821,182 +830,374 @@ const Formdata = () => {
                                     {(view === 'live' || view === 'draft') && createdForms.length > 0 && filteredByView.map(form => (
                                         form.formId === currentFormId && (
                                             <div
-                                            key={form.formId}
-                                            style={{
-                                              ...form.styles,
-                                              position: 'relative', 
-                                              borderRadius: `${form.styles.borderRadius}px`,
-                                              padding: `${form.styles.padding}px`,
-                                              backgroundColor: 'transparent', 
-                                            }}
-                                            className="form-details"
-                                          >
-                                            <div
-                                              style={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                left: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                backgroundImage: `url(${form.styles.backgroundImage})`,
-                                                backgroundSize: 'cover',
-                                                backgroundPosition: 'center',
-                                                opacity: form.styles.opacityForm, 
-                                                borderRadius: `${form.styles.borderRadius}px`,
-                                                backgroundColor: form.styles.backgroundColor , 
-                                              }}
-                                            ></div>
-                                                <div className='form-builder-create-wrapping-forms'>
-                                                {form.fields.map(field => (
-                                                    <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
-                                                        {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
-                                                        {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
-                                                        {field.type === 'description' && <p style={{ fontSize: `${field.textSize}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
-                                                        {field.type === 'toggle' && (
-                                                            <div className='form-build-toggle'>
-                                                                 <div style={{ color: form.styles.labelColor }}>
-                                                                    {field.label}
+                                                key={form.formId}
+                                                style={{
+                                                    ...form.styles,
+                                                    position: 'relative',
+                                                    padding: `${form.styles.padding}px`,
+                                                    backgroundColor: 'transparent',
+                                                    border: 0
+                                                }}
+                                                className="form-details"
+                                            >
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        left: 0,
+                                                        right: 0,
+                                                        bottom: 0,
+                                                        backgroundImage: `url(${form.styles.backgroundImage})`,
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                        opacity: form.styles.opacityForm,
+                                                        borderRadius: `${form.styles.borderRadius}px`,
+                                                        backgroundColor: form.styles.backgroundColor || '#FFFFFF',
+                                                        borderWidth: form.styles.borderWidth,
+                                                        borderStyle: form.styles.borderStyle,
+                                                        borderColor: form.styles.borderColor,
+
+                                                    }}
+                                                ></div>
+                                                <div className='form-builder-create-wrapping-forms '>
+                                                    {form.fields.map(field => (
+                                                        <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
+                                                            {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
+                                                            {field.type === 'name' && <input type="name" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'text' && <input type="text" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'textarea' && <textarea placeholder={field.placeholder} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
+                                                            {field.type === 'description' && <p style={{ fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
+                                                            {field.type === 'toggle' && (
+                                                                <div className='form-build-toggle'>
+                                                                    <div style={{ color: form.styles.labelColor }}>
+                                                                        {field.label}
+                                                                    </div>
+                                                                    <label className="custom-toggle">
+                                                                        <input type="checkbox" aria-label={field.label} />
+                                                                        <span className="slider"></span>
+                                                                    </label>
+
                                                                 </div>
-                                                                <label className="custom-toggle">
-                                                                    <input type="checkbox" aria-label={field.label} />
-                                                                    <span className="slider"></span>
-                                                                </label>
-                                                              
-                                                            </div>
-                                                        )}
-                                                        {field.type === 'heading' && <h1 style={{ fontSize: field.fontSize, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</h1>}
-                                                        {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'multi-file' && <input type="file" placeholder={field.placeholder}   multiple style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'file' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'phone' && (
-                                                            <div className='phone-edit'>
-                                                                <PhoneInput
-                                                                    country={'us'}
-                                                                    value={field.value}
-                                                                    onChange={(phone) => field.onChange(phone)}
-                                                                    placeholder={field.placeholder}
-                                                                    containerStyle={{
-                                                                        width: '100%',
+                                                            )}
+                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, color: form.styles.colorHeading, textAlign: form.styles.textHeading }}>{field.text}</field.level></div>}
+                                                            {field.type === 'number' && <input type="number" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'multi-file' && (
+                                                                field.multiOptions[field.id] === 'option1' ? (
+                                                                    <input type="file" style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
+                                                                ) : field.multiOptions[field.id] === 'option2' ? (
+                                                                    <div className="drag-and-drop-text third  multifile-second">
+                                                                        <div className='form-builder-chaneging-wrap file multifile1 '>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, textAlign: field.width === '25%' ? 'center' : undefined, }}>
+                                                                                <img src={multifile1} alt="" />
+                                                                                <div className="email-files drop">
+                                                                                    <h2 style={{
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                    }}> Drag & Drop <span style={{ color: "#09ae54" }}>images,</span></h2>
+                                                                                    <h2 style={{
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                    }}><span style={{ color: "#09ae54" }}>videos,</span> or any <span style={{ color: "#09ae54" }}>file</span></h2>
+                                                                                </div>
+                                                                                <span className='form-builder-changes-file-button' style={{
+                                                                                    fontSize: field.width === '25%' ? '12px' : undefined,
+                                                                                }}>Upload</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : field.multiOptions[field.id] === 'option3' ? (
+                                                                    <div className="drag-and-drop-text third multifile-second">
+                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined }}>
+                                                                                <img src={multifile12} alt="" />
+                                                                                <div className='email-files drop'>
+                                                                                    <h3 style={{
+                                                                                        color: "#404b52",
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                    }}>Drag & drop files or <span style={{ color: '#79c27c', textDecoration: 'underline' }}>Browse</span></h3>
+                                                                                    <p style={{
+                                                                                        color: '#676767',
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                        maxWidth: field.width === '25%' ? '100%' : undefined,
+                                                                                        marginBottom: field.width === '25%' ? '30px' : undefined,
+                                                                                    }}>Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, Al, Word, PPT</p>
+                                                                                    <span className='form-builder-changes-file-button'
+                                                                                        style={{
+                                                                                            fontSize: field.width === '25%' ? '12px' : undefined,
+                                                                                            padding: field.width === '25%' ? '10px 20px' : undefined,
+                                                                                        }}
+                                                                                    >Upload files</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : null
+                                                            )}
+                                                            {field.type === 'file' && (
+                                                                field.fileOptions[field.id] === 'option1' ? (
+                                                                    <input type="file" style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
+                                                                ) : field.fileOptions[field.id] === 'option2' ? (
+                                                                    <div className="drag-and-drop-text third">
+                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped'>
+                                                                                <img src={singlefile} alt="" />
+                                                                                <div className='email-files drop'>
+                                                                                    <p>Drag & Drop your files here</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : field.fileOptions[field.id] === 'option3' ? (
+                                                                    <div className="drag-and-drop-text first" >
+                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                <img src={file} alt="" style={{ width: field.width === '25%' ? '50px' : undefined }} />
+                                                                                <div className="email-files drop"
+                                                                                    style={{
+                                                                                        width: field.width === '25%' ? '100%' :
+                                                                                            field.width === '50%' ? '100%' :
+                                                                                                field.width === '75%' ? '38%' :
+                                                                                                    field.width === '100%' ? '26%' :
+                                                                                                        field.width || '60%',
+                                                                                    }}
+                                                                                >
+                                                                                    <p style={{
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                    }}>Drop Files Here or <span>browse for files.</span></p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                ) : null
+                                                            )}
+
+                                                            {field.type === 'email' && <input type="email" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'password' && <input type="password" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'url' && <input type="url" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'location' && <input type="location" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'date' && <input type="date" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'datetime' && <input type="datetime" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'time' && <input type="time" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
+                                                            {field.type === 'phone' && (
+                                                                <div className='phone-edit'>
+                                                                    <PhoneInput
+                                                                        country={'us'}
+                                                                        value={field.value || ''}
+                                                                        onChange={(phone) => {
+                                                                            if (typeof field.onChange === 'function') {
+                                                                                field.onChange(phone);
+                                                                            } else {
+                                                                                console.error('field.onChange is not a function');
+                                                                            }
+                                                                        }}
+                                                                        placeholder={field.placeholder}
+                                                                        containerStyle={{
+                                                                            width: '100%',
+                                                                        }}
+                                                                        inputStyle={{
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${form.styles.inputRadious}px`,
+                                                                            borderWidth: `${form.styles.inputwidth}px`,
+                                                                            borderStyle: form.styles.inputstyle,
+                                                                            borderColor: form.styles.inputborderColor,
+                                                                            backgroundColor: form.styles.inputBgColor,
+                                                                            width: '100%',
+                                                                        }}
+                                                                        buttonStyle={{
+                                                                            borderRadius: `${form.styles.inputRadious}px`,
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            {field.type === 'link' && (
+                                                                <a
+                                                                    href={field.linkUrl}
+                                                                    target={field.linkTarget}
+                                                                    style={{
+
+                                                                        textDecoration: 'none',
+                                                                        textAlign: field.linkaline,
+                                                                        padding: field.padding,
                                                                     }}
-                                                                    inputStyle={{
+                                                                    dangerouslySetInnerHTML={{ __html: field.linktext }}
+                                                                />
+                                                            )}
+                                                            {field.type === 'images' && (field.imageOptions[field.id] === 'option1' ? (
+                                                                <input type="file" style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
+                                                            ) : field.imageOptions[field.id] === 'option2' ? (
+
+                                                                <div className="drag-and-drop-text third">
+                                                                    <div className='form-builder-chaneging-wrap file'>
+                                                                        <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                        <div className='form-builder-changes-file-wraped'>
+                                                                            <img src={singleimage0} alt="" />
+                                                                            <div className='email-files drop'>
+                                                                                <p style={{ color: "#676767" }}>Drag & Drop your image here</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : field.imageOptions[field.id] === 'option3' ? (
+                                                                <div className="drag-and-drop-text first singleimages">
+                                                                    <div className='form-builder-chaneging-wrap file'>
+                                                                        <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                        <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                            <img src={singleimage1} style={{ width: field.width === '25%' ? '50px' : undefined }} />
+                                                                            <div className='email-files drop'
+                                                                                style={{
+                                                                                    width: field.width === '25%' ? '100%' :
+                                                                                        field.width === '50%' ? '100%' :
+                                                                                            field.width === '75%' ? '38%' :
+                                                                                                field.width === '100%' ? '26%' :
+                                                                                                    field.width || '60%',
+                                                                                }}
+                                                                            >
+                                                                                <h2 style={{
+                                                                                    fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                    lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                }}>Drop image Here</h2>
+                                                                                <h2 style={{
+                                                                                    fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                    lineHeight: field.width === '25%' ? '10px' : undefined,
+                                                                                }}>or <span style={{ color: "#00ac4f" }}>browse for image.</span></h2>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : null
+                                                            )}
+                                                            {field.type === 'multi-image' && (
+                                                                field.multiimagesOptions[field.id] === 'option1' ? (
+                                                                    <input type="file" style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
+                                                                ) : field.multiimagesOptions[field.id] === 'option2' ? (
+                                                                    <div className="drag-and-drop-text third  multifile-second multi-image">
+                                                                        <div className='form-builder-chaneging-wrap file '>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                <img src={multiimg1} alt="" />
+                                                                                <div className='email-files drop'>
+                                                                                    <h2 style={{
+                                                                                        color: "#404b52",
+                                                                                        fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '20px' : undefined,
+                                                                                    }}>Drop your images here</h2>
+                                                                                    <span><span style={{
+                                                                                        color: "#9ed29f", fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                    }}>Browse file </span>  from your computer </span>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : field.multiimagesOptions[field.id] === 'option3' ? (
+                                                                    <div className="drag-and-drop-text third multifile-second multi">
+                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                <img src={multiimg} alt="" style={{ width: field.width === '25%' ? '50px' : undefined }} />
+                                                                                <div className='email-files drop'>
+                                                                                    <h3 style={{ color: "#404b52", fontSize: field.width === '25%' ? '16px' : undefined, lineHeight: field.width === '25%' ? '16px' : undefined, }}>Drag & Drop  <span style={{ color: '#00ac4f', lineHeight: field.width === '25%' ? '16px' : undefined, fontSize: field.width === '25%' ? '16px' : undefined, }}>images,</span></h3>
+                                                                                    <span style={{
+                                                                                        fontSize: field.width === '25%' ? '12px' : undefined,
+
+                                                                                    }} className='form-builder-changes-file-button'>Upload</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : null
+                                                            )}
+                                                            {field.type === 'slider' && (
+                                                                <input
+                                                                    type="range"
+                                                                    placeholder={field.placeholder}
+                                                                    min={field.min}
+                                                                    max={field.max}
+                                                                    step={field.step}
+                                                                    style={{
                                                                         padding: field.inputPadding,
                                                                         borderRadius: `${form.styles.inputRadious}px`,
                                                                         borderWidth: `${form.styles.inputwidth}px`,
-                                                                        borderStyle: form.styles.inputstyle,
-                                                                        borderColor: form.styles.inputborderColor,
-                                                                        backgroundColor: form.styles.inputBgColor,
-                                                                        width: '100%',
-                                                                    }}
-                                                                    buttonStyle={{
-                                                                        borderRadius: `${form.styles.inputRadious}px`,
+                                                                        borderStyle: `${form.styles.inputstyle}`,
+                                                                        borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`,
                                                                     }}
                                                                 />
+                                                            )}
+                                                            {field.type === 'button' && <div style={{ textAlign: field.buttonaline }}><button style={{
+                                                                backgroundColor: field.backgroundColor || '#45a7f6',
+                                                                fontSize: `${field.buttontext || '16'}px`,
+                                                                height: field.buttonHeight || 'auto',
+                                                                minWidth: `${field.btnwidth}px`,
+                                                                padding: `${field.padding}px`,
+                                                                color: field.btncolor,
+                                                                borderWidth: `${field.buttonBorderWidth}px`,
+                                                                borderRadius: `${field.btnradious}px`,
+                                                                borderStyle: field.buttonBorderStyle,
+                                                                borderColor: field.buttonBorderColor,
+                                                            }}> <label>{field.label}</label> </button></div>}
+
+                                                            {field.type === 'divider' && (
+                                                                <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
+                                                            )}
+                                                            {field.type === 'radio' && (
+                                                                <div style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
+                                                                    {field.options.map(option => (
+                                                                        <div key={option.id} className='form_radio_flex' >
+                                                                            <input
+                                                                                type="radio"
+                                                                                name={field.name}
+                                                                                value={option.value}
+                                                                            />
+                                                                            <label>{option.label}</label>
+                                                                        </div>
+
+                                                                    ))}
+                                                                    <div className='description'>{field.description}</div>
+                                                                </div>
+                                                            )}
+                                                            {field.type === 'checkbox' && (
+                                                                <div style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
+                                                                    {field.options.map(option => (
+                                                                        <div key={option.id} className='form_checkbox_flex'>
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                name={field.name}
+                                                                                value={option.value}
+                                                                                required={field.required}
+                                                                                readOnly={field.readonly}
+                                                                            />
+                                                                            <label>{option.label}</label>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+
+                                                            {field.type === 'select' && (
+                                                                <div>
+                                                                    <CustomSelect
+                                                                        options={field.options}
+                                                                        selectedValue={selectedOption ? selectedOption.label : ''}
+                                                                        onChange={(option) => setSelectedOption(option)}
+                                                                        formStyles={form.styles}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            <div className='description' style={{ minHeight: `${form.styles.maxDescriptionHeight}px` }}>
+                                                                {field.description}
                                                             </div>
-                                                        )}
 
-                                                        {field.type === 'link' && (
-                                                            <a
-                                                                href={field.linkUrl}
-                                                                target={field.linkTarget}
-                                                                style={{
-
-                                                                    textDecoration: 'none',
-                                                                    textAlign: field.linkaline,
-                                                                    padding: field.padding,
-                                                                }}
-                                                                dangerouslySetInnerHTML={{ __html: field.linktext }}
-                                                            />
-                                                        )}
-                                                        {field.type === 'images' && <input type="file" placeholder={field.placeholder} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'multi-image' && <input type="file" placeholder={field.placeholder} multiple style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                        {field.type === 'slider' && (
-                                                            <input
-                                                                type="range"
-                                                                placeholder={field.placeholder}
-                                                                min={field.min}
-                                                                max={field.max}
-                                                                step={field.step}
-                                                                style={{
-                                                                    padding: field.inputPadding,
-                                                                    borderRadius: `${form.styles.inputRadious}px`,
-                                                                    borderWidth: `${form.styles.inputwidth}px`,
-                                                                    borderStyle: `${form.styles.inputstyle}`,
-                                                                    borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`,
-                                                                }}
-                                                            />
-                                                        )}
-                                                        {field.type === 'button' && <div style={{textAlign:field.buttonaline}}><button style={{
-                                                            backgroundColor: field.backgroundColor || '#45a7f6',
-                                                            fontSize: `${field.buttontext || '16'}px`,
-                                                            height: field.buttonHeight || 'auto',
-                                                             width: `${field.btnwidth}px`,
-                                                            padding: field.padding || '10px',
-                                                            color: field.btncolor,
-                                                            borderWidth: `${field.buttonBorderWidth}px`,
-                                                            borderRadius: `${field.btnradious}px`,
-                                                            borderStyle: field.buttonBorderStyle,
-                                                            borderColor: field.buttonBorderColor,
-                                                        }}> <label>{field.label}</label> </button></div>}
-
-                                                        {field.type === 'divider' && (
-                                                            <hr style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
-                                                        )}
-                                                        {field.type === 'radio' && (
-                                                            <div style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
-                                                                {field.options.map(option => (
-                                                                    <div key={option.id} className='form_radio_flex' >
-                                                                        <input
-                                                                            type="radio"
-                                                                            name={field.name}
-                                                                            value={option.value}
-                                                                        />
-                                                                        <label>{option.label}</label>
-                                                                    </div>
-                                                                    
-                                                                ))}
-                                                                <div className='description'>{field.description}</div>
-                                                            </div>
-                                                        )}
-                                                        {field.type === 'checkbox' && (
-                                                            <div  style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
-                                                                {field.options.map(option => (
-                                                                    <div key={option.id} className='form_checkbox_flex'>
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            name={field.name}
-                                                                            value={option.value}
-                                                                            required={field.required}
-                                                                            readOnly={field.readonly}
-                                                                        />
-                                                                        <label>{option.label}</label>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        )}
-
-                                                        {field.type === 'select' && (
-                                                            <div>
-                                                                <CustomSelect
-                                                                    options={field.options}
-                                                                    selectedValue={selectedOption ? selectedOption.label : ''}
-                                                                    onChange={(option) => setSelectedOption(option)}
-                                                                    formStyles={form.styles}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                        {field.description}
-
-                                                    </div>
-                                                ))}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                                 <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
                                                     <img src={cancle1} alt="" />
@@ -1011,7 +1212,7 @@ const Formdata = () => {
                     </div>
                 </div >
             )}
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{fontWeight:'600', color:'#686767'}}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
         </>
     );
 };

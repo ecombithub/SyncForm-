@@ -2,36 +2,40 @@
     font-family: Poppins;
 } */
 
-.email_field h1 {
-    line-height: 50px;
-}
-
-.email_field h2 {
-    line-height: 40px;
-}
-
-.email_field h3 {
-    line-height: 30px;
-}
-
-.email_field h4 {
-    line-height: 25px;
-}
-
-.email_field h5 {
-    line-height: 20px;
-}
-
-.email_field p {
-    line-height: 20px;
-}
 
 .email-templates-wredd h1 {
-    font-size: 40px !important;
+    line-height: 50px;
+    font-size: 40px;
 }
 
 .email-templates-wredd h2 {
-    font-size: 30px !important;
+    line-height: 40px;
+    font-size: 36px;
+}
+
+.email-templates-wredd h3 {
+    line-height: 34px;
+    font-size: 31px;
+}
+
+.email-templates-wredd h4 {
+    line-height: 30px;
+    font-size: 26px;
+}
+
+.email-templates-wredd h5 {
+    line-height: 26px;
+    font-size: 23px;
+}
+
+.email-templates-wredd h6 {
+    line-height: 23px;
+    font-size: 19px;
+}
+
+.email-templates-wredd p {
+    line-height: 20px;
+    font-size: 15px;
 }
 
 .text-wraped a {
@@ -39,27 +43,6 @@
     color: black;
 }
 
-.text-wraped h3 {
-    font-size: 20px !important;
-    font-weight: 600 !important;
-    margin: 0 !important;
-}
-
-.text-wraped h4 {
-    font-size: 18px !important;
-    font-weight: 500 !important;
-    margin: 0 !important;
-}
-
-.text-wraped h5 {
-    font-size: 15px !important;
-    font-weight: 500 !important;
-    margin: 0 !important;
-}
-
-/* .text-wraped .ql-editor h3 {
-    font-weight: inherit !important;
-} */
 
 .container {
     width: 100%;
@@ -84,6 +67,16 @@
     border: 0;
     background: white;
 }
+
+
+.custom-range-slider .custom-range-text {
+    color: white;
+}
+
+.custom-range-slider .custom-range-text.high-width {
+    color: white;
+}
+
 
 .setting_bg_email_templetes {
     background-color: #f5fff9;
@@ -158,13 +151,18 @@ button.toogle-btn-wraped {
     top: 6px;
     padding: 4px 10px;
     font-size: 12px;
-    border: 2px solid #6bd49b !important;
+    border: 2px solid #00ac4f !important;
     border-radius: 4px;
     transition: background-color 0.3s ease;
 }
 
+div#bg_change_background {
+    background: white;
+}
+
 .toogle-btn-wraped.active {
-    background-color: #e7f9f4 !important;
+    background-color: #00ac4f !important;
+    color: white !important;
 }
 
 .setting_bg_email_templetes_white input,
@@ -252,15 +250,17 @@ p.spacer-height-text {
 }
 
 
-.builder-container h3 {
+.builder-contain-h3 h3 {
     font-size: 22px;
     font-weight: bold;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
 }
+
 
 .form_builder_option_select h3 {
     margin-bottom: 20px;
     color: black;
+    font-size: 14px;
 }
 
 .builder-container {
@@ -333,14 +333,8 @@ p.spacer-height-text {
     background-size: cover;
 }
 
-.controls-main-wrp .forms-wrapping {
-    height: 96vh;
-    overflow: hidden;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #ccc transparent;
-    background-repeat: no-repeat;
-    background-size: cover;
+.input-field.phone-edit input.form-control {
+    padding-left: 45px !important;
 }
 
 button.btn-templates {
@@ -348,18 +342,29 @@ button.btn-templates {
     text-align: center;
 }
 
-.controls-main-wrp .form-builder-wrp::-webkit-scrollbar {
-    width: 2px;
+.controls-main-wrp .forms-wrapping {
+    height: 96vh;
+    overflow: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    scrollbar-color: #ccc transparent;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
-.controls-main-wrp .form-builder-wrp::-webkit-scrollbar-thumb {
+.controls-main-wrp .forms-wrapping::-webkit-scrollbar {
+    width: 1px;
+}
+
+.controls-main-wrp .forms-wrapping::-webkit-scrollbar-thumb {
     background-color: #ccc;
     border-radius: 10px;
 }
 
-.controls-main-wrp .form-builder-wrp::-webkit-scrollbar-track {
+.controls-main-wrp .forms-wrapping::-webkit-scrollbar-track {
     background: transparent;
 }
+
 
 .builder_block_blank {
     position: absolute;
@@ -709,6 +714,20 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
     position: relative;
     cursor: pointer;
 }
+
+span.rm-btn.bg-img {
+    background: none !important;
+    position: absolute;
+    top: 0px;
+    right: 0;
+    padding: 0;
+    width: 33px;
+}
+
+span.rm-btn.bg-img img {
+    width: 100%;
+}
+
 
 .form-builder-green-btn:hover .noUi-tooltip-id {
     display: flex;
@@ -1240,13 +1259,14 @@ button.btn-templates.desktop {
     border: 0;
     background: transparent;
     width: 40px;
+    cursor: pointer;
 }
-
 
 .form-builder-change-propertites .form_build_propertities .radio-option button.remove-options {
     border: 0;
     background: transparent;
     width: 40px;
+    cursor: pointer;
 }
 
 .form-builder-change-propertites .form_build_propertities .radio-option label {
@@ -1261,6 +1281,7 @@ button.btn-templates.desktop {
     border: 0;
     background: transparent;
     width: 40px;
+    cursor: pointer;
 }
 
 .form-builder-change-propertites .form_build_propertities .select-option {
@@ -1542,7 +1563,7 @@ button.cancel {
 }
 
 .form-scroll-bar {
-    height: 100vh;
+    height: 102.5vh;
     position: sticky;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1564,7 +1585,7 @@ button.cancel {
 
 .controls .form-scroll-bar {
     scrollbar-width: thin;
-    scrollbar-color: #A3A3A3;
+    scrollbar-color: #ccc transparent;
 }
 
 .builder-wrp .builder-wrp .controls h4 {
@@ -1586,6 +1607,7 @@ button.cancel {
 .builder_form_select_control h2 {
     font-size: 16px !important;
     font-weight: 600;
+    line-height: 18px;
 }
 
 .form-build-checkbox-wrp-options .selected-files ul {
@@ -1660,7 +1682,7 @@ button.cancel {
 .form-builder-change-propertites {
     color: white;
     border-radius: 0px 20px 0px 0px;
-    height: 117.5vh;
+    height: 118.9vh;
     overflow: hidden;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -1731,8 +1753,11 @@ button.cancel {
     margin-bottom: 15px;
 }
 
+.form-builder-chaneging-wrap.image {
+    margin-bottom: 15px;
+}
+
 .form-builder-change-propertites .form_build_propertities .form-builder-chaneging-wrap input[type="text"] {
-    margin-bottom: 10px;
     border-radius: 4px;
     border: 1px solid #B5B7C0;
     color: #180000;
@@ -2096,7 +2121,7 @@ div#formBuilder .hover_lable_form {
     padding: 9px 30px;
     font-size: 16px;
     cursor: pointer;
-
+    width: 110px;
 }
 
 button.cancle-form-btn {
@@ -2108,6 +2133,7 @@ button.cancle-form-btn {
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
+    width: 110px;
 }
 
 .edit_setting_bg:nth-last-child(-n + 1) {
@@ -2161,9 +2187,13 @@ button.cancle-form-btn {
 
 .checkbox-option.bg-colors {
     display: flex;
-    margin: 10px 0;
+    margin: 15px 0;
     justify-content: space-between;
     align-items: center;
+}
+
+.form-builder-chaneging-wrap.textediter {
+    margin-bottom: 15px;
 }
 
 .color-code {
@@ -2461,7 +2491,7 @@ span.name_build span {
 
 
 .form-names-list {
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+    transition: max-height 0.6s ease, opacity 0.6s ease;
     overflow: hidden;
     max-height: 0;
     opacity: 0;
@@ -2470,7 +2500,7 @@ span.name_build span {
 .form-names-list.show {
     max-height: 500px;
     opacity: 1;
-    z-index: 1;
+    z-index: 99;
 }
 
 .form-names-list div {
@@ -2503,6 +2533,7 @@ span.name_build span {
     left: 0;
     top: 100%;
     border-radius: 4px;
+    z-index: 99;
 }
 
 .form-builder-customer_title h2 {
@@ -2718,10 +2749,8 @@ button.copy-btn.first {
 .form_builders_plan_btn .form_builders_plan_annually {
     display: flex;
     align-items: center;
-    border: 1px solid;
     border-radius: 4px;
     font-size: 13px;
-    padding-left: 10px;
     color: #838383;
     cursor: pointer;
 }
@@ -2731,21 +2760,43 @@ button.copy-btn.first {
     text-align: center;
     font-size: 10px;
     line-height: 12px;
-    padding: 2px 4px;
+    padding: 2.6px 10px;
+    border-radius: 2px;
+}
+
+.enjoy_paln {
+    border: 1px solid #2D90E0;
+    border-radius: 4px;
+}
+
+
+.form_annualy_plans {
+    border: 1px solid #D9D9D9;
+    padding: 7px 13px;
+    border-radius: 4px;
+    background: white;
+    transform: translateX(5px);
+}
+
+.form_annualy_plans._plans {
+    background: #404B52;
+    border: 0;
+    padding: 7px 13px;
+}
+
+.from_builder_pricing .form_builder_plan_add .form_builders_plan_btn.active {
+    gap: 15px;
 }
 
 .form_builders_plan_btn .form_builders_plan_monthly {
     border: 1px solid;
-    padding: 5px 10px;
+    padding: 7px 10px;
     border-radius: 4px;
     font-size: 13px;
     color: #838383;
     cursor: pointer;
 }
 
-.form_builders_plan_annually p {
-    padding-right: 10px;
-}
 
 .form_builder_choose_pan {
     display: flex;
@@ -3523,15 +3574,20 @@ button.plus_option {
     height: 70px;
 }
 
+.edit_setting_bg.subject label {
+    font-size: 14px;
+    color: #180000;
+}
+
 .submission-select {
     padding: 10px;
+    margin-bottom: 0;
     border-radius: 5px;
     border: 1px solid #B5B7C0;
     color: #180000;
     background-color: transparent;
     width: 100%;
-    max-width: 300px;
-    margin-bottom: 10px;
+    max-width: 100%;
     transition: border-color 0.3s;
 }
 
@@ -3733,6 +3789,7 @@ button.plus_option {
 
 .email-campaing-templates .form_builder_build .form-builder {
     height: 92%;
+    background: white;
 }
 
 button.btn-templates {
@@ -4133,10 +4190,184 @@ button.update-image.rmove-img.rm-btn {
 }
 
 .email-template-input-setting .form-builder-change-propertites {
-    height: 117.5vh;
+    height: 119.6vh;
     overflow-x: hidden;
     overflow-y: auto;
     background: white;
+}
+
+.form-builder-chaneging-wred-file-upload input[type="file"] {
+    padding: 10px;
+    background: #e7f9f4;
+    border-radius: 4px;
+    color: #000000;
+    border: 1px solid #B5B7C0;
+}
+
+.drag-and-drop-text.first img {
+    width: 100px;
+}
+
+.drag-and-drop-text.first .email-files.drop p {
+    font-size: 19px;
+    max-width: 100%;
+    line-height: 28px;
+}
+
+.drag-and-drop-text.first .email-files.drop {
+    width: 25%;
+}
+
+.drag-and-drop-text.third .email-files.drop {
+    margin-top: 10px;
+}
+
+.drag-and-drop-text.third.multifile-second h3 {
+    font-size: 19px;
+    line-height: 40px;
+}
+
+span.form-builder-changes-file-button {
+    background: #4fae52;
+    color: white !important;
+    padding: 10px 70px;
+    border-radius: 4px;
+    border: 1px solid #209324;
+    font-size: 14px;
+}
+
+.drag-and-drop-text.third.multifile-second p {
+    font-size: 15px;
+    max-width: 53%;
+    margin: auto;
+    line-height: 23px;
+    margin-bottom: 40px;
+}
+
+.form-builder-chaneging-wrap.file.multifile1 {
+    background: white;
+}
+
+.form-builder-chaneging-wrap.file.multifile1 .email-files.drop {
+    margin-bottom: 30px;
+}
+
+.form-builder-chaneging-wrap.file.multifile1 span.form-builder-changes-file-button {
+    background: #00ac4f;
+    border-radius: 31px;
+    padding: 5px 22px;
+    font-size: 17px;
+    border: 0;
+}
+
+.drag-and-drop-text.third.multifile-second.multi span.form-builder-changes-file-button {
+    background: #00ac4f;
+    border-radius: 31px;
+    padding: 5px 22px;
+    font-size: 17px;
+    border: 0;
+}
+
+.form-builder-chaneging-file-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.form-builder-chaneging-file-options span.file-option {
+    width: 100px;
+    text-align: center;
+    padding: 7px;
+    color: white;
+    font-size: 15px;
+}
+
+span.file-option.basic {
+    border: 1px solid #1B2D38;
+    border-radius: 4px;
+    background: #404B52;
+    cursor: pointer;
+}
+
+span.file-option.pro {
+    border: 1px solid #4DA1B7;
+    border-radius: 4px;
+    background: #46B7D3;
+    cursor: pointer;
+}
+
+span.file-option.pro-plus {
+    background: rgb(255, 156, 6);
+    border: 1px solid #D78100;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.drag-and-drop-text.third.multifile-second.multi-image span {
+    color: black;
+    font-weight: 400;
+}
+
+.drag-and-drop-text {
+    border-radius: 4px;
+}
+
+.drag-and-drop-text.third.multifile-second.multi-image img {
+    width: 80px;
+}
+
+.drag-and-drop-text.third.multifile-second.multi h3 {
+    margin-bottom: 40px;
+}
+
+.drag-and-drop-text.third.multifile-second.multi h3 {
+    margin-bottom: 30px;
+}
+
+.drag-and-drop-text.first.singleimages .form-builder-changes-file-wraped {
+    gap: 50px;
+}
+
+.drag-and-drop-text.first.singleimages .form-builder-changes-file-wraped .email-files.drop {
+    width: 30%;
+}
+
+.drag-and-drop-text.first.singleimages img {
+    width: 66px;
+}
+
+.form-builder-chaneging-wrap.file.multifile1 img {
+    width: 90px !important;
+}
+
+.drag-and-drop-text.third.multifile-second {
+    background: #f6fffa;
+}
+
+.drag-and-drop-text.third.multifile-second .form-builder-changes-file-wraped img {
+    width: 70px;
+}
+
+.drag-and-drop-text .email-files.drop span {
+    color: #00ac4f;
+}
+
+.drag-and-drop-text.third .form-builder-changes-file-wraped {
+    display: block;
+    text-align: center;
+}
+
+.drag-and-drop-text.third .form-builder-changes-file-wraped img {
+    width: 45px;
+}
+
+.drag-and-drop-text .form-builder-changes-file-wraped {
+    border: 2px dashed #8ee2b4;
+    margin: auto;
+    justify-content: center;
+    background: white;
+    padding: 30px;
 }
 
 .email-template-input-setting .form-builder-change-propertites::-webkit-scrollbar {
@@ -4302,7 +4533,7 @@ button.update-image.rmove-img.rm-btn {
 
 .form-builder-chaneging-wrap h2 {
     color: black;
-    font-size: 18px !important;
+    font-size: 18px;
 }
 
 .email-template-reviw-popup.emial-wrap {
@@ -4517,19 +4748,32 @@ button.remove-options img {
 }
 
 .form-builder-drag-drop.drag {
-    top: 23%;
+    top: 36%;
 }
 
 .form-builder-drag-drop img {
-    width: 60%;
+    width: 12px;
+}
+
+.form-builder-drag-drop.drag.date {
+    top: 55%;
+    right: 35px;
 }
 
 .form-builder-drag-drop {
-    position: absolute;
-    top: 50%;
-    left: -10px;
     cursor: grab;
-
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: -5px;
+    background: #23c66d;
+    height: 100%;
+    padding: 10px;
+    transition: height 0.2s ease;
+    border-radius: 0 4px 4px 0;
+    width: 40px;
+    top: 0;
 }
 
 .upload-area-hidden {
@@ -4546,7 +4790,7 @@ button.remove-options img {
 
 .form-builder-chaneging-wrap .image-preview {
     border: 1px solid #B5B7C0;
-    padding: 10px;
+    /* padding: 10px; */
     border-radius: 4px;
     text-align: center;
 }
@@ -4557,19 +4801,12 @@ button.remove-options img {
     padding: 5px;
 }
 
-.ql-editor {
-    color: black;
-}
-
-/* .email_field .ql-editor {
-    text-align: inherit !important;
-} */
-
 
 .form-builder-changing-wrap.url input[type="url"] {
     border-radius: 4px;
     border: 1px solid #B5B7C0;
     padding: 10px;
+    margin-bottom: 15px;
 }
 
 .form-builder-changing-wrap.url label {
@@ -4581,9 +4818,7 @@ button.remove-options img {
 .column {
     border: 1px solid black;
     box-sizing: border-box;
-    text-align: center;
     min-width: 100px;
-    padding: 10px;
 }
 
 iframe#tidio-chat-iframe {
@@ -4645,15 +4880,15 @@ button.rm-btn.remove-coloum img {
 
 button.rm-btn.remove-coloum {
     position: absolute;
-    right: 4px;
+    right: 0px;
     top: 4px;
-    padding: 4px;
     border-radius: 50%;
     height: 30px;
     width: 30px;
     background: none !important;
     border: none;
-    width: 15%;
+    width: 11%;
+    padding: 0;
 }
 
 .controls-main-wrp.email-tempalte div#bg_change {
@@ -4666,6 +4901,41 @@ button.rm-btn.remove-coloum {
     border: 1px solid red;
 }
 
+.form-builder-chaneging-addbtn-pass {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.form-builder-storng-pass input[type="text"] {
+    margin-bottom: 0 !important;
+}
+
+.form-builder-storng-btn {
+    display: flex;
+    gap: 15px;
+    width: 50%;
+}
+
+button.form-builder-storng-btn-wrap {
+    padding: 9px 17px;
+    border-radius: 4px;
+    background-color: #ecfff5;
+    border: 1px solid #79d7a4;
+    cursor: pointer;
+}
+
+.form-builder-chaneging-addbtn-pass input[type="text"] {
+    width: 100%;
+    background-color: #ecfff5;
+    border: 1px solid #79d7a4;
+}
+
+.form-builder-storng-btn-wrap.active {
+    background-color: #00ac4f;
+    color: white;
+}
 
 span.payment-plan {
     width: 19%;
@@ -4920,9 +5190,8 @@ span.custom-range-text {
 }
 
 .form-builder-chaneging-wrap.images-upload {
-    border: 1px solid #B5B7C0;
+    border: 1px solid #6bd49b;
     padding: 10px;
-
 }
 
 .column-settings .quill .ql-container.ql-snow {
@@ -4996,8 +5265,9 @@ button.rm-btn.showfirst {
     position: absolute;
     right: 0px;
     top: -2px;
-    width: 55px;
     background: none !important;
+    padding: 0;
+    width: 33px;
 }
 
 button.rm-btn.showfirst img {
@@ -5279,6 +5549,16 @@ button.form_email_btn {
         margin: 0 auto;
         padding: 0 20px;
     }
+
+    .controls-main-wrp .controls-wrp {
+        height: 117.5vh;
+        background-color: white;
+    }
+
+    .controls-wrp.email {
+        height: 119vh;
+        background-color: white;
+    }
 }
 
 @media screen and (max-width: 1440px) {
@@ -5478,6 +5758,11 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1024px) {
+    .controls-main-wrp .controls-wrp.email .edit_setting_bg {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
     .color-picker-container {
         padding: 2px 5px;
         width: 60%;
@@ -6418,6 +6703,26 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+
+    .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content {
+        padding: 20px;
+    }
+
+    .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content .form-builder-search-bar.search-bar {
+        width: 43%;
+        margin: 0;
+    }
+
+    .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content .images-galley {
+        width: 45px;
+        height: 45px;
+    }
+
+    .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content h3 {
+        font-size: 15px;
+    }
+
+
     .form-builder-add-text-wraped {
         padding: 25px;
 
@@ -6609,6 +6914,28 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .email-campaing-templates button.create-form-btn.action_btn {
+        width: 70px;
+        padding: 9px 12px;
+    }
+
+    .email-campaing-templates button.cancle-form-btn {
+        width: 70px;
+        padding: 9px 12px;
+    }
+
+    .form-builder-search-bar-btns {
+        display: grid;
+        gap: 20px;
+        width: 100%;
+        justify-content: normal;
+    }
+
+    .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content .form-builder-search-bar.search-bar {
+        width: 100% !important;
+        margin: 0;
+    }
+
     .email-template-section .email-tempalte-your .form-builder-search-bar {
         width: 49% !important;
     }
@@ -6918,6 +7245,25 @@ button.form_email_btn {
     width: 100%;
 }
 
+.form-builder-changes-file-wraped img {
+    width: 68px;
+}
+
+.email-files.drop p {
+    font-weight: 600;
+    line-height: 19px;
+}
+
+.form-builder-changes-file-wraped {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: black;
+    border: 1px dashed #8ee2b4;
+    border-radius: 10px;
+    padding: 20px;
+}
+
 .input-field.phone-edit .flag-dropdown {
     height: 33px;
     top: 1px !important;
@@ -6925,7 +7271,7 @@ button.form_email_btn {
     border-radius: 0 !important;
     background: #e7f9f4 !important;
     color: black;
-    left: 2px;
+    left: 1px;
 }
 
 .input-field.phone-edit .selected-flag:hover,
@@ -6977,3 +7323,4 @@ button.form_email_btn {
 .custom-checkbox-form-build input[type="checkbox"]:checked+label:after {
     transform: translate(-50%, -50%) scale(1);
 }
+

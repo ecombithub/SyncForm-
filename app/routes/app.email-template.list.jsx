@@ -75,6 +75,7 @@ export default function EmailTemplate() {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [formsPerPage] = useState(4);
+    const [formsPer] = useState(4);
     const navigate = useNavigate();
     const [previwPopup, setPreviwPopup] = useState(false);
     const [selectedForm, setSelectedForm] = useState(null);
@@ -85,6 +86,7 @@ export default function EmailTemplate() {
     const [showFormNames, setShowFormNames] = useState(false);
     const [showtemplate, setShowTemplate] = useState(false);
     const [selectedFormName, setSelectedFormName] = useState('');
+    const [selectedTemplate, setSelectedTemplate] = useState('');
     const { shop, apiUrl } = useLoaderData() || {};
     const [isLoading, setIsLoading] = useState(false);
     const [matchedData, setMatchedData] = useState(null);
@@ -97,21 +99,19 @@ export default function EmailTemplate() {
         try {
             const response = await axios.get(`${apiUrl}/get/base64`);
             let fetchedData = response.data.data || [];
-
+    
             fetchedData = fetchedData.filter(form => form.shop === shop);
-
-            fetchedData = fetchedData.slice().reverse();
-
+    
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             setUserPlan(planResponse.data);
             console.log("User Plan:", planResponse.data);
-
+    
             if (planResponse.data?.plan === "free" && planResponse.data.status === "active") {
                 if (fetchedData.length > 1) {
-                    const formsToDelete = fetchedData.slice(1);
-
+                    const [firstTemplate, ...formsToDelete] = fetchedData;
+    
                     console.log("Forms to delete:", formsToDelete);
-
+    
                     await Promise.all(formsToDelete.map(async (form) => {
                         const idToDelete = form.formId || form.templateId || form._id;
                         if (idToDelete) {
@@ -125,11 +125,12 @@ export default function EmailTemplate() {
                             console.error("Skipping deletion. Missing valid ID for:", form);
                         }
                     }));
+    
+                    fetchedData = [firstTemplate]; 
                 }
-
-                fetchedData = fetchedData.slice(0, 2);
             }
-
+    
+            fetchedData = fetchedData.slice().reverse();
             setFormsData(fetchedData);
             console.log("Final templates:", fetchedData);
         } catch (error) {
@@ -138,6 +139,7 @@ export default function EmailTemplate() {
             setLoading(false);
         }
     };
+    
 
     const handlePreviw1 = async (form) => {
         try {
@@ -397,17 +399,19 @@ export default function EmailTemplate() {
     const filteredtemplate = newformsData.filter((form) =>
         form.title.toLowerCase().includes(searchTempalte.toLowerCase())
     );
-    const total = Math.ceil(filteredtemplate.length / formsPerPage);
+    const total = Math.ceil(filteredtemplate.length / formsPer);
 
     const currenttemplate = filteredtemplate.slice(
-        (current - 1) * formsPerPage,
-        current * formsPerPage
+        (current - 1) * formsPer,
+        current * formsPer
     );
 
     const renderField = (field) => {
         const { viewMode = 'desktop' } = field;
+
         switch (field.type) {
             case 'heading':
+                const HeadingTag = field.headingLevel || "h1";
                 return <div style={{
                     borderWidth: `${field.headingBorderWidth}px`,
                     borderStyle: field.headingBorderStyle,
@@ -441,7 +445,7 @@ export default function EmailTemplate() {
                         textAlign: field.headingTextAlign || '',
                         padding: `${field.headingPadding}px`,
                     }}>
-                        <h1 style={{
+                        <HeadingTag style={{
                             fontSize: `${field.headingFontSize}px`,
                             color: field.headingColor,
                             letterSpacing: `${field.headingLetterSpacing}px`,
@@ -450,7 +454,7 @@ export default function EmailTemplate() {
                             fontFamily: field.headingfamily,
                            
                         }}>
-                            {field.headingText}</h1>
+                            {field.headingText}</HeadingTag>
 
                         {(field.editorContent) && (
                             <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' , fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily,  letterSpacing: `${field.subheadingleter}px`, color: field.subheadingColor, }}
@@ -464,10 +468,11 @@ export default function EmailTemplate() {
                             <a href={field.headingUrl} target="_blank" rel="noopener noreferrer">
                                 <button
                                     style={{
+                                        fontFamily: field.headingbtnfamily,
                                         background: field.headerbtnbg,
                                         color: field.headerbtncolor,
                                         height: `${field.headingbtnheight}px`,
-                                        width: `${field.headingbtnwidth}px`,
+                                        minWidth: `${field.headingbtnwidth}px`,
                                         fontSize: `${field.headingbtnFontSize}px`,
                                         borderRadius: `${field.headingbtnradious}px`,
                                         paddingLeft: `${field.headingbtnPadding}px`,
@@ -508,7 +513,9 @@ export default function EmailTemplate() {
                             style={{
                                 border: `${field.dividerheight}px solid ${field.dividerColor}`,
                                 width: `${field.dividerWidth}%`,
-                                margin: 'auto'
+                                margin: 'auto',
+                                marginLeft: field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'left' ? '0' : '',
+                                marginRight: field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : '', 
                             }}
                         />
                     </div>
@@ -520,10 +527,11 @@ export default function EmailTemplate() {
                         <a href={field.buttonUrll} target='_blank'>
                             <button
                                 style={{
+                                    fontFamily: field.buttonfamily,
                                     backgroundColor: field.buttonColor || '#008CBA',
                                     padding: `${field.buttonPadding}px` || '10px 20px',
                                     height: `${field.buttonHeight}px` || '10px',
-                                    width: `${field.buttonWidth}px`,
+                                    minWidth: `${field.buttonWidth}px`,
                                     fontSize: `${field.buttonFontSize}px` || 'Button',
                                     color: field.buttonTextColor,
                                     borderWidth: `${field.buttonBorderWidth}px`,
@@ -537,6 +545,24 @@ export default function EmailTemplate() {
                                 {field.buttonLabel || ''}
                             </button>
                         </a>
+                    </div>
+                );
+                case 'costum':
+                return (
+                    <div style={{
+                        whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                        width: '100%',
+                        fontSize:`${field.costumFont}px`,
+                        color:field.costumColor,
+                        backgroundColor:field.costumBg,
+                        textAlign:field.costumAline,
+                        lineHeight:`${field.costumline}px`,
+                        padding:`${field.costumPadding}px`,
+                        fontFamily:field.costomfamily,
+                        fontWeight: field.costumfontweight,
+                        letterSpacing:`${field.costumLetter}px`
+                    }}>
+                        {field.costumText}
                     </div>
                 );
             case 'product':
@@ -575,8 +601,8 @@ export default function EmailTemplate() {
                                             <p>No image available</p>
                                         )}
                                         <div>
-                                            <h4 style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</h4>
-                                            {field.price && (
+                                            <h6 style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</h6>
+                                            {field.showPrice && (
                                                 <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.price}</p>
                                             )}
                                         </div>
@@ -589,8 +615,9 @@ export default function EmailTemplate() {
                                                 <button
                                                     style={{
                                                         fontSize: `${field.productfontSize}px`,
-                                                        width: `${field.productwidth}px`,
+                                                        minWidth: `${field.productwidth}px`,
                                                         height: `${field.productheight}px`,
+                                                        fontFamily: field.productbtnfamily,
                                                         backgroundColor: field.productbackgroundColor,
                                                         borderWidth: `${field.productbtnBorderWidth}px`,
                                                         borderStyle: field.productbtnBorderStyle,
@@ -693,10 +720,11 @@ export default function EmailTemplate() {
                                         <button style={{
                                             marginTop: "20px",
                                             backgroundColor: field.Multibtnbg,
+                                            fontFamily: field.Multibtnfamily,
                                             borderWidth: `${field.MultibtnBorderWidth}px`,
                                             borderStyle: field.MultibtnBorderStyle,
                                             borderColor: field.MultibtnBorderColor,
-                                            width: `${field.Multibtnweight || '100'}px`,
+                                            minWidth: `${field.Multibtnweight || '100'}px`,
                                             height: `${field.Multibtnheight || '40'}px`,
                                             color: field.Multibtncolor,
                                             borderRadius: `${field.Multibtnradious}px`,
@@ -715,7 +743,7 @@ export default function EmailTemplate() {
                 );
 
             case 'html convert':
-                return <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' ,  padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
+                return <div style={{ fontFamily: field.htmlfamily, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' ,  padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
 
             case 'spacer':
                 return (
@@ -732,10 +760,9 @@ export default function EmailTemplate() {
                 return (
                     <div
                         style={{
-                            width: field.width,
+                            width:  matchedData?.styles?.viewMode === 'mobile' ? '100%' : field.width,
                             backgroundColor: field.splitbg,
                             padding: `${field.splitPadding}px`,
-                            height: `${field.splitheight}px`,
                             display: 'flex',
                             position: 'relative',
                             textAlign: field.splitTextAlin,
@@ -761,11 +788,12 @@ export default function EmailTemplate() {
                                             <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
                                                 <button style={{
                                                     marginTop: "20px",
+                                                    fontFamily: field.splitbtnfamily,
                                                     backgroundColor: field.splitbtnbg,
                                                     fontSize: `${field.splitbtnfont}px`,
                                                     color: field.splitbtncolor,
                                                     height: `${field.splitbtnheight}px`,
-                                                    width: `${field.splitbtnwidth}px`,
+                                                    minWidth: `${field.splitbtnwidth}px`,
                                                     borderRadius: `${field.splitbtnradious}px`,
                                                     borderWidth: `${field.splitBorderWidth}px`,
                                                     borderStyle: field.splitBorderStyle,
@@ -844,7 +872,7 @@ export default function EmailTemplate() {
     };
 
     const handleSelectTemplate = (title) => {
-        setSelectedFormName(title);
+        setSelectedTemplate(title);
         setShowTemplate(false);
     };
 
@@ -854,7 +882,7 @@ export default function EmailTemplate() {
     };
 
     const handleSelectAlltemplate = () => {
-        setSelectedFormName(null);
+        setSelectedTemplate(null);
         setShowTemplate(false);
     };
 
@@ -878,7 +906,7 @@ export default function EmailTemplate() {
                 const templatesResponse = await axios.get(`${apiUrl}/get/base64`);
                 const fetchedData = templatesResponse.data.data || [];
 
-                if (fetchedData.length >= 2) {
+                if (fetchedData.length >= 1) {
                     setUphradePopup(true);
                     setIsLoading(false);
                     return;
@@ -956,7 +984,7 @@ export default function EmailTemplate() {
                     </div>
                 </div>
             ) : (
-                <div className="email-template-section email-templates-wredd">
+                <div className="email-template-section">
 
                     <div className='container'>
                         <div className="email-tempalte-your">
@@ -1135,7 +1163,7 @@ export default function EmailTemplate() {
                                         {filteredtemplate.length === 0 ? (
                                             <p>No template available.</p>
                                         ) : (
-                                            currenttemplate.filter(form => selectedFormName ? form.title === selectedFormName : true).map((form) => (
+                                            currenttemplate.filter(form => selectedTemplate ? form.title === selectedTemplate : true).map((form) => (
                                                 <div key={form.createdAt} className="email-templates">
                                                     <div className='email-tempalte-text'
                                                     >
@@ -1269,7 +1297,7 @@ export default function EmailTemplate() {
                                     </div>
                                 </div>
                             ) : (
-                                <div className='email-tempalte-textt text-wraped '
+                                <div className='email-tempalte-textt text-wraped email-templates-wredd'
                                     style={{
                                         width: matchedData?.styles?.width,
                                         backgroundColor: matchedData?.styles?.backgroundColor || '#fff',

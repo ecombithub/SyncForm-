@@ -262,7 +262,7 @@ function Index() {
               <p>Expert Installation Support</p>
               <a target='_blank' href="https://calendly.com/ecom-support/shopify-expert">
                 <button style={{ cursor: 'pointer' }}>
-                  Book an appointment
+                  Book an Appointment
                 </button></a>
             </div>
             <div className="contact_img">
