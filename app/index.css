@@ -4491,6 +4491,12 @@ span.file-option.pro-plus {
     gap: 15px;
 }
 
+.form-builder-chaneging-wrap.number.imagePreview {
+    display: flex;
+    margin-top: 15px;
+    gap: 30px;
+}
+
 .template-products.row-1 {
     grid-template-columns: repeat(1, 1fr);
 }
@@ -7323,4 +7329,3 @@ button.form_email_btn {
 .custom-checkbox-form-build input[type="checkbox"]:checked+label:after {
     transform: translate(-50%, -50%) scale(1);
 }
-

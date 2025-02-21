@@ -93,13 +93,11 @@ export const loader = async ({ request }) => {
     return response;
 };
 
-
-
 export default function Setting() {
     const { shop, apiUrl } = useLoaderData() || {};
     const shopData = { email: 'sahil@hubsyntax.com' };
     const [status, setStatus] = useState('disactive');
-    const [numberValue, setNumberValue] = useState(10);
+    const [numberValue, setNumberValue] = useState(3);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -108,7 +106,7 @@ export default function Setting() {
             try {
                 const response = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(response.data.status);
-                setNumberValue(response.data.numberValue || 10);
+                setNumberValue(response.data.numberValue || 3);
                 console.log(`Fetched Status: ${response.data.status}`);
             } catch (error) {
                 console.error("Error fetching status:", error);
@@ -119,17 +117,17 @@ export default function Setting() {
     }, [shop, apiUrl]);
 
     useEffect(() => {
-        if (status === 'active' && numberValue >= 10) {
+        if (status === 'active' && numberValue >= 3) {
             sendData();
         }
     }, [status, numberValue]);
 
     const handleNumberChange = (e) => {
         const value = Number(e.target.value);
-        if (value >= 10) {
+        if (value >= 3) {
             setNumberValue(value);
         } else {
-            alert("Enter at least 10 forms.");
+            alert("Enter at least 3 forms.");
         }
     };
 

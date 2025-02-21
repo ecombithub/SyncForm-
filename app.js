@@ -55,12 +55,13 @@ const formCreateSchema = new mongoose.Schema({
     type: {
       type: String,
       required: true,
-      enum: ['text', 'name', 'button', 'divider', 'heading', 'radio', 'file', 'multi-file', 'number', 'date', 'datetime', 'images', 'link', 'checkbox', 'location', 'toggle', 'select', 'textarea', 'password', 'email', 'phone', 'time', 'description', 'url', 'slider']
+      enum: ['text', 'name', 'button', 'divider', 'heading', 'radio', 'file', 'multi-file', 'number', 'date', 'datetime', 'images', 'multi-image', 'multi-file' ,'link', 'checkbox', 'location', 'toggle', 'select', 'textarea', 'password', 'email', 'phone', 'time', 'description', 'url', 'slider']
     },
     label: { type: String, required: true, default: function () { return this.name || 'Unnamed Field'; } },
     name: String,
     required: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
     onValue: { type: String, default: 'On' },
     offValue: { type: String, default: 'Off' },
     width: { type: String, default: '100%' },
@@ -98,6 +99,9 @@ const formCreateSchema = new mongoose.Schema({
     passwordCharacter: { type: String, required: false },
     passwordStatus: { type: String, required: false },
     fileOptions: {type: Map,of: String, required: false,},
+    ImagePreview: { type: String, enum: ['on', 'off'] },
+    multifilePreview: { type: String, enum: ['on', 'off'] },
+    signlePreview: { type: String, enum: ['on', 'off'] },
     multiOptions: {type: Map,of: String, required: false,},
     imageOptions: {type: Map,of: String, required: false,},
     multiimagesOptions: {type: Map,of: String, required: false,},
@@ -342,7 +346,6 @@ const emailTemplateSchema = new mongoose.Schema({
       splitlineheight: { type: String, required: false },
       splitfamily: { type: String, required: false },
       splitbtnradious: { type: String, required: false },
-      splitheight: { type: String, required: false },
       add: { type: String, required: false },
       width: { type: String, required: false },
       spacerHeight: { type: String, required: false },
@@ -351,6 +354,7 @@ const emailTemplateSchema = new mongoose.Schema({
       splittextSize: { type: String, required: false },
       splitPadding: { type: String, required: false },
       splitTextAlin: { type: String, required: false },
+      divHeight: { type: Object, required: false },
       videoBorderWidth: { type: String, required: false },
       videoBorderStyle: { type: String, required: false },
       videoBorderColor: { type: String, required: false },
@@ -634,7 +638,6 @@ const ShowTemplats = new mongoose.Schema({
       splitlineheight: { type: String, required: false },
       splitfamily: { type: String, required: false },
       splitbtnradious: { type: String, required: false },
-      splitheight: { type: String, required: false },
       add: { type: String, required: false },
       width: { type: String, required: false },
       spacerHeight: { type: String, required: false },
@@ -643,6 +646,7 @@ const ShowTemplats = new mongoose.Schema({
       splitPadding: { type: String, required: false },
       splittextSize: { type: String, required: false },
       splitTextAlin: { type: String, required: false },
+      divHeight: { type: Object, required: false },
       videoBorderWidth: { type: String, required: false },
       videoBorderStyle: { type: String, required: false },
       videoBorderColor: { type: String, required: false },
@@ -1262,6 +1266,7 @@ const sendEmail = async (email, TemplateAll,subject) => {
                   background-color: ${field.splitbg || '#ffffff'};
                   width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : field.width};
                   padding: ${field.splitPadding || 0}px;
+                  height: ${field.divHeight}px;
                   float: ${field.float || 'left'};
                   color: ${field.splitColor || '#000'};
                   font-size: ${field.splittextSize || 14}px;

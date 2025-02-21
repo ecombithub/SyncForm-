@@ -2,14 +2,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
 
-<div class="form_builder_app {{ block.id }}">
+<div class="form_builder_app {{ block.id }}" id="formBuilderApp-{{ block.id }}">
   <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
 </div>
 
 <script>
+
   function toggleDropdown(event, fieldName) {
     event.preventDefault();
-
     const dropdown = document.getElementById(`dropdown-${fieldName}`);
     const selectBox = dropdown.previousElementSibling;
     const arrowSpan = selectBox.querySelector('span:last-child');
@@ -78,16 +78,15 @@
   }
  
   
-  function handleSingleInputChange(event, fieldId, fieldLabel) {
+  function handleSingleInputChange(event, fieldId, fieldLabel,fieldImagePreview,fieldsignlePreview) {
     const files = event.target.files;
     console.log('Files from file input:', files); 
-    displayimagesNames(files, fieldId, fieldLabel);
+    displayimagesNames(files, fieldId, fieldLabel,fieldImagePreview,fieldsignlePreview);
   }
   
-  function handleDropimages(event, fieldId, fieldLabel) {
+  function handleDropimages(event, fieldId, fieldLabel,fieldImagePreview,fieldsignlePreview) {
     event.preventDefault();
     event.stopPropagation();
-    console.log('Field Label:', fieldLabel);
 
     console.log('Field ID:', fieldId);
   
@@ -101,12 +100,12 @@
   
     const files = event.dataTransfer.files;
   
-    displayimagesNames(files, fieldId,fieldLabel);
+    displayimagesNames(files, fieldId,fieldLabel,fieldImagePreview,fieldsignlePreview);
   }
   
   var uploadeImages = {}; 
   
-  function displayimagesNames(files, fieldId, fieldLabel) {
+  function displayimagesNames(files, fieldId, fieldLabel,fieldImagePreview,fieldsignlePreview) {
     let fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
     
     if (!fileNamesList) {
@@ -153,6 +152,7 @@
         const imagePreview = document.createElement('img');
         imagePreview.style.maxWidth = '100px';
         imagePreview.style.maxHeight = '100px';
+        imagePreview.src = e.target.result;
 
         uploadeImages[fieldId].push({
           name: file.name,
@@ -165,7 +165,14 @@
         };
 
         li.appendChild(fileName);
-        li.appendChild(imagePreview);  
+        if (fieldImagePreview === "on") {
+          imagePreview.src = e.target.result;
+          li.appendChild(imagePreview);
+        }
+        if (fieldsignlePreview === "on") {
+          imagePreview.src = e.target.result;
+          li.appendChild(imagePreview);
+        }
         li.appendChild(removeButton);
         fileNamesList.appendChild(li);
       };
@@ -191,13 +198,13 @@
 
  var droppedMulti = []; 
 
-function handleMultiInputChange(event, fieldId) {
+function handleMultiInputChange(event, fieldId,fieldLabel,fieldmultifilePreview) {
   const files = event.target.files;
   console.log('Files from file input:', files); 
-  displayFileNames(files, fieldId);
+  displayFileNames(files, fieldId,fieldLabel,fieldmultifilePreview);
 }
 
-function handleDropfile(event, fieldId, fieldLabel) {
+function handleDropfile(event, fieldId, fieldLabel,fieldmultifilePreview) {
   event.preventDefault();
   event.stopPropagation();
 
@@ -213,12 +220,12 @@ function handleDropfile(event, fieldId, fieldLabel) {
 
   const files = event.dataTransfer.files;
 
-  displayFileNames(files, fieldId,fieldLabel);
+  displayFileNames(files, fieldId,fieldLabel,fieldmultifilePreview);
 }
 
 var uploadedmulti = {}; 
 
-function displayFileNames(files, fieldId, fieldLabel) {
+function displayFileNames(files, fieldId, fieldLabel,fieldmultifilePreview) {
   const fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
   
   if (!fileNamesList) {
@@ -292,7 +299,10 @@ function displayFileNames(files, fieldId, fieldLabel) {
       };
 
       li.appendChild(fileName);
-      li.appendChild(imagePreview);  
+      if (fieldmultifilePreview === "on") {
+        imagePreview.src = e.target.result;
+        li.appendChild(imagePreview);
+      } 
       li.appendChild(removeButton);
       fileNamesList.appendChild(li);
     };
@@ -334,8 +344,8 @@ function removeFil1e(fileName, fieldId, fileNamesList, li) {
     console.log('Files from file input:', files); 
     displayimage(files, fieldId);
   }
-  
-function handleDrop(event, fieldId,fieldLabel) {
+
+function handleDrop(event, fieldId,fieldLabel,fieldmultiIamgePreview) {
   event.preventDefault();
   event.stopPropagation();
   console.log('field Label:', fieldLabel);
@@ -351,11 +361,11 @@ function handleDrop(event, fieldId,fieldLabel) {
 
   const files = event.dataTransfer.files;
 
-  displayimage(files, fieldId,fieldLabel);
+  displayimage(files, fieldId,fieldLabel,fieldmultiIamgePreview);
 }
 
 var uploadedFiles = {}; 
-function displayimage(files, fieldId,fieldLabel) {
+function displayimage(files, fieldId,fieldLabel,fieldmultiIamgePreview) {
   const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
   fileNamesList.innerHTML = ''; 
 
@@ -410,7 +420,10 @@ function displayimage(files, fieldId,fieldLabel) {
       removeButton.onclick = () => removeFile(file.name, fieldId, fileNamesList, li);
 
       li.appendChild(fileName);
-      li.appendChild(imagePreview);
+      if (fieldmultiIamgePreview === "on") {
+        imagePreview.src = e.target.result;
+        li.appendChild(imagePreview);
+      } 
       li.appendChild(removeButton);
       fileNamesList.appendChild(li);
     };
@@ -427,7 +440,6 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
   fileNamesList.removeChild(li);
   console.log('Updated Uploaded Files:', uploadedFiles);
 }
-
 
   $(document).ready(function () {
     const formId = '{{ block.settings.formId }}';
@@ -473,7 +485,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
       if (formData.styles) {
         console.log('Form styles:', formData.styles);
 
-        const backgroundOverlay = $('<div class="background-overlay"></div>');
+        const backgroundOverlay = $('<div class="background-overlay"><span style="display: none;">background-overlay</span></div>');
         backgroundOverlay.css({
           position: 'absolute',
           top: 0,
@@ -605,22 +617,30 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
       const passwordStatus = input.dataset.passwordStatus;
       const password = input.value;
       const errorMessage = input.nextElementSibling;
-
+  
       let isValid = password.length >= minLength;
       let errorText = `Password must be at least ${minLength} characters long.`;
-
+  
       if (passwordStatus === 'on') {
-        const hasNumber = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-        if (!hasNumber || !hasSpecialChar) {
-          isValid = false;
-          errorText = `Password must be at least ${minLength} characters long, include at least one number, and one special character.`;
-        }
+          const hasNumber = /\d/.test(password);
+          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+          if (!hasNumber || !hasSpecialChar) {
+              isValid = false;
+              errorText = `Password must be at least ${minLength} characters long, include at least one number, and one special character.`;
+          }
       }
-      errorMessage.textContent = errorText;
-      errorMessage.style.display = isValid ? 'none' : 'block';
-    };
+  
+      if (!isValid) {
+          errorMessage.textContent = errorText;
+          errorMessage.style.display = 'block';
+      } else {
+          errorMessage.style.display = 'none';
+      }
+  
+      return isValid;
+  };
+  
     function getFieldInput(
       field,
       formUrl,
@@ -646,16 +666,17 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
         case 'name':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div> `;
+          }"  ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div> `;
         case 'text':
           return `<input type="text" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" /> <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'toggle':
           return `
             <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
               <input 
                 type="checkbox" 
+                ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} 
                 style="display: none;" 
                 aria-label="${field.label || 'Toggle'}" 
                  onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
@@ -687,24 +708,21 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                 border-radius: 50%;
                 transform: translateX(0);
               "></span>
-            </label> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description || ''}</div>`;
+            </label> <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description || ''}</div>`;
 
         case 'textarea':
           return `<textarea placeholder="${
-            field.placeholder || ''
-          }" name="w3review" rows="4" cols="50" style="width: ${field.width || '100%'};padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}">
-          <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
-          </textarea>`;
+            field.placeholder || '' }" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  name="w3review" rows="4" cols="50" style="width:100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}">
+        
+          </textarea> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'checkbox':
           return `
-                <div style="width: ${
-                  field.width || '100%'
-                };padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
+                <div style="width:100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
                     .map(
                       (option) => `
                    <div class="form_checkbox_flex" style="display: flex; gap: 10px; align-items: center; padding: 10px;">
-                      <input type="checkbox" id="${option.id}" name="${field.name}" value="${option.value}" ${
+                      <input type="checkbox" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  id="${option.id}" name="${field.name}" value="${option.value}" ${
                         field.required ? 'required' : ''
                       } ${field.readonly ? 'readonly' : ''}/>
                       <label for="${option.id}">${option.label}</label>
@@ -713,18 +731,16 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                     )
                     .join('')}
                 </div>
-                 <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                 <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
         case 'radio':
           return `
-                  <div style="width: ${
-                    field.width || '100%'
-                  };padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
+                  <div style="width:100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
                     .map(
                       (option) => `
                     <div class="form_radio_flex" style="display: flex; gap: 10px; align-items: center; padding: 10px;">
-                      <input type="radio" id="${option.id}" name="${field.name}" value="${option.value}" ${
+                      <input type="radio" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  id="${option.id}" name="${field.name}" value="${option.value}" ${
                         option.checked ? 'checked' : ''
                       } aria-label="${field.label || 'Radio Input'}"/>
                       <label for="${option.id}">${option.label}</label>
@@ -733,7 +749,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                     )
                     .join('')}
                 </div>
-                  <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
         case 'select':
           const options = field.options
@@ -742,9 +758,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
 
           return `
                 <div class="custom-select-container" style="position: relative;">
-                  <div class="custom-select-box" style="width: ${
-                    field.width || 'auto'
-                  }; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color :${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle}; cursor: pointer;" onclick="toggleDropdown(event, '${field.name}')">
+                  <div class="custom-select-box" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color :${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle}; cursor: pointer;" onclick="toggleDropdown(event, '${field.name}')">
                     <span>${field.label || 'Select Input'}</span><span style = "float: right">▼</span>
                   </div>
                   <div id="dropdown-${
@@ -764,10 +778,10 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                     </div>
                   </div>
                 </div>
-                 <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                 <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
         case 'divider':
-          return `<hr style="border: 1px solid ${field.dividerColor}; width: 100%;" /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          return `<hr ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="border: 1px solid ${field.dividerColor}; width: 100%;" /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'description':
           return `<p style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
@@ -806,30 +820,30 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                           </${field.level}>`;
 
         case 'number':
-          return `<input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="${
+          return `<input  ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'file':
           let fileInputHTML = '';
 
           if (field.fileOptions[field.id] === 'option1') {
             fileInputHTML = `
-              <input type="file" placeholder="${field.placeholder || ''}" 
-                style="width: ${field.width || '100%'}; padding: ${
+              <input  type="file" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" 
+                style="width: 100%; padding: ${
               field.inputPadding
             }; border-radius: ${inputRadius}px; 
                 border-color: ${inputBorderColor}; background-color: ${inputBgColor}; border-width: ${inputWidth}px; 
-                border-style: ${inputStyle}" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}')" /> 
-              <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                border-style: ${inputStyle}" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${field.ImagePreview}')" /> 
+              <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           } else if (field.fileOptions[field.id] === 'option2') {
             fileInputHTML = `
-            <div class="drag-and-drop-text third" style="text-align: center;">
-                <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 30px;" 
+            <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+                <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 20px;" 
                 onclick="handleClickImages('file-input-${field.id}')"
                 ondragover="handleDragOverimages(event)"
-                  ondrop="handleDropimages(event, '${field.id}', '${field.label}')">  
-                 <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}')" />
+                  ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.ImagePreview}')">  
+                 <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${field.ImagePreview}')" />
                   <div class='form-builder-changes-file-wraped'>
                     <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/singlefile.png?v=1739342645" alt="" style="display: inline;" />
                     <div class='email-files drop' style="margin-top: 10px;">
@@ -838,16 +852,16 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                   </div>
                 </div>
               </div>
-          <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+          <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           } else if (field.fileOptions[field.id] === 'option3') {
             fileInputHTML = `
-            <div class="drag-and-drop-text first" style="text-align: center;">
-               <div class='form-builder-chaneging-wrap file' style="border-radius: 10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${field.width === '25%' ? '20px': '30px'};" 
+            <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+               <div class='form-builder-chaneging-wrap file' style="border-radius: 10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${field.width === '25%' ? '20px': '20px'};" 
                onclick="handleClickImages('file-input-${field.id}')"
                ondragover="handleDragOverimages(event)"
-                ondrop="handleDropimages(event, '${field.id}', '${field.label}')">  
-                 <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}, '${field.label}'')" />
+                ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.ImagePreview}')">  
+                 <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${field.ImagePreview}')" />
              <div class="form-builder-changes-file-wraped" style="display: flex; gap: 10px; justify-content: center; align-items: center;">
               <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/1.png?v=1739342645" style="width: ${field.width === '25%' ? '50px' : 'auto'};" alt="" />
                  <div class="email-files drop" style="width: ${field.width === '25%' ? '100%' : 
@@ -861,7 +875,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                </div>
            </div>
               
-             <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+             <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           }
           return fileInputHTML;
@@ -869,22 +883,22 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
           let multifileInputHTML = '';
           if (field.multiOptions[field.id] === 'option1') {
             multifileInputHTML = `
-              <input type="file" placeholder="${field.placeholder || ''}" 
+              <input type="file"  ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" 
                 style="width:100%; padding: ${
                   field.inputPadding
                 }; border-radius: ${inputRadius}px; 
                 border-color: ${inputBorderColor}; background-color: ${inputBgColor}; border-width: ${inputWidth}px; 
-                border-style: ${inputStyle}" multiple onchange="handleMultiInputChange(event, '${field.id}')" /> 
-             <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                border-style: ${inputStyle}" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${field.multifilePreview}')" /> 
+             <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           } else if (field.multiOptions[field.id] === 'option2') {
             multifileInputHTML = `
-              <div class="drag-and-drop-text first" style="text-align: center;">
-                <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${field.width === '25%' ? '20px': '30px'};" 
+              <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+                <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${field.width === '25%' ? '20px': '20px'};" 
                 onclick="handleClickmulti('file-input-${field.id}')"
                  ondragover="handleDragOverfile(event)"
-                 ondrop="handleDropfile(event, '${field.id}', '${field.label}')">
-                  <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleMultiInputChange(event, '${field.id}')" />
+                 ondrop="handleDropfile(event, '${field.id}', '${field.label}','${field.multifilePreview}')">
+                  <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${field.multifilePreview}')" />
                   <div class="form-builder-changes-file-wraped">
                     <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/mut2.png?v=1739350278" alt="" style="display: inline;" />
                    <div className='email-files drop' style="margin-top: 20px; margin-bottom: 30px;">
@@ -899,16 +913,16 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                   </div>
                 </div>
               </div>
-              <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           } else if (field.multiOptions[field.id] === 'option3') {
             multifileInputHTML = `
-                <div class="drag-and-drop-text third" style="text-align: center;">
-        <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${field.width === '25%' ? '20px': '30px'};"
+                <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+        <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${field.width === '25%' ? '20px': '20px'};"
           onclick="handleClickmulti('file-input-${field.id}')"
         ondragover="handleDragOverfile(event)"
-        ondrop="handleDropfile(event, '${field.id}', '${field.label}')">
-        <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleMultiInputChange(event, '${field.id}')"/>
+        ondrop="handleDropfile(event, '${field.id}', '${field.label}','${field.multifilePreview}')">
+        <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${field.multifilePreview}')"/>
           <div class="form-builder-changes-file-wraped">
         <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/multifile.png?v=1739350277" alt="" style="display: inline;" />
         <div className='email-files drop' style="margin-top: 20px;">
@@ -925,7 +939,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
          </div>
          </div>
       </div>
-              <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           }
           return `
@@ -939,13 +953,13 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
           `;
         
         case 'email':
-          return `<input type="email" placeholder="${
+          return `<input type="email" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${
             field.placeholder || ''
-          }" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'phone':
           const phoneInputHtml = `
-          <input type="tel" id="phone-${uniqueId}" placeholder="${field.placeholder || ''}" 
-            style="width: ${field.width || '100%'}; 
+          <input type="tel" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  id="phone-${uniqueId}" placeholder="${field.placeholder || ''}" 
+            style="width:100%; 
                    padding: ${field.inputPadding || '10px'}; 
                    border-radius: ${inputRadius || '4px'}px; 
                    border-color: ${inputBorderColor || '#ccc'}; 
@@ -954,7 +968,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                    padding-left:50px;
                   border-style: ${inputStyle || 'solid'};"
       inputmode="tel" pattern="[0-9]*" />
-          <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+          <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
         `;
           setTimeout(() => {
             const phoneInput = document.querySelector(`#phone-${uniqueId}`);
@@ -966,9 +980,14 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
 
               iti.setCountry('us');
               $('.iti').css('width', '100%');
+              let alertShown = false;
 
               phoneInput.addEventListener('input', () => {
                 phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
+                
+                if (phoneInput.value.length > 17) {
+                  phoneInput.value = phoneInput.value.substring(0, 17); 
+                }
                 const phoneNumber = iti.getNumber();
                 console.log('Formatted phone number: ', phoneNumber);
               });
@@ -978,8 +997,8 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
         case 'password':
           return `
             <div style="position: relative;">
-              <input type="password" placeholder="${field.placeholder || ''}" 
-                style="width: ${field.width || '100%'}; padding: ${field.inputPadding};
+              <input type="password" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" 
+                style="width: 100%; padding: ${field.inputPadding};
                 border-radius: ${inputRadius}px; border-color: ${inputBorderColor};
                 background-color: ${inputBgColor}; border-width: ${inputWidth}px;
                 border-style: ${inputStyle}" 
@@ -988,63 +1007,63 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
               />
               <small style="color: red; display: none;"></small>
             </div>
-           <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+           <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
           `;
 
         case 'url':
-          return `<input type="url" placeholder="${
+          return `<input type="url" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div> `;
+          }" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div> `;
         case 'location':
-          return `<input type="text" placeholder="${
+          return `<input type="text" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'date':
-          return `<input type="date" placeholder="${
+          return `<input type="date" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /><div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /><div class="description" style="word-break: break-word;min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'datetime':
-          return `<input type="datetime-local" placeholder="${
+          return `<input type="datetime-local" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}   placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'time':
-          return `<input type="time" placeholder="${
+          return `<input type="time" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${
             field.placeholder || ''
-          }" style="width: ${field.width || '100%'}; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          }" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'link':
           return `
         <a
         href="${field.linkUrl || '#'}"
         target="${field.linkTarget || '_blank'}"
          style="
-          width: ${field.width || '100%'};
+          width: 100%;
           text-decoration: none;
           text-align: ${field.linkaline || 'left'};
           padding: ${field.padding || '0'};
           "
-             >${field.linktext || 'Default Link Text'} <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div></a>
+             >${field.linktext || 'Default Link Text'} <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div></a>
       `;
       case 'images':
       let imagesInputHTML = '';
       if (field.imageOptions[field.id] === 'option1') {
         imagesInputHTML = `
-          <input type="file" placeholder="${field.placeholder || ''}" 
+          <input type="file" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" 
             style="width: 100%; padding: ${
           field.inputPadding
         }; border-radius: ${inputRadius}px; 
             border-color: ${inputBorderColor}; background-color: ${inputBgColor}; border-width: ${inputWidth}px; 
-            border-style: ${inputStyle}" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}')"/> 
-          <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+            border-style: ${inputStyle}" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}', '${field.signlePreview}')"/> 
+          <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
         `;
       } else if (field.imageOptions[field.id] === 'option2') {
         imagesInputHTML = `
       
-          <div class="drag-and-drop-text third" style="text-align: center;">
-            <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 30px;" 
+          <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+            <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 20px;" 
               onclick="handleClickImages('file-input-${field.id}')"
                ondragover="handleDragOverimages(event)"
-              ondrop="handleDropimages(event, '${field.id}', '${field.label}')"> 
-              <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}')" />
+              ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.signlePreview}')"> 
+              <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}' , '${field.signlePreview}')" />
               <div class='form-builder-changes-file-wraped'>
                 <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/singleimage0.png?v=1739353222" alt="" style="display: inline;" />
                 <div class='email-files drop' style="margin-top: 20px;">
@@ -1053,17 +1072,17 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
               </div>
             </div>
           </div>
-          <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+          <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
         `;
       } else if (field.imageOptions[field.id] === 'option3') {
         imagesInputHTML = `
-        <div class="drag-and-drop-text first" style="text-align: center;">
+        <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
           <div class="form-builder-chaneging-wrap file" 
-        style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${field.width === '25%' ? '20px' : '30px'};" 
+        style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${field.width === '25%' ? '20px' : '20px'};" 
         onclick="handleClickImages('file-input-${field.id}')"
         ondragover="handleDragOverimages(event)"
-        ondrop="handleDropimages(event, '${field.id}', '${field.label}')"> 
-        <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}')" />
+        ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.signlePreview}')"> 
+        <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}', '${field.signlePreview}')" />
          <div class="form-builder-changes-file-wraped" 
          style="display: flex; gap: ${field.width === '25%' ? '10px' : '50px'}; justify-content: center; align-items: center;">
             <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/singleimage1.png?v=1739353222" 
@@ -1086,7 +1105,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
         </div>
         </div>
          </div>
-          <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+          <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
         `;
       }
       return imagesInputHTML;
@@ -1095,22 +1114,22 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
           let multiimageInputHTML = '';
           if (field.multiimagesOptions[field.id] === 'option1') {
             multiimageInputHTML = `
-              <input type="file" placeholder="${field.placeholder || ''}" 
+              <input type="file" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" 
                 style="width: 100%; padding: ${
                   field.inputPadding
                 }; border-radius: ${inputRadius}px; 
                 border-color: ${inputBorderColor}; background-color: ${inputBgColor}; border-width: ${inputWidth}px; 
-                border-style: ${inputStyle}" multiple onchange="handleFileInputChange(event, '${field.id}')" /> 
-              <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                border-style: ${inputStyle}" multiple onchange="handleFileInputChange(event, '${field.id}','${field.multiIamgePreview}')" /> 
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           } else if (field.multiimagesOptions[field.id] === 'option2') {
             multiimageInputHTML = `
-              <div class="drag-and-drop-text first" style="text-align: center;">
-                <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${field.width === '25%' ? '20px' : '30px'};"
+              <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+                <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${field.width === '25%' ? '20px' : '20px'};"
                  onclick="handleClickmulti('file-input-${field.id}')"
                  ondragover="handleDragOver(event)"
-                 ondrop="handleDrop(event, '${field.id}','${field.label}')">
-                  <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleFileInputChange(event, '${field.id}')" />
+                 ondrop="handleDrop(event, '${field.id}','${field.label}','${field.multiIamgePreview}')">
+                  <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleFileInputChange(event, '${field.id}','${field.multiIamgePreview}')" />
                   <div class="form-builder-changes-file-wraped">
                     <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/multiimg1.png?v=1739355803" alt="" style="display: inline;" />
                    <div className='email-files drop' style="margin-top: 20px; margin-bottom: ${field.width === '25%' ? '0': '20px'};">
@@ -1121,16 +1140,16 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                   </div>
                 </div>
               </div>
-              <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           } else if (field.multiimagesOptions[field.id] === 'option3') {
             multiimageInputHTML = `
-              <div class="drag-and-drop-text third" style="text-align: center;">
-             <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${field.width === '25%' ? '20px' : '30px'};"
+              <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+             <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${field.width === '25%' ? '20px' : '20px'};"
          onclick="handleClickmulti('file-input-${field.id}')"
           ondragover="handleDragOver(event)"
-          ondrop="handleDrop(event, '${field.id}','${field.label}')">
-            <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleFileInputChange(event, '${field.id}')"/>
+          ondrop="handleDrop(event, '${field.id}','${field.label}','${field.multiIamgePreview}')">
+            <input type="file" accept="image/*" id="file-input-${field.id}" style="display: none;" multiple onchange="handleFileInputChange(event, '${field.id}','${field.multiIamgePreview}')"/>
          <div class="form-builder-changes-file-wraped">
         <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/multiimg.png?v=1739355803" alt="" style="width: ${field.width === '25%' ? '50px' : 'auto'}; margin: ${field.width === '25%' ? 'auto' : 'auto'};" />
          <div className='email-files drop' style="margin-top: 20px;">
@@ -1145,7 +1164,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
           </div>
          </div>
 
-              <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
             `;
           }
           return `
@@ -1159,12 +1178,13 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
         case 'slider':
           return `<input 
                     type="range" 
+                    ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} 
                     placeholder="${field.placeholder || ''}" 
-                    style="width: ${field.width || '100%'};" 
+                    style="width: 100%;" 
                     min="${field.min}" 
                     max="${field.max}" 
                     step="${field.step}" 
-                    /> <div class="description" style="min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+                    /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'button':
           return `
               <div style= "text-align:${field.buttonaline}">
@@ -1242,11 +1262,18 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
       }
       
       const emailField = $('#formData-' + blockId + ' input[type="email"]');
-      if (emailField.length === 0) {
+      const emailValue = emailField.val().trim(); 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+      
+      if (emailField.length === 0 || emailValue === '') {
           formData.email = 'no email';  
+      } else if (!emailRegex.test(emailValue)) {
+          alert('Please enter a valid email address.');
+          return false;
       } else {
-          formData.email = emailField.val() || 'no email'; 
+          formData.email = emailValue; 
       }
+      
       let isValid = true;
       let uploadedFileNames = new Set();
       let uniqueImageFileNames = new Set(); 
@@ -1256,6 +1283,29 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
         const input = $(this).find('input, select, textarea');
         const dropdown = $(this).find('.custom-select-box span:first-child');
         const fieldId = input.attr('id') || generateUniqueId();
+
+        if (input.length > 0 && input.attr('type') === 'password') {
+          const passwordValue = input.val().trim();
+          if (passwordValue.length === 0) {
+              return true;
+          }
+      
+          const minLength = parseInt(input.attr('data-password-status')) || 6;
+          const isPasswordValid = validatePassword(input[0], minLength);
+      
+          if (!isPasswordValid) {
+              isValid = false;
+      
+              if (!window.passwordAlertShown) {
+                  alert('Password does not meet the required conditions.');
+                  window.passwordAlertShown = true;
+              }
+      
+              return false;
+          }
+      }
+      
+      window.passwordAlertShown = false; 
         let fieldValue;
         let imagesFieldExists = false;  
         let allFileNames = [];
@@ -1583,4 +1633,3 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
   ]
 }
 {% endschema %}
-

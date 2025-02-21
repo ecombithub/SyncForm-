@@ -763,6 +763,7 @@ export default function EmailTemplate() {
                             width:  matchedData?.styles?.viewMode === 'mobile' ? '100%' : field.width,
                             backgroundColor: field.splitbg,
                             padding: `${field.splitPadding}px`,
+                            height:`${field.divHeight}px`,
                             display: 'flex',
                             position: 'relative',
                             textAlign: field.splitTextAlin,
@@ -1315,7 +1316,7 @@ export default function EmailTemplate() {
                                     <div className='form-builder-icon-deleted' onClick={() => setPreviwPopup(false)}>
                                         <img src={cancle1} alt="" />
                                     </div>
-                                    <div style={{ height: '100%' }}>
+                                    <div>
                                         {matchedData?.fields?.map((field) => (
                                             <div className='form-builder-template-email' key={field.name}>
                                                 {renderField(field)}
