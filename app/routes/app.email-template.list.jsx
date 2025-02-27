@@ -99,19 +99,19 @@ export default function EmailTemplate() {
         try {
             const response = await axios.get(`${apiUrl}/get/base64`);
             let fetchedData = response.data.data || [];
-    
+
             fetchedData = fetchedData.filter(form => form.shop === shop);
-    
+
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             setUserPlan(planResponse.data);
             console.log("User Plan:", planResponse.data);
-    
+
             if (planResponse.data?.plan === "free" && planResponse.data.status === "active") {
                 if (fetchedData.length > 1) {
                     const [firstTemplate, ...formsToDelete] = fetchedData;
-    
+
                     console.log("Forms to delete:", formsToDelete);
-    
+
                     await Promise.all(formsToDelete.map(async (form) => {
                         const idToDelete = form.formId || form.templateId || form._id;
                         if (idToDelete) {
@@ -125,11 +125,11 @@ export default function EmailTemplate() {
                             console.error("Skipping deletion. Missing valid ID for:", form);
                         }
                     }));
-    
-                    fetchedData = [firstTemplate]; 
+
+                    fetchedData = [firstTemplate];
                 }
             }
-    
+
             fetchedData = fetchedData.slice().reverse();
             setFormsData(fetchedData);
             console.log("Final templates:", fetchedData);
@@ -139,7 +139,7 @@ export default function EmailTemplate() {
             setLoading(false);
         }
     };
-    
+
 
     const handlePreviw1 = async (form) => {
         try {
@@ -452,12 +452,12 @@ export default function EmailTemplate() {
                             textAlign: field.headingTextAlign ? field.headingTextAlign : '',
                             fontWeight: field.headingFontWeight,
                             fontFamily: field.headingfamily,
-                           
+
                         }}>
                             {field.headingText}</HeadingTag>
 
                         {(field.editorContent) && (
-                            <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' , fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily,  letterSpacing: `${field.subheadingleter}px`, color: field.subheadingColor, }}
+                            <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%', fontSize: `${field.headingsubheading}px`, fontFamily: field.subheadingfamily, letterSpacing: `${field.subheadingleter}px`, color: field.subheadingColor, }}
                                 className="heading-editor-content"
                                 dangerouslySetInnerHTML={{
                                     __html: field.editorContent
@@ -515,7 +515,7 @@ export default function EmailTemplate() {
                                 width: `${field.dividerWidth}%`,
                                 margin: 'auto',
                                 marginLeft: field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'left' ? '0' : '',
-                                marginRight: field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : '', 
+                                marginRight: field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : '',
                             }}
                         />
                     </div>
@@ -547,20 +547,20 @@ export default function EmailTemplate() {
                         </a>
                     </div>
                 );
-                case 'costum':
+            case 'costum':
                 return (
                     <div style={{
                         whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                         width: '100%',
-                        fontSize:`${field.costumFont}px`,
-                        color:field.costumColor,
-                        backgroundColor:field.costumBg,
-                        textAlign:field.costumAline,
-                        lineHeight:`${field.costumline}px`,
-                        padding:`${field.costumPadding}px`,
-                        fontFamily:field.costomfamily,
+                        fontSize: `${field.costumFont}px`,
+                        color: field.costumColor,
+                        backgroundColor: field.costumBg,
+                        textAlign: field.costumAline,
+                        lineHeight: `${field.costumline}px`,
+                        padding: `${field.costumPadding}px`,
+                        fontFamily: field.costomfamily,
                         fontWeight: field.costumfontweight,
-                        letterSpacing:`${field.costumLetter}px`
+                        letterSpacing: `${field.costumLetter}px`
                     }}>
                         {field.costumText}
                     </div>
@@ -587,7 +587,7 @@ export default function EmailTemplate() {
                                 }}
                             >
                                 {field.products.map((product, index) => (
-                                    <div key={index} className="product-item" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    <div key={index} className="product-item" style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'center' }}>
 
                                         {product.image ? (
                                             <div className="images-gallery">
@@ -677,73 +677,73 @@ export default function EmailTemplate() {
                 const columnsPerRow = field.columnsPerRow || 1;
                 return (
                     <div style={{ display: 'flow-root', width: '100%' }}>
-                    <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: `${field.Multigap || 10}px`,
-                        padding: `${field.MultiPadding}px`,
-                        textAlign: 'center',
-                        backgroundColor: field.Multibgcolor,
-                        color: field.MultiColor,
-                        justifyContent: 'space-between' 
-                    }}>
-                        {field.columnData.map((column, index) => (
-                            <div
-                                key={column._id}
-                                style={{
-                                    flex: `1 1 calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`,
-                                    maxWidth: `calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`, 
-                                    fontSize: `${field.fontsizeMulticolumn}px`,
-                                    borderWidth: `${field.MulticolumnbtnBorderWidth || 1}px`,
-                                    borderStyle: field.MulticolumnbtnBorderStyle || 'solid',
-                                    borderColor: field.MulticolumnbtnBorderColor || 'black',
-                                    padding: `${field.MulticolumnPadding || 10}px`,
-                                    backgroundColor: field.Multicolumnbgcolor,
-                                    textAlign: field.Multitext,
-                                    color: field.MultiColor,
-                                    borderRadius: `${field.Multiborderradious}px`,
-                                    fontFamily: field.Multifamily,
-                                    letterSpacing: `${field.Multiletter}px`,
-
-                                }}
-                            >
-                                {column.image && (
-                                    <img src={column.image} alt={`Column ${index}`} style={{ width: `${field.Multiimgwidth || 100}%`, height: 'auto' }} />
-                                )}
-                
+                        <div style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: `${field.Multigap || 10}px`,
+                            padding: `${field.MultiPadding}px`,
+                            textAlign: 'center',
+                            backgroundColor: field.Multibgcolor,
+                            color: field.MultiColor,
+                            justifyContent: 'space-between'
+                        }}>
+                            {field.columnData.map((column, index) => (
                                 <div
-                                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }}
-                                 dangerouslySetInnerHTML={{ __html: column.content }} />
-                
-                                {column.isVisible && (
-                                    <a href={column.Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
-                                        <button style={{
-                                            marginTop: "20px",
-                                            backgroundColor: field.Multibtnbg,
-                                            fontFamily: field.Multibtnfamily,
-                                            borderWidth: `${field.MultibtnBorderWidth}px`,
-                                            borderStyle: field.MultibtnBorderStyle,
-                                            borderColor: field.MultibtnBorderColor,
-                                            minWidth: `${field.Multibtnweight || '100'}px`,
-                                            height: `${field.Multibtnheight || '40'}px`,
-                                            color: field.Multibtncolor,
-                                            borderRadius: `${field.Multibtnradious}px`,
-                                            fontSize: `${field.Multibtnfont || '14'}px`,
-                                            fontWeight: field.MultiWeight
-                                        }}>
-                                            {column.Multibtnlable || 'Click'}
-                                        </button>
-                                    </a>
-                                )}
-                            </div>
-                        ))}
+                                    key={column._id}
+                                    style={{
+                                        flex: `1 1 calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`,
+                                        maxWidth: `calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`,
+                                        fontSize: `${field.fontsizeMulticolumn}px`,
+                                        borderWidth: `${field.MulticolumnbtnBorderWidth || 1}px`,
+                                        borderStyle: field.MulticolumnbtnBorderStyle || 'solid',
+                                        borderColor: field.MulticolumnbtnBorderColor || 'black',
+                                        padding: `${field.MulticolumnPadding || 10}px`,
+                                        backgroundColor: field.Multicolumnbgcolor,
+                                        textAlign: field.Multitext,
+                                        color: field.MultiColor,
+                                        borderRadius: `${field.Multiborderradious}px`,
+                                        fontFamily: field.Multifamily,
+                                        letterSpacing: `${field.Multiletter}px`,
+
+                                    }}
+                                >
+                                    {column.image && (
+                                        <img src={column.image} alt={`Column ${index}`} style={{ width: `${field.Multiimgwidth || 100}%`, height: 'auto' }} />
+                                    )}
+
+                                    <div
+                                        style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }}
+                                        dangerouslySetInnerHTML={{ __html: column.content }} />
+
+                                    {column.isVisible && (
+                                        <a href={column.Multibtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                            <button style={{
+                                                marginTop: "20px",
+                                                backgroundColor: field.Multibtnbg,
+                                                fontFamily: field.Multibtnfamily,
+                                                borderWidth: `${field.MultibtnBorderWidth}px`,
+                                                borderStyle: field.MultibtnBorderStyle,
+                                                borderColor: field.MultibtnBorderColor,
+                                                minWidth: `${field.Multibtnweight || '100'}px`,
+                                                height: `${field.Multibtnheight || '40'}px`,
+                                                color: field.Multibtncolor,
+                                                borderRadius: `${field.Multibtnradious}px`,
+                                                fontSize: `${field.Multibtnfont || '14'}px`,
+                                                fontWeight: field.MultiWeight
+                                            }}>
+                                                {column.Multibtnlable || 'Click'}
+                                            </button>
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-                
+
                 );
 
             case 'html convert':
-                return <div style={{ fontFamily: field.htmlfamily, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' ,  padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
+                return <div style={{ fontFamily: field.htmlfamily, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%', padding: `${field.htmlPadding}px`, color: field.htmlColor, fontSize: `${field.htmlFontSize}px` }} dangerouslySetInnerHTML={{ __html: field.value }} />;
 
             case 'spacer':
                 return (
@@ -756,103 +756,120 @@ export default function EmailTemplate() {
                         }}
                     ></div>
                 );
-            case 'split':
+            case 'split-group':
                 return (
                     <div
                         style={{
-                            width:  matchedData?.styles?.viewMode === 'mobile' ? '100%' : field.width,
                             backgroundColor: field.splitbg,
                             padding: `${field.splitPadding}px`,
-                            height:`${field.divHeight}px`,
-                            display: 'flex',
+                            display: matchedData?.styles?.viewMode === "mobile" ? "block" : "flex",
                             position: 'relative',
                             textAlign: field.splitTextAlin,
                             float: 'inline-start',
                             color: field.splitColor,
                             fontSize: `${field.splittextSize}px`,
-                            letterSpacing: `${field.splitletter}px`,
+                            
                             fontFamily: field.splitfamily,
                         }}
                     >
-                        {field.add === 'image' ? (
-                            <img
-                                src={field.value}
-                                alt="Uploaded Preview"
-                                style={{ width: '100%', height: 'auto' }}
-                            />
-                        ) : (
-                            <div style={{ width: '100%', display: 'flex', alignItems: field.splittext === 'left' ? 'flex-start' : field.splittext === 'center' ? 'center' : 'flex-end' }}>
-                                <div style={{ width: '100%' }}>
-                                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value }} />
-                                    <div >
-                                        {field.showbtnsplit && (
-                                            <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
-                                                <button style={{
-                                                    marginTop: "20px",
-                                                    fontFamily: field.splitbtnfamily,
-                                                    backgroundColor: field.splitbtnbg,
-                                                    fontSize: `${field.splitbtnfont}px`,
-                                                    color: field.splitbtncolor,
-                                                    height: `${field.splitbtnheight}px`,
-                                                    minWidth: `${field.splitbtnwidth}px`,
-                                                    borderRadius: `${field.splitbtnradious}px`,
-                                                    borderWidth: `${field.splitBorderWidth}px`,
-                                                    borderStyle: field.splitBorderStyle,
-                                                    borderColor: field.splitBorderColor,
-                                                    fontWeight: field.splitbtnWeight,
-                                                }}>
-                                                    {field.splitbtn}</button>
-                                            </a>
-                                        )}
+                        {field.children.map((child) => (
+                            <div key={child.id} style={{ width: matchedData?.styles?.viewMode === 'mobile' ? '100%' : child.width,display:"flex", letterSpacing: `${child.splitletter}px`, }}>
+                                {child.add === 'image' ? (
+                                    <img
+                                        src={child.value} 
+                                        alt="Uploaded Preview"
+                                        style={{ width: '100%', height: 'auto' }}
+                                    />
+                                ) : (
+                                    <div
+                                        style={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            alignItems:
+                                                child.splittext === 'left'
+                                                    ? 'flex-start'
+                                                    : child.splittext === 'center'
+                                                        ? 'center'
+                                                        : 'flex-end',
+                                        }}
+                                    >
+                                        <div style={{ width: '100%' }}>
+                                            <div
+                                                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%', }}
+                                                dangerouslySetInnerHTML={{ __html: child.value }}
+                                            />
+                                            {field.showbtnsplit && (
+                                                <div>
+                                                    <a href={field.splitbtnurl} target="_blank" onClick={(e) => e.preventDefault()}>
+                                                        <button
+                                                            style={{
+                                                                marginTop: '20px',
+                                                                fontFamily: field.splitbtnfamily,
+                                                                backgroundColor: field.splitbtnbg,
+                                                                fontSize: `${child.splitbtnfont}px`,
+                                                                color: field.splitbtncolor,
+                                                                height: `${child.splitbtnheight}px`,
+                                                                minWidth: `${child.splitbtnwidth}px`,
+                                                                borderRadius: `${field.splitbtnradious}px`,
+                                                                borderWidth: `${child.splitBorderWidth}px`,
+                                                                borderStyle: field.splitBorderStyle,
+                                                                borderColor: field.splitBorderColor,
+                                                                fontWeight: field.splitbtnWeight,
+                                                            }}
+                                                        >
+                                                            {child.splitbtn}
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-
+                                )}
                             </div>
-                        )}
+                        ))}
                     </div>
                 );
+
             case 'socalicon':
                 return (
-                    <div style={{ textAlign: field.socaliconTextAlign, backgroundColor: field.socalIconbg, padding: `${field.socalIconPadding}px` }} >
-                        <div className="form-builder-icon">
-                            {field.value && field.value.facebook && field.value.facebook.url && !field.value.facebook.isHidden && (
-                                <div>
-                                    <a style={{ paddingRight: `${field.socalIcongap}px` }} href={field.value.facebook.url} target="_blank" rel="noopener noreferrer">
-                                        <img src={facebook} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                    <div
+                        style={{
+                            backgroundColor: field.socalIconbg,
+                            padding: `${field.socalIconPadding}px`,
+                            display: 'flex',
+                            justifyContent: field.socaliconTextAlign === 'center' ? 'center' :
+                                field.socaliconTextAlign === 'right' ? 'flex-end' :
+                                    'flex-start',
+                            alignItems: 'center',
+                            width: '100%'
+                        }}
+                    >
+                        <div className="form-builder-icon" style={{ display: "flex", gap: `${field.socalIcongap}px` }}>
+                            {field.value?.facebook?.url && !field.value.facebook.isHidden && (
+                                <a href={field.value.facebook.url} target="_blank" rel="noopener noreferrer">
+                                    <img src={facebook} alt="Facebook" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                                </a>
+                            )}
+                            {field.value?.twitter?.url && !field.value.twitter.isHidden && (
+                                <a href={field.value.twitter.url} target="_blank" rel="noopener noreferrer">
+                                    <img src={twitter} alt="Twitter" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                                </a>
+                            )}
+                            {field.value?.instagram?.url && !field.value.instagram.isHidden && (
+                                <a href={field.value.instagram.url} target="_blank" rel="noopener noreferrer">
+                                    <img src={instagram} alt="Instagram" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
+                                </a>
+                            )}
+                            {field.customIcons?.length > 0 && field.customIcons
+                                .filter(icon => !icon.isHidden)
+                                .map((icon, index) => (
+                                    <a key={index} href={icon.url} target="_blank" rel="noopener noreferrer">
+                                        <img src={icon.src} alt={`custom-icon-${index}`} style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
                                     </a>
-                                </div>
-                            )}
-                            {field.value && field.value.twitter && field.value.twitter.url && !field.value.twitter.isHidden && (
-                                <div>
-                                    <a style={{ paddingRight: `${field.socalIcongap}px` }} href={field.value.twitter.url} target="_blank" rel="noopener noreferrer">
-                                        <img src={twitter} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
-                                    </a>
-                                </div>
-                            )}
-                            {field.value && field.value.instagram && field.value.instagram.url && !field.value.instagram.isHidden && (
-                                <div>
-                                    <a style={{ paddingRight: `${field.socalIcongap}px` }} href={field.value.instagram.url} target="_blank" rel="noopener noreferrer">
-                                        <img src={instagram} alt="" style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }} />
-                                    </a>
-                                </div>
-                            )}
-                            {field.customIcons && field.customIcons.length > 0 && (
-                                <div>
-                                    {field.customIcons
-                                        .filter((icon) => !icon.isHidden)
-                                        .map((icon, index) => (
-                                            <a style={{ paddingRight: `${field.socalIcongap}px` }} key={index} href={icon.url} target="_blank" rel="noopener noreferrer">
-                                                <img
-                                                    src={icon.src}
-                                                    alt={`custom-icon-${index}`}
-                                                    style={{ height: `${field.socalIconHeight}px`, width: `${field.socalIconWidth}px` }}
-                                                />
-                                            </a>
-                                        ))}
-                                </div>
-                            )}
+                                ))}
                         </div>
                     </div>
+
                 );
             default:
                 return null;

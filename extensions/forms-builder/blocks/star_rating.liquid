@@ -6,6 +6,19 @@
   <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
 </div>
 
+<style>
+  img.form-builder-wred-starr-requid {
+    width: 10px;
+    top: 3px;
+    height: 10px;
+}
+
+.input-field.input-gap label {
+  display: flex;
+}
+
+</style>
+
 <script>
 
   function toggleDropdown(event, fieldName) {
@@ -150,8 +163,9 @@
       const reader = new FileReader();
       reader.onload = function (e) {
         const imagePreview = document.createElement('img');
-        imagePreview.style.maxWidth = '100px';
-        imagePreview.style.maxHeight = '100px';
+        imagePreview.style.width = '40px';
+        imagePreview.style.maxHeight = '40px';
+        imagePreview.style.marginRight = '10px';
         imagePreview.src = e.target.result;
 
         uploadeImages[fieldId].push({
@@ -172,7 +186,8 @@
         if (fieldsignlePreview === "on") {
           imagePreview.src = e.target.result;
           li.appendChild(imagePreview);
-        }
+        } 
+
         li.appendChild(removeButton);
         fileNamesList.appendChild(li);
       };
@@ -281,8 +296,8 @@ function displayFileNames(files, fieldId, fieldLabel,fieldmultifilePreview) {
       console.log('Image preview loaded:', e.target.result);
 
       const imagePreview = document.createElement('img');
-      imagePreview.style.maxWidth = '100px';
-      imagePreview.style.maxHeight = '100px';
+      imagePreview.style.maxWidth = '40px';
+      imagePreview.style.maxHeight = '40px';
       // imagePreview.src = e.target.result; // Uncomment this if you want to show the image preview
 
       uploadedmulti[fieldId].push({
@@ -339,100 +354,110 @@ function removeFil1e(fileName, fieldId, fileNamesList, li) {
    var droppedFiles = []; 
 
 
-   function handleFileInputChange(event, fieldId) {
+   function handleFileInputChange(event, fieldId, fieldmultiIamgePreview) {
     const files = event.target.files;
-    console.log('Files from file input:', files); 
-    displayimage(files, fieldId);
+    console.log("Files from file input:", files);
+    displayImage(files, fieldId, fieldmultiIamgePreview);
   }
-
-function handleDrop(event, fieldId,fieldLabel,fieldmultiIamgePreview) {
-  event.preventDefault();
-  event.stopPropagation();
-  console.log('field Label:', fieldLabel);
-  console.log('Field ID:', fieldId);
-
-  const fileInput = document.getElementById(`file-input-${fieldId}`);
-  console.log('File input element:', fileInput);
-
-  if (!fileInput) {
-    console.error('File input not found for fieldId:', fieldId);
-    return;
+  
+  function handleDrop(event, fieldId, fieldLabel, fieldmultiIamgePreview) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("Field Label:", fieldLabel);
+    console.log("Field ID:", fieldId);
+  
+    const fileInput = document.getElementById(`file-input-${fieldId}`);
+    console.log("File input element:", fileInput);
+  
+    if (!fileInput) {
+      console.error("File input not found for fieldId:", fieldId);
+      return;
+    }
+  
+    const files = event.dataTransfer.files;
+    displayImage(files, fieldId, fieldmultiIamgePreview);
   }
-
-  const files = event.dataTransfer.files;
-
-  displayimage(files, fieldId,fieldLabel,fieldmultiIamgePreview);
-}
-
-var uploadedFiles = {}; 
-function displayimage(files, fieldId,fieldLabel,fieldmultiIamgePreview) {
-  const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
-  fileNamesList.innerHTML = ''; 
-
-  if (!uploadedFiles[fieldId]) {
-    uploadedFiles[fieldId] = [];
-  }
-
-  console.log('Files received:', files); 
-
-  Array.from(files).forEach((file) => {
-    const li = document.createElement('li');
-    li.style.border = '1px solid #ddd';
-    li.style.padding = '8px';
-    li.style.marginBottom = '5px';
-    li.style.display = 'flex';
-    li.style.justifyContent = 'space-between';
-    li.style.alignItems = 'center';
-
-    const fileName = document.createElement('span');
-    fileName.textContent = file.name;
-    fileName.style.flex = '1';
-
-    const removeButton = document.createElement('button');
-    removeButton.style.padding = '0';
-    removeButton.style.border = 'none';
-    removeButton.style.background = 'none';
-
-    const removeImage = document.createElement('img');
-    removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
-    removeImage.alt = 'Remove';
-    removeImage.style.width = '20px';
-    removeImage.style.height = '20px';
-    removeImage.style.cursor = 'pointer';
-
-    removeButton.appendChild(removeImage);
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      console.log('Image preview loaded:', e.target.result);
+  
+  var uploadedFiles = {};
+  
+  function displayImage(files, fieldId, fieldmultiIamgePreview) {
+    const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
+    
+    if (!fileNamesList) {
+      console.error(`Element with ID image-names-list-${fieldId} not found.`);
+      return;
+    }
+    
+    fileNamesList.innerHTML = "";
+  
+    if (!uploadedFiles[fieldId]) {
+      uploadedFiles[fieldId] = [];
+    }
+  
+    console.log("Files received:", files);
+  
+    Array.from(files).forEach((file) => {
+      const li = document.createElement("li");
+      li.style.border = "1px solid #ddd";
+      li.style.padding = "8px";
+      li.style.marginBottom = "5px";
+      li.style.display = "flex";
+      li.style.justifyContent = "space-between";
+      li.style.alignItems = "center";
+  
+      const fileName = document.createElement("span");
+      fileName.textContent = file.name;
+      fileName.style.flex = "1";
+  
+      const removeButton = document.createElement("button");
+      removeButton.style.padding = "0";
+      removeButton.style.border = "none";
+      removeButton.style.background = "none";
+  
+      const removeImage = document.createElement("img");
+      removeImage.src =
+        "https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508";
+      removeImage.alt = "Remove";
+      removeImage.style.width = "20px";
+      removeImage.style.height = "20px";
+      removeImage.style.cursor = "pointer";
+  
+      removeButton.appendChild(removeImage);
+  
+      const reader = new FileReader();
       
-      const imagePreview = document.createElement('img');
-      imagePreview.style.maxWidth = '100px'; 
-      imagePreview.style.maxHeight = '100px';
-      {% comment %} imagePreview.src = e.target.result; {% endcomment %}
-
-      uploadedFiles[fieldId].push({
-        name: file.name,
-        base64: e.target.result,
-        label: fieldLabel
-      });
-
-      removeButton.onclick = () => removeFile(file.name, fieldId, fileNamesList, li);
-
-      li.appendChild(fileName);
-      if (fieldmultiIamgePreview === "on") {
-        imagePreview.src = e.target.result;
-        li.appendChild(imagePreview);
-      } 
-      li.appendChild(removeButton);
-      fileNamesList.appendChild(li);
-    };
-
-    reader.readAsDataURL(file);
-  });
-
-  console.log('Uploaded Files:', uploadedFiles);
-}
+      reader.onload = function (e) {
+        console.log("Image preview loaded:", e.target.result);
+  
+        if (fieldmultiIamgePreview === "on") {
+          const imagePreview = document.createElement("img");
+          imagePreview.style.width = "40px";  
+          imagePreview.style.height = "40px";
+          imagePreview.src = e.target.result;
+          li.appendChild(imagePreview);
+        }
+  
+        uploadedFiles[fieldId].push({
+          name: file.name,
+          base64: e.target.result,
+        });
+  
+        removeButton.onclick = () => removeFile(file.name, fieldId, fileNamesList, li);
+  
+        li.appendChild(fileName);
+        li.appendChild(removeButton);
+        fileNamesList.appendChild(li);
+      };
+  
+      reader.onerror = function (error) {
+        console.error("Error loading image preview:", error);
+      };
+  
+      reader.readAsDataURL(file);
+    });
+  
+    console.log("Uploaded Files:", uploadedFiles);
+  }
 
 function removeFile(fileName, fieldId, fileNamesList, li) {
   if (!uploadedFiles[fieldId]) return;
@@ -500,6 +525,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
           borderColor: formData.styles.borderColor || '',
           borderWidth: formData.styles.borderWidth || '',
           borderStyle: formData.styles.borderStyle || '',
+          boxShadow: formData.styles.boxShadow || '',
           borderRadius: formData.styles.borderRadius ? `${formData.styles.borderRadius}px` : '',
           zIndex: -1,
         });
@@ -508,7 +534,8 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
 
         container.css({
           position: 'relative',
-          width: formData.styles.width || '100%',
+          width: '100%',
+          maxWidth: formData.styles.width || '100%',
           padding: formData.styles.padding || '20px',
           margin: 'auto',
         });
@@ -571,7 +598,15 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                         field.type !== 'button' &&
                         field.type !== 'link' &&
                         field.type !== 'divider'
-                          ? `<label style="color: ${labelColor};">${field.label}</label>`
+                          ? `<label style="color: ${labelColor};">${field.label}
+                          ${
+                          field.required
+                           ? `<img class="form-builder-wred-starr-requid" 
+                          src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/imgpsh_fullsize_anim_28.png?v=1740472426" 
+                           alt="Required Field" />`
+                         : ''
+                          }
+                           </label>`
                           : ''
                       }
                       
@@ -606,17 +641,17 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
 
         $('.iti').css('width', '100%');
 
-        $('label').css('display', 'block');
       } else {
         container.append('<p>No fields available.</p>');
       }
       container.append('<div class="clear-float"></div>');
     }
 
-    window.validatePassword = function (input, minLength) {
+ 
+  window.validatePassword = function (input, minLength) {
       const passwordStatus = input.dataset.passwordStatus;
       const password = input.value;
-      const errorMessage = input.nextElementSibling;
+      const errorMessage = input.nextElementSibling.nextElementSibling;
   
       let isValid = password.length >= minLength;
       let errorText = `Password must be at least ${minLength} characters long.`;
@@ -639,6 +674,19 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
       }
   
       return isValid;
+  };
+  
+  window.togglePasswordVisibility = function (icon) {
+      const input = icon.previousElementSibling;
+      if (input.type === "password") {
+          input.type = "text";
+          icon.src = "https://cdn.shopify.com/s/files/1/0780/6255/1355/files/imgpsh_fullsize_anim_27.png?v=1740467283"; 
+          icon.alt = "Hide Password";
+      } else {
+          input.type = "password";
+          icon.src = "https://cdn.shopify.com/s/files/1/0780/6255/1355/files/pass.png?v=1740467283";
+          icon.alt = "Show Password";
+      }
   };
   
     function getFieldInput(
@@ -786,6 +834,8 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
           return `<p style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
                   line-height:${field.textlineheight}px;
+                  padding-left: ${field.textPadding || '5'}px;
+                  padding-right: ${field.textPadding || '5'}px;
                   text-align: ${field.textAline || 'center'};">
                   ${field.text || 'Default description'}
                   </p>`;
@@ -814,6 +864,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
             }
           }
           return `<${field.level} style="font-size: ${fontSize}; 
+                          line-height:${field.headingLineheight}px;
                           color: ${headingcolor || '#000'}; 
                           text-align: ${headingaline || 'center'};">
                           ${field.text || 'Default Heading'}
@@ -994,22 +1045,27 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
             }
           }, 100);
           return phoneInputHtml;
-        case 'password':
+          case 'password':
           return `
-            <div style="position: relative;">
-              <input type="password" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" 
-                style="width: 100%; padding: ${field.inputPadding};
+            <div style="position: relative; ">
+              <input type="password" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} 
+                placeholder="${field.placeholder || ''}" 
+                style="width: 100%; padding: ${field.inputPadding}; padding-right: 40px;
                 border-radius: ${inputRadius}px; border-color: ${inputBorderColor};
                 background-color: ${inputBgColor}; border-width: ${inputWidth}px;
                 border-style: ${inputStyle}" 
                 data-password-status="${field.passwordStatus}" 
                 oninput="validatePassword(this, ${field.passwordCharacter || 6})"
               />
+               <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/pass.png?v=1740467283" 
+               onclick="togglePasswordVisibility(this)" 
+                style="position: absolute; right: 10px; top: 12px; cursor: pointer; user-select: none; width: 21px; height: 15px;"
+              alt="Show Password"
+              />
               <small style="color: red; display: none;"></small>
             </div>
-           <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+            <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
           `;
-
         case 'url':
           return `<input type="url" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${
             field.placeholder || ''
@@ -1038,6 +1094,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
          style="
           width: 100%;
           text-decoration: none;
+          font-size:${field.linkfontsize}px;
           text-align: ${field.linkaline || 'left'};
           padding: ${field.padding || '0'};
           "
@@ -1201,7 +1258,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                     border-radius: ${field.btnradious}px;
                     color:${field.btncolor}"
                     data-url="${formUrl}"
-                    onclick="submitFormData('{{ block.id }}', this, '${
+                    onclick="submitFormData(event,'{{ block.id }}', this, '${
                       editorValue || ''
                     }', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}','${formTitle}', '${toggleStatus}','${emailsubject}')">
                   ${field.label || 'Submit'}
@@ -1220,6 +1277,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
 
     const currentTimestamp = new Date().toISOString();
     window.submitFormData = function (
+      event,
       blockId,
       button,
       editorValue,
@@ -1228,8 +1286,9 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
       formshop,
       formTitle,
       toggleStatus,
-      emailsubject
+      emailsubject,
     ) {
+      event.preventDefault();
       const container = $('#formData-' + blockId);
       const formID = container.find('p').first().text().split(': ')[1];
       console.log('Editor Value:', editorValue);
@@ -1253,14 +1312,16 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
         editorValue: editorValue,
         thankYouTimer: thankYouTimer,
       };
-
+ 
+    
       if (toggleStatus === 'Enabled') {
         console.log('Window URL:', window.location.href);
         formData.currentUrl = window.location.href;
       } else if (toggleStatus === 'Disabled') {
         console.log('Form submission is disabled');
       }
-      
+
+     
       const emailField = $('#formData-' + blockId + ' input[type="email"]');
       const emailValue = emailField.val().trim(); 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
@@ -1304,12 +1365,13 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
               return false;
           }
       }
-      
+
       window.passwordAlertShown = false; 
         let fieldValue;
         let imagesFieldExists = false;  
         let allFileNames = [];
         let multiFileNames = [];
+        
         let uniqueFileNames = []; 
         if (dropdown.length > 0) {
           fieldValue = dropdown.text().trim();
@@ -1344,7 +1406,6 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                     });
                   }
                 }
-          
                 if (file.label === file.label) {
                   const isFileAlreadyAdded = formData.fields.some((field) => field.name === file.label && field.value === file.name);
           
@@ -1392,6 +1453,7 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
 
           if (uploadedmulti && typeof uploadedmulti === 'object') {
             Object.keys(uploadedmulti).forEach((key) => {
+
                 uploadedmulti[key].forEach((file) => {
                     if (file && file.name) {  
                         if (!uploadedFileNames.has(file.name)) {
@@ -1418,9 +1480,9 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
                 }
             });
            }        
-
+           uploadedmulti=[]
           fieldValue = fieldValue.join(', ');
-          $(this).find('input[type="file"]').val('');
+          $(this).find('input[type="file"]').replaceWith($(this).find('input[type="file"]').clone(true)); 
         } else {
           fieldValue = input.val();
         }
@@ -1437,6 +1499,13 @@ function removeFile(fileName, fieldId, fileNamesList, li) {
       });
 
       if (!isValid) return;
+      console.log("Final Fields Collected:", formData.fields);
+
+      if (formData.fields.length === 0) {
+        alert("Please fill in at least one field before submitting.");
+        console.log("Submission blocked: No fields provided.");
+        return false;
+      }
 
       console.log('Form Data:', JSON.stringify(formData));
 

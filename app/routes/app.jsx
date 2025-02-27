@@ -59,12 +59,12 @@ export default function App() {
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>
         <Link to="/app" rel="home" onClick={handleLinkClick}>Home</Link>
-        <Link to="/app/forms/list">Forms</Link>
-        <Link to="/app/customer">Customers</Link>
+        <Link to="/app/forms/list" onClick={handleLinkClick}>Forms</Link>
+        <Link to="/app/customer"onClick={handleLinkClick}>Customers</Link>
         <Link to="/app/setting" onClick={handleLinkClick}>Settings</Link> 
         <Link to="/app/pricing" onClick={handleLinkClick}>Pricing</Link>
         <Link to="/app/support" onClick={handleLinkClick}>Support</Link>
-        <Link to="/app/email-template/list">Email Template</Link>
+        <Link to="/app/email-template/list" onClick={handleLinkClick}>Email Template</Link>
   
         <ul>
           <li><Link to="/app/forms/new">Create</Link></li>

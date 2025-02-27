@@ -37,38 +37,86 @@ export const loader = async ({ request }) => {
     }
 };
 
+
 export const action = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;
+
 
     const method = request.method.toLowerCase();
     const formData = await request.formData();
 
     if (method === 'post') {
         const selectedPlan = formData.get('plan');
-        const chargeData = selectedPlan === 'free' ? null : {
-            recurring_application_charge: {
-                name: selectedPlan === 'pro' ? 'Form Builder Pro Plan' : selectedPlan === 'pro_plus' ? 'Form Builder Pro Plus Plan' : 'Form Builder Pro Yearly Plan',
-                price: selectedPlan === 'pro' ? 4.99 : selectedPlan === 'pro_plus' ? 9.99 : 99.90,
-                return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
-                trial_days: 7,
-                test: true,
-            }
-        };
 
-        console.log('Charge data being sent:', JSON.stringify(chargeData, null, 2));
+        const chargeData = selectedPlan === "free" ? null :
+    {
+        recurring_application_charge: {
+            name: selectedPlan === "pro" ? "Form Builder Pro Plan" :
+                  selectedPlan === "pro_plus" ? "Form Builder Pro Plus Plan" :
+                  "Form Builder Pro Yearly Plan",
+            price: selectedPlan === "pro" ? 4.99 :
+                   selectedPlan === "pro_plus" ? 9.99 :
+                   99.90,
+            return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
+            trial_days: 7,
+            test: true,
+            interval: selectedPlan === "pro_yearly" ? "annual" : "every_30_days" 
+        }
+    };
+
+
+        if (!chargeData) {
+            return { success: false, message: "Free plan selected. No charge required." };
+        }
 
         try {
-            const response = await axios.post(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`, chargeData, {
-                headers: {
-                    'X-Shopify-Access-Token': accessToken,
-                    'Content-Type': 'application/json',
-                },
-            });
+            const existingChargesResponse = await axios.get(
+                `https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`,
+                {
+                    headers: {
+                        'X-Shopify-Access-Token': accessToken,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
-            console.log('Recurring Application Charge created:', response.data);
-            const confirmationUrl = response.data.recurring_application_charge.confirmation_url;
-            return { success: true, confirmationUrl };
+            const activeCharges = existingChargesResponse.data.recurring_application_charges
+                .filter(charge => charge.status === 'active');
+
+            for (const charge of activeCharges) {
+                await axios.delete(
+                    `https://${shop}/admin/api/${apiVersion}/recurring_application_charges/${charge.id}.json`,
+                    {
+                        headers: {
+                            'X-Shopify-Access-Token': accessToken,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                console.log(`Deleted existing charge with ID: ${charge.id}`);
+            }
+
+            console.log('Creating new charge:', JSON.stringify(chargeData, null, 2));
+
+            const response = await axios.post(
+                `https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`,
+                chargeData,
+                {
+                    headers: {
+                        'X-Shopify-Access-Token': accessToken,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            console.log('New Recurring Charge Created:', response.data);
+
+            return {
+                success: true,
+                confirmationUrl: response.data.recurring_application_charge.confirmation_url
+            };
+
         } catch (error) {
             console.error('Error creating charge:', error.response ? error.response.data : error.message);
             return { success: false, message: error.response ? error.response.data : error.message };
@@ -77,15 +125,18 @@ export const action = async ({ request }) => {
 
     if (method === 'delete') {
         const chargeId = formData.get('charge_id');
-        console.log("Charge ID received:", chargeId);
+        console.log("Charge ID received for deletion:", chargeId);
 
         try {
-            const response = await axios.delete(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges/${chargeId}.json`, {
-                headers: {
-                    'X-Shopify-Access-Token': accessToken,
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios.delete(
+                `https://${shop}/admin/api/${apiVersion}/recurring_application_charges/${chargeId}.json`,
+                {
+                    headers: {
+                        'X-Shopify-Access-Token': accessToken,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             if (response.status !== 200) {
                 throw new Error('Failed to delete charge');
@@ -93,12 +144,14 @@ export const action = async ({ request }) => {
 
             console.log("Charge deleted successfully!");
             return { success: true, chargeId };
+
         } catch (error) {
             console.error('Error deleting charge:', error);
             return { success: false, message: error.message || 'Error deleting charge' };
         }
     }
 };
+
 
 export default function Pricing() {
     const [selectedPlanadd, setSelectedPlanadd] = useState('monthly');
@@ -178,6 +231,7 @@ export default function Pricing() {
     }, [activePlan]);
 
     const handleChoosePlan = async (plan) => {
+        console.log("Selected Plan:", plan);
         if (isSubmitting || (activePlan && activePlan.name.includes(plan))) return;
 
         setIsSubmitting(true);

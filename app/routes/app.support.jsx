@@ -4,6 +4,7 @@ import cancle1 from '../images/cancle1.png'
 import { useState } from 'react';
 import axios from 'axios';
 import '../index.css';
+import star from '../images/star1.png';
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
@@ -59,10 +60,12 @@ export default function Support() {
     const [shop, setShop] = useState('');
     const [describe, setDescribe] = useState('');
     const { apiUrl } = useLoaderData() || {};
+    const [popup, setPopup] = useState(false);
+    const [message, setMessage]= useState(false);
 
     const handleSubmit = async () => {
         if (!shop || !name || !email || !category || !theme || !describe) {
-            alert('Please fill in all fields.');
+            setPopup(true);
             return;
         }
         try {
@@ -76,7 +79,10 @@ export default function Support() {
             });
             console.log('Response status:', response.status);
             if (response.status === 200) {
-                alert('Form submitted successfully!');
+                setMessage('Form submitted successfully!');
+                setTimeout(() => {
+                    setMessage(''); 
+                }, 3000);
                 setName('');
                 setEmail('');
                 setCategory('');
@@ -202,19 +208,19 @@ export default function Support() {
                                 <p>Please provide the details of the problem</p>
                                 <div className="service-form-input">
                                     <div className="servies-input">
-                                        <label htmlFor="name">Name</label>
+                                        <label htmlFor="name">Name<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /> </label>
                                         <input type="name" value={name} onChange={(e) => setName(e.target.value)} />
                                     </div>
                                     <div className="servies-input">
-                                        <label htmlFor="email">E-mail</label>
+                                        <label htmlFor="email">E-mail<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
                                         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                     </div>
                                     <div className="servies-input">
-                                        <label htmlFor="Department">Category</label>
+                                        <label htmlFor="Department">Category<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
                                         <input type="test" value={category} onChange={(e) => setCategory(e.target.value)} />
                                     </div>
                                     <div className="servies-input">
-                                        <label htmlFor="Computer ID">Theme ID or Collaborator Code</label>
+                                        <label htmlFor="Computer ID">Theme ID or Collaborator Code<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
                                         <input type="test" value={theme} onChange={(e) => setTheme(e.target.value)} />
                                     </div>
                                     <div className="servies-input shop">
@@ -222,17 +228,33 @@ export default function Support() {
                                         <input type="test" value={shop} onChange={(e) => setShop(e.target.value)} />
                                     </div>
                                     <div className="servies-input textarea">
-                                        <label htmlFor="Describe the Problem">Describe the Problem</label>
-                                        <textarea id="w3review" name="w3review" rows="4" cols="50" value={describe} onChange={(e) => setDescribe(e.target.value)}></textarea>
+                                        <label htmlFor="Describe the Problem">Describe the Problem<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
+                                        <textarea id="w3review" name="w3review" style={{ resize: 'vertical' }} rows="4" cols="50" value={describe} onChange={(e) => setDescribe(e.target.value)}></textarea>
                                     </div>
                                 </div>
                                 <div className="it-service-icon" onClick={handleHide}>
                                     <img src={cancle1} alt="" />
                                 </div>
+                                {message && <p style={{color:'red'}}>{message}</p>}
                                 <button className='btn' onClick={handleSubmit}>Submit</button>
                             </div>
                         </div>
                     </div>
+                )}
+            </div>
+            <div className='form-builder-wrap-popup-inputs requid-fields'>
+                {popup && (
+                <div className="popup">
+                    <div className="popup-content ">
+                        <div className="form_builder_input-fields-requid">
+                            <p>Kindly fill in all the
+                                Required Fields</p>
+                        </div>
+                        <div className="it-service-icon" onClick={()=>setPopup(false)}>
+                          <img src={cancle1} alt="" />
+                                </div>
+                    </div>
+                </div>
                 )}
             </div>
             <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>

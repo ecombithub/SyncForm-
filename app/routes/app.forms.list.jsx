@@ -27,7 +27,7 @@ import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
+import star from '../images/star1.png';
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
@@ -862,11 +862,11 @@ const Formdata = () => {
                                                 <div className='form-builder-create-wrapping-forms '>
                                                     {form.fields.map(field => (
                                                         <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
-                                                            {field.type !== 'link' && field.type !== 'button' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label}</label>}
+                                                            {field.type !== 'link' && field.type !== 'button' && field.type !== 'divider' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label} {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}</label>}
                                                             {field.type === 'name' && <input type="name" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'text' && <input type="text" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'textarea' && <textarea placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
-                                                            {field.type === 'description' && <p style={{ fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
+                                                            {field.type === 'description' && <p style={{ paddingLeft:`${field.textPadding}px`,paddingRight:`${field.textPadding}px`, fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
                                                             {field.type === 'toggle' && (
                                                                 <div className='form-build-toggle'>
                                                                     <div style={{ color: form.styles.labelColor }} >
@@ -879,7 +879,7 @@ const Formdata = () => {
 
                                                                 </div>
                                                             )}
-                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, color: form.styles.colorHeading, textAlign: form.styles.textHeading }} >{field.text}</field.level></div>}
+                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, lineHeight:`${field.headingLineheight}px`, color: form.styles.colorHeading, textAlign: form.styles.textHeading }} >{field.text}</field.level></div>}
                                                             {field.type === 'number' && <input type="number" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'multi-file' && (
                                                                 field.multiOptions[field.id] === 'option1' ? (
@@ -1020,17 +1020,19 @@ const Formdata = () => {
                                                             )}
 
                                                             {field.type === 'link' && (
+                                                                <div>
                                                                 <a
                                                                     href={field.linkUrl}
                                                                     target={field.linkTarget}
                                                                     style={{
-
+                                                                        fontSize:`${field.linkfontsize}px`,  
                                                                         textDecoration: 'none',
                                                                         textAlign: field.linkaline,
                                                                         padding: field.padding,
                                                                     }}
                                                                     dangerouslySetInnerHTML={{ __html: field.linktext }}
                                                                 />
+                                                                </div>
                                                             )}
                                                             {field.type === 'images' && (field.imageOptions[field.id] === 'option1' ? (
                                                                 <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />

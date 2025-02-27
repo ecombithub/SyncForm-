@@ -193,8 +193,9 @@ export default function Setting() {
                     <h2>Settings</h2>
                 </div>
                 <div className='form_builder_complte_actions'>
+                    <div className='form_builder_complte_toggle_wraped'>
                     <div className='form_builder_action_status'>
-                        <p>Click the button to automatically send data and complete the action.</p>
+                        <p>Submission Notification</p>
                         <div className="toggle-switched">
                             <input
                                 type="checkbox"
@@ -205,8 +206,12 @@ export default function Setting() {
                             />
                         </div>
                     </div>
+                    <span>Enable this option to get notified once a particular number of form submissions are completed, you will automatically receive an email containing a CSV file. This file contains all collected data without manually exporting.</span>
+                    </div>
+                    
+                    <div className='form_builder_complte_toggle_wraped'>
                     <div className='form_builder_action_status'>
-                        <p>Enter the number of forms you want to send at once.</p>
+                        <p>Set Submission Notification Count</p>
                         <div className='form_builder_action_number'>
                             <input
                                 type="number"
@@ -216,9 +221,14 @@ export default function Setting() {
                             <label>Enter at least 10 forms.</label>
                         </div>
                     </div>
+                    <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 50 submissions, but you can adjust it to a higher number based on your needs.</span>
+                    </div>
                 </div>
                 <div className='form_builder_complte_actions'>
-                    <div className='form_builder_comple_email'> <p>Enter your email to receive the data.</p></div>
+                    <div className='form_builder_comple_email'> <p>Integrate Email for Form Notifications</p>
+                    <span>Store owners link their email address to integrate with form. Once a user submits the form, the provided email will send or receive notifications based on the configured template.</span>
+                    </div>
+                    <span></span>
                     <form onSubmit={handleSubmit}>
                         <div className='form_builder_complte_forms'>
                            <div className='form_build_inputs'>
@@ -240,6 +250,7 @@ export default function Setting() {
                                      placeholder='Your Password'
                                     required
                                 />
+                                <span> <p>Note:An app password is a security code that allows authorized  apps access to your email and different from your email password. To generate App Password click here.</p> </span>
                             </div>
                         </div>
                         <button className='form_email_btn' type="submit">Submit</button>

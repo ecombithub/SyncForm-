@@ -17,3 +17,4 @@ database.sqlite
 
 
 /extensions/*/dist
+.shopify

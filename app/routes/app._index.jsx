@@ -1,13 +1,13 @@
 import { Link, useNavigate } from '@remix-run/react';
 import React, { useState, useEffect } from 'react';
-import user from '../images/user.png'
+import user from '../images/user1.png'
 import '../index.css';
-import dash1 from '../images/dash1.png';
-import dash2 from '../images/dash2.png';
-import dash3 from '../images/dash3.png';
-import Vector1 from '../images/Vector10.png';
-import vecter2 from '../images/Vector100.png';
-import Vector3 from '../images/Vector1000.png';
+import dash1 from '../images/dash0.png';
+import dash2 from '../images/dash4.png';
+import dash3 from '../images/dash5.png';
+import Vector1 from '../images/vecter2.png';
+import vecter2 from '../images/vecter3.png';
+import Vector3 from '../images/vecter97.png';
 
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
@@ -344,7 +344,7 @@ function Index() {
             <div className="form_build_new_base">
               <h4>Knowledgebase</h4>
               <p>A resource hub provides detailed guides, troubleshooting steps and support to help users for form creation and integration.</p>
-              <div className="form_build_app_bottm second ">
+              <div className="form_build_app_bottm second know ">
                 <div className="form_build_app_btn">
                   <p>Knowledge base</p>
                 </div>

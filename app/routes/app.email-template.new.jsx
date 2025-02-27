@@ -10,13 +10,14 @@ import phonem from '../images/phonem.png';
 import desk from '../images/desk.png';
 import socail from '../images/socail0.png';
 import htmlicon from '../images/htmlicon0.png';
-import maximizesize from '../images/maximize-size.png';
+import maximizesize from '../images/maximize-size1.png';
 import deletep from '../images/deletep.png';
-import delete1 from '../images/delete.png';
+import delete1 from '../images/delete1.png';
 import facebook from '../images/facebook.png';
 import instagram from '../images/instagram.png';
 import twitter from '../images/twitter.png';
 import videoplay from '../images/videoplay.png';
+import drop from '../images/slideicon.png';
 import left from '../images/left.png';
 import right from '../images/right.png';
 import hdbg from '../images/hdbg.jpeg';
@@ -26,7 +27,7 @@ import banner from '../images/banner0.png';
 import imghd from '../images/bgimg.jpeg';
 import imghd1 from '../images/imghd1.png';
 import itext from '../images/image-0.png';
-import editicon from '../images/editicon.png';
+import editicon from '../images/edit.png';
 import savemail from '../images/savemail1.png';
 import canclemail from '../images/canclemail1.png';
 import multimedia from '../images/multimedia0.png';
@@ -237,6 +238,7 @@ const EmailTemplateCreate = () => {
     const selectRef = useRef(null);
     const [fonts, setFonts] = useState([]);
     const [uploadedImage, setUploadedImage] = useState(null);
+    const [hoveredFieldId, setHoveredFieldId] = useState(null);
 
 
 
@@ -457,9 +459,9 @@ const EmailTemplateCreate = () => {
             splittextSize: type === 'split' ? '14' : undefined,
             splittext: type === 'split' ? 'left' : undefined,
             splitbtn: type === 'split' ? 'Add Text' : undefined,
-            splitbtnbg: type === 'split' ? '#007BFF' : undefined,
+            splitbtnbg: type === 'split' ? '#FFFFFFF' : undefined,
             splitbtnfont: type === 'split' ? '14' : undefined,
-            splitbtncolor: type === 'split' ? '#FFFFFF' : undefined,
+            splitbtncolor: type === 'split' ? '#000' : undefined,
             splitbtnurl: type === 'split' ? '' : undefined,
             splitbtnfamily: type === 'split' ? '' : undefined,
             splitbtnheight: type === 'split' ? '35' : undefined,
@@ -569,24 +571,6 @@ const EmailTemplateCreate = () => {
         };
     };
 
-    const divRefs = useRef({});
-    const [divHeights, setDivHeights] = useState({});
-
-    useEffect(() => {
-        const newHeights = {};
-        console.log("Fields:", fields);
-        fields.forEach((field) => {
-            console.log("divRef for field id", field.id, divRefs.current[field.id]);
-            if (divRefs.current[field.id]) {
-                newHeights[field.id] = divRefs.current[field.id].clientHeight;
-            }
-        });
-
-        setDivHeights(newHeights);
-        console.log("Updated Div Heights:", newHeights);
-    }, [fields, viewMode]);
-
-
     const addInputField = (type) => {
         let newField;
         if (type === 'images') {
@@ -631,13 +615,16 @@ const EmailTemplateCreate = () => {
             setFields((prevFields) => [...prevFields, newField]);
         } else if (type === 'split') {
             const parentId = generateUniqueId();
-
             const splitFields = [
                 createInputField("split", "image", parentId),
                 createInputField("split", "text", parentId),
             ];
 
-            setFields((prevFields) => [...prevFields, ...splitFields]);
+            setFields((prevFields) => [
+                ...prevFields,
+                { id: parentId, type: "split-group", children: splitFields }
+            ]);
+
 
             if (splitFields.length > 0) {
                 setActiveFieldId(splitFields[0].id);
@@ -689,7 +676,6 @@ const EmailTemplateCreate = () => {
             handleFieldClick(newField.id);
         }
     };
-
 
     useEffect(() => {
 
@@ -1106,16 +1092,16 @@ const EmailTemplateCreate = () => {
                     break;
                 case 'button':
                     value = 'Button';
-                case 'split':
-                    value = field.value || 'No Value Provided';
-                    field.add = field.add;
+                case 'split-group':
+                    console.log("Rendering field:", field);
+                    field.children;
                     field.splitbg = field.splitbg || '';
                     field.width = field.width || '50%';
-                    field.splitPadding = field.splitPadding || 0
+                    field.splitPadding = field.splitPadding || 0;
                     field.splitTextAlin = field.splitTextAlin || 'left';
-                    field.divHeight = divHeights[field.id] || 0;
-                    console.log("Using divHeight in split case:", divHeights);
+                    console.log("Final value in split-group case:", value);
                     break;
+
                 case 'spacer':
                     value = 'Spacer Field';
                     field.spacerHeight = field.spacerHeight || 30;
@@ -1482,12 +1468,15 @@ const EmailTemplateCreate = () => {
     };
 
     const handleContinue = () => {
-        navigate('/app/email-template/list');
         setIsLoading(true);
         setSaveEmail(false);
-        setCancelEmail(false)
+        setCancelEmail(false);
+    
+        setTimeout(() => {
+            navigate('/app/email-template/list');
+        }, 3000);
     };
-
+    
     const handleBackgroundImageUpload = (e) => {
         let file;
 
@@ -1627,36 +1616,18 @@ const EmailTemplateCreate = () => {
 
     const handleWidthChange = (newWidth) => {
         const parsedWidth = parseInt(newWidth, 10);
-
         if (selectedFieldId) {
             setFields((prevFields) => {
-                const selectedIndex = prevFields.findIndex((f) => f.id === selectedFieldId);
-                if (selectedIndex === -1) return prevFields;
-
-                const selectedField = prevFields[selectedIndex];
-
-                const pairedField = prevFields.find(
-                    (field) =>
-                        (field.add === "image" && selectedField.add === "text" && field.id !== selectedFieldId && field.parentId === selectedField.parentId) ||
-                        (field.add === "text" && selectedField.add === "image" && field.id !== selectedFieldId && field.parentId === selectedField.parentId)
-                );
-
-                if (!pairedField) return prevFields;
-
-                const newWidthForPair = 100 - parsedWidth;
-
-                console.log(`Width of selected field with id ${selectedField.id} changed to ${parsedWidth}%`);
-                console.log(`Width of paired field with id ${pairedField.id} changed to ${newWidthForPair}%`);
-
                 return prevFields.map((field) => {
-                    if (field.id === selectedFieldId) {
-                        return { ...field, width: `${parsedWidth}%` };
+                    if (field.type === "split-group" && field.children.some((child) => child.id === selectedFieldId)) {
+                        return {
+                            ...field,
+                            children: field.children.map((child) => ({
+                                ...child,
+                                width: child.id === selectedFieldId ? `${parsedWidth}%` : `${100 - parsedWidth}%`,
+                            })),
+                        };
                     }
-
-                    if (field.id === pairedField.id) {
-                        return { ...field, width: `${newWidthForPair}%` };
-                    }
-
                     return field;
                 });
             });
@@ -1924,6 +1895,7 @@ const EmailTemplateCreate = () => {
         setSelectedFieldId(fieldId);
         setEmailFieldPopup(true);
         setActiveFieldId(fieldId);
+        setHoveredFieldId(fieldId)
         const selectedField = fields.find((field) => field.id === fieldId);
         if (selectedField && selectedField.type === 'Multicolumn') {
             setIsPopupVisible(true);
@@ -1933,6 +1905,7 @@ const EmailTemplateCreate = () => {
             handleFieldPro();
         }
     };
+
 
     const handleColumnClick = (fieldId, columnIndex) => {
         setPopupFieldId(fieldId);
@@ -2346,7 +2319,22 @@ const EmailTemplateCreate = () => {
                                                                         <div className='checkbox-option bg-colors'>
                                                                             <label>  Background Color:</label>
                                                                             <div className="color-picker-container">
-                                                                                <span className="color-code">{backgroundColor || '#FFFFFF'}</span>
+
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="color-code"
+                                                                                    value={backgroundColor || '#ffffff'}
+                                                                                    readOnly
+                                                                                    onClick={(e) => {
+                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                    }}
+                                                                                    onPaste={(e) => {
+                                                                                        const pastedText = e.clipboardData.getData('text');
+                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                            setBackgroundColor(pastedText);
+                                                                                        }
+                                                                                    }}
+                                                                                />
                                                                                 <input
                                                                                     type="color"
                                                                                     value={backgroundColor || '#FFFFFF'}
@@ -2530,6 +2518,8 @@ const EmailTemplateCreate = () => {
                                                                     <div
                                                                         key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100% ' }}
                                                                     >
@@ -2548,10 +2538,11 @@ const EmailTemplateCreate = () => {
                                                                                 position: 'relative',
 
                                                                             }}
+
                                                                         >
                                                                             <div
                                                                                 style={{
-                                                                                    backgroundColor: field.headingbg && !field.headingbgImage ? field.headingbg : 'transparent', // Show color if no image is set
+                                                                                    backgroundColor: field.headingbg && !field.headingbgImage ? field.headingbg : 'transparent',
                                                                                     backgroundImage: field.headingbgImage
                                                                                         ? `url(${field.headingbgImage})`
                                                                                         : field.headingbg
@@ -2629,78 +2620,11 @@ const EmailTemplateCreate = () => {
                                                                                     </a>
                                                                                 )}
                                                                             </div>
-                                                                            <div className='form-builder-radio-btn email'>
-                                                                                <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
-                                                                                    <img src={editicon} alt="copy" />
-                                                                                </button>
-                                                                                <button className='remove-btn' onClick={() => removeField(field.id)}>
-                                                                                    <img src={delete1} alt="delete" />
-                                                                                </button>
-                                                                                <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
-                                                                                    <img src={maximizesize} alt="copy" />
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            }
-                                                            if (field.type === 'split') {
-                                                                const isImageUploaded = field.add === 'image' && field.value.startsWith('data:image');
-                                                                return (
-                                                                    <div ref={(el) => (divRefs.current[field.id] = el)} style={{ width: viewMode === 'mobile' ? '100%' : field.width || '50%', display: 'flex' }}>
-                                                                        <div key={field.id} onClick={() => handleFieldClick(field.id)}
-                                                                            className={`email_field split-width ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                            style={{
-                                                                                width: '100%',
-                                                                                backgroundColor: field.splitbg,
-                                                                                padding: `${field.splitPadding}px`,
-                                                                                textAlign: field.splitTextAlin,
-                                                                                position: 'relative',
-                                                                                display: 'flex',
-                                                                                color: field.splitColor,
-                                                                                fontSize: `${field.splittextSize}px`,
-                                                                                letterSpacing: `${field.splitletter}px`,
-                                                                                // lineHeight: `${field.splitlineheight}px`,
-                                                                                fontFamily: field.splitfamily,
-                                                                            }}
-                                                                        >
-                                                                            {field.add === 'image' ? (
-                                                                                <img
-                                                                                    src={field.value || imghd1}
-                                                                                    alt="Uploaded Preview"
-                                                                                    style={{ width: '100%', height: 'auto' }}
-                                                                                />
-                                                                            ) : (
-                                                                                <div style={{ width: '100%', display: 'flex', alignItems: field.splittext === 'left' ? 'flex-start' : field.splittext === 'center' ? 'center' : 'flex-end' }}>
-                                                                                    <div style={{ width: '100%' }}>
-                                                                                        <div className=' ql-editored' style={{ color: field.splitColor, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: field.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...' }} />
-                                                                                        <div >
-                                                                                            {field.showbtnsplit && (
-                                                                                                <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
-                                                                                                    <button style={{
-                                                                                                        fontFamily: field.splitbtnfamily,
-                                                                                                        marginTop: "20px",
-                                                                                                        backgroundColor: field.splitbtnbg,
-                                                                                                        fontSize: `${field.splitbtnfont}px`,
-                                                                                                        color: field.splitbtncolor,
-                                                                                                        height: `${field.splitbtnheight}px`,
-                                                                                                        minWidth: `${field.splitbtnwidth}px`,
-                                                                                                        borderRadius: `${field.splitbtnradious}px`,
-                                                                                                        borderWidth: `${field.splitBorderWidth}px`,
-                                                                                                        borderStyle: field.splitBorderStyle,
-                                                                                                        borderColor: field.splitBorderColor,
-                                                                                                        fontWeight: field.splitbtnWeight,
-
-                                                                                                    }}>
-                                                                                                        {field.splitbtn}</button>
-                                                                                                </a>
-                                                                                            )}
-                                                                                        </div>
-                                                                                    </div>
-
+                                                                            {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                    <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}
-
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -2711,11 +2635,129 @@ const EmailTemplateCreate = () => {
                                                                                 <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
                                                                                     <img src={maximizesize} alt="copy" />
                                                                                 </button>
+
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 );
                                                             }
+
+                                                            if (field.type === "split-group") {
+                                                                return (
+                                                                    <div style={{ width: '100%', position: 'relative' }} className={`email_field split-width ${activeFieldId === field.id ? 'active' : ''}`} onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)} >
+                                                                        <div key={field.id} className="split-container" style={{ display: viewMode === "mobile" ? "block" : "flex", padding: `${field.splitPadding}px`, width: "100%", backgroundColor: field.splitbg, }}>
+                                                                            {field.children.map((child) => {
+                                                                                const isImage = child.add === "image";
+                                                                                return (
+                                                                                    <div
+                                                                                        key={child.id}
+                                                                                        onClick={() => {
+                                                                                            handleFieldClick(child.id);
+                                                                                            setActiveFieldId(field.id);
+                                                                                        }}
+                                                                                        style={{
+                                                                                            width: viewMode === "mobile" ? "100%" : child.width || "50%",
+                                                                                            textAlign: field.splitTextAlin,
+                                                                                            position: 'relative',
+                                                                                            display: 'flex',
+                                                                                            color: field.splitColor,
+                                                                                            fontSize: `${field.splittextSize}px`,
+                                                                                            letterSpacing: `${child.splitletter}px`,
+                                                                                            fontFamily: field.splitfamily,
+                                                                                        }}
+                                                                                    >
+                                                                                        {isImage ? (
+                                                                                            <img src={child.value || imghd1} alt="Uploaded Preview" style={{ width: "100%", height: "auto" }} />
+                                                                                        ) : (
+                                                                                            <div style={{ width: '100%', display: 'flex', alignItems: child.splittext === 'left' ? 'flex-start' : child.splittext === 'center' ? 'center' : 'flex-end' }}>
+                                                                                                <div style={{ width: '100%' }}>
+                                                                                                    <div className=' ql-editored' style={{ color: field.splitColor, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: child.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...' }} />
+                                                                                                    <div >
+                                                                                                        {field.showbtnsplit && (
+                                                                                                            <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
+                                                                                                                <button style={{
+                                                                                                                    fontFamily: field.splitbtnfamily,
+                                                                                                                    marginTop: "20px",
+                                                                                                                    backgroundColor: field.splitbtnbg,
+                                                                                                                    fontSize: `${child.splitbtnfont}px`,
+                                                                                                                    color: field.splitbtncolor,
+                                                                                                                    height: `${child.splitbtnheight}px`,
+                                                                                                                    minWidth: `${child.splitbtnwidth}px`,
+                                                                                                                    borderRadius: `${field.splitbtnradious}px`,
+                                                                                                                    borderWidth: `${child.splitBorderWidth}px`,
+                                                                                                                    borderStyle: field.splitBorderStyle,
+                                                                                                                    borderColor: field.splitBorderColor,
+                                                                                                                    fontWeight: field.splitbtnWeight,
+
+                                                                                                                }}>
+                                                                                                                    {field.splitbtn}</button>
+                                                                                                            </a>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                            </div>
+                                                                                        )}
+
+                                                                                    </div>
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className={`form-builder-drag-drop ${activeFieldId === field.id ? 'active' : ''}`}>
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
+
+                                                                        <div className='form-builder-radio-btn email'>
+                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
+                                                                                <img src={editicon} alt="copy" />
+                                                                            </button>
+                                                                            <button className='remove-btn' onClick={() => removeField(field.id)}>
+                                                                                <img src={delete1} alt="delete" />
+                                                                            </button>
+                                                                            <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
+                                                                                <img src={maximizesize} alt="copy" />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            }
+                                                            if (field.type === 'spacer') {
+                                                                return (
+                                                                    <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
+                                                                        className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
+                                                                        style={{ display: 'flex', width: "100%" }}
+                                                                        ref={emailFieldRef}
+                                                                    >
+                                                                        <div style={{ width: '100%' }}>
+                                                                            <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
+                                                                        </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
+
+                                                                        <div className='form-builder-radio-btn email'>
+                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
+                                                                                <img src={editicon} alt="copy" />
+                                                                            </button>
+                                                                            <button className='remove-btn' onClick={() => removeField(field.id)}>
+                                                                                <img src={delete1} alt="delete" />
+                                                                            </button>
+                                                                            <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
+                                                                                <img src={maximizesize} alt="copy" />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+
+                                                            }
+
                                                             if (field.type === 'description') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
@@ -2756,6 +2798,8 @@ const EmailTemplateCreate = () => {
                                                             if (field.type === 'images') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field  ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
                                                                         ref={emailFieldRef}
@@ -2768,7 +2812,7 @@ const EmailTemplateCreate = () => {
                                                                                 borderStyle: field.imgBorderStyle,
                                                                                 borderColor: field.imgBorderColor,
                                                                                 width: '100%',
-                                                                                display:'inline-grid'
+                                                                                display: 'inline-grid'
                                                                             }}>
 
                                                                             <img src={field.value || imghd} alt="Dynamic" style={{
@@ -2778,6 +2822,11 @@ const EmailTemplateCreate = () => {
 
 
                                                                         </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
 
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
@@ -2796,6 +2845,8 @@ const EmailTemplateCreate = () => {
                                                             if (field.type === 'divider') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                         ref={emailFieldRef}
@@ -2808,6 +2859,12 @@ const EmailTemplateCreate = () => {
                                                                                 marginRight: field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : '',
                                                                             }} />
                                                                         </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
+
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
@@ -2827,6 +2884,8 @@ const EmailTemplateCreate = () => {
                                                             if (field.type === 'richtext') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                     >
@@ -2851,6 +2910,12 @@ const EmailTemplateCreate = () => {
 
                                                                                 }}
                                                                                 dangerouslySetInnerHTML={{ __html: editorValueed || field.content || 'Captivate customers with' }} />
+                                                                            {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                    <img src={drop} alt="Drag" />
+                                                                                </div>
+                                                                            )}
+
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -2867,35 +2932,13 @@ const EmailTemplateCreate = () => {
                                                                 );
                                                             }
 
-                                                            if (field.type === 'spacer') {
-                                                                return (
-                                                                    <div key={field.id} onClick={() => handleFieldClick(field.id)}
-                                                                        className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
-                                                                        style={{ display: 'flex', width: "100%" }}
-                                                                        ref={emailFieldRef}
-                                                                    >
-                                                                        <div style={{ width: '100%' }}>
-                                                                            <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
-                                                                        </div>
-                                                                        <div className='form-builder-radio-btn email'>
-                                                                            <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
-                                                                                <img src={editicon} alt="copy" />
-                                                                            </button>
-                                                                            <button className='remove-btn' onClick={() => removeField(field.id)}>
-                                                                                <img src={delete1} alt="delete" />
-                                                                            </button>
-                                                                            <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
-                                                                                <img src={maximizesize} alt="copy" />
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                );
 
-                                                            }
                                                             if (field.type === 'video') {
 
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                         ref={emailFieldRef}
@@ -2916,6 +2959,12 @@ const EmailTemplateCreate = () => {
                                                                                 </div>
                                                                             )}
                                                                         </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
+
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
@@ -2935,6 +2984,8 @@ const EmailTemplateCreate = () => {
                                                             if (field.type === 'button') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field leftbtn ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                         ref={emailFieldRef}
@@ -2968,6 +3019,11 @@ const EmailTemplateCreate = () => {
                                                                                 </button>
                                                                             </a>
                                                                         </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
 
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
@@ -2986,6 +3042,8 @@ const EmailTemplateCreate = () => {
                                                             if (field.type === 'costum') {
                                                                 return (
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field form-builder-and-preview ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                         ref={emailFieldRef}
@@ -3006,6 +3064,12 @@ const EmailTemplateCreate = () => {
                                                                             }}>
                                                                                 {field.costumText}
                                                                             </div>
+                                                                            {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                    <img src={drop} alt="Drag" />
+                                                                                </div>
+                                                                            )}
+
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -3027,6 +3091,8 @@ const EmailTemplateCreate = () => {
                                                                 return (
 
                                                                     <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field form-builder-and-preview ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                         ref={emailFieldRef}
@@ -3036,6 +3102,12 @@ const EmailTemplateCreate = () => {
                                                                                 className="preview-content ql-editored"
                                                                                 dangerouslySetInnerHTML={{ __html: field.value || field.htmltext }}
                                                                             />
+                                                                            {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                    <img src={drop} alt="Drag" />
+                                                                                </div>
+                                                                            )}
+
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -3056,6 +3128,8 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div key={field.id}
                                                                         onClick={() => handleFieldClick(field.id)}
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
                                                                         className={`email_field columns-container ${activeFieldId === field.id ? 'active' : ''}`}
                                                                         style={{ display: 'flex', width: '100%' }}
                                                                     >
@@ -3137,6 +3211,12 @@ const EmailTemplateCreate = () => {
 
                                                                             </div>
                                                                         </div>
+                                                                        {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <img src={drop} alt="Drag" />
+                                                                            </div>
+                                                                        )}
+
                                                                         <div className='form-builder-radio-btn email'>
                                                                             <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                 <img src={editicon} alt="copy" />
@@ -3157,6 +3237,8 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div style={{ width: '100%' }} onClick={() => handleAddProductToSelected(field.id, field.title, field.image, field.products)}>
                                                                         <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                            onMouseLeave={() => setHoveredFieldId(null)}
                                                                             className={`email_field ${activeFieldId === field.id ? 'active' : ''}`}
                                                                             style={{ display: 'flex', width: '100%' }}
                                                                             ref={emailFieldRef}
@@ -3189,7 +3271,7 @@ const EmailTemplateCreate = () => {
                                                                                         ) : (
                                                                                             <p>No image available</p>
                                                                                         )}
-                                                                                        <div style={{display:'grid',gap:'10px', marginBottom:'10px'}}>
+                                                                                        <div style={{ display: 'grid', gap: '10px', marginBottom: '10px' }}>
                                                                                             <span style={{ letterSpacing: `${field.productLetterSpacing}px`, fontWeight: field.productWeight }}>
                                                                                                 {product.title.length > 15 ? `${product.title.slice(0, 15)}...` : product.title}
                                                                                             </span>
@@ -3222,6 +3304,12 @@ const EmailTemplateCreate = () => {
                                                                                     </div>
                                                                                 ))}
                                                                             </div>
+                                                                            {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                    <img src={drop} alt="Drag" />
+                                                                                </div>
+                                                                            )}
+
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn first " onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -3240,8 +3328,10 @@ const EmailTemplateCreate = () => {
 
                                                             if (field.type === 'socalicon') {
                                                                 return (
-                                                                    <div style={{width:'100%'}} onClick={() => handleEdit(field)}>
+                                                                    <div style={{ width: '100%' }} onClick={() => handleEdit(field)}>
                                                                         <div key={field.id} onClick={() => handleFieldClick(field.id)}
+                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                            onMouseLeave={() => setHoveredFieldId(null)}
                                                                             className={`email_field  ${activeFieldId === field.id ? 'active' : ''}`}
                                                                             style={{ display: 'flex', width: '100%' }}
                                                                             ref={emailFieldRef}
@@ -3273,6 +3363,12 @@ const EmailTemplateCreate = () => {
                                                                                     )}
                                                                                 </div>
                                                                             </div>
+                                                                            {(activeFieldId === field.id || hoveredFieldId === field.id) && (
+                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                    <img src={drop} alt="Drag" />
+                                                                                </div>
+                                                                            )}
+
                                                                             <div className='form-builder-radio-btn email'>
                                                                                 <button className="copy-btn first" onClick={() => handleFieldClick(field.id)}>
                                                                                     <img src={editicon} alt="copy" />
@@ -3482,7 +3578,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.MultiColor || '#000'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.MultiColor || '#0000'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, MultiColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.MultiColor || '#000'}
@@ -3501,7 +3617,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Background Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.Multibgcolor || '#FFFFFF'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.Multibgcolor || '#FFFFFF'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, Multibgcolor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.Multibgcolor || '#FFFFFF'}
@@ -3535,7 +3671,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors add-text-line'>
                                                                                         <label>Background Color Column</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.Multicolumnbgcolor || '#FFFFFF'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.Multicolumnbgcolor || '#FFFFFF'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, Multicolumnbgcolor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.Multicolumnbgcolor || '#FFFFFF'}
@@ -3600,9 +3756,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
 
@@ -3716,10 +3872,30 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Border Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.MulticolumnbtnBorderColor || '#FFFFFFF'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.MulticolumnbtnBorderColor || '#0000'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, MulticolumnbtnBorderColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
-                                                                                                value={field.MulticolumnbtnBorderColor || '#FFFFFFF'}
+                                                                                                value={field.MulticolumnbtnBorderColor || '#0000'}
                                                                                                 onChange={(e) => {
                                                                                                     setFields(prevFields =>
                                                                                                         prevFields.map(f =>
@@ -3789,7 +3965,27 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label> Text-color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.Multibtncolor || '#000000'}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.Multibtncolor || '#0000'}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, Multibtncolor: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
                                                                                                     value={field.Multibtncolor || '#000000'}
@@ -3926,7 +4122,27 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label>Background Color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.Multibtnbg || '#FFFFFF'}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.Multibtnbg || '#FFFFFF'}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, Multibtnbg: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
                                                                                                     value={field.Multibtnbg || '#FFFFFF'}
@@ -3945,7 +4161,27 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label>Border Color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.MultibtnBorderColor || '#0000'}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.MultibtnBorderColor || '#0000'}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, MultibtnBorderColor: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
                                                                                                     value={field.MultibtnBorderColor || '#0000'}
@@ -4066,7 +4302,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Text-color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.richtextcolor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.richtextcolor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, richtextcolor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.richtextcolor}
@@ -4095,9 +4351,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
 
@@ -4164,7 +4420,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Background Color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.richbgcolor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.richbgcolor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, richbgcolor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.richbgcolor}
@@ -4359,7 +4635,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Background Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.productbg || '#FFFFFF'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.productbg}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, productbg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.productbg || '#FFFFFF'}
@@ -4378,7 +4674,26 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Border Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.productBorderColor}</span>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.productBorderColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, productBorderColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.productBorderColor}
@@ -4447,7 +4762,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.productTextColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.productTextColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, productTextColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.productTextColor}
@@ -4612,7 +4947,27 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label>Background Color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.productbackgroundColor}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.productbackgroundColor}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, productbackgroundColor: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
                                                                                                     value={field.productbackgroundColor}
@@ -4631,7 +4986,26 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label> Text Color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.productbtnbg || '#FFFFFF'}</span>
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.productbtnbg}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, productbtnbg: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
                                                                                                     value={field.productbtnbg || '#FFFFFF'}
@@ -4650,7 +5024,27 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label>Border Color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.productbtnBorderColor}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.productbtnBorderColor}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, productbtnBorderColor: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
                                                                                                     value={field.productbtnBorderColor}
@@ -5004,7 +5398,26 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color </label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.headingColor}</span>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.headingColor || '#ffffff'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, headingColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.headingColor}
@@ -5124,7 +5537,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.subheadingColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.subheadingColor || '#ffffff'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, subheadingColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.subheadingColor}
@@ -5187,9 +5620,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
 
@@ -5197,7 +5630,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Background Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.headingbg || '#ffffff'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.headingbg || '#ffffff'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, headingbg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.headingbg || '#ffffff'}
@@ -5217,7 +5670,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Border Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.headingBorderColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.headingBorderColor || '#ffffff'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, headingBorderColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.headingBorderColor}
@@ -5337,7 +5810,27 @@ const EmailTemplateCreate = () => {
                                                                                             <div className='checkbox-option bg-colors'>
                                                                                                 <label>Button Background</label>
                                                                                                 <div className="color-picker-container color_wraped">
-                                                                                                    <span className="color-code">{field.headerbtnbg}</span>
+
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        className="color-code"
+                                                                                                        value={field.headerbtnbg || '#ffffff'}
+                                                                                                        readOnly
+                                                                                                        onClick={(e) => {
+                                                                                                            navigator.clipboard.writeText(e.target.value);
+                                                                                                        }}
+                                                                                                        onPaste={(e) => {
+                                                                                                            e.preventDefault();
+                                                                                                            const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                            if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                                setFields(prevFields =>
+                                                                                                                    prevFields.map(f =>
+                                                                                                                        f.id === field.id ? { ...f, headerbtnbg: pastedText } : f
+                                                                                                                    )
+                                                                                                                );
+                                                                                                            }
+                                                                                                        }}
+                                                                                                    />
                                                                                                     <input
                                                                                                         type="color"
                                                                                                         value={field.headerbtnbg}
@@ -5356,7 +5849,27 @@ const EmailTemplateCreate = () => {
                                                                                             <div className='checkbox-option bg-colors'>
                                                                                                 <label>Button Border color   </label>
                                                                                                 <div className="color-picker-container color_wraped">
-                                                                                                    <span className="color-code">{field.headingbtnBorderColor}</span>
+
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        className="color-code"
+                                                                                                        value={field.headingbtnBorderColor || '#ffffff'}
+                                                                                                        readOnly
+                                                                                                        onClick={(e) => {
+                                                                                                            navigator.clipboard.writeText(e.target.value);
+                                                                                                        }}
+                                                                                                        onPaste={(e) => {
+                                                                                                            e.preventDefault();
+                                                                                                            const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                            if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                                setFields(prevFields =>
+                                                                                                                    prevFields.map(f =>
+                                                                                                                        f.id === field.id ? { ...f, headingbtnBorderColor: pastedText } : f
+                                                                                                                    )
+                                                                                                                );
+                                                                                                            }
+                                                                                                        }}
+                                                                                                    />
                                                                                                     <input
                                                                                                         type="color"
                                                                                                         value={field.headingbtnBorderColor}
@@ -5410,7 +5923,27 @@ const EmailTemplateCreate = () => {
                                                                                             <div className='checkbox-option bg-colors'>
                                                                                                 <label>Button text color</label>
                                                                                                 <div className="color-picker-container color_wraped">
-                                                                                                    <span className="color-code">{field.headerbtncolor}</span>
+
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        className="color-code"
+                                                                                                        value={field.headerbtncolor || '#ffffff'}
+                                                                                                        readOnly
+                                                                                                        onClick={(e) => {
+                                                                                                            navigator.clipboard.writeText(e.target.value);
+                                                                                                        }}
+                                                                                                        onPaste={(e) => {
+                                                                                                            e.preventDefault();
+                                                                                                            const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                            if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                                setFields(prevFields =>
+                                                                                                                    prevFields.map(f =>
+                                                                                                                        f.id === field.id ? { ...f, headerbtncolor: pastedText } : f
+                                                                                                                    )
+                                                                                                                );
+                                                                                                            }
+                                                                                                        }}
+                                                                                                    />
                                                                                                     <input
                                                                                                         type="color"
                                                                                                         value={field.headerbtncolor}
@@ -5663,9 +6196,9 @@ const EmailTemplateCreate = () => {
                                                                                     }}
                                                                                 >
                                                                                     <option value="">Select text align</option>
-                                                                                    <option value="left">left</option>
-                                                                                    <option value="center">center</option>
-                                                                                    <option value="right">right</option>
+                                                                                    <option value="left">Left</option>
+                                                                                    <option value="center">Center</option>
+                                                                                    <option value="right">Right</option>
                                                                                 </select>
                                                                             </div>
                                                                             <div className='form-builder-chaneging-wrap color'>
@@ -5802,9 +6335,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
 
@@ -5812,7 +6345,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Background Color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.imgbg || '#ffffff'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.imgbg}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, imgbg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.imgbg || '#ffffff'}
@@ -5849,7 +6402,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Border Color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.imgBorderColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.imgBorderColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, imgBorderColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.imgBorderColor}
@@ -5910,7 +6483,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Divider Color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.dividerColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.dividerColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, dividerColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.dividerColor}
@@ -5929,7 +6522,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>Divider Background color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.dividerbgColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.dividerbgColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, dividerbgColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.dividerbgColor}
@@ -6141,7 +6754,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.costumColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.costumColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, costumColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.costumColor}
@@ -6161,7 +6794,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Background-color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.costumBg}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.costumBg}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, costumBg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.costumBg}
@@ -6189,9 +6842,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
@@ -6249,7 +6902,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.htmlColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.htmlColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, htmlColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.htmlColor}
@@ -6277,9 +6950,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
 
@@ -6332,7 +7005,7 @@ const EmailTemplateCreate = () => {
                                                                         </div>
                                                                     );
                                                                 }
-                                                                if (field.id === selectedFieldId && field.type === "split") {
+                                                                if (field.type === "split-group" && field.children.some(child => child.id === selectedFieldId)) {
                                                                     return (
                                                                         <div key={field.id} className="form-builder-chaneging-wrap color">
                                                                             <div className='setting_bg_email_templetes'>
@@ -6341,7 +7014,8 @@ const EmailTemplateCreate = () => {
                                                                                     <select
                                                                                         id="widthSelect"
                                                                                         onChange={(e) => handleWidthChange(e.target.value)}
-                                                                                        value={fields.find((f) => f.id === selectedFieldId)?.width || '50%'}
+                                                                                        value={fields.flatMap((f) => (f.type === "split-group" ? f.children : []))
+                                                                                            .find((f) => f.id === selectedFieldId)?.width || "50%"}
                                                                                     >
                                                                                         <option value="25%">25%</option>
                                                                                         <option value="50%">50%</option>
@@ -6354,45 +7028,72 @@ const EmailTemplateCreate = () => {
                                                                                             id="add"
                                                                                             onChange={(e) =>
                                                                                                 setFields((prevFields) =>
-                                                                                                    prevFields.map((f) =>
-                                                                                                        f.id === selectedFieldId ? { ...f, add: e.target.value, value: e.target.value === 'image' ? '' : f.value } : f
-                                                                                                    )
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, add: e.target.value, value: e.target.value === "image" ? "" : child.value }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, add: e.target.value, value: e.target.value === "image" ? "" : f.value }
+                                                                                                            : f;
+                                                                                                    })
                                                                                                 )
                                                                                             }
-                                                                                            value={fields.find((f) => f.id === selectedFieldId)?.add || 'text'}
+                                                                                            value={fields.flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                .find((f) => f.id === selectedFieldId)?.add || "text"}
                                                                                         >
                                                                                             <option value="text">Text</option>
                                                                                             <option value="image">Image</option>
                                                                                         </select>
+
                                                                                     </div>
 
-                                                                                    <div style={{ marginTop: '10px' }} className='form-builder-chaneging-wrap'>
-                                                                                        {fields.find((f) => f.id === selectedFieldId)?.add === 'text' ? (
+                                                                                    <div style={{ marginTop: '10px' }} className="form-builder-chaneging-wrap">
+
+                                                                                        {fields
+                                                                                            .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                            .find((f) => f.id === selectedFieldId)?.add === "text" ? (
                                                                                             <div className='form-builder-chaneging-wrap textediter' style={{ color: 'black' }}>
-                                                                                                {ReactQuill ? (
-                                                                                                    <ReactQuill
-                                                                                                        value={fields.find((f) => f.id === selectedFieldId)?.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...'}
-                                                                                                        onChange={(value) => {
-                                                                                                            setFields((prevFields) =>
-                                                                                                                prevFields.map((f) =>
-                                                                                                                    f.id === selectedFieldId ? { ...f, value } : f
-                                                                                                                )
-                                                                                                            );
-                                                                                                        }}
-                                                                                                        modules={{ toolbar: toolbarOptions }}
-                                                                                                    />
-                                                                                                ) : (
-                                                                                                    <p>Loading editor...</p>
-                                                                                                )}
+                                                                                                <ReactQuill
+                                                                                                    value={
+                                                                                                        fields
+                                                                                                            .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                            .find((f) => f.id === selectedFieldId)?.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...'
+                                                                                                    }
+                                                                                                    onChange={(content) =>
+                                                                                                        setFields((prevFields) =>
+                                                                                                            prevFields.map((f) => {
+                                                                                                                if (f.type === "split-group") {
+                                                                                                                    return {
+                                                                                                                        ...f,
+                                                                                                                        children: f.children.map((child) =>
+                                                                                                                            child.id === selectedFieldId ? { ...child, value: content } : child
+                                                                                                                        ),
+                                                                                                                    };
+                                                                                                                }
+                                                                                                                return f.id === selectedFieldId ? { ...f, value: content } : f;
+                                                                                                            })
+                                                                                                        )
+                                                                                                    }
+                                                                                                    modules={{ toolbar: toolbarOptions }}
+                                                                                                    style={{ width: '100%', minHeight: '150px', padding: '10px', fontSize: '16px', border: '1px solid #ccc' }}
+                                                                                                />
                                                                                             </div>
                                                                                         ) : (
-                                                                                            <div className='form-builder-chaneging-wrap file'>
-                                                                                                <label htmlFor="fileInput">Upload Image </label>
-
-                                                                                                {!fields.find((f) => f.id === selectedFieldId)?.value ? (
+                                                                                            <div className="form-builder-chaneging-wrap file">
+                                                                                                <label htmlFor="fileInput">Upload Image</label>
+                                                                                                {!fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.value ? (
                                                                                                     <div
                                                                                                         className="upload-area"
-                                                                                                        onClick={() => document.getElementById('fileInput').click()}
+                                                                                                        onClick={() => document.getElementById("fileInput").click()}
                                                                                                         onDragOver={(e) => e.preventDefault()}
                                                                                                         onDrop={(e) => {
                                                                                                             e.preventDefault();
@@ -6401,9 +7102,17 @@ const EmailTemplateCreate = () => {
                                                                                                                 const reader = new FileReader();
                                                                                                                 reader.onload = () => {
                                                                                                                     setFields((prevFields) =>
-                                                                                                                        prevFields.map((f) =>
-                                                                                                                            f.id === selectedFieldId ? { ...f, value: reader.result } : f
-                                                                                                                        )
+                                                                                                                        prevFields.map((f) => {
+                                                                                                                            if (f.type === "split-group") {
+                                                                                                                                return {
+                                                                                                                                    ...f,
+                                                                                                                                    children: f.children.map((child) =>
+                                                                                                                                        child.id === selectedFieldId ? { ...child, value: reader.result } : child
+                                                                                                                                    ),
+                                                                                                                                };
+                                                                                                                            }
+                                                                                                                            return f.id === selectedFieldId ? { ...f, value: reader.result } : f;
+                                                                                                                        })
                                                                                                                     );
                                                                                                                 };
                                                                                                                 reader.readAsDataURL(file);
@@ -6411,32 +7120,42 @@ const EmailTemplateCreate = () => {
                                                                                                         }}
                                                                                                     >
                                                                                                         <img src={file} alt="Uploaded" style={{ maxWidth: '100%' }} />
-                                                                                                        <p>Drag & Drop to Upload image </p>
+                                                                                                        <p>Drag & Drop to Upload Image</p>
                                                                                                         <p>OR</p>
-                                                                                                        <span className='upload-btn'>Browse image </span>
+                                                                                                        <span className="upload-btn">Browse Image</span>
                                                                                                     </div>
                                                                                                 ) : (
-                                                                                                    <div style={{ marginTop: '10px' }}>
+                                                                                                    <div style={{ marginTop: "10px" }}>
                                                                                                         <img
-                                                                                                            src={fields.find((f) => f.id === selectedFieldId)?.value}
+                                                                                                            src={fields
+                                                                                                                .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                                .find((f) => f.id === selectedFieldId)?.value}
                                                                                                             alt="Uploaded Preview"
-                                                                                                            style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ccc', padding: '5px' }}
+                                                                                                            style={{ maxWidth: "100%", height: "auto", border: "1px solid #ccc", padding: "5px" }}
                                                                                                         />
-                                                                                                        <div style={{ marginTop: '10px' }}>
+                                                                                                        <div style={{ marginTop: "10px" }}>
                                                                                                             <button
-                                                                                                                className='update-image img'
-                                                                                                                onClick={() => document.getElementById('fileInput').click()}
-                                                                                                                style={{ marginRight: '10px' }}
+                                                                                                                className="update-image img"
+                                                                                                                onClick={() => document.getElementById("fileInput").click()}
+                                                                                                                style={{ marginRight: "10px" }}
                                                                                                             >
                                                                                                                 Update Image
                                                                                                             </button>
                                                                                                             <button
-                                                                                                                className='update-image rmove-img rm-btn'
+                                                                                                                className="update-image rmove-img rm-btn"
                                                                                                                 onClick={() => {
                                                                                                                     setFields((prevFields) =>
-                                                                                                                        prevFields.map((f) =>
-                                                                                                                            f.id === selectedFieldId ? { ...f, value: '' } : f
-                                                                                                                        )
+                                                                                                                        prevFields.map((f) => {
+                                                                                                                            if (f.type === "split-group") {
+                                                                                                                                return {
+                                                                                                                                    ...f,
+                                                                                                                                    children: f.children.map((child) =>
+                                                                                                                                        child.id === selectedFieldId ? { ...child, value: "" } : child
+                                                                                                                                    ),
+                                                                                                                                };
+                                                                                                                            }
+                                                                                                                            return f.id === selectedFieldId ? { ...f, value: "" } : f;
+                                                                                                                        })
                                                                                                                     );
                                                                                                                 }}
                                                                                                             >
@@ -6445,7 +7164,6 @@ const EmailTemplateCreate = () => {
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 )}
-
                                                                                                 <input
                                                                                                     type="file"
                                                                                                     accept="image/*"
@@ -6456,17 +7174,26 @@ const EmailTemplateCreate = () => {
                                                                                                             const reader = new FileReader();
                                                                                                             reader.onload = () => {
                                                                                                                 setFields((prevFields) =>
-                                                                                                                    prevFields.map((f) =>
-                                                                                                                        f.id === selectedFieldId ? { ...f, value: reader.result } : f
-                                                                                                                    )
+                                                                                                                    prevFields.map((f) => {
+                                                                                                                        if (f.type === "split-group") {
+                                                                                                                            return {
+                                                                                                                                ...f,
+                                                                                                                                children: f.children.map((child) =>
+                                                                                                                                    child.id === selectedFieldId ? { ...child, value: reader.result } : child
+                                                                                                                                ),
+                                                                                                                            };
+                                                                                                                        }
+                                                                                                                        return f.id === selectedFieldId ? { ...f, value: reader.result } : f;
+                                                                                                                    })
                                                                                                                 );
                                                                                                             };
                                                                                                             reader.readAsDataURL(file);
                                                                                                         }
                                                                                                     }}
-                                                                                                    style={{ display: 'none' }}
+                                                                                                    style={{ display: "none" }}
                                                                                                 />
                                                                                             </div>
+
                                                                                         )}
                                                                                     </div>
 
@@ -6477,7 +7204,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.splitColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.splitColor || '#000'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, splitColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.splitColor || '#000'}
@@ -6506,24 +7253,35 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     />
                                                                                 </div> */}
-
                                                                                 <div className='form-builder-chaneging-wrap number'>
                                                                                     <label>Letter Spacing</label>
                                                                                     <input
                                                                                         type="number"
-                                                                                        value={field.splitletter}
                                                                                         onChange={(e) => {
-                                                                                            const inputValue = e.target.value;
-                                                                                            const newWidth = parseInt(inputValue, 10);
-
-                                                                                            if (inputValue === "" || (newWidth >= 0 && newWidth <= 100)) {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitletter: inputValue } : f
-                                                                                                    )
-                                                                                                );
-                                                                                            }
+                                                                                            const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                            setFields((prevFields) =>
+                                                                                                prevFields.map((f) => {
+                                                                                                    if (f.type === "split-group") {
+                                                                                                        return {
+                                                                                                            ...f,
+                                                                                                            children: f.children.map((child) =>
+                                                                                                                child.id === selectedFieldId
+                                                                                                                    ? { ...child, splitletter: newValue }
+                                                                                                                    : child
+                                                                                                            ),
+                                                                                                        };
+                                                                                                    }
+                                                                                                    return f.id === selectedFieldId
+                                                                                                        ? { ...f, splitletter: newValue }
+                                                                                                        : f;
+                                                                                                })
+                                                                                            );
                                                                                         }}
+                                                                                        value={
+                                                                                            fields
+                                                                                                .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                .find((f) => f.id === selectedFieldId)?.splitletter || 0
+                                                                                        }
                                                                                         min="0"
                                                                                         max="100"
                                                                                         placeholder="Letter Spacing"
@@ -6584,16 +7342,32 @@ const EmailTemplateCreate = () => {
                                                                                 <div className='form-builder-chaneging-wrap'>
                                                                                     <label>Text Style</label>
                                                                                     <select
-                                                                                        value={field.splittext}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, splittext: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
+                                                                                        id="splittext"
+                                                                                        onChange={(e) =>
+                                                                                            setFields((prevFields) =>
+                                                                                                prevFields.map((f) => {
+                                                                                                    if (f.type === "split-group") {
+                                                                                                        return {
+                                                                                                            ...f,
+                                                                                                            children: f.children.map((child) =>
+                                                                                                                child.id === selectedFieldId
+                                                                                                                    ? { ...child, splittext: e.target.value }
+                                                                                                                    : child
+                                                                                                            ),
+                                                                                                        };
+                                                                                                    }
+                                                                                                    return f.id === selectedFieldId
+                                                                                                        ? { ...f, splittext: e.target.value }
+                                                                                                        : f;
+                                                                                                })
+                                                                                            )
+                                                                                        }
+                                                                                        value={
+                                                                                            fields.flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                .find((f) => f.id === selectedFieldId)?.splittext || "left"
+                                                                                        }
                                                                                     >
-                                                                                        <option value="left">TOP</option>
+                                                                                        <option value="left">Top</option>
                                                                                         <option value="center">Center</option>
                                                                                         <option value="end">Bottom</option>
                                                                                     </select>
@@ -6602,7 +7376,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Background color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.splitbg || '#FFFFFF'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.splitbg || '#FFFFFF'}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, splitbg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.splitbg || '#FFFFFF'}
@@ -6621,7 +7415,7 @@ const EmailTemplateCreate = () => {
                                                                                     <label>Padding</label>
                                                                                     <input
                                                                                         type="number"
-                                                                                        value={field.splitPadding}
+                                                                                        value={field.splitPadding || 0}
                                                                                         onChange={(e) => {
                                                                                             setFields(prevFields =>
                                                                                                 prevFields.map(f =>
@@ -6645,9 +7439,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
@@ -6666,14 +7460,33 @@ const EmailTemplateCreate = () => {
                                                                                         <label>Button Label</label>
                                                                                         <input
                                                                                             type="text"
-                                                                                            value={field.splitbtn}
                                                                                             onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitbtn: e.target.value } : f
-                                                                                                    )
+                                                                                                const newValue = e.target.value;
+                                                                                                setFields((prevFields) =>
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, splitbtn: newValue }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, splitbtn: newValue }
+                                                                                                            : f;
+                                                                                                    })
                                                                                                 );
                                                                                             }}
+                                                                                            value={
+                                                                                                fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtn || 0
+                                                                                            }
+
+                                                                                            placeholder="Letter Spacing"
                                                                                         />
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
@@ -6730,10 +7543,30 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors add-text-line'>
                                                                                             <label> Button Background color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.splitbtnbg || '#FFFFFFF'}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.splitbtnbg || '#FFFFFF'}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, splitbtnbg: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
-                                                                                                    value={field.splitbtnbg || '#FFFFFFF'}
+                                                                                                    value={field.splitbtnbg || '#FFFFFF'}
                                                                                                     onChange={(e) => {
                                                                                                         setFields(prevFields =>
                                                                                                             prevFields.map(f =>
@@ -6749,14 +7582,32 @@ const EmailTemplateCreate = () => {
                                                                                         <label>Font-Size</label>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={field.splitbtnfont}
+
                                                                                             onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitbtnfont: e.target.value } : f
-                                                                                                    )
+                                                                                                const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                                setFields((prevFields) =>
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, splitbtnfont: newValue }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, splitbtnfont: newValue }
+                                                                                                            : f;
+                                                                                                    })
                                                                                                 );
                                                                                             }}
+                                                                                            value={
+                                                                                                fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtnfont || 0
+                                                                                            }
                                                                                             min='0'
                                                                                         />
                                                                                     </div>
@@ -6765,10 +7616,30 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label> Button text color </label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.splitbtncolor || '#FFFFFFF'}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.splitbtncolor || '#000'}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, splitbtncolor: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
-                                                                                                    value={field.splitbtncolor || '#FFFFFFF'}
+                                                                                                    value={field.splitbtncolor || '#000'}
                                                                                                     onChange={(e) => {
                                                                                                         setFields(prevFields =>
                                                                                                             prevFields.map(f =>
@@ -6804,29 +7675,63 @@ const EmailTemplateCreate = () => {
                                                                                         <label>Height</label>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={field.splitbtnheight}
                                                                                             onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitbtnheight: e.target.value } : f
-                                                                                                    )
+                                                                                                const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                                setFields((prevFields) =>
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, splitbtnheight: newValue }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, splitbtnheight: newValue }
+                                                                                                            : f;
+                                                                                                    })
                                                                                                 );
                                                                                             }}
-                                                                                            min='0'
+                                                                                            value={
+                                                                                                fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtnheight || 0
+                                                                                            }
                                                                                         />
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Width</label>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={field.splitbtnwidth}
+
                                                                                             onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitbtnwidth: e.target.value } : f
-                                                                                                    )
+                                                                                                const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                                setFields((prevFields) =>
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, splitbtnwidth: newValue }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, splitbtnwidth: newValue }
+                                                                                                            : f;
+                                                                                                    })
                                                                                                 );
                                                                                             }}
+                                                                                            value={
+                                                                                                fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtnwidth || 0
+                                                                                            }
                                                                                             min='0'
                                                                                         />
                                                                                     </div>
@@ -6858,10 +7763,30 @@ const EmailTemplateCreate = () => {
                                                                                         <div className='checkbox-option bg-colors'>
                                                                                             <label>Border Color</label>
                                                                                             <div className="color-picker-container color_wraped">
-                                                                                                <span className="color-code">{field.splitBorderColor || '#FFFFFFF'}</span>
+
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    className="color-code"
+                                                                                                    value={field.splitBorderColor || '#000'}
+                                                                                                    readOnly
+                                                                                                    onClick={(e) => {
+                                                                                                        navigator.clipboard.writeText(e.target.value);
+                                                                                                    }}
+                                                                                                    onPaste={(e) => {
+                                                                                                        e.preventDefault();
+                                                                                                        const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                            setFields(prevFields =>
+                                                                                                                prevFields.map(f =>
+                                                                                                                    f.id === field.id ? { ...f, splitBorderColor: pastedText } : f
+                                                                                                                )
+                                                                                                            );
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
                                                                                                 <input
                                                                                                     type="color"
-                                                                                                    value={field.splitBorderColor || '#FFFFFFF'}
+                                                                                                    value={field.splitBorderColor || '#000'}
                                                                                                     onChange={(e) => {
                                                                                                         setFields(prevFields =>
                                                                                                             prevFields.map(f =>
@@ -6878,21 +7803,39 @@ const EmailTemplateCreate = () => {
                                                                                         <label>Border Width (px)</label>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={field.splitBorderWidth}
+
                                                                                             onChange={(e) => {
-                                                                                                setFields(prevFields =>
-                                                                                                    prevFields.map(f =>
-                                                                                                        f.id === field.id ? { ...f, splitBorderWidth: e.target.value } : f
-                                                                                                    )
+                                                                                                const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                                setFields((prevFields) =>
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, splitBorderWidth: newValue }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, splitBorderWidth: newValue }
+                                                                                                            : f;
+                                                                                                    })
                                                                                                 );
                                                                                             }}
+                                                                                            value={
+                                                                                                fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitBorderWidth || 0
+                                                                                            }
                                                                                             min='0'
                                                                                         />
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap '>
                                                                                         <label>Border Style</label>
                                                                                         <select
-                                                                                            value={field.splitBorderStyle}
+                                                                                            value={field.splitBorderStyle || 'solid'}
                                                                                             onChange={(e) => {
                                                                                                 setFields(prevFields =>
                                                                                                     prevFields.map(f =>
@@ -7027,7 +7970,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>  Background color</label>
                                                                                         <div className="color-picker-container color_wraped">
-                                                                                            <span className="color-code">{field.spacerbg || '#FFFFFFF'}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.spacerbg}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, spacerbg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.spacerbg || '#FFFFFFF'}
@@ -7096,9 +8059,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap number'>
@@ -7120,7 +8083,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Text-color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.buttonTextColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.buttonTextColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, buttonTextColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.buttonTextColor}
@@ -7272,7 +8255,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label>  Background color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.buttonbgColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.buttonbgColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, buttonbgColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.buttonbgColor}
@@ -7292,7 +8295,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors add-text-line'>
                                                                                         <label> Button Background Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.buttonColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.buttonColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, buttonColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.buttonColor}
@@ -7336,7 +8359,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Border Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.buttonBorderColor}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.buttonBorderColor}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, buttonBorderColor: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.buttonBorderColor}
@@ -7535,7 +8578,27 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='checkbox-option bg-colors'>
                                                                                         <label> Background Color</label>
                                                                                         <div className="color-picker-container">
-                                                                                            <span className="color-code">{field.socalIconbg}</span>
+
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="color-code"
+                                                                                                value={field.socalIconbg}
+                                                                                                readOnly
+                                                                                                onClick={(e) => {
+                                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                                }}
+                                                                                                onPaste={(e) => {
+                                                                                                    e.preventDefault();
+                                                                                                    const pastedText = e.clipboardData.getData('text').trim();
+                                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                        setFields(prevFields =>
+                                                                                                            prevFields.map(f =>
+                                                                                                                f.id === field.id ? { ...f, socalIconbg: pastedText } : f
+                                                                                                            )
+                                                                                                        );
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
                                                                                             <input
                                                                                                 type="color"
                                                                                                 value={field.socalIconbg || '#FFFFFF'}
@@ -7608,9 +8671,9 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                     >
                                                                                         <option value="">Select text align</option>
-                                                                                        <option value="left">left</option>
-                                                                                        <option value="center">center</option>
-                                                                                        <option value="right">right</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
                                                                                     </select>
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap number' >

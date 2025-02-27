@@ -77,6 +77,13 @@
     color: white;
 }
 
+.form_build_contact .contact_img {
+    width: 30%;
+}
+
+.form_build_wrap_img img {
+    width: 100%;
+}
 
 .setting_bg_email_templetes {
     background-color: #f5fff9;
@@ -236,9 +243,10 @@ span.upload-btn {
 
 button.rm-btn.remove-btn-img {
     background: transparent !important;
-    width: 44px !important;
+    width: 30px !important;
     right: 7px;
     position: absolute;
+    padding: 0 !important;
 }
 
 .checkbox-option.bg-colors.add-text-line label {
@@ -1109,8 +1117,8 @@ input:checked+.slider:before {
 
 .form-builder-wrap-popup-inputs .popup-content label {
     display: block;
-    margin-bottom: 10px;
-    line-height: 25px;
+    margin-bottom: 5px;
+    line-height: 16px;
 }
 
 .form-builder-wrap-popup-inputs .popup-content select {
@@ -1260,6 +1268,7 @@ button.btn-templates.desktop {
     background: transparent;
     width: 40px;
     cursor: pointer;
+    padding: 2px;
 }
 
 .form-builder-change-propertites .form_build_propertities .radio-option button.remove-options {
@@ -1267,6 +1276,7 @@ button.btn-templates.desktop {
     background: transparent;
     width: 40px;
     cursor: pointer;
+    padding: 4px;
 }
 
 .form-builder-change-propertites .form_build_propertities .radio-option label {
@@ -1282,6 +1292,7 @@ button.btn-templates.desktop {
     background: transparent;
     width: 40px;
     cursor: pointer;
+    padding: 2px;
 }
 
 .form-builder-change-propertites .form_build_propertities .select-option {
@@ -1823,7 +1834,7 @@ button.cancel {
     background-color: #ccc;
     transition: .4s;
     border-radius: 34px;
-    width: 45px;
+    width: 40px;
 }
 
 .input-field a {
@@ -1838,12 +1849,18 @@ button.cancel {
     width: 70px;
 }
 
+.form-builder-chaneging-wrap.textediter .quill {
+    padding: 0 !important;
+}
 
 .form-builder-chaneging-wrap.sliders {
     display: flex;
     gap: 10px;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #B5B7C0;
+    padding-bottom: 15px;
+
 }
 
 .form_builder_option_select .slider:before {
@@ -1855,7 +1872,7 @@ button.cancel {
     left: 4px;
     bottom: 4px;
     background-color: white;
-    transition: .4s;
+    transition: 0.4s;
 }
 
 .form-build-wrpped {
@@ -1869,7 +1886,7 @@ button.cancel {
 }
 
 .form_builder_option_select input:checked+.slider:before {
-    transform: translateX(26px);
+    transform: translateX(21px);
 }
 
 
@@ -1892,20 +1909,21 @@ button.cancel {
     background-color: white;
 }
 
-
 .form-builder-options-container .form-builder-chaneging-wrap {
+    margin-bottom: 15px;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 25px;
-    align-items: center;
+    gap: 20px;
+    width: 100%;
+    border-bottom: 1px solid #B5B7C0;
+    padding-bottom: 15px;
 }
 
+.form-builder-options-container .form-builder-chaneging-wrap:nth-child(1) {
+    border-top: 1px solid #B5B7C0 !important;
+    padding-top: 15px;
 
-
-.form-builder-chaneging-wrap:nth-child(3) {
-    margin: 0;
 }
-
 
 .form-builder-options-container.show {
     max-height: 500px;
@@ -2155,7 +2173,7 @@ button.cancle-form-btn {
 
 .checkbox-option.bg-colors input[type="color"] {
     -webkit-appearance: none;
-    width: 35px;
+    width: 60px;
     height: 35px;
     border-radius: 4px;
     padding: 0;
@@ -2255,10 +2273,22 @@ button.cancle-form-btn {
 
 .form-builder-radio-btn {
     position: absolute;
-    bottom: -13px;
+    bottom: -16px;
     right: 13px;
     display: flex;
     gap: 0px;
+    z-index: 99;
+}
+
+.form-builder-wred-starr-requid {
+    width: 7px;
+    top: 3px;
+    position: absolute;
+    margin-left: 6px;
+}
+
+.form-builder-wred-starr-requid img {
+    width: 100%;
 }
 
 .formId-copy-popup-Id {
@@ -2559,11 +2589,12 @@ span.name_build span {
 }
 
 .form_build_contact button {
-    padding: 6px 17px;
+    height: 35px;
+    width: 185px;
     border-radius: 4px;
     border: none;
     background: white;
-    font-size: 13px;
+    font-size: 14px;
     color: #00AC4F;
     margin-top: 20px;
     font-weight: 550;
@@ -2615,11 +2646,38 @@ span.name_build span {
     gap: 60px;
 }
 
+.form_build_app_btn {
+    width: 123px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.form_build_app_img {
+    width: 90px;
+}
+
+.form-builder-radio-btn button.remove-btn img {
+    width: 13px;
+}
+
+.form-builder-radio-btn button.copy-btn img {
+    width: 13px;
+}
+
 .form_build_wrap_apps {
     display: flex;
     gap: 20px;
     width: 33.3%;
     border-right: 1px solid #F0F0F0;
+    align-items: center;
+}
+
+.form_build_wrap_img {
+    width: 20%;
+}
+
+.form_build_wrap_elements {
+    width: 70%;
 }
 
 .form_build_wrap_apps:last-child {
@@ -2831,6 +2889,10 @@ button.copy-btn.first {
     font-weight: 400;
 }
 
+div#bg_change {
+    box-shadow: none !important;
+}
+
 .form_builder_plan_table.bg {
     padding: 50px 20px 30px;
     border-right: 1px solid;
@@ -2840,7 +2902,7 @@ button.copy-btn.first {
 .form_builder_plan_table.activee img {
     position: absolute;
     top: 16px;
-    left: 28%;
+    left: 32%;
 }
 
 .form_builder_plan_table.bg p {
@@ -3724,10 +3786,28 @@ button.plus_option {
     width: 100%;
 }
 
+.form-builder-wrap-popup-inputs.requid-fields .form_builder_input-fields-requid p {
+    font-size: 25px;
+    font-weight: 600;
+    text-align: center;
+    max-width: 60%;
+    line-height: 30px;
+    margin: auto !important;
+}
+
+.form-builder-wrap-popup-inputs.requid-fields .popup-content {
+    padding: 100px 0 !important;
+    max-width: 30% !important;
+    background-image: url(./images/BG.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .form_builder_support .form-builder-wrap-popup-inputs .popup-content {
     width: 100%;
     max-width: 40%;
     padding: 40px;
+    position: relative;
 }
 
 .form_builder_support .form-builder-wrap-popup-inputs .popup-content h2 {
@@ -3759,6 +3839,7 @@ button.plus_option {
 
 .servies-input {
     width: 48%;
+    position: relative;
 }
 
 .servies-input.textarea {
@@ -3770,10 +3851,6 @@ button.plus_option {
     border: 1px solid #18bd5b;
     padding: 10px 30px;
     font-size: 16px;
-}
-
-.it-services {
-    position: relative;
 }
 
 .it-service-icon {
@@ -4493,8 +4570,7 @@ span.file-option.pro-plus {
 
 .form-builder-chaneging-wrap.number.imagePreview {
     display: flex;
-    margin-top: 15px;
-    gap: 30px;
+
 }
 
 .template-products.row-1 {
@@ -4916,12 +4992,6 @@ button.rm-btn.remove-coloum {
 
 .form-builder-storng-pass input[type="text"] {
     margin-bottom: 0 !important;
-}
-
-.form-builder-storng-btn {
-    display: flex;
-    gap: 15px;
-    width: 50%;
 }
 
 button.form-builder-storng-btn-wrap {
@@ -5473,7 +5543,7 @@ button.rm-btn.showfirst img {
 }
 
 .form_builder_comple_email p {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 650;
     color: #191919;
 }
@@ -5483,12 +5553,31 @@ button.rm-btn.showfirst img {
     border-bottom: 1px solid #F0F0F0;
 }
 
+.form_builder_complte_toggle_wraped span {
+    font-size: 14px;
+    color: #707679;
+}
+
 .form_builder_action_status {
-    padding: 25px 40px;
-    border-bottom: 1px solid #F0F0F0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 10px;
+}
+
+.form_builder_complte_forms .form_build_inputs span {
+    font-size: 13px;
+    color: #707679;
+}
+
+.form_builder_comple_email p {
+    margin-bottom: 10px;
+}
+
+
+.form_builder_complte_toggle_wraped {
+    padding: 25px 40px;
+    border-bottom: 1px solid #F0F0F0;
 }
 
 .form_builder_action_number input[type="number"] {
@@ -5509,7 +5598,7 @@ button.rm-btn.showfirst img {
 }
 
 .form_builder_action_status p {
-    font-size: 18px;
+    font-size: 22px;
     color: #191919;
     font-weight: 650;
 }
@@ -5565,6 +5654,10 @@ button.form_email_btn {
         height: 119vh;
         background-color: white;
     }
+
+    .email-templates {
+        width: 22% !important;
+    }
 }
 
 @media screen and (max-width: 1440px) {
@@ -5574,6 +5667,30 @@ button.form_email_btn {
         max-width: 1440px;
         margin: 0 auto;
         padding: 0 20px;
+    }
+
+    .setting_bg_email_templetes {
+        margin-top: 50px;
+    }
+
+    .email-template-input-setting .form-builder-change-propertites .form_qucik {
+        position: fixed;
+        background: white;
+        z-index: 9999;
+        width: 100%;
+    }
+
+
+    .form_builder_action_number {
+        width: 12%;
+    }
+
+    .form_build_new_base p {
+        max-width: 100%;
+    }
+
+    .form_build_app_bottm.second.know {
+        padding-top: 42px;
     }
 
     button.copy-btn.first {
@@ -5658,7 +5775,7 @@ button.form_email_btn {
         position: absolute;
         right: -6px;
         top: -25px;
-        z-index: 9 !important;
+        z-index: 9999 !important;
         display: block !important;
     }
 
@@ -5720,6 +5837,25 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1280px) {
+    .form_build_new_base {
+        padding: 20px 20px;
+    }
+
+    .form_build_setup {
+        padding: 20px;
+    }
+
+    .form_build_wrap_img {
+        width: 25%;
+    }
+
+    .form_build_contact {
+        padding: 10px 20px;
+    }
+
+    .form_build_contact .contact_img {
+        width: 40%;
+    }
 
     .email-template-show-wreped {
         gap: 28px;
@@ -5764,6 +5900,18 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1024px) {
+    .form-build-wrpped.propertites-forms {
+        height: 90vh;
+    }
+
+    .form-builder-change-propertites.change-form {
+        height: 90vh;
+    }
+
+    .form-builder-wrap-popup-inputs.requid-fields .popup-content {
+        max-width: 50% !important;
+    }
+
     .controls-main-wrp .controls-wrp.email .edit_setting_bg {
         width: 100%;
         margin-bottom: 20px;
@@ -6020,6 +6168,7 @@ button.form_email_btn {
         overflow: hidden;
         overflow-y: auto;
         height: 90vh;
+        z-index: 999;
         scrollbar-width: thin;
         scrollbar-color: #ccc transparent;
     }
@@ -6046,7 +6195,7 @@ button.form_email_btn {
     }
 
     .controls-wrpping.cancleimg {
-        position: absolute;
+        position: fixed;
         right: -6px;
         top: -25px;
         z-index: 9 !important;
@@ -6124,9 +6273,6 @@ button.form_email_btn {
         gap: 15px;
     }
 
-    .form_build_wrap_img img {
-        width: 45px;
-    }
 
     .form_builder_theme_section {
         flex-wrap: wrap;
@@ -6272,6 +6418,9 @@ button.form_email_btn {
 
 
 @media screen and (max-width:991px) {
+    .form_build_app_bottm.second.know {
+        padding-top: 20px;
+    }
 
     .email-templates {
         width: 47.8% !important;
@@ -6396,7 +6545,7 @@ button.form_email_btn {
     }
 
     .builder-forms .builder-sections-forms {
-        width: 90% !important;
+        width: 45% !important;
     }
 
     .form-main-wrp table tr {
@@ -6436,12 +6585,31 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 768px) {
+    .form-builder-wrap-popup-inputs.requid-fields .popup-content {
+        max-width: 60% !important;
+    }
+
+    span.payment-plan {
+        width: 28%;
+    }
+
+    .builder-forms .builder-sections-forms {
+        width: 52% !important;
+    }
 
     .form_builder_support .form_builder_convert {
         display: block;
     }
 
-    .form_builder_action_status {
+    .form_builder_action_status p {
+        font-size: 20px;
+    }
+
+    .form_builder_comple_email p {
+        font-size: 20px;
+    }
+
+    .form_builder_complte_toggle_wraped {
         padding: 15px 20px;
     }
 
@@ -6496,8 +6664,12 @@ button.form_email_btn {
         border: none;
     }
 
-    .form_build_wrap_img img {
-        width: 60px;
+    .form_build_contact .contact_img {
+        width: 70%;
+    }
+
+    .form_build_wrap_img {
+        width: 15%;
     }
 
     .contact_img {
@@ -6551,16 +6723,49 @@ button.form_email_btn {
         max-width: 75%;
     }
 
+    .form_build_contact {
+        padding: 10px 30px;
+    }
+
+    .form_build_setup {
+        padding: 30px;
+    }
+
+    .form_build_new_base {
+        padding: 30px 30px;
+    }
+
 }
 
 @media screen and (max-width:640px) {
+    .builderr_field_wrpp {
+        padding: 15px 15px;
+    }
+
+    .controls-main-wrp .controls-wrp {
+        max-width: 85%;
+    }
+
     .email-campaing-templates .builder_form_name {
         align-items: baseline;
     }
 
-    .forms_build_flex-wraped {
-        display: grid;
+    .email-campaing-templates button.cancle-form-btn {
+        width: 80px;
+        padding: 9px;
+        font-size: 13px;
     }
+
+    .email-campaing-templates button.create-form-btn.action_btn {
+        width: 80px;
+        padding: 9px;
+        font-size: 13px;
+    }
+
+    .email-campaing-templates .btn_form_bulider {
+        gap: 10px;
+    }
+
 
     .form_building_popupshow .table-header {
         grid-template-columns: 20px repeat(2, 1fr);
@@ -6593,16 +6798,26 @@ button.form_email_btn {
     }
 
 
-    .form_builder_action_status p {
-        font-size: 14px;
-    }
-
-    .form_builder_comple_email p {
-        font-size: 14px;
-    }
 }
 
+
 @media screen and (max-width:540px) {
+
+    .email-template-heading {
+        width: 40%;
+    }
+
+    .form-builder-wrap-popup-inputs.requid-fields .popup-content {
+        max-width: 80% !important;
+    }
+
+    .builder-forms .builder-sections-forms {
+        width: 70% !important;
+    }
+
+    .form_build_contact {
+        padding: 10px 20px;
+    }
 
     .email-template-section .email-tempalte-your .form-builder-search-bar {
         width: 59% !important;
@@ -6630,7 +6845,7 @@ button.form_email_btn {
         width: 30%;
     }
 
-    .form_builder_action_status {
+    .form_builder_complte_forms {
         display: block;
     }
 
@@ -6709,6 +6924,73 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .email-campaing-templates .builder_form_name {
+        align-items: baseline;
+        display: block;
+    }
+
+    .template-select-forms {
+        width: 45%;
+    }
+
+    .email-campaing-templates .btn_form_bulider {
+        position: absolute;
+        top: 15.7%;
+        left: 28%;
+    }
+
+    .email-template-heading {
+        width: 50%;
+    }
+
+    .form-builder-wrap-popup-inputs.requid-fields .form_builder_input-fields-requid p {
+        max-width: 90%;
+    }
+
+    .form_builder_complte_forms .form_build_inputs span p {
+        line-height: 18px;
+    }
+
+    .form-tota-customer-element p {
+        font-size: 11px;
+    }
+
+    button.cancle-form-btn {
+        padding: 8px;
+        width: 80px;
+        font-size: 15px;
+    }
+
+    .btn_form_bulider button.action_btn {
+        padding: 8px;
+        width: 80px;
+        font-size: 15px;
+    }
+
+    .builderr_field_wrpp {
+        padding: 15px 3px;
+    }
+
+    .form-builder-table tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--verticalAlignTop.Polaris-DataTable__Cell--header {
+        padding: 5px;
+    }
+
+    .builder-forms .builder-sections-forms {
+        width: 90% !important;
+    }
+
+    .form_build_wrap_img {
+        width: 20%;
+    }
+
+    .form_build_setup_options p {
+        max-width: 100%;
+    }
+
+    .form_build_contact button {
+        height: 35px;
+        width: 165px;
+    }
 
     .form-builder-wrap-popup-inputs .form-builder-prodcut-all .popup-content {
         padding: 20px;
@@ -6920,6 +7202,46 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .email-campaing-templates .btn_form_bulider {
+        left: 31%;
+    }
+
+    .controls-main-wrp .controls-wrp button h4 {
+        font-size: 11px;
+    }
+
+    button.action_btn {
+        padding: 9px 9px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+
+    .builder-sections-draftform {
+        font-size: 12px;
+    }
+
+    .builder-sections-liveform {
+        font-size: 12px;
+    }
+
+    .form_build_contact {
+        display: block;
+        width: 100%;
+    }
+
+    .form_build_contact .contact_img {
+        width: 100%;
+    }
+
+    .form_build_count {
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .form_build_contact {
+        padding: 20px 30px;
+    }
+
     .email-campaing-templates button.create-form-btn.action_btn {
         width: 70px;
         padding: 9px 12px;
@@ -6947,8 +7269,8 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 20px;
-        line-height: 25px;
+        font-size: 26px;
+        line-height: 32px;
     }
 
     .email-title-t {
@@ -6991,6 +7313,18 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:395px) {
+    .email-campaing-templates .btn_form_bulider {
+        left: 35%;
+    }
+
+    .form_build_new_base {
+        padding: 20px 20px;
+    }
+
+    .form_build_wrap_img {
+        width: 25%;
+    }
+
     .email-template-section .email-tempalte-your .form-builder-search-bar {
         width: 43% !important;
     }
@@ -7035,7 +7369,7 @@ button.form_email_btn {
     }
 
     .form-build-customer-search .form-builder-search-bar {
-        max-width: 85%;
+        max-width: 83%;
     }
 
     .form_builder_show_all_forms .form_build_heading .form-build-customer-search {
@@ -7054,9 +7388,41 @@ button.form_email_btn {
     .form-build-customer-search {
         flex-wrap: wrap;
     }
+
+    .form_builders_plan_monthly {
+        font-size: 11px !important;
+    }
+
+    .form_annualy_plans {
+        font-size: 11px !important;
+    }
+
+    .enjoy_paln span {
+        font-size: 11px !important;
+    }
+
+    .form_annualy_plans._plans {
+        padding: 8px 7px;
+    }
 }
 
 @media screen and (max-width:375px) {
+    .email-campaing-templates .btn_form_bulider {
+        left: 36%;
+    }
+
+    .from_builder_pricing .form_builder_plan_add .form_builders_plan_btn.active {
+        gap: 12px;
+    }
+
+    .form_builders_plan_btn .form_builders_plan_monthly {
+        padding: 6px 5px
+    }
+
+    .form_build_app_img {
+        width: 66px;
+    }
+
     .form_build_contact button {
         padding: 5px 7px;
     }
@@ -7066,8 +7432,8 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 17px;
-        line-height: 20px;
+        font-size: 24px;
+        line-height: 27px;
     }
 
     .builder-sections-draftform {
@@ -7075,7 +7441,7 @@ button.form_email_btn {
     }
 
     .form-build-customer-search .form-builder-search-bar {
-        max-width: 78%;
+        max-width: 80%;
     }
 
     .table-header {
@@ -7095,6 +7461,16 @@ button.form_email_btn {
 
     }
 
+}
+
+@media screen and (max-width:320px) {
+    .email-campaing-templates .btn_form_bulider {
+        left: 42%;
+    }
+
+    .email-template-section .email-tempalte-your .form-builder-search-bar {
+        width: 100% !important;
+    }
 }
 
 .toggle-container {
@@ -7278,6 +7654,7 @@ button.form_email_btn {
     background: #e7f9f4 !important;
     color: black;
     left: 1px;
+    border-radius: 2px !important;
 }
 
 .input-field.phone-edit .selected-flag:hover,
@@ -7329,3 +7706,83 @@ button.form_email_btn {
 .custom-checkbox-form-build input[type="checkbox"]:checked+label:after {
     transform: translate(-50%, -50%) scale(1);
 }
+
+.form-builder-chaneging-wrap.number.password-creater {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #B5B7C0;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+}
+
+.form-builder-chaneging-wrap.number.password-creater.character {
+    border-top: 1px solid #B5B7C0;
+    padding-top: 15px;
+}
+
+.form-builder-chaneging-wrap.number.password-creater input[type="number"] {
+    width: 54px;
+    text-align: center;
+}
+
+.form-builder-chaneging-wrap-lable-passwoerd {
+    color: black;
+}
+
+.form-builder-chaneging-wrap-lable-passwoerd p {
+    font-size: 11px;
+}
+
+
+
+
+
+
+
+.switch-form-builder {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch-form-builder input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-switch-form-builder {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.slider-switch-form-builder::before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.switch-form-builder input:checked+.slider-switch-form-builder {
+    background-color: #4CAF50;
+}
+
+.switch-form-builder input:checked+.slider-switch-form-builder::before {
+    transform: translateX(21px);
+}
+
+
+

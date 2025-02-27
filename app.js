@@ -90,11 +90,13 @@ const formCreateSchema = new mongoose.Schema({
     linktext: { type: String, required: false },
     linkUrl: { type: String, required: false },
     linkTarget: { type: String, required: false },
+    linkfontsize: { type: String, required: false },
     customClass: { type: String, required: false },
     linkaline: { type: String, required: false },
     min: { type: String, required: false },
     max: { type: String, required: false },
     step: { type: String, required: false },
+    textPadding: { type: String, required: false },
     btnradious: { type: String, required: false },
     passwordCharacter: { type: String, required: false },
     passwordStatus: { type: String, required: false },
@@ -102,6 +104,7 @@ const formCreateSchema = new mongoose.Schema({
     ImagePreview: { type: String, enum: ['on', 'off'] },
     multifilePreview: { type: String, enum: ['on', 'off'] },
     signlePreview: { type: String, enum: ['on', 'off'] },
+    multiIamgePreview: { type: String, enum: ['on', 'off'] },
     multiOptions: {type: Map,of: String, required: false,},
     imageOptions: {type: Map,of: String, required: false,},
     multiimagesOptions: {type: Map,of: String, required: false,},
@@ -139,6 +142,7 @@ const formCreateSchema = new mongoose.Schema({
     inputGap: { type: String, default: '10' },
     opacityForm: { type: String, default: '1' },
     textHeading: { type: String, default: '' },
+    headingLineheight: { type: String, default: '' },
     colorHeading: { type: String, default: '' },
     subject: { type: String, default: '' },
     maxDescriptionHeight: { type: Number, default: 0 },
@@ -246,6 +250,7 @@ const emailTemplateSchema = new mongoose.Schema({
       headerbtn: { type: String, required: false },
       columnCount: { type: Number, required: false },
       columnData: { type: [columnSchema], required: false },
+      children:{type: Object ,requid: false},
       value: { type: Object, required: false, default: { typeValue: 'No Value Provided', customIcons: [] } },
       bannerImageWidth: { type: String, required: false },
       bannerImageHeight: { type: String, required: false },
@@ -1256,71 +1261,83 @@ const sendEmail = async (email, TemplateAll,subject) => {
                 </div>`;
             }
 
-            case 'split': {
+            case 'split-group': {
               const value = field.value || '';
-              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, (match) => '');
+              const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');
+          
+              let childrenHtml = field.children
+                  .map((child) => {
+                      return `
+                      <div style="width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : child.width}; letter-spacing: ${child.splitletter || 1}px;">
+                          ${
+                              child.add === 'image'
+                                  ? `<img src=${child.value} alt="Uploaded Preview" style="width: 100%; height: auto;" />`
+                                  : `<div style="width: 100%;">
+                                      ${child.value}
+                                      ${field.showbtnsplit ? `
+                                      <a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                                      <button style="
+                                          margin-top: 20px;
+                                          background-color: ${field.splitbtnbg || '#007BFF'};
+                                          font-size: ${child.splitbtnfont || 14}px;
+                                          color: ${field.splitbtncolor || '#FFF'};
+                                          height: ${child.splitbtnheight || 40}px;
+                                          min-width: ${child.splitbtnwidth || 100}px;
+                                          border-radius: ${field.splitbtnradious || 0}px;
+                                          border-width: ${child.splitBorderWidth || 2}px;
+                                          border-style: ${field.splitBorderStyle || 'solid'};
+                                          border-color: ${field.splitBorderColor || '#000'};
+                                          
+                                          cursor: pointer;
+                                          font-family: ${field.splitbtnfamily || '"Poppins", sans-serif'};
+                                          font-weight: ${field.splitbtnWeight || 'bold'}; 
+                                      ">
+                                          ${child.splitbtn || 'Click Me'}
+                                      </button>
+                                  </a>` : ''}
+                                  </div>`
+                          }
+                      </div>
+                      `;
+                  })
+                  .join('');
           
               return `
                   <div style="
-                  overflow: hidden;
-                  background-color: ${field.splitbg || '#ffffff'};
-                  width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : field.width};
-                  padding: ${field.splitPadding || 0}px;
-                  height: ${field.divHeight}px;
-                  float: ${field.float || 'left'};
-                  color: ${field.splitColor || '#000'};
-                  font-size: ${field.splittextSize || 14}px;
-                  line-height: ${field.splitlineheight || 30}px; 
-                  font-family: ${field.splitfamily || 'Poppins'};
-                  letter-spacing: ${field.splitletter || 1}px; 
-                ">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
-                    width: 100%;
-                    height: 100%;
-                    text-align: ${field.splitTextAlin || 'left'};
-                    border-spacing: 0;
-                    color: ${field.splitColor || '#000'};
+                      overflow: hidden;
+                      background-color: ${field.splitbg || '#ffffff'};
+                      width: 100%;
+                      padding: ${field.splitPadding || 0}px;
+                      float: ${field.float || 'left'};
+                      color: ${field.splitColor || '#000'};
+                      font-size: ${field.splittextSize || 14}px;
+                      line-height: ${field.splitlineheight || 30}px;
+                      font-family: ${field.splitfamily || 'Poppins'};
+                     
                   ">
-                    <tr>
-                      <td style="
-                  vertical-align: ${['top', 'middle', 'bottom', 'center', 'end'].includes(field.splittext) 
-                        ? (field.splittext === 'center' ? 'middle' : field.splittext === 'end' ? 'bottom' : field.splittext) 
-              : 'top'};
-
-                        text-align: ${field.splitTextAlin || 'left'};
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
+                          width: 100%;
+                          height: 100%;
+                          text-align: ${field.splitTextAlin || 'left'};
+                          border-spacing: 0;
+                          color: ${field.splitColor || '#000'};
                       ">
-                        ${field.add === 'image' && field.value ?
-                          `<img src="${field.value}" alt="Uploaded Preview" style="width: 100%; height: auto; display: block;" />` :
-                          `<div>${updatedValue}</div>`
-                        }
-                        ${field.showbtnsplit ?
-                          `<a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                            <button style="
-                              margin-top: 20px;
-                              background-color: ${field.splitbtnbg || '#007BFF'};
-                              font-size: ${field.splitbtnfont || 14}px;
-                              color: ${field.splitbtncolor || '#FFF'};
-                              height: ${field.splitbtnheight || 40}px;
-                              width: ${field.splitbtnwidth || 100}px;
-                              border-radius: ${field.splitbtnradious || 0}px;
-                              border-width: ${field.splitBorderWidth || 2}px;
-                              border-style: ${field.splitBorderStyle || 'solid'};
-                              border-color: ${field.splitBorderColor || '#000'};
-                              padding: 10px 20px;
-                              cursor: pointer;
-                              font-family: ${field.splitbtnfamily || '"Poppins", sans-serif'};
-                              font-weight: ${field.splitbtnWeight || 'bold'}; 
-                            ">
-                              ${field.splitbtn || 'Click Me'}
-                            </button>
-                          </a>` : ''
-                        }
-                      </td>
-                    </tr>
-                  </table>
-                </div>
+                          <tr>
+                              <td style=" display:${TemplateAll?.styles?.viewMode === 'mobile' ? 'block' : 'flex'};
+                                  vertical-align: ${['top', 'middle', 'bottom', 'center', 'end'].includes(field.splittext) 
+                                      ? (field.splittext === 'center' ? 'middle' : field.splittext === 'end' ? 'bottom' : field.splittext) 
+                                      : 'top'};
+                                  text-align: ${field.splitTextAlin || 'left'};
+                              ">
+                                  ${childrenHtml}
+                                  
+                              </td>
+                          </tr>
+                      </table>
+                  </div>
               `;
           }
+          
           
             case 'product':
               return `
@@ -1762,7 +1779,6 @@ Thank you for using our Form Builder HuB app to connect with your customer. If y
   }
 });
 
-
 app.get('/get-status/:shop', async (req, res) => {
   try {
     const { shop } = req.params;
@@ -1952,6 +1968,19 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
       }
     });
 
+    fieldsArray.forEach(field => {
+      if (field.type === 'split-group' && Array.isArray(field.children)) {
+        field.children.forEach(child => {
+          if (child.value && typeof child.value === 'string' && child.value.startsWith('data:image')) {
+            const base64Data = child.value.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const fileName = `split_child_image_${Date.now()}.png`;
+            child.value = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+    });
+    
+
     const formData = new Email({
       templateId,
       shop,
@@ -2029,6 +2058,18 @@ app.put('/update/:id', async (req, res) => {
       }
     });
 
+    updatedFormData.fields.forEach(field => {
+      if (field.type === 'split-group' && Array.isArray(field.children)) {
+        field.children.forEach(child => {
+          if (child.value && typeof child.value === 'string' && child.value.startsWith('data:image')) {
+            const base64Data = child.value.replace(/^data:image\/(?:png|jpeg);base64,/, '');
+            const fileName = `split_child_image_${Date.now()}.png`;
+            child.value = saveBase64Image2(base64Data, fileName);
+          }
+        });
+      }
+    });
+    
     const updatedForm = await Email.findByIdAndUpdate(id, updatedFormData, {
       new: true,
       runValidators: true,
@@ -2345,10 +2386,7 @@ app.post('/api/forms', async (req, res) => {
     if (!shop) {
       return res.status(400).send({ error: 'Shop field is missing from the form submission.' });
     }
-    if (!title || !id || !fields || !Array.isArray(fields) || fields.length === 0) {
-      return res.status(400).send({ error: 'Missing required fields: title, id, and fields are required.' });
-    }
-
+   
     for (const field of fields) {
       if (!field.id || !field.value) {
         return res.status(400).send({ error: 'Each field must have an id and a value.' });
