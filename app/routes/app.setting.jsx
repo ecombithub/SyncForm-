@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../index.css';
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
+import cancleimg from '../images/cancleimg.png';
+import { Link, useNavigate } from '@remix-run/react';
 import axios from 'axios';
 
 export const loader = async ({ request }) => {
@@ -101,6 +103,10 @@ export default function Setting() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [userPlan, setUserPlan] = useState(null);
+    const [upgradePopup, setUpgradePopup] = useState(false);
+    const navigator = useNavigate();
+
     useEffect(() => {
         const fetchStatus = async () => {
             try {
@@ -131,9 +137,41 @@ export default function Setting() {
         }
     };
 
+    const fetchPaymentPlan = async () => {
+        try {
+            console.log("Fetching payment plan...");
+            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+
+            console.log("Response data:", response.data);
+            setUserPlan(response.data);
+            console.log("User plan set:", response.data);
+            await fetchForms(response.data);
+            console.log("Forms fetched successfully with user plan data.");
+        } catch (error) {
+            console.error("Error fetching payment plan:", error);
+
+        }
+    };
+
+    useEffect(() => {
+        fetchPaymentPlan();
+    })
+
     const toggleStatus = () => {
+        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUpgradePopup(true);
+            return;
+        }
         setStatus(prevStatus => (prevStatus === 'active' ? 'disactive' : 'active'));
     };
+
+    const handleUpgrade = () => {
+        navigator('/app/pricing');
+    }
+    
+    const handleCancle = () => {
+        setUpgradePopup(false);
+    }
 
     const sendData = async () => {
         try {
@@ -174,7 +212,7 @@ export default function Setting() {
                 setMessage('Settings saved successfully!');
                 setEmail('');
                 setPassword('');
-    
+
                 setTimeout(() => {
                     setMessage('');
                 }, 3000);
@@ -187,79 +225,90 @@ export default function Setting() {
     };
 
     return (
-        <div className='form_builder_setting_page'>
-            <div className="container">
-                <div className="form_builder_setting_title">
-                    <h2>Settings</h2>
-                </div>
-                <div className='form_builder_complte_actions'>
-                    <div className='form_builder_complte_toggle_wraped'>
-                    <div className='form_builder_action_status'>
-                        <p>Submission Notification</p>
-                        <div className="toggle-switched">
-                            <input
-                                type="checkbox"
-                                id="status-toggle"
-                                checked={status === 'active'}
-                                onChange={toggleStatus}
-                                className="toggle-checkboxed"
-                            />
-                        </div>
-                    </div>
-                    <span>Enable this option to get notified once a particular number of form submissions are completed, you will automatically receive an email containing a CSV file. This file contains all collected data without manually exporting.</span>
-                    </div>
-                    
-                    <div className='form_builder_complte_toggle_wraped'>
-                    <div className='form_builder_action_status'>
-                        <p>Set Submission Notification Count</p>
-                        <div className='form_builder_action_number'>
-                            <input
-                                type="number"
-                                value={numberValue}
-                                onChange={handleNumberChange}
-                            />
-                            <label>Enter at least 10 forms.</label>
-                        </div>
-                    </div>
-                    <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 50 submissions, but you can adjust it to a higher number based on your needs.</span>
+        <>
+            {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp'>
+                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                    <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
+                        <img src={cancleimg} alt="" />
                     </div>
                 </div>
-                <div className='form_builder_complte_actions'>
-                    <div className='form_builder_comple_email'> <p>Integrate Email for Form Notifications</p>
-                    <span>Store owners link their email address to integrate with form. Once a user submits the form, the provided email will send or receive notifications based on the configured template.</span>
+            </div>}
+            <div className='form_builder_setting_page'>
+                <div className="container">
+                    <div className="form_builder_setting_title">
+                        <h2>Settings</h2>
                     </div>
-                    <span></span>
-                    <form onSubmit={handleSubmit}>
-                        <div className='form_builder_complte_forms'>
-                           <div className='form_build_inputs'>
-                           <label>Email:</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder='Your email'
-                                required
-                            />
-                           </div>
-                            <div className='form_build_inputs'>
-                                <label>Password:</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                     placeholder='Your Password'
-                                    required
-                                />
-                                <span> <p>Note:An app password is a security code that allows authorized  apps access to your email and different from your email password. To generate App Password click here.</p> </span>
+                    <div className='form_builder_complte_actions'>
+                        <div className='form_builder_complte_toggle_wraped'>
+                            <div className='form_builder_action_status'>
+                                <p>Submission Notification</p>
+                                <div className="toggle-switched">
+                                    <input
+                                        type="checkbox"
+                                        id="status-toggle"
+                                        checked={status === 'active'}
+                                        onChange={toggleStatus}
+                                        className="toggle-checkboxed"
+                                    />
+                                </div>
                             </div>
+                            <span>Enable this option to get notified once a particular number of form submissions are completed, you will automatically receive an email containing a CSV file. This file contains all collected data without manually exporting.</span>
                         </div>
-                        <button className='form_email_btn' type="submit">Submit</button>
-                        {message && <p style={{color:"red"}}>{message}</p>}
-                    </form>
-                   
+
+                        <div className='form_builder_complte_toggle_wraped'>
+                            <div className='form_builder_action_status'>
+                                <p>Set Submission Notification Count</p>
+                                <div className='form_builder_action_number'>
+                                    <input
+                                        type="number"
+                                        value={numberValue}
+                                        onChange={handleNumberChange}
+                                    />
+                                    <label>Enter at least 10 forms.</label>
+                                </div>
+                            </div>
+                            <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 50 submissions, but you can adjust it to a higher number based on your needs.</span>
+                        </div>
+                    </div>
+                    <div className='form_builder_complte_actions'>
+                        <div className='form_builder_comple_email'> <p>Integrate Email for Form Notifications</p>
+                            <span>Store owners link their email address to integrate with form. Once a user submits the form, the provided email will send or receive notifications based on the configured template.</span>
+                        </div>
+                        <span></span>
+                        <form onSubmit={handleSubmit}>
+                            <div className='form_builder_complte_forms'>
+                                <div className='form_build_inputs'>
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder='Your email'
+                                        required
+                                    />
+                                </div>
+                                <div className='form_build_inputs'>
+                                    <label>Password:</label>
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder='Your Password'
+                                        required
+                                    />
+                                    <span> <p>Note:An app password is a security code that allows authorized  apps access to your email and different from your email password. To generate App Password click here.</p> </span>
+                                </div>
+                            </div>
+                            <button className='form_email_btn' type="submit">Submit</button>
+                            {message && <p style={{ color: "red" }}>{message}</p>}
+                        </form>
+
+                    </div>
                 </div>
+                <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
             </div>
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
-        </div>
+        </>
     );
 }

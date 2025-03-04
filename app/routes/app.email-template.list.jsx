@@ -704,11 +704,12 @@ export default function EmailTemplate() {
                                         borderRadius: `${field.Multiborderradious}px`,
                                         fontFamily: field.Multifamily,
                                         letterSpacing: `${field.Multiletter}px`,
+                                         display:'block'
 
                                     }}
                                 >
                                     {column.image && (
-                                        <img src={column.image} alt={`Column ${index}`} style={{ width: `${field.Multiimgwidth || 100}%`, height: 'auto' }} />
+                                        <img src={column.image} alt={`Column ${index}`} style={{ verticalAlign:'bottom', width: `${field.Multiimgwidth || 100}%`, height: 'auto' }} />
                                     )}
 
                                     <div
@@ -761,19 +762,18 @@ export default function EmailTemplate() {
                     <div
                         style={{
                             backgroundColor: field.splitbg,
-                            padding: `${field.splitPadding}px`,
                             display: matchedData?.styles?.viewMode === "mobile" ? "block" : "flex",
                             position: 'relative',
-                            textAlign: field.splitTextAlin,
                             float: 'inline-start',
                             color: field.splitColor,
                             fontSize: `${field.splittextSize}px`,
                             
                             fontFamily: field.splitfamily,
+                            width:'100%'
                         }}
                     >
                         {field.children.map((child) => (
-                            <div key={child.id} style={{ width: matchedData?.styles?.viewMode === 'mobile' ? '100%' : child.width,display:"flex", letterSpacing: `${child.splitletter}px`, }}>
+                            <div key={child.id} style={{ textAlign: child.splitTextAlin, padding: `${child.splitPadding}px`, width: matchedData?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%',display:"flex", letterSpacing: `${child.splitletter}px`, }}>
                                 {child.add === 'image' ? (
                                     <img
                                         src={child.value} 
@@ -810,7 +810,7 @@ export default function EmailTemplate() {
                                                                 color: field.splitbtncolor,
                                                                 height: `${child.splitbtnheight}px`,
                                                                 minWidth: `${child.splitbtnwidth}px`,
-                                                                borderRadius: `${field.splitbtnradious}px`,
+                                                                borderRadius: `${child.splitbtnradious}px`,
                                                                 borderWidth: `${child.splitBorderWidth}px`,
                                                                 borderStyle: field.splitBorderStyle,
                                                                 borderColor: field.splitBorderColor,
@@ -1079,7 +1079,7 @@ export default function EmailTemplate() {
                                                         </div>
                                                         <div className='email-templete-icon-wrp'>
                                                             <div className="email-template-icons-all">
-
+                                                        
                                                                 <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleCopyTemplate(form)}>
                                                                     <img src={copy12} alt="" />
                                                                 </div>
@@ -1203,6 +1203,7 @@ export default function EmailTemplate() {
                                                                 <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handleTemplate(form)}>
                                                                     <img src={copyeddd} alt="" />
                                                                 </div>
+                                                                
                                                                 <div className='email-show-icon' style={{ cursor: "pointer" }} onClick={() => handlePreviw(form)}>
                                                                     <img src={yplus} alt="" />
                                                                 </div>

@@ -879,7 +879,7 @@ const Formdata = () => {
 
                                                                 </div>
                                                             )}
-                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, lineHeight:`${field.headingLineheight}px`, color: form.styles.colorHeading, textAlign: form.styles.textHeading }} >{field.text}</field.level></div>}
+                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, lineHeight:`${field.headingLineheight}px`, color: field.colorHeading, textAlign: field.textHeading }} >{field.text}</field.level></div>}
                                                             {field.type === 'number' && <input type="number" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'multi-file' && (
                                                                 field.multiOptions[field.id] === 'option1' ? (
@@ -1140,7 +1140,7 @@ const Formdata = () => {
                                                             {field.type === 'button' && <div style={{ textAlign: field.buttonaline }}><button style={{
                                                                 backgroundColor: field.backgroundColor || '#45a7f6',
                                                                 fontSize: `${field.buttontext || '16'}px`,
-                                                                height: field.buttonHeight || 'auto',
+                                                                minHeight: field.buttonHeight || 'auto',
                                                                 minWidth: `${field.btnwidth}px`,
                                                                 padding: `${field.padding}px`,
                                                                 color: field.btncolor,

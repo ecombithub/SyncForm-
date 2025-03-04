@@ -77,6 +77,8 @@ function Customer() {
     const [percentage1, setPercentage1] = useState(0);
     const { shop, apiUrl } = useLoaderData() || {};
     const [currentFormsed, setCurrentForms] = useState([]);
+    const [upgradePopup, setUphradePopup] = useState(false);
+    const [userPlan, setUserPlan] = useState(null);
 
     useEffect(() => {
         const fetchForms = async () => {
@@ -222,6 +224,8 @@ function Customer() {
         setSelectedForms(new Set());
     }
 
+   
+
     const handleToggleFormNames = () => {
         setShowFormNames(prevState => !prevState);
     };
@@ -355,20 +359,20 @@ function Customer() {
         const csvRows = [];
         const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
         csvRows.push(headers.join(','));
-    
+
         currentFormsed.forEach(form => {
             form.submissions.forEach((submission, index) => {
                 const nameField = submission.fields.find(field => field.name === 'First name' || field.name === 'Full name') || { value: 'N/A' };
                 const emailField = submission.fields.find(field => field.name === 'Email') || { value: 'N/A' };
                 const phoneField = submission.fields.find(field => field.name === 'Phone' || field.name === 'Number') || { value: 'N/A' };
-    
+
                 const fieldDetails = Array.isArray(submission.fields)
                     ? submission.fields.map(field => `${field.name}: ${field.value || 'N/A'}`).join('; ')
                     : '';
                 const shop = form.shop || 'N/A';
                 const currentUrl = form.currentUrl || 'N/A';
                 const timestamp = submission.timestamp || 'N/A';
-    
+
                 const values = [
                     form.title || '',
                     form.id || '',
@@ -384,7 +388,7 @@ function Customer() {
                 csvRows.push(values.join(','));
             });
         });
-    
+
         const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -395,10 +399,57 @@ function Customer() {
         a.click();
         document.body.removeChild(a);
     };
+
+    const fetchPaymentPlan = async () => {
+        try {
+            console.log("Fetching payment plan...");
+            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+
+            console.log("Response data:", response.data);
+            setUserPlan(response.data);
+            console.log("User plan set:", response.data);
+
+            console.log("Forms fetched successfully with user plan data.");
+        } catch (error) {
+            console.error("Error fetching payment plan:", error);
+
+        }
+    };
+
+    useEffect(() => {
+        fetchPaymentPlan();
+    }, []);
+
+  
+    const handleCancle = () => {
+        setUphradePopup(false);
+    }
     
+
+    const handleUpgrade = () => {
+        navigate('/app/pricing');
+    }
+
+    const handleshowPopup = () => {
+        if (!['pro','pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUphradePopup(true);
+            return;
+        }
+        setShowpop(!showpop);
+    };
     
     return (
         <>
+
+            {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp'>
+                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                    <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>}
             {loading ? (
                 <div className="skeleton-wrapper fade-in">
                     <div className="container skeleton-wred">
@@ -493,7 +544,7 @@ function Customer() {
                                             <img src={search12} alt="" />
                                         </div>
                                     </div>
-                                    <div className="form_builder_download" onClick={handleShowPop}>
+                                    <div className="form_builder_download"onClick={handleshowPopup}>
                                         <p>Download all CSV</p>
                                     </div>
                                     <div className="form_builder_download icon" onClick={handleShowPop}>

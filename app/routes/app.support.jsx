@@ -5,6 +5,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import '../index.css';
 import star from '../images/star1.png';
+import add from '../images/add.png';
+import create from '../images/create.png';
+import track from '../images/track.png';
+
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
@@ -162,8 +166,8 @@ export default function Support() {
                 </div>
                 <div className="form_builder_convert">
                     <div className="form_builder_blogs">
-                        <img src={blog1} alt="" />
-                        <h3>Maximize Engagement: Tips for Designing Forms That Convert</h3>
+                        <img src={add} alt="" />
+                        <h3>How to Add Form Builder App on Shopify Store?</h3>
                         <div className='form_build_blog_btn'>
                             <div className="form_blog_data oct">
                                 October 05, 2024
@@ -174,8 +178,8 @@ export default function Support() {
                         </div>
                     </div>
                     <div className="form_builder_blogs">
-                        <img src={blog1} alt="" />
-                        <h3>Maximize Engagement: Tips for Designing Forms That Convert</h3>
+                        <img src={create} alt="" />
+                        <h3>How to Create Form in Form Builder</h3>
                         <div className='form_build_blog_btn'>
                             <div className="form_blog_data oct">
                                 October 05, 2024
@@ -186,8 +190,8 @@ export default function Support() {
                         </div>
                     </div>
                     <div className="form_builder_blogs">
-                        <img src={blog1} alt="" />
-                        <h3>Maximize Engagement: Tips for Designing Forms That Convert</h3>
+                        <img src={track} alt="" />
+                        <h3>How to Track and Analyze Form Submissions in Shopity</h3>
                         <div className='form_build_blog_btn'>
                             <div className="form_blog_data oct">
                                 October 05, 2024
@@ -224,7 +228,7 @@ export default function Support() {
                                         <input type="test" value={theme} onChange={(e) => setTheme(e.target.value)} />
                                     </div>
                                     <div className="servies-input shop">
-                                        <label htmlFor="Shop">Shop</label>
+                                        <label htmlFor="Shop">Shop <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
                                         <input type="test" value={shop} onChange={(e) => setShop(e.target.value)} />
                                     </div>
                                     <div className="servies-input textarea">

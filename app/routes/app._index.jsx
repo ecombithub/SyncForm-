@@ -176,14 +176,19 @@ function Index() {
   useEffect(() => {
     const fetchPaymentPlan = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
-        setUserPlan(response.data);
-        await fetchForms(response.data);
+          console.log("Fetching payment plan...");
+          const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+
+          console.log("Response data:", response.data);
+          setUserPlan(response.data);
+          console.log("User plan set:", response.data);
+          await fetchForms(response.data);
+          console.log("Forms fetched successfully with user plan data.");
       } catch (error) {
-        setError('Error fetching payment plan');
-        console.error('Error fetching payment plan:', error);
+          console.error("Error fetching payment plan:", error);
+
       }
-    };
+  };
 
     const fetchForms = async (userPlan) => {
       try {
@@ -231,15 +236,18 @@ function Index() {
 
     fetchPaymentPlan();
   }, [shop]);
+  
 
   const handleCreateForm = () => {
-    if (userPlan?.plan === 'free' && userPlan.status === 'active' && createdForms.length >= 1) {
-      setUpgradePopup(true);
-      return;
+    console.log("User plan:", userPlan?.activePlan?.plan); 
+    
+    if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        setUpgradePopup(true);
+        return;
     }
-
+    
     navigator('/app/forms/new');
-  };
+};
 
   const handleCancle = () => {
     setUpgradePopup(false);
@@ -254,7 +262,7 @@ function Index() {
       <div className="form_builder_dashboard">
         <div className="container">
           <div className="form-builder-customer_title">
-            <h2>Forms Builder HUB</h2>
+            <h2>SyncForm</h2>
           </div>
           <div className="form_build_contact">
             <div className="form_build_count">

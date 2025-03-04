@@ -34,7 +34,7 @@ import multimedia from '../images/multimedia0.png';
 import rich from '../images/rich0.png';
 import costum from '../images/costum.png';
 import remove from '../images/remove.png';
-import rm from '../images/rm.png';
+import redsign from '../images/redsign.png';
 import file from '../images/file.png';
 import cancleimg from '../images/cancleimg.png';
 import bk from '../images/bk.png';
@@ -239,8 +239,18 @@ const EmailTemplateCreate = () => {
     const [fonts, setFonts] = useState([]);
     const [uploadedImage, setUploadedImage] = useState(null);
     const [hoveredFieldId, setHoveredFieldId] = useState(null);
-
-
+    const [isHeadingAdded, setIsHeadingAdded] = useState(false);
+    const [isRichTextAdded, setIsRichTextAdded] = useState(false);
+    const [isbuttonTextAdded, setIsbuttonTextAdded] = useState(false);
+    const [isdividerTextAdded, setIsdividerTextAdded] = useState(false);
+    const [issplitTextAdded, setIssplitTextAdded] = useState(false);
+    const [isimagesTextAdded, setIsimagesTextAdded] = useState(false);
+    const [issocialTextAdded, setIssocialTextAdded] = useState(false);
+    const [ishtmlTextAdded, setIshtmlTextAdded] = useState(false);
+    const [isspacerTextAdded, setIsspacerTextAdded] = useState(false);
+    const [ismultiTextAdded, setIsmultiTextAdded] = useState(false);
+    const [isproductTextAdded, setIsproductTextAdded] = useState(false);
+    const [iscostomTextAdded, setIscostomTextAdded] = useState(false);
 
     useEffect(() => {
         const fetchFonts = async () => {
@@ -578,6 +588,12 @@ const EmailTemplateCreate = () => {
             newField = createInputField('images');
             setFields((prevFields) => [...prevFields, newField]);
             setSelectedFieldId(newField.id);
+            if (window.innerWidth < 540){
+                setIsimagesTextAdded(true); 
+            setTimeout(() => {
+                setIsimagesTextAdded(false);
+            }, 3000);
+            }
             if (window.innerWidth > 1400) {
                 handleFieldClick(newField.id);
             }
@@ -586,6 +602,12 @@ const EmailTemplateCreate = () => {
             setEditorValue('');
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
+            if (window.innerWidth < 540){
+                setIsHeadingAdded(true); 
+            setTimeout(() => {
+                setIsHeadingAdded(false);
+            }, 3000);
+            }
             setSelectedFieldId(newField.id);
             if (window.innerWidth > 1400) {
                 handleFieldClick(newField.id);
@@ -594,9 +616,21 @@ const EmailTemplateCreate = () => {
             toggleColorPicker();
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
+            if (window.innerWidth < 540){
+                setIsdividerTextAdded(true); 
+            setTimeout(() => {
+                setIsdividerTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'button') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
+            if (window.innerWidth < 540){
+                setIsbuttonTextAdded(true); 
+            setTimeout(() => {
+                setIsbuttonTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'socalicon') {
             newField = createInputField('socalicon');
             setFields((prevFields) => {
@@ -610,9 +644,21 @@ const EmailTemplateCreate = () => {
 
                 return updatedFields;
             });
+            if (window.innerWidth < 540){
+                setIssocialTextAdded(true); 
+            setTimeout(() => {
+                setIssocialTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'html convert') {
             newField = createInputField(type, type === 'html convert' ? '<h1>Your HTML Here</h1>' : '');
             setFields((prevFields) => [...prevFields, newField]);
+            if (window.innerWidth < 540){
+                setIshtmlTextAdded(true); 
+            setTimeout(() => {
+                setIshtmlTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'split') {
             const parentId = generateUniqueId();
             const splitFields = [
@@ -633,10 +679,22 @@ const EmailTemplateCreate = () => {
             if (splitFields.length > 0 && window.innerWidth > 1400) {
                 handleFieldClick(splitFields[0].id);
             }
+            if (window.innerWidth < 540){
+                setIssplitTextAdded(true); 
+            setTimeout(() => {
+                setIssplitTextAdded(false);
+            }, 3000);
+            }
         }
         else if (type === 'spacer') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
+            if (window.innerWidth < 540){
+                setIsspacerTextAdded(true); 
+            setTimeout(() => {
+                setIsspacerTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'video') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
@@ -648,6 +706,12 @@ const EmailTemplateCreate = () => {
             setIsPopupOpen(true);
             setSelectedProducts([])
             setSearchTerm('');
+            if (window.innerWidth < 540){
+                setIsproductTextAdded(true); 
+            setTimeout(() => {
+                setIsproductTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'Multicolumn') {
             const id = generateUniqueId();
             const newField = {
@@ -663,14 +727,32 @@ const EmailTemplateCreate = () => {
                 }
                 return updatedFields;
             });
+            if (window.innerWidth < 540){
+                setIsmultiTextAdded(true); 
+            setTimeout(() => {
+                setIsmultiTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'richtext') {
             newField = createInputField('richtext');
             setFields((prevFields) => [...prevFields, newField]);
             setCurrentFieldId(newField.id);
             setEditorValueed('');
+            if (window.innerWidth < 540){
+                setIsRichTextAdded(true); 
+            setTimeout(() => {
+                setIsRichTextAdded(false);
+            }, 3000);
+            }
         } else if (type === 'costum') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
+            if (window.innerWidth < 540){
+                setIscostomTextAdded(true); 
+            setTimeout(() => {
+                setIscostomTextAdded(false);
+            }, 3000);
+            }
         }
         if (newField && newField.id && window.innerWidth > 1400) {
             handleFieldClick(newField.id);
@@ -771,7 +853,6 @@ const EmailTemplateCreate = () => {
             )
         );
     };
-
 
     const handleImageUpload = (e, fieldId) => {
         const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
@@ -1471,12 +1552,12 @@ const EmailTemplateCreate = () => {
         setIsLoading(true);
         setSaveEmail(false);
         setCancelEmail(false);
-    
+
         setTimeout(() => {
             navigate('/app/email-template/list');
         }, 3000);
     };
-    
+
     const handleBackgroundImageUpload = (e) => {
         let file;
 
@@ -2076,7 +2157,6 @@ const EmailTemplateCreate = () => {
         }
     };
 
-
     const handleImageChange1 = (e, fieldId, index) => {
         const file = e.target.files[0];
         if (file) {
@@ -2263,24 +2343,24 @@ const EmailTemplateCreate = () => {
 
                                             </div>
                                             {showFields ? (
-                                                <div className='form-scroll-bar'>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('heading')}><span className='form_builder_field_img'><img src={banner} alt="" /></span> <span><h4>Banner</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('richtext')}><span className='form_builder_field_img'><img src={rich} alt="" /></span> <span><h4>Rich Text</h4></span></button></div>
+                                                <div className='form-scroll-bar choose-wraped'>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('heading')}><span className='form_builder_field_img'><img src={banner} alt="" /></span> <span><h4>Banner</h4></span>  {isHeadingAdded && <img className='form_builder-redsign' src={redsign} alt="" />}  </button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('richtext')}><span className='form_builder_field_img'><img src={rich} alt="" /></span> <span><h4>Rich Text</h4></span> {isRichTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
                                                     {/* <div className='builderr_field_wrpp'> <button onClick={() => addInputField('description')}><span className='form_builder_field_img'><img src={font} alt="" /></span> <span><h4>Description</h4></span></button></div> */}
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('split')}><span className='form_builder_field_img'><img src={itext} alt="" /></span> <span><h4>Images with Text</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Images</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('socalicon')}><span className='form_builder_field_img'><img src={socail} alt="" /></span> <span><h4>Social Icon</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('html convert')}><span className='form_builder_field_img'><img src={htmlicon} alt="" /></span> <span><h4>HTML Block</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('spacer')}><span className='form_builder_field_img'><img src={spacer} alt="" /></span> <span><h4>Spacer</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('Multicolumn')}><span className='form_builder_field_img'><img src={multimedia} /></span><span><h4>Multicolumn</h4></span></button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span>{isbuttonTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span>{isdividerTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('split')}><span className='form_builder_field_img'><img src={itext} alt="" /></span> <span><h4>Images with Text</h4></span>{issplitTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Images</h4></span>{isimagesTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('socalicon')}><span className='form_builder_field_img'><img src={socail} alt="" /></span> <span><h4>Social Icon</h4></span>{issocialTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('html convert')}><span className='form_builder_field_img'><img src={htmlicon} alt="" /></span> <span><h4>HTML Block</h4></span>{ishtmlTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('spacer')}><span className='form_builder_field_img'><img src={spacer} alt="" /></span> <span><h4>Spacer</h4></span>{isspacerTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('Multicolumn')}><span className='form_builder_field_img'><img src={multimedia} /></span><span><h4>Multicolumn</h4></span>{ismultiTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
                                                     {/* <div className='builderr_field_wrpp'> <button onClick={() => addInputField('video')}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>video</h4></span></button></div> */}
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('product')}><span className='form_builder_field_img'><img src={product} alt="" /></span> <span><h4>Product</h4></span></button></div>
-                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('costum')}><span className='form_builder_field_img'><img src={costum} alt="" /></span> <span><h4>Custom Content</h4></span></button></div></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('product')}><span className='form_builder_field_img'><img src={product} alt="" /></span> <span><h4>Product</h4></span>{isproductTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div>
+                                                    <div className='builderr_field_wrpp email'> <button onClick={() => addInputField('costum')}><span className='form_builder_field_img'><img src={costum} alt="" /></span> <span><h4>Custom Content</h4></span>{iscostomTextAdded && <img className='form_builder-redsign' src={redsign} alt="" />}</button></div></div>
 
                                             ) : (
-                                                <div className='form-scroll-bar'>
+                                                <div className='form-scroll-bar choose-wraped'>
                                                     <div className='edit_form_close'>
                                                         <div className='edit-formwrap'>
                                                             <h3>Edit Properties</h3>
@@ -2646,7 +2726,7 @@ const EmailTemplateCreate = () => {
                                                                 return (
                                                                     <div style={{ width: '100%', position: 'relative' }} className={`email_field split-width ${activeFieldId === field.id ? 'active' : ''}`} onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                         onMouseLeave={() => setHoveredFieldId(null)} >
-                                                                        <div key={field.id} className="split-container" style={{ display: viewMode === "mobile" ? "block" : "flex", padding: `${field.splitPadding}px`, width: "100%", backgroundColor: field.splitbg, }}>
+                                                                        <div key={field.id} className="split-container" style={{ display: viewMode === "mobile" ? "block" : "flex", width: "100%", backgroundColor: field.splitbg || '#FFFFFF', }}>
                                                                             {field.children.map((child) => {
                                                                                 const isImage = child.add === "image";
                                                                                 return (
@@ -2658,7 +2738,8 @@ const EmailTemplateCreate = () => {
                                                                                         }}
                                                                                         style={{
                                                                                             width: viewMode === "mobile" ? "100%" : child.width || "50%",
-                                                                                            textAlign: field.splitTextAlin,
+                                                                                            textAlign: child.splitTextAlin,
+                                                                                            padding: `${child.splitPadding}px`,
                                                                                             position: 'relative',
                                                                                             display: 'flex',
                                                                                             color: field.splitColor,
@@ -2672,7 +2753,7 @@ const EmailTemplateCreate = () => {
                                                                                         ) : (
                                                                                             <div style={{ width: '100%', display: 'flex', alignItems: child.splittext === 'left' ? 'flex-start' : child.splittext === 'center' ? 'center' : 'flex-end' }}>
                                                                                                 <div style={{ width: '100%' }}>
-                                                                                                    <div className=' ql-editored' style={{ color: field.splitColor, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: child.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...' }} />
+                                                                                                    <div className=' ql-editored' style={{ fontSize: '15px', color: field.splitColor, whiteSpace: 'pre-wrap', wordBreak: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: child.value || 'Use this section to add reviews or testimonials from your store’s happy customers Use this section to add reviews or testimonials from your store’s happy customers ...' }} />
                                                                                                     <div >
                                                                                                         {field.showbtnsplit && (
                                                                                                             <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
@@ -2684,14 +2765,14 @@ const EmailTemplateCreate = () => {
                                                                                                                     color: field.splitbtncolor,
                                                                                                                     height: `${child.splitbtnheight}px`,
                                                                                                                     minWidth: `${child.splitbtnwidth}px`,
-                                                                                                                    borderRadius: `${field.splitbtnradious}px`,
+                                                                                                                    borderRadius: `${child.splitbtnradious}px`,
                                                                                                                     borderWidth: `${child.splitBorderWidth}px`,
                                                                                                                     borderStyle: field.splitBorderStyle,
                                                                                                                     borderColor: field.splitBorderColor,
                                                                                                                     fontWeight: field.splitbtnWeight,
 
                                                                                                                 }}>
-                                                                                                                    {field.splitbtn}</button>
+                                                                                                                    {child.splitbtn}</button>
                                                                                                             </a>
                                                                                                         )}
                                                                                                     </div>
@@ -2812,14 +2893,14 @@ const EmailTemplateCreate = () => {
                                                                                 borderStyle: field.imgBorderStyle,
                                                                                 borderColor: field.imgBorderColor,
                                                                                 width: '100%',
-                                                                                display: 'inline-grid'
+                                                                                display: 'block'
                                                                             }}>
 
                                                                             <img src={field.value || imghd} alt="Dynamic" style={{
                                                                                 width: `${field.imgWidth}%`,
                                                                                 padding: `${field.imgPadding}px`,
+                                                                                verticalAlign: 'bottom'
                                                                             }} />
-
 
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
@@ -3150,7 +3231,8 @@ const EmailTemplateCreate = () => {
                                                                                             borderRadius: `${field.Multiborderradious}px`,
                                                                                             fontFamily: field.Multifamily,
                                                                                             letterSpacing: `${field.Multiletter}px`,
-                                                                                            overflow: 'hidden'
+                                                                                            overflow: 'hidden',
+                                                                                            display: 'block'
 
                                                                                         }}
                                                                                         className={`column ${field.selectedColumn === index ? 'active-column' : ''}`}
@@ -3160,7 +3242,7 @@ const EmailTemplateCreate = () => {
                                                                                             <img
                                                                                                 src={field.columnData[index].image}
                                                                                                 alt={`Uploaded for Column ${index + 1}`}
-                                                                                                style={{ width: `${field.Multiimgwidth || 100}%`, height: 'auto', }}
+                                                                                                style={{ width: `${field.Multiimgwidth || 100}%`, height: 'auto', verticalAlign: 'bottom' }}
                                                                                             />
                                                                                         )}
 
@@ -3401,6 +3483,9 @@ const EmailTemplateCreate = () => {
                                             <div className='form-builder-change_show_all'>
                                                 <div className='form_qucik'>
                                                     <p>Quick setup Settings</p>
+                                                    <div className="form-builder-propertites-save-topions" onClick={hanldeCanclepro} >
+                                                        save
+                                                    </div>
                                                 </div>
                                                 <div className='form_build_propertities emails'>
 
@@ -6281,16 +6366,16 @@ const EmailTemplateCreate = () => {
                                                                                         </div>
                                                                                     ) : (
 
-                                                                                        <div>
+                                                                                        <div style={{ position: 'relative' }}>
                                                                                             <div className='form-builder-img-wrap'>
-                                                                                                <img src={field.value} alt="Uploaded" style={{ maxWidth: '100%' }} />
+                                                                                                <img src={field.value} alt="Uploaded" style={{ display: 'flex', width: '100%', maxWidth: "100%", height: "auto", border: "1px solid #ccc", padding: "5px" }} />
                                                                                             </div>
                                                                                             <button className='update-image img rm-btn' onClick={() => document.getElementById(`fileInput-${field.id}`).click()}>
                                                                                                 Update Image
                                                                                             </button>
-                                                                                            <button className='update-image rmove-img rm-btn' onClick={() => removeField(field.id)}>
-                                                                                                Remove Image
-                                                                                            </button>
+                                                                                            <span className='update-image rmove-img rm-btn' onClick={() => removeField(field.id)}>
+                                                                                                <img src={remove} alt="" />
+                                                                                            </span>
                                                                                             <input
                                                                                                 type="file"
                                                                                                 accept="image/*"
@@ -7009,7 +7094,7 @@ const EmailTemplateCreate = () => {
                                                                     return (
                                                                         <div key={field.id} className="form-builder-chaneging-wrap color">
                                                                             <div className='setting_bg_email_templetes'>
-                                                                                <div style={{ marginTop: '20px' }}>
+                                                                                <div>
                                                                                     <label htmlFor="widthSelect">Adjust Width: </label>
                                                                                     <select
                                                                                         id="widthSelect"
@@ -7086,7 +7171,7 @@ const EmailTemplateCreate = () => {
                                                                                                 />
                                                                                             </div>
                                                                                         ) : (
-                                                                                            <div className="form-builder-chaneging-wrap file">
+                                                                                            <div className="form-builder-chaneging-wrap file" >
                                                                                                 <label htmlFor="fileInput">Upload Image</label>
                                                                                                 {!fields
                                                                                                     .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
@@ -7125,24 +7210,24 @@ const EmailTemplateCreate = () => {
                                                                                                         <span className="upload-btn">Browse Image</span>
                                                                                                     </div>
                                                                                                 ) : (
-                                                                                                    <div style={{ marginTop: "10px" }}>
+                                                                                                    <div style={{ marginTop: "10px", position: 'relative' }}>
                                                                                                         <img
                                                                                                             src={fields
                                                                                                                 .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
                                                                                                                 .find((f) => f.id === selectedFieldId)?.value}
                                                                                                             alt="Uploaded Preview"
-                                                                                                            style={{ maxWidth: "100%", height: "auto", border: "1px solid #ccc", padding: "5px" }}
+                                                                                                            style={{ display: 'flex', width: '100%', maxWidth: "100%", height: "auto", border: "1px solid #ccc", padding: "5px" }}
                                                                                                         />
                                                                                                         <div style={{ marginTop: "10px" }}>
                                                                                                             <button
                                                                                                                 className="update-image img"
                                                                                                                 onClick={() => document.getElementById("fileInput").click()}
-                                                                                                                style={{ marginRight: "10px" }}
+                                                                                                                style={{ marginRight: "10px", cursor: 'pointer' }}
                                                                                                             >
                                                                                                                 Update Image
                                                                                                             </button>
-                                                                                                            <button
-                                                                                                                className="update-image rmove-img rm-btn"
+                                                                                                            <span
+                                                                                                                className="update-image rmove-img rm-btn split-group"
                                                                                                                 onClick={() => {
                                                                                                                     setFields((prevFields) =>
                                                                                                                         prevFields.map((f) => {
@@ -7159,8 +7244,8 @@ const EmailTemplateCreate = () => {
                                                                                                                     );
                                                                                                                 }}
                                                                                                             >
-                                                                                                                Remove Image
-                                                                                                            </button>
+                                                                                                                <img src={remove} alt="Remove" />
+                                                                                                            </span>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 )}
@@ -7415,34 +7500,71 @@ const EmailTemplateCreate = () => {
                                                                                     <label>Padding</label>
                                                                                     <input
                                                                                         type="number"
-                                                                                        value={field.splitPadding || 0}
                                                                                         onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, splitPadding: e.target.value } : f
-                                                                                                )
+                                                                                            const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                            setFields((prevFields) =>
+                                                                                                prevFields.map((f) => {
+                                                                                                    if (f.type === "split-group") {
+                                                                                                        return {
+                                                                                                            ...f,
+                                                                                                            children: f.children.map((child) =>
+                                                                                                                child.id === selectedFieldId
+                                                                                                                    ? { ...child, splitPadding: newValue }
+                                                                                                                    : child
+                                                                                                            ),
+                                                                                                        };
+                                                                                                    }
+                                                                                                    return f.id === selectedFieldId
+                                                                                                        ? { ...f, splitPadding: newValue }
+                                                                                                        : f;
+                                                                                                })
                                                                                             );
                                                                                         }}
-                                                                                        min='0'
+                                                                                        value={
+                                                                                            fields
+                                                                                                .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                .find((f) => f.id === selectedFieldId)?.splitPadding || 0
+                                                                                        }
+                                                                                        min="0"
+                                                                                        max="100"
+                                                                                        placeholder="Letter Spacing"
                                                                                     />
                                                                                 </div>
                                                                                 <div className='form-builder-chaneging-wrap'>
                                                                                     <label>Text Align </label>
                                                                                     <select
-                                                                                        value={field.splitTextAlin}
                                                                                         onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, splitTextAlin: e.target.value } : f
-                                                                                                )
+                                                                                            const newValue = e.target.value; 
+                                                                                            setFields((prevFields) =>
+                                                                                                prevFields.map((f) => {
+                                                                                                    if (f.type === "split-group") {
+                                                                                                        return {
+                                                                                                            ...f,
+                                                                                                            children: f.children.map((child) =>
+                                                                                                                child.id === selectedFieldId
+                                                                                                                    ? { ...child, splitTextAlin: newValue }
+                                                                                                                    : child
+                                                                                                            ),
+                                                                                                        };
+                                                                                                    }
+                                                                                                    return f.id === selectedFieldId
+                                                                                                        ? { ...f, splitTextAlin: newValue }
+                                                                                                        : f;
+                                                                                                })
                                                                                             );
                                                                                         }}
+                                                                                        value={
+                                                                                            fields
+                                                                                                .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                .find((f) => f.id === selectedFieldId)?.splitTextAlin || ""
+                                                                                        }
                                                                                     >
                                                                                         <option value="">Select text align</option>
                                                                                         <option value="left">Left</option>
                                                                                         <option value="center">Center</option>
                                                                                         <option value="right">Right</option>
                                                                                     </select>
+
                                                                                 </div>
                                                                             </div>
                                                                             <div className='setting_bg_email_templetes'>
@@ -7483,7 +7605,7 @@ const EmailTemplateCreate = () => {
                                                                                             value={
                                                                                                 fields
                                                                                                     .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
-                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtn || 0
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtn
                                                                                             }
 
                                                                                             placeholder="Letter Spacing"
@@ -7740,22 +7862,33 @@ const EmailTemplateCreate = () => {
                                                                                         <label>Border-Radius</label>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={field.splitbtnradious}
-                                                                                            onChange={(e) => {
-                                                                                                const inputValue = e.target.value;
-                                                                                                const newWidth = parseInt(inputValue, 10);
 
-                                                                                                if (inputValue === "" || (newWidth >= 0 && newWidth <= 100)) {
-                                                                                                    setFields(prevFields =>
-                                                                                                        prevFields.map(f =>
-                                                                                                            f.id === field.id ? { ...f, splitbtnradious: inputValue } : f
-                                                                                                        )
-                                                                                                    );
-                                                                                                }
+                                                                                            onChange={(e) => {
+                                                                                                const newValue = parseInt(e.target.value, 10) || 0;
+                                                                                                setFields((prevFields) =>
+                                                                                                    prevFields.map((f) => {
+                                                                                                        if (f.type === "split-group") {
+                                                                                                            return {
+                                                                                                                ...f,
+                                                                                                                children: f.children.map((child) =>
+                                                                                                                    child.id === selectedFieldId
+                                                                                                                        ? { ...child, splitbtnradious: newValue }
+                                                                                                                        : child
+                                                                                                                ),
+                                                                                                            };
+                                                                                                        }
+                                                                                                        return f.id === selectedFieldId
+                                                                                                            ? { ...f, splitbtnradious: newValue }
+                                                                                                            : f;
+                                                                                                    })
+                                                                                                );
                                                                                             }}
-                                                                                            min="0"
-                                                                                            max="100"
-                                                                                            placeholder=""
+                                                                                            value={
+                                                                                                fields
+                                                                                                    .flatMap((f) => (f.type === "split-group" ? f.children : [f]))
+                                                                                                    .find((f) => f.id === selectedFieldId)?.splitbtnradious || 0
+                                                                                            }
+                                                                                            min='0'
                                                                                         />
                                                                                     </div>
 

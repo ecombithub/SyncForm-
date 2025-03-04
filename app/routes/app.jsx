@@ -5,37 +5,9 @@ import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 
-const Loader = () => (
-  <div className="skeleton-wrapper fade-in">
-    <div className="container skeleton-wred">
-      <div className="skeleton-wrp">
-      <div className="skeleton-wrp-left">
-          <div className="skeleton skeleton-header"></div>
-          <div className="skeleton-wrp-left-para">
-          <div className="skeleton skeleton-paragraph"></div>
-          <div className="skeleton skeleton-paragraph"></div>
-          </div>
-          <div className="skeleton-wrp-left-para">
-          <div className="skeleton skeleton-paragraph"></div>
-          <div className="skeleton skeleton-paragraph "></div>
-          </div>
-        </div>
-        <div className="skeleton-wrp-right">
-        <div className="skeleton-wrp-left-para right">
-        <div className="skeleton skeleton-paragraph"></div>
-        <div className="skeleton skeleton-paragraph two"></div>
-        </div>
-        <div className="skeleton-wrp-left-para right">
-        <div className="skeleton skeleton-paragraph"></div>
-        <div className="skeleton skeleton-paragraph two"></div>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+const Loader = lazy(() => import("./app.loader")); 
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -72,7 +44,9 @@ export default function App() {
         </ul>
       </NavMenu>
 
-      {loading ? <Loader /> : <Outlet />}
+      <Suspense fallback={<div></div>}>
+        {loading ? <Loader /> : <Outlet />}
+      </Suspense>
     </AppProvider>
   );
 }

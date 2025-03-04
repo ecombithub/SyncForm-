@@ -261,7 +261,7 @@ const Formgenerated = () => {
     const [multifilePreview, setMultifilePreview] = useState('off');
     const [signlePreview, setSignlePreview] = useState('off');
     const [multiIamgePreview, setMultiIamgePreview] = useState('off');
-
+    const [upgradePopup, setUphradePopup] = useState(false);
 
 
     const handleToggleImagePreview = () => {
@@ -482,8 +482,6 @@ const Formgenerated = () => {
             setBorderColor(styles.borderColor || '#ffffff');
             setInputRadious(styles.inputRadious);
             setInputStyle(styles.inputstyle);
-            setColorHeading(styles.colorHeading);
-            setTextHeading(styles.textHeading);
             setInputWidth(styles.inputwidth);
             setInputBorderColor(styles.inputborderColor);
             setInputBgColor(styles.inputBgColor);
@@ -606,6 +604,8 @@ const Formgenerated = () => {
             textColor: type === 'description' ? '#000000' : undefined,
             textlineheight: type === 'description' ? '20' : undefined,
             headingText: type === 'heading' ? 'Add Heading' : undefined,
+            textHeading: type === 'heading' ? '' : undefined,
+            colorHeading: type === 'heading' ? '#00000' : undefined,
             headingLineheight: type === 'heading' ? '' : undefined,
             linktext: type === 'link' ? 'Link' : undefined,
             linkUrl: type === 'link' ? '' : undefined,
@@ -636,6 +636,10 @@ const Formgenerated = () => {
 
 
     const handleToggleChange = () => {
+        if (![ 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUphradePopup(true);
+            return;
+        }
         setIsActive(prevState => !prevState);
     };
 
@@ -963,7 +967,6 @@ const Formgenerated = () => {
             }));
         }
     };
-
 
     const handleAddCheckboxOptions = () => {
 
@@ -1330,8 +1333,6 @@ const Formgenerated = () => {
                 borderRadius: borderRadius,
                 borderWidth: borderWidth,
                 borderStyle: borderStyle,
-                textHeading,
-                colorHeading,
                 subject,
                 maxDescriptionHeight
             },
@@ -1854,29 +1855,6 @@ const Formgenerated = () => {
         }));
     };
 
-
-    const fetchPaymentPlan = async () => {
-        try {
-            console.log("Fetching payment plan...");
-
-            const shop = "dev-himanshu.myshopify.com";
-            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
-
-            console.log("Response data:", response.data);
-            setUserPlan(response.data);
-            console.log("User plan set:", response.data);
-
-            console.log("Forms fetched successfully with user plan data.");
-        } catch (error) {
-            console.error("Error fetching payment plan:", error);
-
-        }
-    };
-
-    useEffect(() => {
-        fetchPaymentPlan();
-    }, []);
-
     const handleSliderChange = (e) => {
         const newValue = e.target.value;
         console.log("Slider changed to:", newValue);
@@ -1911,9 +1889,46 @@ const Formgenerated = () => {
         setFields(prevFields => [...prevFields, copiedField]);
     };
 
+    const fetchPaymentPlan = async () => {
+        try {
+            console.log("Fetching payment plan...");
+            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+
+            console.log("Response data:", response.data);
+            setUserPlan(response.data);
+            console.log("User plan set:", response.data);
+
+            console.log("Forms fetched successfully with user plan data.");
+        } catch (error) {
+            console.error("Error fetching payment plan:", error);
+
+        }
+    };
+
+    useEffect(() => {
+        fetchPaymentPlan();
+    }, []);
+
+    const handleUpgrade = () => {
+        navigator('/app/pricing');
+    }
+
+    const handleCancle = () => {
+        setUphradePopup(false);
+    }
+
 
     return (
         <div>
+            {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp'>
+                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                    <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>}
             {isLoading && (
                 <div className="skeleton-wrapper fade-in">
                     <div className="container skeleton-wred">
@@ -2019,9 +2034,9 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('textarea')}><span className='form_builder_field_img'><img src={text1} alt="" /></span> <span><h4>Textarea</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('url')}><span className='form_builder_field_img'><img src={url1} alt="" /></span> <span><h4>Url</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('file')} ><span className='form_builder_field_img'><img src={single} alt="" /></span> <span><h4>File Upload</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-file')} disabled={!['pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-file'); }}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={singleimage} alt="" /></span> <span><h4>Images</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('multi-image')} disabled={!['pro_plus'].includes(userPlan?.activePlan?.plan)} className={!['pro_plus'].includes(userPlan?.activePlan?.plan) ? 'disabled-button' : ''}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro_plus'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-image'); }}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('toggle')}><span className='form_builder_field_img'><img src={toggle} alt="" /></span> <span><h4>Toggle</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
@@ -2031,7 +2046,7 @@ const Formgenerated = () => {
                                         ) : (
                                             <div className='form-scroll-bar'>
                                                 <div className='edit_form_close'>
-                                                    <div className='edit-formwrap '>
+                                                    <div className='edit-formwrap forms '>
                                                         <h3>Edit Form Properties</h3>
                                                         <div className='form_builder_submission'>
                                                             <h2> Form Submission</h2>
@@ -2073,11 +2088,18 @@ const Formgenerated = () => {
                                                                     </div>
                                                                 )}
                                                                 {submissionOption === 'Redirect to other page' && (
-                                                                    <div className='option-content'>
+                                                                    <div
+                                                                        className='option-content'
+                                                                        onClick={() => {
+                                                                            if (!['pro','pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                setUphradePopup(true);
+                                                                                return;
+                                                                            }
+                                                                        }}
+                                                                    >
                                                                         <label htmlFor="Redirect Page URL">Redirect Page URL</label>
                                                                         <input
                                                                             type="url"
-
                                                                             value={url}
                                                                             onChange={(e) => setUrl(e.target.value)}
                                                                             className='url-input'
@@ -2087,7 +2109,14 @@ const Formgenerated = () => {
                                                                 )}
 
                                                                 {submissionOption === 'Hide form and show thank you message' && (
-                                                                    <div className='option-content'>
+                                                                    <div className='option-content'
+                                                                    onClick={() => {
+                                                                        if (!['pro','pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                            setUphradePopup(true);
+                                                                            return;
+                                                                        }
+                                                                    }}
+                                                                    >
                                                                         <div className='admin-input'>
                                                                             <div className='admin-label'>
                                                                                 <label htmlFor="content">Content</label>
@@ -2634,8 +2663,8 @@ const Formgenerated = () => {
                                                                 <label>
                                                                     <div style={{
                                                                         fontSize: `${field.fontSize || ''}px`, width: field.width, opacity: field.opacity || 1,
-                                                                        textAlign: textHeading, color: colorHeading,
-                                                                        
+                                                                        textAlign: field.textHeading, color: field.colorHeading,
+
                                                                     }}>
                                                                         {React.createElement(
                                                                             field.level || 'h1',
@@ -2644,7 +2673,7 @@ const Formgenerated = () => {
                                                                                     display: "inline-block",
                                                                                     width: "100%",
                                                                                     fontSize: `${field.fontSize || ''}px`,
-                                                                                    lineHeight:`${field.headingLineheight || ''}px`
+                                                                                    lineHeight: `${field.headingLineheight || ''}px`
                                                                                 }
                                                                             },
                                                                             null,
@@ -3187,7 +3216,7 @@ const Formgenerated = () => {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    
+
                                                     {field.type === 'number' && (
                                                         <div className={`input-field ${field.customClass}`} style={{
                                                             width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
@@ -3469,7 +3498,7 @@ const Formgenerated = () => {
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
 
-                                                                    {field.label }{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                    {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                     <input
                                                                         style={{
                                                                             width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
@@ -3728,13 +3757,9 @@ const Formgenerated = () => {
                                                                             width: '100%', opacity: field.opacity || 1, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
 
                                                                         }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
-                                                                            }}>
-
+                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                        onMouseLeave={() => setHoveredFieldId(null)}
+                                                                    >
                                                                             <input
                                                                                 type="range"
                                                                                 className="name"
@@ -4033,8 +4058,10 @@ const Formgenerated = () => {
                                                                     <button
                                                                         type="button"
                                                                         style={{
-                                                                            minWidth: `${field.btnwidth}px`,
-                                                                            height: field.buttonHeight,
+
+                                                                            minWidth: `${Math.max(100, field.btnwidth)}px`,
+                                                                            maxWidth: `${Math.min(800, Math.max(800, field.btnwidth))}px`,
+                                                                            minHeight: field.buttonHeight,
                                                                             backgroundColor: field.backgroundColor,
                                                                             fontSize: `${field.buttontext || '16px'}px`,
                                                                             color: field.btncolor,
@@ -4099,9 +4126,9 @@ const Formgenerated = () => {
 
                                                     {field.type === 'link' && (
                                                         <div className={`input-field ${field.customClass}`} style={{
-                                                            minHeight: `${field.linkfontsize * 1.8 || 24}px`, 
+                                                            minHeight: `${field.linkfontsize * 1.8 || 24}px`,
                                                             padding: "5px",
-                                                            display:"flex",
+                                                            display: "flex",
                                                             width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
                                                                 ? '1px solid #33cba2'
                                                                 : '1px solid transparent',
@@ -4111,15 +4138,15 @@ const Formgenerated = () => {
                                                                     ? '#e7f9f4'
                                                                     : 'transparent',
                                                         }}>
-                                                            <div style={{display:'block',width:'100%'}}>
-                                                            <div style={{width:"100%", textAlign: field.linkaline, fontSize: `${field.linkfontsize}px` }}>
-                                                                <a href={field.linkUrl} target={field.linkTarget} rel="noopener noreferrer">
-                                                                    <div onClick={(e) => e.preventDefault()} dangerouslySetInnerHTML={{ __html: field.linktext }} />
-                                                                </a>
-                                                            </div>
-                                                            <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` ,  marginTop: `${field.linkfontsize * 0.5 ||0.5}px`, }}>
-                                                                {field.description}
-                                                            </div>
+                                                            <div style={{ display: 'block', width: '100%' }}>
+                                                                <div style={{ width: "100%", textAlign: field.linkaline, fontSize: `${field.linkfontsize}px` }}>
+                                                                    <a href={field.linkUrl} target={field.linkTarget} rel="noopener noreferrer">
+                                                                        <div onClick={(e) => e.preventDefault()} dangerouslySetInnerHTML={{ __html: field.linktext }} />
+                                                                    </a>
+                                                                </div>
+                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px`, marginTop: `${field.linkfontsize * 0.5 || 0.5}px`, }}>
+                                                                    {field.description}
+                                                                </div>
                                                             </div>
                                                             {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
                                                                 <div id='form-drag' className='form-builder-drag-drop'>
@@ -4175,919 +4202,970 @@ const Formgenerated = () => {
                                                     <div className='form_qucik forms-set'>
                                                         <p>Quick setup Settings</p>
                                                     </div>
-
-                                                    <div className='form_build_propertities forms '>
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'divider' && selectedField.type !== 'button' && selectedField.type !== 'description' && selectedField.type !== 'link' && (
-                                                            <div className="form-builder-chaneging-wrap">
-                                                                <label>Label</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={selectedField.label}
-                                                                    onChange={(e) => updateFieldProperty('label', e.target.value)}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                        {selectedField.type === 'slider' && (
-                                                            <div className="slider-settings">
-                                                                <div className="form-builder-chaneging-wrap sliders">
-                                                                    <label>Min:</label>
+                                                    <div className='form-build-wrp-settings-right'>
+                                                        <div className='form_build_propertities forms '>
+                                                            {selectedField.type !== 'heading' && selectedField.type !== 'divider' && selectedField.type !== 'button' && selectedField.type !== 'description' && selectedField.type !== 'link' && (
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Label</label>
                                                                     <input
-                                                                        type="number"
-                                                                        value={selectedField.min}
-                                                                        onChange={(e) => updateFieldProperty('min', e.target.value, selectedField.id)}
-                                                                        min={0}
+                                                                        type="text"
+                                                                        value={selectedField.label}
+                                                                        onChange={(e) => updateFieldProperty('label', e.target.value)}
                                                                     />
                                                                 </div>
-                                                                <div className="form-builder-chaneging-wrap sliders">
-                                                                    <label>Max:</label>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={selectedField.max}
-                                                                        onChange={(e) => updateFieldProperty('max', e.target.value, selectedField.id)}
-                                                                        min={0}
-                                                                    />
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap sliders">
-                                                                    <label>Step:</label>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={selectedField.step}
-                                                                        onChange={(e) => updateFieldProperty('step', e.target.value, selectedField.id)}
-                                                                        min={0}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {selectedField.type === 'name' && (
-                                                            <div className='form_build_name_custom'>
-                                                                <select onChange={(e) => {
-                                                                    const newLabel = e.target.value;
-                                                                    updateFieldProperty('label', newLabel);
-                                                                }}>
-                                                                    <option value="Full name">Full name</option>
-                                                                    <option value="First name">First name</option>
-                                                                    <option value="Last name">Last name</option>
-                                                                </select>
-                                                            </div>
-                                                        )}
-                                                        {selectedField.type === 'select' && (
-                                                            <div className="popup-content">
-                                                                {selectOptions.map((option, index) => (
-                                                                    <div key={option.id} className="select-option">
-                                                                        <label style={{ display: 'flex', alignItems: 'center' }}>
-                                                                            <input
-                                                                                type="text"
-                                                                                value={option.name}
-                                                                                onChange={(e) => handleOptionNameChangees(index, e.target.value, 'select')}
-                                                                                placeholder={`Enter option name`}
-                                                                            />
-                                                                        </label>
-                                                                        <button onClick={() => removeSelectOption(option.id)} className="remove-options"> <img src={remove} alt="" /></button>
+                                                            )}
+                                                            {selectedField.type === 'slider' && (
+                                                                <div className="slider-settings">
+                                                                    <div className="form-builder-chaneging-wrap sliders">
+                                                                        <label>Min:</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={selectedField.min}
+                                                                            onChange={(e) => updateFieldProperty('min', e.target.value, selectedField.id)}
+                                                                            min={0}
+                                                                        />
                                                                     </div>
-                                                                ))}
-                                                                <button className='btn-design' onClick={addSelectOption}>Add Select Input</button>
-
-                                                            </div>
-                                                        )}
-                                                        {selectedField.type === 'radio' && (
-                                                            <div>
-                                                                {radioOptions.map((option, index) => (
-                                                                    <div key={option.id} className="radio-option">
-                                                                        <label>
-                                                                            <input
-                                                                                type="text"
-                                                                                value={option.label}
-                                                                                onChange={(e) => handleOptionNameChange(index, e.target.value)}
-                                                                                placeholder={`Enter option name`}
-                                                                            />
-                                                                        </label>
-                                                                        <button onClick={() => removeRadioOption(option.id)} className="remove-options"><img src={remove} alt="" /></button>
+                                                                    <div className="form-builder-chaneging-wrap sliders">
+                                                                        <label>Max:</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={selectedField.max}
+                                                                            onChange={(e) => updateFieldProperty('max', e.target.value, selectedField.id)}
+                                                                            min={0}
+                                                                        />
                                                                     </div>
-                                                                ))}
-                                                                <button className='btn-design' onClick={addRadioOption}>Add Radio Button</button>
+                                                                    <div className="form-builder-chaneging-wrap sliders">
+                                                                        <label>Step:</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={selectedField.step}
+                                                                            onChange={(e) => updateFieldProperty('step', e.target.value, selectedField.id)}
+                                                                            min={0}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            )}
 
-                                                            </div>
-                                                        )}
-
-                                                        {selectedField.type === 'checkbox' && (
-                                                            <div>
+                                                            {selectedField.type === 'name' && (
+                                                                <div className='form_build_name_custom'>
+                                                                    <select onChange={(e) => {
+                                                                        const newLabel = e.target.value;
+                                                                        updateFieldProperty('label', newLabel);
+                                                                    }}>
+                                                                        <option value="Full name">Full name</option>
+                                                                        <option value="First name">First name</option>
+                                                                        <option value="Last name">Last name</option>
+                                                                    </select>
+                                                                </div>
+                                                            )}
+                                                            {selectedField.type === 'select' && (
                                                                 <div className="popup-content">
-                                                                    {checkboxOptions.map((option, index) => (
-                                                                        <div key={option.id} className="checkbox-option check">
+                                                                    {selectOptions.map((option, index) => (
+                                                                        <div key={option.id} className="select-option">
                                                                             <label style={{ display: 'flex', alignItems: 'center' }}>
                                                                                 <input
                                                                                     type="text"
                                                                                     value={option.name}
-                                                                                    onChange={(e) => handleOptionNameChanges(index, e.target.value)}
+                                                                                    onChange={(e) => handleOptionNameChangees(index, e.target.value, 'select')}
                                                                                     placeholder={`Enter option name`}
-
                                                                                 />
-
                                                                             </label>
-                                                                            <button onClick={() => removeCheckboxOption(option.id)} className="remove-options"><img src={remove} alt="" /></button>
+                                                                            <button onClick={() => removeSelectOption(option.id)} className="remove-options"> <img src={remove} alt="" /></button>
                                                                         </div>
                                                                     ))}
-                                                                    <button className='btn-design' onClick={addCheckboxOption}>Add Checkbox Button</button>
+                                                                    <button className='btn-design' onClick={addSelectOption}>Add Select Input</button>
 
                                                                 </div>
-                                                            </div>
-                                                        )}
-                                                        {selectedField.type === 'divider' && (
-                                                            <div className="checkbox-option bg-colors">
-                                                                <label>Divider Color</label>
-                                                                <div className="color-picker-container">
-                                                                    <span className="color-code">{selectedField.dividerColor}</span>
-                                                                    <input
-                                                                        type="color"
-                                                                        value={selectedField.dividerColor}
-                                                                        onChange={(e) => updateFieldProperty('dividerColor', e.target.value)}
-                                                                    />
+                                                            )}
+                                                            {selectedField.type === 'radio' && (
+                                                                <div>
+                                                                    {radioOptions.map((option, index) => (
+                                                                        <div key={option.id} className="radio-option">
+                                                                            <label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={option.label}
+                                                                                    onChange={(e) => handleOptionNameChange(index, e.target.value)}
+                                                                                    placeholder={`Enter option name`}
+                                                                                />
+                                                                            </label>
+                                                                            <button onClick={() => removeRadioOption(option.id)} className="remove-options"><img src={remove} alt="" /></button>
+                                                                        </div>
+                                                                    ))}
+                                                                    <button className='btn-design' onClick={addRadioOption}>Add Radio Button</button>
+
                                                                 </div>
-                                                            </div>
-                                                        )}
+                                                            )}
 
+                                                            {selectedField.type === 'checkbox' && (
+                                                                <div>
+                                                                    <div className="popup-content">
+                                                                        {checkboxOptions.map((option, index) => (
+                                                                            <div key={option.id} className="checkbox-option check">
+                                                                                <label style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        value={option.name}
+                                                                                        onChange={(e) => handleOptionNameChanges(index, e.target.value)}
+                                                                                        placeholder={`Enter option name`}
 
-                                                        {selectedField.type === 'button' && (
-                                                            <>
-                                                                <div className="form-builder-changing-wrap">
-                                                                    <div>
+                                                                                    />
 
-                                                                        <div className='checkbox-option'>
-                                                                            <label>Button Label</label>
-                                                                            <input
-                                                                                type="text"
-                                                                                value={selectedField.label}
-                                                                                onChange={(e) => updateFieldProperty('label', e.target.value)}
-                                                                            />
-                                                                        </div>
-
-                                                                        <div className='checkbox-option'>
-                                                                            <label>Font Size (px)</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.buttontext}
-                                                                                onChange={(e) => updateFieldProperty('buttontext', e.target.value)}
-                                                                                min={0}
-                                                                            />
-                                                                        </div>
-                                                                        <div className='checkbox-option bg-colors'>
-                                                                            <label> Text-color</label>
-                                                                            <div className="color-picker-container">
-
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="color-code"
-                                                                                    value={selectedField.btncolor || '#ffffff'}
-                                                                                    readOnly
-                                                                                    onClick={(e) => {
-                                                                                        navigator.clipboard.writeText(e.target.value);
-                                                                                    }}
-                                                                                    onPaste={(e) => {
-                                                                                        const pastedText = e.clipboardData.getData('text');
-                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
-                                                                                            updateFieldProperty('btncolor', pastedText);
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={selectedField.btncolor}
-                                                                                    onChange={(e) => updateFieldProperty('btncolor', e.target.value)}
-                                                                                />
+                                                                                </label>
+                                                                                <button onClick={() => removeCheckboxOption(option.id)} className="remove-options"><img src={remove} alt="" /></button>
                                                                             </div>
-                                                                        </div>
-                                                                        <div className="form-builder-chaneging-wrap">
-                                                                            <label>Text Align </label>
-                                                                            <select
-                                                                                value={selectedField.buttonaline}
-                                                                                onChange={(e) => updateFieldProperty('buttonaline', e.target.value, selectedField.id)}
-                                                                            >
-                                                                                <option value="">Select text align</option>
-                                                                                <option value="left">Left</option>
-                                                                                <option value="center">Center</option>
-                                                                                <option value="right">Right</option>
-                                                                            </select>
-                                                                        </div>
-
-                                                                        <div className='checkbox-option'>
-                                                                            <label>Button Padding (px)</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.padding}
-                                                                                onChange={(e) => updateFieldProperty('padding', e.target.value)}
-                                                                                placeholder="e.g., 10px"
-                                                                                min={0}
-                                                                            />
-                                                                        </div>
-                                                                        <div className='checkbox-option'>
-                                                                            <label>Button Radius (px)</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.btnradious}
-                                                                                onChange={(e) => updateFieldProperty('btnradious', e.target.value)}
-                                                                                placeholder="e.g., 4px"
-                                                                                min={0}
-                                                                            />
-                                                                        </div>
-                                                                        <div className='checkbox-option'>
-                                                                            <label>Width (px)</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.btnwidth}
-                                                                                onChange={(e) => updateFieldProperty('btnwidth', e.target.value)}
-                                                                                placeholder="e.g., 150"
-                                                                                min={0}
-                                                                            />
-                                                                        </div>
-                                                                        <div className='checkbox-option'>
-                                                                            <label>Height (px)</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.buttonHeight ? selectedField.buttonHeight.replace('px', '') : '40'}
-                                                                                onChange={(e) => updateFieldProperty('buttonHeight', `${e.target.value}px`)}
-                                                                                placeholder="e.g., 40"
-                                                                                min={0}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="checkbox-option bg-colors">
-                                                                            <label>Background Color</label>
-                                                                            <div className="color-picker-container">
-
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="color-code"
-                                                                                    value={selectedField.backgroundColor || '#ffffff'}
-                                                                                    readOnly
-                                                                                    onClick={(e) => {
-                                                                                        navigator.clipboard.writeText(e.target.value);
-                                                                                    }}
-                                                                                    onPaste={(e) => {
-                                                                                        const pastedText = e.clipboardData.getData('text');
-                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
-                                                                                            updateFieldProperty('backgroundColor', pastedText);
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={selectedField.backgroundColor}
-                                                                                    onChange={(e) => updateFieldProperty('backgroundColor', e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div className="checkbox-option bg-colors">
-                                                                            <label>Border Color</label>
-                                                                            <div className="color-picker-container">
-
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="color-code"
-                                                                                    value={selectedField.buttonBorderColor || '#ffffff'}
-                                                                                    readOnly
-                                                                                    onClick={(e) => {
-                                                                                        navigator.clipboard.writeText(e.target.value);
-                                                                                    }}
-                                                                                    onPaste={(e) => {
-                                                                                        const pastedText = e.clipboardData.getData('text');
-                                                                                        if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
-                                                                                            updateFieldProperty('buttonBorderColor', pastedText);
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                                <input
-                                                                                    type="color"
-                                                                                    value={selectedField.buttonBorderColor}
-                                                                                    onChange={(e) => updateFieldProperty('buttonBorderColor', e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div className='form-builder-chaneging-wrap number'>
-                                                                            <label>Border Width (px)</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.buttonBorderWidth}
-                                                                                onChange={(e) => {
-                                                                                    updateFieldProperty('buttonBorderWidth', `${e.target.value}`);
-                                                                                }}
-                                                                                min={0}
-                                                                            />
-                                                                        </div>
-
-                                                                        <div className='form-builder-chaneging-wrap'>
-                                                                            <label>Border Style</label>
-                                                                            <select
-                                                                                value={selectedField.buttonBorderStyle}
-                                                                                onChange={(e) => updateFieldProperty('buttonBorderStyle', e.target.value)}
-                                                                            >
-                                                                                <option value="solid">Solid</option>
-                                                                                <option value="dashed">Dashed</option>
-                                                                                <option value="dotted">Dotted</option>
-                                                                                <option value="double ">Double </option>
-                                                                            </select>
-                                                                        </div>
+                                                                        ))}
+                                                                        <button className='btn-design' onClick={addCheckboxOption}>Add Checkbox Button</button>
 
                                                                     </div>
                                                                 </div>
-                                                            </>
-                                                        )}
-                                                        {selectedField.type === 'link' && (
-                                                            <div className="form-builder-chaneging-wrap">
-                                                                <div className='form-builder-chaneging-wrap ' style={{ color: 'black' }}>
-                                                                    <label>Link text</label>
-                                                                    <ReactQuill
-                                                                        value={selectedField.linktext}
-                                                                        onChange={(value) => updateFieldProperty('linktext', value, selectedField.id)}
-                                                                        modules={{
-                                                                            toolbar: [
-                                                                                ['bold', 'italic', 'underline'],
-                                                                                ['link'],
-                                                                            ],
-                                                                        }}
-                                                                        placeholder="Enter the URL"
-                                                                    />
-                                                                </div>
-                                                                <div className='form-builder-chaneging-wrap'>
-                                                                    <label>Link URL</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={selectedField.linkUrl || ''}
-                                                                        onChange={(e) => updateFieldProperty('linkUrl', e.target.value, selectedField.id)}
-                                                                        placeholder="Enter the URL"
-                                                                    />
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label>
-                                                                        Font Size (px):
+                                                            )}
+                                                            {selectedField.type === 'divider' && (
+                                                                <div className="checkbox-option bg-colors">
+                                                                    <label>Divider Color</label>
+                                                                    <div className="color-picker-container">
+                                                                        <span className="color-code">{selectedField.dividerColor}</span>
                                                                         <input
-                                                                            type="number"
-                                                                            value={selectedField.linkfontsize}
-                                                                            onChange={(e) => updateFieldProperty('linkfontsize', e.target.value, selectedField.id)}
-                                                                            min={0}
+                                                                            type="color"
+                                                                            value={selectedField.dividerColor}
+                                                                            onChange={(e) => updateFieldProperty('dividerColor', e.target.value)}
                                                                         />
-                                                                    </label>
+                                                                    </div>
                                                                 </div>
-                                                                <div className='form-builder-chaneging-wrap'>
-                                                                    <label>Text Align</label>
-                                                                    <select
-                                                                        name="textAlign"
-                                                                        id="textAlign"
-                                                                        value={selectedField.linkaline}
-                                                                        onChange={(e) => updateFieldProperty('linkaline', e.target.value, selectedField.id)}
-                                                                    >
-                                                                        <option value="">Select text align</option>
-                                                                        <option value="left">Left</option>
-                                                                        <option value="center">Center</option>
-                                                                        <option value="right">Right</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div className='form-builder-chaneging-wrap'>
-                                                                    <label>Open in</label>
-                                                                    <select
-                                                                        name="linkTarget"
-                                                                        id="linkTarget"
-                                                                        value={selectedField.linkTarget}
-                                                                        onChange={(e) => updateFieldProperty('linkTarget', e.target.value, selectedField.id)}
-                                                                    >
-                                                                        <option value="_self">Same Tab</option>
-                                                                        <option value="_blank">New Tab</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
+                                                            )}
 
-                                                        )}
 
-                                                        {selectedField.type === 'heading' && (
-                                                            <>
+                                                            {selectedField.type === 'button' && (
+                                                                <>
+                                                                    <div className="form-builder-changing-wrap">
+                                                                        <div>
+
+                                                                            <div className='checkbox-option'>
+                                                                                <label>Button Label</label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={selectedField.label}
+                                                                                    onChange={(e) => updateFieldProperty('label', e.target.value)}
+                                                                                />
+                                                                            </div>
+
+                                                                            <div className='checkbox-option'>
+                                                                                <label>Font Size (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.buttontext}
+                                                                                    onChange={(e) => updateFieldProperty('buttontext', e.target.value)}
+                                                                                    min={0}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='checkbox-option bg-colors'>
+                                                                                <label> Text-color</label>
+                                                                                <div className="color-picker-container">
+
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="color-code"
+                                                                                        value={selectedField.btncolor || '#ffffff'}
+                                                                                        readOnly
+                                                                                        onClick={(e) => {
+                                                                                            navigator.clipboard.writeText(e.target.value);
+                                                                                        }}
+                                                                                        onPaste={(e) => {
+                                                                                            const pastedText = e.clipboardData.getData('text');
+                                                                                            if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                updateFieldProperty('btncolor', pastedText);
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <input
+                                                                                        type="color"
+                                                                                        value={selectedField.btncolor}
+                                                                                        onChange={(e) => updateFieldProperty('btncolor', e.target.value)}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="form-builder-chaneging-wrap">
+                                                                                <label>Text Align </label>
+                                                                                <select
+                                                                                    value={selectedField.buttonaline}
+                                                                                    onChange={(e) => updateFieldProperty('buttonaline', e.target.value, selectedField.id)}
+                                                                                >
+                                                                                    <option value="">Select text align</option>
+                                                                                    <option value="left">Left</option>
+                                                                                    <option value="center">Center</option>
+                                                                                    <option value="right">Right</option>
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div className='checkbox-option'>
+                                                                                <label>Button Padding (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.padding}
+                                                                                    onChange={(e) => updateFieldProperty('padding', e.target.value)}
+                                                                                    placeholder="e.g., 10px"
+                                                                                    min={0}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='checkbox-option'>
+                                                                                <label>Button Radius (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.btnradious}
+                                                                                    onChange={(e) => updateFieldProperty('btnradious', e.target.value)}
+                                                                                    placeholder="e.g., 4px"
+                                                                                    min={0}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='checkbox-option'>
+                                                                                <label>Width (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.btnwidth}
+                                                                                    onChange={(e) => updateFieldProperty('btnwidth', e.target.value)}
+                                                                                    placeholder="e.g., 150"
+                                                                                    min={0}
+                                                                                    max={100}
+                                                                                />
+                                                                            </div>
+                                                                            <div className='checkbox-option'>
+                                                                                <label>Height (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.buttonHeight ? selectedField.buttonHeight.replace('px', '') : '40'}
+                                                                                    onChange={(e) => updateFieldProperty('buttonHeight', `${e.target.value}px`)}
+                                                                                    placeholder="e.g., 40"
+                                                                                    min={0}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="checkbox-option bg-colors">
+                                                                                <label>Background Color</label>
+                                                                                <div className="color-picker-container">
+
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="color-code"
+                                                                                        value={selectedField.backgroundColor || '#ffffff'}
+                                                                                        readOnly
+                                                                                        onClick={(e) => {
+                                                                                            navigator.clipboard.writeText(e.target.value);
+                                                                                        }}
+                                                                                        onPaste={(e) => {
+                                                                                            const pastedText = e.clipboardData.getData('text');
+                                                                                            if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                updateFieldProperty('backgroundColor', pastedText);
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <input
+                                                                                        type="color"
+                                                                                        value={selectedField.backgroundColor}
+                                                                                        onChange={(e) => updateFieldProperty('backgroundColor', e.target.value)}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="checkbox-option bg-colors">
+                                                                                <label>Border Color</label>
+                                                                                <div className="color-picker-container">
+
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="color-code"
+                                                                                        value={selectedField.buttonBorderColor || '#ffffff'}
+                                                                                        readOnly
+                                                                                        onClick={(e) => {
+                                                                                            navigator.clipboard.writeText(e.target.value);
+                                                                                        }}
+                                                                                        onPaste={(e) => {
+                                                                                            const pastedText = e.clipboardData.getData('text');
+                                                                                            if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                                updateFieldProperty('buttonBorderColor', pastedText);
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <input
+                                                                                        type="color"
+                                                                                        value={selectedField.buttonBorderColor}
+                                                                                        onChange={(e) => updateFieldProperty('buttonBorderColor', e.target.value)}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className='form-builder-chaneging-wrap number'>
+                                                                                <label>Border Width (px)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.buttonBorderWidth}
+                                                                                    onChange={(e) => {
+                                                                                        updateFieldProperty('buttonBorderWidth', `${e.target.value}`);
+                                                                                    }}
+                                                                                    min={0}
+                                                                                />
+                                                                            </div>
+
+                                                                            <div className='form-builder-chaneging-wrap'>
+                                                                                <label>Border Style</label>
+                                                                                <select
+                                                                                    value={selectedField.buttonBorderStyle}
+                                                                                    onChange={(e) => updateFieldProperty('buttonBorderStyle', e.target.value)}
+                                                                                >
+                                                                                    <option value="solid">Solid</option>
+                                                                                    <option value="dashed">Dashed</option>
+                                                                                    <option value="dotted">Dotted</option>
+                                                                                    <option value="double ">Double </option>
+                                                                                </select>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                            {selectedField.type === 'link' && (
                                                                 <div className="form-builder-chaneging-wrap">
-                                                                    <label>Heading Level</label>
-                                                                    <select value={headingLevel} onChange={(e) => setHeadingLevel(e.target.value)}>
-                                                                        {['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map(level => (
-                                                                            <option key={level} value={level}>{level.toUpperCase()}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Heading Text</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={headingText}
-                                                                        onChange={(e) => setHeadingText(e.target.value)}
-                                                                    />
+                                                                    <div className='form-builder-chaneging-wrap ' style={{ color: 'black' }}>
+                                                                        <label>Link text</label>
+                                                                        <ReactQuill
+                                                                            value={selectedField.linktext}
+                                                                            onChange={(value) => updateFieldProperty('linktext', value, selectedField.id)}
+                                                                            modules={{
+                                                                                toolbar: [
+                                                                                    ['bold', 'italic', 'underline'],
+                                                                                    ['link'],
+                                                                                ],
+                                                                            }}
+                                                                            placeholder="Enter the URL"
+                                                                        />
+                                                                    </div>
+                                                                    <div className='form-builder-chaneging-wrap'>
+                                                                        <label>Link URL</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={selectedField.linkUrl || ''}
+                                                                            onChange={(e) => updateFieldProperty('linkUrl', e.target.value, selectedField.id)}
+                                                                            placeholder="Enter the URL"
+                                                                        />
+                                                                    </div>
                                                                     <div className="form-builder-chaneging-wrap number">
                                                                         <label>
                                                                             Font Size (px):
                                                                             <input
                                                                                 type="number"
-                                                                                value={headingFontSize} px
-                                                                                onChange={(e) => setHeadingFontSize(e.target.value)}
+                                                                                value={selectedField.linkfontsize}
+                                                                                onChange={(e) => updateFieldProperty('linkfontsize', e.target.value, selectedField.id)}
                                                                                 min={0}
                                                                             />
                                                                         </label>
                                                                     </div>
-                                                                    <div className="form-builder-chaneging-wrap number">
-                                                                        <label>
-                                                                            Line Height (px):
-                                                                            <input
-                                                                                type="number"
-                                                                                value={selectedField.headingLineheight} 
-                                                                                onChange={(e) => updateFieldProperty('headingLineheight', e.target.value, selectedField.id)}
-                                                                                min={0}
-                                                                            />
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Text Align </label>
-                                                                    <select
-                                                                        value={textHeading}
-                                                                        onChange={(e) => setTextHeading(e.target.value)}
-                                                                    >
-                                                                        <option value="">Select text align</option>
-                                                                        <option value="left">Left</option>
-                                                                        <option value="center">Center</option>
-                                                                        <option value="right">Right</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div className='checkbox-option bg-colors'>
-                                                                    <label> Color</label>
-                                                                    <div className="color-picker-container">
-                                                                        <input
-                                                                            type="text"
-                                                                            className="color-code"
-                                                                            value={colorHeading || '#ffffff'}
-                                                                            readOnly
-                                                                            onClick={(e) => {
-                                                                                navigator.clipboard.writeText(e.target.value);
-                                                                            }}
-                                                                            onPaste={(e) => {
-                                                                                const pastedText = e.clipboardData.getData('text');
-                                                                                if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
-                                                                                    setColorHeading(pastedText);
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                        <input
-                                                                            type="color"
-                                                                            value={colorHeading}
-                                                                            onChange={(e) => setColorHeading(e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                            </>
-                                                        )}
-                                                        {selectedField.type === 'description' && (
-                                                            <>
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Description Text</label>
-                                                                    <textarea
-                                                                        style={{ resize: 'vertical' }}
-                                                                        value={descriptionText}
-                                                                        onChange={(e) => setDescriptionText(e.target.value)}
-                                                                    />
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label>Font-Size:</label>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={selectedField.textSize}
-                                                                        onChange={(e) => updateFieldProperty('textSize', e.target.value, selectedField.id)}
-                                                                        min='0'
-                                                                    />
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label>Padding (Left & Right):</label>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={selectedField.textPadding}
-                                                                        onChange={(e) => updateFieldProperty('textPadding', e.target.value, selectedField.id)}
-                                                                        min='0'
-                                                                    />
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label>Line-Height:</label>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={selectedField.textlineheight}
-                                                                        onChange={(e) => updateFieldProperty('textlineheight', e.target.value, selectedField.id)}
-                                                                        min='0'
-                                                                    />
-                                                                </div>
-
-                                                                <div className='checkbox-option bg-colors'>
-                                                                    <label> Color</label>
-                                                                    <div className="color-picker-container">
-
-                                                                        <input
-                                                                            type="text"
-                                                                            className="color-code"
-                                                                            value={selectedField.textColor || '#ffffff'}
-                                                                            readOnly
-                                                                            onClick={(e) => {
-                                                                                navigator.clipboard.writeText(e.target.value);
-                                                                            }}
-                                                                            onPaste={(e) => {
-                                                                                const pastedText = e.clipboardData.getData('text');
-                                                                                if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
-                                                                                    updateFieldProperty('textColor', pastedText, selectedField.id);
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                        <input
-                                                                            type="color"
-                                                                            value={selectedField.textColor}
-                                                                            onChange={(e) => updateFieldProperty('textColor', e.target.value, selectedField.id)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Text Align </label>
-                                                                    <select
-                                                                        value={selectedField.textAline}
-                                                                        onChange={(e) => updateFieldProperty('textAline', e.target.value, selectedField.id)}
-                                                                    >
-                                                                        <option value="">Select text align</option>
-                                                                        <option value="left">Left</option>
-                                                                        <option value="center">Center</option>
-                                                                        <option value="right">Right</option>
-                                                                    </select>
-                                                                </div>
-
-                                                            </>
-                                                        )}
-                                                        {selectedField.type !== 'multi-image' && selectedField.type !== 'multi-file' && selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
-                                                            <label>Placeholder</label>
-                                                            <input
-                                                                type="text"
-                                                                value={selectedField.placeholder}
-                                                                onChange={(e) => updateFieldProperty('placeholder', e.target.value)}
-                                                            />
-                                                        </div>
-                                                        )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
-                                                            <div className="form-builder-chaneging-wrap">
-                                                                <label>Description</label>
-                                                                <textarea
-                                                                    value={selectedField.description}
-                                                                    onChange={(e) => updateFieldProperty('description', e.target.value)}
-                                                                    style={{ wordBreak: 'break-word', width: '100%', minHeight: '50px', resize: 'vertical' }}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
-                                                            <div className="form-builder-chaneging-wrap">
-                                                                <label>Input Width</label>
-                                                                <select
-                                                                    value={selectedField.width}
-                                                                    onChange={(e) => updateFieldProperty('width', e.target.value)}
-                                                                >
-                                                                    <option value="25%">25%</option>
-                                                                    <option value="50%">50%</option>
-                                                                    <option value="75%">75%</option>
-                                                                    <option value="100%">100%</option>
-                                                                </select>
-                                                            </div>
-                                                        )}
-                                                        <div className="form-builder-chaneging-wrap">
-                                                            <label>Custom Class</label>
-                                                            <input
-                                                                type="text"
-                                                                value={selectedField?.customClass || ''}
-                                                                onChange={(e) => updateFieldProperty('customClass', e.target.value)}
-                                                            />
-                                                        </div>
-                                                        {selectedField.type === 'toggle' && (
-                                                            <div className="form-builder-chaneging-wrap">
-                                                                <label>Values</label>
-                                                                <div className="toggle-values">
-                                                                    <div className='toggle-buttons-wrap'>
-                                                                        <input
-                                                                            type="text"
-                                                                            placeholder="On Value"
-                                                                            value={selectedField.onValue || ''}
-                                                                            onChange={(e) => handleChange('onValue', e.target.value)}
-                                                                        />
-                                                                        <button
-                                                                            className={`toogle-btn-wraped ${selectedField.onActive === 'active' ? 'active' : ''}`}
-                                                                            type="button"
-                                                                            onClick={() => handleSetValue('onActive')}
+                                                                    <div className='form-builder-chaneging-wrap'>
+                                                                        <label>Text Align</label>
+                                                                        <select
+                                                                            name="textAlign"
+                                                                            id="textAlign"
+                                                                            value={selectedField.linkaline}
+                                                                            onChange={(e) => updateFieldProperty('linkaline', e.target.value, selectedField.id)}
                                                                         >
-                                                                            On
-                                                                        </button>
+                                                                            <option value="">Select text align</option>
+                                                                            <option value="left">Left</option>
+                                                                            <option value="center">Center</option>
+                                                                            <option value="right">Right</option>
+                                                                        </select>
                                                                     </div>
-                                                                    <div className='toggle-buttons-wrap'>
+                                                                    <div className='form-builder-chaneging-wrap'>
+                                                                        <label>Open in</label>
+                                                                        <select
+                                                                            name="linkTarget"
+                                                                            id="linkTarget"
+                                                                            value={selectedField.linkTarget}
+                                                                            onChange={(e) => updateFieldProperty('linkTarget', e.target.value, selectedField.id)}
+                                                                        >
+                                                                            <option value="_self">Same Tab</option>
+                                                                            <option value="_blank">New Tab</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                            )}
+
+                                                            {selectedField.type === 'heading' && (
+                                                                <>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Heading Level</label>
+                                                                        <select value={headingLevel} onChange={(e) => setHeadingLevel(e.target.value)}>
+                                                                            {['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map(level => (
+                                                                                <option key={level} value={level}>{level.toUpperCase()}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Heading Text</label>
                                                                         <input
                                                                             type="text"
-                                                                            placeholder="Off Value"
-                                                                            value={selectedField.offValue || ''}
-                                                                            onChange={(e) => handleChange('offValue', e.target.value)}
+                                                                            value={headingText}
+                                                                            onChange={(e) => setHeadingText(e.target.value)}
                                                                         />
-                                                                        <button
-                                                                            className={`toogle-btn-wraped ${selectedField.offActive === 'active' ? 'active' : ''}`}
-                                                                            type="button"
-                                                                            onClick={() => handleSetValue('offActive')}
-                                                                        >
-                                                                            Off
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                        {selectedField.type === 'password' && (
-                                                            <div className='form-builder-chaneging-wrap password-wrapped'>
-                                                                <label>Password Options</label>
-                                                                <div className="form-builder-chaneging-wrap number password-creater character">
-                                                                    <div className='form-builder-chaneging-wrap-lable-passwoerd'>
-                                                                        <label>Min Character </label>
-                                                                        <p>Enter at least 6 character </p></div>
-                                                                    <input
-                                                                        type="number"
-                                                                        min="6"
-                                                                        value={selectedField.passwordCharacter}
-                                                                        onChange={(e) => {
-                                                                            const newValue = parseInt(e.target.value, 10);
-
-                                                                            if (newValue < 6) {
-                                                                                alert("Minimum password length should be 6 characters.");
-                                                                                updateFieldProperty('passwordCharacter', "6");
-                                                                            } else {
-                                                                                updateFieldProperty('passwordCharacter', `${newValue}`);
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap number password-creater">
-                                                                    <div className='form-builder-chaneging-wrap-lable-passwoerd'>
-                                                                        <label>Enable/Disable strong password</label>
-                                                                        <p>e.g of password (AxvNEn@9)</p></div>
-                                                                    <div className='form-builder-chaneging-addbtn-pass'>
-                                                                        <div className='form-builder-storng-btn'>
-                                                                            <label className="switch-form-builder">
+                                                                        <div className="form-builder-chaneging-wrap number">
+                                                                            <label>
+                                                                                Font Size (px):
                                                                                 <input
-                                                                                    type="checkbox"
-                                                                                    checked={passwordStatus === 'on'}
-                                                                                    onChange={handleToggle}
+                                                                                    type="number"
+                                                                                    value={headingFontSize} px
+                                                                                    onChange={(e) => setHeadingFontSize(e.target.value)}
+                                                                                    min={0}
                                                                                 />
-                                                                                <span className="slider-switch-form-builder round"></span>
                                                                             </label>
                                                                         </div>
-
+                                                                        <div className="form-builder-chaneging-wrap number">
+                                                                            <label>
+                                                                                Line Height (px):
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={selectedField.headingLineheight}
+                                                                                    onChange={(e) => updateFieldProperty('headingLineheight', e.target.value, selectedField.id)}
+                                                                                    min={0}
+                                                                                />
+                                                                            </label>
+                                                                        </div>
                                                                     </div>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Text Align </label>
+                                                                        <select
+                                                                            value={selectedField.textHeading}
+                                                                            onChange={(e) => updateFieldProperty('textHeading', e.target.value, selectedField.id)}
+                                                                        >
+                                                                            <option value="">Select text align</option>
+                                                                            <option value="left">Left</option>
+                                                                            <option value="center">Center</option>
+                                                                            <option value="right">Right</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className='checkbox-option bg-colors'>
+                                                                        <label> Color</label>
+                                                                        <div className="color-picker-container">
+
+                                                                            <input
+                                                                                type="text"
+                                                                                className="color-code"
+                                                                                value={selectedField.colorHeading || '#00000'}
+                                                                                readOnly
+                                                                                onClick={(e) => {
+                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                }}
+                                                                                onPaste={(e) => {
+                                                                                    const pastedText = e.clipboardData.getData('text');
+                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                        updateFieldProperty('colorHeading', pastedText);
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            <input
+                                                                                type="color"
+                                                                                value={selectedField.colorHeading}
+                                                                                onChange={(e) => updateFieldProperty('colorHeading', e.target.value)}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                </>
+                                                            )}
+                                                            {selectedField.type === 'description' && (
+                                                                <>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Description Text</label>
+                                                                        <textarea
+                                                                            style={{ resize: 'vertical' }}
+                                                                            value={descriptionText}
+                                                                            onChange={(e) => setDescriptionText(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label>Font-Size:</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={selectedField.textSize}
+                                                                            onChange={(e) => updateFieldProperty('textSize', e.target.value, selectedField.id)}
+                                                                            min='0'
+                                                                        />
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label>Padding (Left & Right):</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={selectedField.textPadding}
+                                                                            onChange={(e) => updateFieldProperty('textPadding', e.target.value, selectedField.id)}
+                                                                            min='0'
+                                                                        />
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label>Line-Height:</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={selectedField.textlineheight}
+                                                                            onChange={(e) => updateFieldProperty('textlineheight', e.target.value, selectedField.id)}
+                                                                            min='0'
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className='checkbox-option bg-colors'>
+                                                                        <label> Color</label>
+                                                                        <div className="color-picker-container">
+
+                                                                            <input
+                                                                                type="text"
+                                                                                className="color-code"
+                                                                                value={selectedField.textColor || '#ffffff'}
+                                                                                readOnly
+                                                                                onClick={(e) => {
+                                                                                    navigator.clipboard.writeText(e.target.value);
+                                                                                }}
+                                                                                onPaste={(e) => {
+                                                                                    const pastedText = e.clipboardData.getData('text');
+                                                                                    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+                                                                                        updateFieldProperty('textColor', pastedText, selectedField.id);
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            <input
+                                                                                type="color"
+                                                                                value={selectedField.textColor}
+                                                                                onChange={(e) => updateFieldProperty('textColor', e.target.value, selectedField.id)}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Text Align </label>
+                                                                        <select
+                                                                            value={selectedField.textAline}
+                                                                            onChange={(e) => updateFieldProperty('textAline', e.target.value, selectedField.id)}
+                                                                        >
+                                                                            <option value="">Select text align</option>
+                                                                            <option value="left">Left</option>
+                                                                            <option value="center">Center</option>
+                                                                            <option value="right">Right</option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                </>
+                                                            )}
+                                                            {selectedField.type !== 'multi-image' && selectedField.type !== 'multi-file' && selectedField.type !== 'date' && selectedField.type !== 'datetime' && selectedField.type !== 'time' && selectedField.type !== 'phone' && selectedField.type !== 'images' && selectedField.type !== 'file' && selectedField.type !== 'divider' && selectedField.type !== 'slider' && selectedField.type !== 'toggle' && selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'radio' && selectedField.type !== 'checkbox' && selectedField.type !== 'select' && selectedField.type !== 'link' && (<div className="form-builder-chaneging-wrap">
+                                                                <label>Placeholder</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={selectedField.placeholder}
+                                                                    onChange={(e) => updateFieldProperty('placeholder', e.target.value)}
+                                                                />
+                                                            </div>
+                                                            )}
+                                                            {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Description</label>
+                                                                    <textarea
+                                                                        value={selectedField.description}
+                                                                        onChange={(e) => updateFieldProperty('description', e.target.value)}
+                                                                        style={{ wordBreak: 'break-word', width: '100%', minHeight: '50px', resize: 'vertical' }}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Input Width</label>
+                                                                    <select
+                                                                        value={selectedField.width}
+                                                                        onChange={(e) => updateFieldProperty('width', e.target.value)}
+                                                                    >
+                                                                        <option value="25%">25%</option>
+                                                                        <option value="50%">50%</option>
+                                                                        <option value="75%">75%</option>
+                                                                        <option value="100%">100%</option>
+                                                                    </select>
+                                                                </div>
+                                                            )}
+                                                            <div className="form-builder-chaneging-wrap">
+                                                                <label>Custom Class</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={selectedField?.customClass || ''}
+                                                                    onChange={(e) => updateFieldProperty('customClass', e.target.value)}
+                                                                />
+                                                            </div>
+                                                            {selectedField.type === 'toggle' && (
+                                                                <div className="form-builder-chaneging-wrap">
+                                                                    <label>Values</label>
+                                                                    <div className="toggle-values">
+                                                                        <div className='toggle-buttons-wrap'>
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="On Value"
+                                                                                value={selectedField.onValue || ''}
+                                                                                onChange={(e) => handleChange('onValue', e.target.value)}
+                                                                            />
+                                                                            <button
+                                                                                className={`toogle-btn-wraped ${selectedField.onActive === 'active' ? 'active' : ''}`}
+                                                                                type="button"
+                                                                                onClick={() => handleSetValue('onActive')}
+                                                                            >
+                                                                                On
+                                                                            </button>
+                                                                        </div>
+                                                                        <div className='toggle-buttons-wrap'>
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="Off Value"
+                                                                                value={selectedField.offValue || ''}
+                                                                                onChange={(e) => handleChange('offValue', e.target.value)}
+                                                                            />
+                                                                            <button
+                                                                                className={`toogle-btn-wraped ${selectedField.offActive === 'active' ? 'active' : ''}`}
+                                                                                type="button"
+                                                                                onClick={() => handleSetValue('offActive')}
+                                                                            >
+                                                                                Off
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {selectedField.type === 'password' && (
+                                                                <div className='form-builder-chaneging-wrap password-wrapped'>
+                                                                    <label>Password Options</label>
+                                                                    <div className="form-builder-chaneging-wrap number password-creater character">
+                                                                        <div className='form-builder-chaneging-wrap-lable-passwoerd'>
+                                                                            <label>Min Character </label>
+                                                                            <p>Enter at least 6 character </p></div>
+                                                                        <input
+                                                                            type="number"
+                                                                            min="6"
+                                                                            value={selectedField.passwordCharacter}
+                                                                            onChange={(e) => {
+                                                                                const newValue = parseInt(e.target.value, 10);
+
+                                                                                if (newValue < 6) {
+                                                                                    alert("Minimum password length should be 6 characters.");
+                                                                                    updateFieldProperty('passwordCharacter', "6");
+                                                                                } else {
+                                                                                    updateFieldProperty('passwordCharacter', `${newValue}`);
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap number password-creater">
+                                                                        <div className='form-builder-chaneging-wrap-lable-passwoerd'>
+                                                                            <label>Enable/Disable strong password</label>
+                                                                            <p>e.g of password (AxvNEn@9)</p></div>
+                                                                        <div className='form-builder-chaneging-addbtn-pass'>
+                                                                            <div className='form-builder-storng-btn'>
+                                                                                <label className="switch-form-builder">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        checked={passwordStatus === 'on'}
+                                                                                        onChange={handleToggle}
+                                                                                    />
+                                                                                    <span className="slider-switch-form-builder round"></span>
+                                                                                </label>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {selectedField.type === 'file' && (
+                                                                <>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label htmlFor="">Choose your style</label>
+                                                                        <div className='form-builder-chaneging-file-options'>
+                                                                            <span
+                                                                                className={`file-option basic ${fileOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                                onClick={() => handleFileOptionChange(selectedField.id, 'option1')}
+                                                                            >
+                                                                                Basic
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro ${fileOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleFileOptionChange(selectedField.id, 'option2');
+                                                                                }}
+                                                                            >
+                                                                                Pro
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro-plus ${fileOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleFileOptionChange(selectedField.id, 'option3')
+                                                                                }}
+                                                                            >
+                                                                                Pro +
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </>
+                                                            )}
+
+                                                            {selectedField.type === 'multi-file' && (
+                                                                <>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label htmlFor="">Choose your style</label>
+                                                                        <div className='form-builder-chaneging-file-options'>
+                                                                            <span
+                                                                                className={`file-option basic ${multiOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                                onClick={() => handleMultiOptionChange(selectedField.id, 'option1')}
+                                                                            >
+                                                                                Basic
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro ${multiOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleMultiOptionChange(selectedField.id, 'option2')
+                                                                                }}
+                                                                            >
+                                                                                Pro
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro-plus ${multiOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleMultiOptionChange(selectedField.id, 'option3')
+                                                                                }}
+                                                                            >
+                                                                                Pro +
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </>
+                                                            )}
+
+                                                            {selectedField.type === 'images' && (
+                                                                <>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label htmlFor="">Choose your style</label>
+                                                                        <div className='form-builder-chaneging-file-options'>
+                                                                            <span
+                                                                                className={`file-option basic ${imageOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                                onClick={() => handleImageOptionChange(selectedField.id, 'option1')}
+                                                                            >
+                                                                                Basic
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro ${imageOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleImageOptionChange(selectedField.id, 'option2')
+                                                                                }}
+                                                                            >
+                                                                                Pro
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro-plus ${imageOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleImageOptionChange(selectedField.id, 'option3')
+                                                                                }}
+                                                                            >
+                                                                                Pro +
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </>
+                                                            )}
+
+                                                            {selectedField.type === 'multi-image' && (
+                                                                <>
+                                                                    <div className="form-builder-chaneging-wrap number">
+                                                                        <label htmlFor="">Choose your style</label>
+                                                                        <div className='form-builder-chaneging-file-options'>
+                                                                            <span
+                                                                                className={`file-option basic ${multiimagesOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
+                                                                                onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option1')}
+                                                                            >
+                                                                                Basic
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro ${multiimagesOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleMultiImagesOptionChange(selectedField.id, 'option2')
+                                                                                }}
+                                                                            >
+                                                                                Pro
+                                                                            </span>
+
+                                                                            <span
+                                                                                className={`file-option pro-plus ${multiimagesOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
+                                                                                onClick={() => {
+                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                        setUphradePopup(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    handleMultiImagesOptionChange(selectedField.id, 'option3')
+                                                                                }}
+                                                                            >
+                                                                                Pro +
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
+                                                            <div className='form_builder_option_select'>
+                                                                <h3>Options</h3>
+                                                                <div className='form-builder-options-container'>
+                                                                    {selectedField.type === 'file' && (
+                                                                        <>
+                                                                            <div className="form-builder-chaneging-wrap">
+                                                                                <label>File Preview</label>
+                                                                                <div className='form-builder-chaneging-addbtn-pass'>
+                                                                                    <div className='form-builder-storng-btn'>
+                                                                                        <label className="toggle-switch">
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                checked={ImagePreview === 'on'}
+                                                                                                onChange={handleToggleImagePreview}
+                                                                                            />
+                                                                                            <span className="slider"></span>
+                                                                                        </label>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </>
+                                                                    )}
+                                                                    {selectedField.type === 'multi-file' && (
+                                                                        <>
+                                                                            <div className="form-builder-chaneging-wrap">
+                                                                                <label>File Preview</label>
+                                                                                <div className='form-builder-chaneging-addbtn-pass'>
+                                                                                    <div className='form-builder-storng-btn'>
+                                                                                        <label className="toggle-switch">
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                checked={multifilePreview === 'on'}
+                                                                                                onChange={handleToggleMiltiPreview}
+                                                                                            />
+                                                                                            <span className="slider"></span>
+                                                                                        </label>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                    {selectedField.type === 'images' && (
+                                                                        <>
+                                                                            <div className="form-builder-chaneging-wrap">
+                                                                                <label>Image Preview</label>
+                                                                                <div className='form-builder-chaneging-addbtn-pass'>
+                                                                                    <div className='form-builder-storng-btn'>
+                                                                                        <label className="toggle-switch">
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                checked={signlePreview === 'on'}
+                                                                                                onChange={handleToggleSinglePreview}
+                                                                                            />
+                                                                                            <span className="slider"></span>
+                                                                                        </label>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+
+                                                                    {selectedField.type === 'multi-image' && (
+                                                                        <>
+                                                                            <div className="form-builder-chaneging-wrap">
+                                                                                <label>Image Preview</label>
+                                                                                <div className='form-builder-chaneging-addbtn-pass'>
+                                                                                    <div className='form-builder-storng-btn'>
+                                                                                        <label className="toggle-switch">
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                checked={multiIamgePreview === 'on'}
+                                                                                                onChange={handleToggleMultiPreview}
+                                                                                            />
+                                                                                            <span className="slider"></span>
+                                                                                        </label>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Required</label>
+                                                                        <label className="toggle-switch">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedField?.required || false}
+                                                                                onChange={(e) => updateFieldProperty('required', e.target.checked)}
+                                                                            />
+                                                                            <span className="slider"></span>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Disabled</label>
+                                                                        <label className="toggle-switch">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedField?.disabled || false}
+                                                                                onChange={(e) => updateFieldProperty('disabled', e.target.checked)}
+                                                                            />
+                                                                            <span className="slider"></span>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Readonly</label>
+                                                                        <label className="toggle-switch">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedField?.readonly || false}
+                                                                                onChange={(e) => updateFieldProperty('readonly', e.target.checked)}
+                                                                            />
+                                                                            <span className="slider"></span>
+                                                                        </label>
+                                                                    </div>
+
+
                                                                 </div>
                                                             </div>
-                                                        )}
-                                                        {selectedField.type === 'file' && (
-                                                            <>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label htmlFor="">Choose your style</label>
-                                                                    <div className='form-builder-chaneging-file-options'>
-                                                                        <span
-                                                                            className={`file-option basic ${fileOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
-                                                                            onClick={() => handleFileOptionChange(selectedField.id, 'option1')}
-                                                                        >
-                                                                            Basic
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro ${fileOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
-                                                                            onClick={() => handleFileOptionChange(selectedField.id, 'option2')}
-                                                                        >
-                                                                            Pro
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro-plus ${fileOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
-                                                                            onClick={() => handleFileOptionChange(selectedField.id, 'option3')}
-                                                                        >
-                                                                            Pro +
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                            </>
-                                                        )}
-
-                                                        {selectedField.type === 'multi-file' && (
-                                                            <>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label htmlFor="">Choose your style</label>
-                                                                    <div className='form-builder-chaneging-file-options'>
-                                                                        <span
-                                                                            className={`file-option basic ${multiOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
-                                                                            onClick={() => handleMultiOptionChange(selectedField.id, 'option1')}
-                                                                        >
-                                                                            Basic
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro ${multiOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
-                                                                            onClick={() => handleMultiOptionChange(selectedField.id, 'option2')}
-                                                                        >
-                                                                            Pro
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro-plus ${multiOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
-                                                                            onClick={() => handleMultiOptionChange(selectedField.id, 'option3')}
-                                                                        >
-                                                                            Pro +
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                            </>
-                                                        )}
-
-                                                        {selectedField.type === 'images' && (
-                                                            <>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label htmlFor="">Choose your style</label>
-                                                                    <div className='form-builder-chaneging-file-options'>
-                                                                        <span
-                                                                            className={`file-option basic ${imageOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
-                                                                            onClick={() => handleImageOptionChange(selectedField.id, 'option1')}
-                                                                        >
-                                                                            Basic
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro ${imageOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
-                                                                            onClick={() => handleImageOptionChange(selectedField.id, 'option2')}
-                                                                        >
-                                                                            Pro
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro-plus ${imageOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
-                                                                            onClick={() => handleImageOptionChange(selectedField.id, 'option3')}
-                                                                        >
-                                                                            Pro +
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                            </>
-                                                        )}
-
-                                                        {selectedField.type === 'multi-image' && (
-                                                            <>
-                                                                <div className="form-builder-chaneging-wrap number">
-                                                                    <label htmlFor="">Choose your style</label>
-                                                                    <div className='form-builder-chaneging-file-options'>
-                                                                        <span
-                                                                            className={`file-option basic ${multiimagesOptions[selectedField.id] === 'option1' ? 'active' : ''}`}
-                                                                            onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option1')}
-                                                                        >
-                                                                            Basic
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro ${multiimagesOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
-                                                                            onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option2')}
-                                                                        >
-                                                                            Pro
-                                                                        </span>
-
-                                                                        <span
-                                                                            className={`file-option pro-plus ${multiimagesOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
-                                                                            onClick={() => handleMultiImagesOptionChange(selectedField.id, 'option3')}
-                                                                        >
-                                                                            Pro +
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                            </>
                                                         )}
                                                     </div>
-                                                    {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
-                                                        <div className='form_builder_option_select'>
-                                                            <h3>Options</h3>
-                                                            <div className='form-builder-options-container'>
-                                                                {selectedField.type === 'file' && (
-                                                                    <>
-                                                                        <div className="form-builder-chaneging-wrap">
-                                                                            <label>File Preview</label>
-                                                                            <div className='form-builder-chaneging-addbtn-pass'>
-                                                                                <div className='form-builder-storng-btn'>
-                                                                                    <label className="toggle-switch">
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            checked={ImagePreview === 'on'}
-                                                                                            onChange={handleToggleImagePreview}
-                                                                                        />
-                                                                                        <span className="slider"></span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-
-                                                                    </>
-                                                                )}
-                                                                {selectedField.type === 'multi-file' && (
-                                                                    <>
-                                                                        <div className="form-builder-chaneging-wrap">
-                                                                            <label>File Preview</label>
-                                                                            <div className='form-builder-chaneging-addbtn-pass'>
-                                                                                <div className='form-builder-storng-btn'>
-                                                                                    <label className="toggle-switch">
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            checked={multifilePreview === 'on'}
-                                                                                            onChange={handleToggleMiltiPreview}
-                                                                                        />
-                                                                                        <span className="slider"></span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                                {selectedField.type === 'images' && (
-                                                                    <>
-                                                                        <div className="form-builder-chaneging-wrap">
-                                                                            <label>Image Preview</label>
-                                                                            <div className='form-builder-chaneging-addbtn-pass'>
-                                                                                <div className='form-builder-storng-btn'>
-                                                                                    <label className="toggle-switch">
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            checked={signlePreview === 'on'}
-                                                                                            onChange={handleToggleSinglePreview}
-                                                                                        />
-                                                                                        <span className="slider"></span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-                                                                    </>
-                                                                )}
-
-                                                                {selectedField.type === 'multi-image' && (
-                                                                    <>
-                                                                        <div className="form-builder-chaneging-wrap">
-                                                                            <label>Image Preview</label>
-                                                                            <div className='form-builder-chaneging-addbtn-pass'>
-                                                                                <div className='form-builder-storng-btn'>
-                                                                                    <label className="toggle-switch">
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            checked={multiIamgePreview === 'on'}
-                                                                                            onChange={handleToggleMultiPreview}
-                                                                                        />
-                                                                                        <span className="slider"></span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Required</label>
-                                                                    <label className="toggle-switch">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedField?.required || false}
-                                                                            onChange={(e) => updateFieldProperty('required', e.target.checked)}
-                                                                        />
-                                                                        <span className="slider"></span>
-                                                                    </label>
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Disabled</label>
-                                                                    <label className="toggle-switch">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedField?.disabled || false}
-                                                                            onChange={(e) => updateFieldProperty('disabled', e.target.checked)}
-                                                                        />
-                                                                        <span className="slider"></span>
-                                                                    </label>
-                                                                </div>
-                                                                <div className="form-builder-chaneging-wrap">
-                                                                    <label>Readonly</label>
-                                                                    <label className="toggle-switch">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedField?.readonly || false}
-                                                                            onChange={(e) => updateFieldProperty('readonly', e.target.checked)}
-                                                                        />
-                                                                        <span className="slider"></span>
-                                                                    </label>
-                                                                </div>
-
-
-                                                            </div>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         )}
