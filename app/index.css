@@ -50,6 +50,11 @@
     margin: 0 auto;
 }
 
+.drag-active {
+    z-index: 999999;
+  }
+  
+
 .builder_form_name .template-select-forms select {
     border: 1px solid #B5B7C0 !important;
 }
@@ -1740,8 +1745,12 @@ button.cancel {
 
 }
 
+.form-Elements-btn.form {
+    display: none;
+}
+
 .builder-container .builder_form_name input[type="text"] {
-    width: 16%;
+    width: 100%;
     padding: 10px;
     border: 1px solid rgb(204, 204, 204);
     border-radius: 4px;
@@ -2778,7 +2787,13 @@ button.copy-btn.first {
 }
 
 .form_build_app_btn.btn-three p {
-    color: #46B7D3;
+    color: #46B7D3 !important;
+}
+
+.builder_form_name.form-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .form-builder-chaneging-wrap.social-icons-img {
@@ -5776,6 +5791,23 @@ button.form_email_btn {
         padding: 0 20px;
     }
 
+    .email-campaing-templates .forms_build_flex-wraped {
+        margin-bottom: 30px;
+    }
+
+    button.cancle-form-btn {
+        padding: 8px 30px;
+    }
+
+    .btn_form_bulider button.action_btn {
+        padding: 8px 30px;
+    }
+
+    .email-campaing-templates .builder_form_name {
+        display: block;
+    }
+    
+
     .form-scroll-bar.choose-wraped {
         height: 75vh;
     }
@@ -5972,10 +6004,6 @@ button.form_email_btn {
         gap: 28px;
     }
 
-    .builder-container .builder_form_name input[type="text"] {
-        width: 27%;
-    }
-
     .controls-main-wrp .controls-wrp {
         width: 25%;
     }
@@ -6011,6 +6039,29 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1024px) {
+    button.cancle-form-btn {
+        padding: 8px 15px;
+        width: 80px;
+        font-size: 15px;
+    }
+
+    .btn_form_bulider button.action_btn {
+        padding: 8px 15px;
+        width: 80px;
+        font-size: 15px;
+    }
+
+    .builder_form_name.form-title {
+        display: block;
+    }
+
+    .builder_form_name-input-title {
+        margin-bottom: 30px;
+        width: 25%;
+    }
+    .form-Elements-btn.form {
+        display: block !important;
+    }
     .form-build-wrpped.propertites-forms {
         height: 90vh;
     }
@@ -6582,6 +6633,10 @@ button.form_email_btn {
 
 @media screen and (max-width: 840px) {
 
+    .builder_form_name-input-title {
+        width: 35%;
+    }
+
     .form_builder_action_number {
         width: 20%;
     }
@@ -7052,12 +7107,13 @@ button.form_email_btn {
         max-width: 90%;
     }
 
-    .builder-container .builder_form_name input[type="text"] {
-        width: 40%;
-    }
+   
 }
 
 @media screen and (max-width: 480px) {
+    .builder_form_name-input-title {
+        width: 40%;
+    }
     .builderr_field_wrpp.email {
         padding: 15px 30px;
     }
@@ -7071,12 +7127,7 @@ button.form_email_btn {
         width: 45%;
     }
 
-    .email-campaing-templates .btn_form_bulider {
-        position: absolute;
-        top: 17.7%;
-        left: 30%;
-    }
-
+   
     .email-template-heading {
         width: 50%;
     }
@@ -7340,13 +7391,13 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .builder_form_name-input-title {
+        width: 50%;
+    }
     .controls-wrp.email .builderr_field_wrpp.email h4 {
         font-size: 15px;
     }
-    .email-campaing-templates .btn_form_bulider {
-        left: 31%;
-    }
-
+   
     .controls-main-wrp .controls-wrp button h4 {
         font-size: 11px;
     }
@@ -7454,10 +7505,7 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:395px) {
-    .email-campaing-templates .btn_form_bulider {
-        left: 36%;
-    }
-
+   
     .form_build_new_base {
         padding: 20px 20px;
     }
@@ -7548,10 +7596,7 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:375px) {
-    .email-campaing-templates .btn_form_bulider {
-        left: 37%;
-    }
-
+    
     .from_builder_pricing .form_builder_plan_add .form_builders_plan_btn.active {
         gap: 12px;
     }
@@ -7605,10 +7650,7 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:320px) {
-    .email-campaing-templates .btn_form_bulider {
-        left: 46%;
-    }
-
+ 
     .email-template-section .email-tempalte-your .form-builder-search-bar {
         width: 100% !important;
     }

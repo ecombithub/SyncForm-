@@ -256,6 +256,8 @@ export default function EmailTemplate() {
                 const sendResponse = await axios.post(`${apiUrl}/send/api`, payload);
 
                 console.log('Response from send API:', sendResponse.data);
+                fetchForms();
+
             } else {
                 console.log('No matching data found for templateId:', form.templateId);
             }

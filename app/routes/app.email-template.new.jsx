@@ -2331,6 +2331,7 @@ const EmailTemplateCreate = () => {
                                 </select>
                             </div>
                         </div>
+                        <div className='email-templete-btns-wrapedd'>
                         <div className='btn_form_bulider'>
                             <div className="form-submission-wrp">
                                 <button className="cancle-form-btn" onClick={handleCancle} >Cancel</button>
@@ -2338,9 +2339,12 @@ const EmailTemplateCreate = () => {
                             <div className="form-submission-wrp">
                                 <button className="create-form-btn action_btn" onClick={createOrUpdateForm} >Save</button>
                             </div>
+                            
+                        </div>
+                        <div className='form-Elements-btn email' onClick={handleFieldInput}>Email Elements</div>
                         </div>
                     </div>
-                    <div className='form-Elements-btn email' onClick={handleFieldInput}>Email Elements</div>
+                    
                     <div className='builder-forms_rapp'>
                         <div className="builder-wrp">
                             <div className="controls-main-wrp email-tempalte">

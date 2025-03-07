@@ -275,7 +275,7 @@ const Formgenerated = () => {
     const [url, setUrl] = useState('');
     const [ReactQuill, setReactQuill] = useState(null);
     const [isDropdownVisible, setDropdownVisible] = useState(false);
-    const { shop, apiUrl,shopData } = useLoaderData() || {};
+    const { shop, apiUrl, shopData } = useLoaderData() || {};
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
     const [inputRadious, setInputRadious] = useState('4');
@@ -314,11 +314,11 @@ const Formgenerated = () => {
     const [activeBrand, setActiveBrand] = useState('');
     const [marginForm, setMarginForm] = useState('10');
     const [linkaline, setLinkaline] = useState('');
-    const [linkTarget,setLinkTarget] = useState('_self');
+    const [linkTarget, setLinkTarget] = useState('_self');
 
     const shopName = shopData.name;
     console.log('Shop Name:', shopName);
-    
+
 
     const handleToggleImagePreview = () => {
         setImagePreview(prevState => (prevState === 'on' ? 'off' : 'on'));
@@ -506,7 +506,7 @@ const Formgenerated = () => {
             }
         }
 
-    }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth,marginForm, padding, borderRadius, boxShadow, fields.length]);
+    }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth, marginForm, padding, borderRadius, boxShadow, fields.length]);
 
     useEffect(() => {
         const formBuilder = document.getElementById('bg_image');
@@ -618,7 +618,20 @@ const Formgenerated = () => {
 
 
         }
+
     }, [location.state]);
+
+    const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
+    const fieldsAdded = useRef(false);
+
+    useEffect(() => {
+        if (fields.length === 0 && !fieldsAdded.current) {
+            fieldsAdded.current = true;
+            defaultFields.forEach((type) => {
+                addInputField(type);
+            });
+        }
+    }, [fields]);
 
     const createInputField = (type, options = [], isFieldEnabled = true, existingField = null) => {
         const baseField = {
@@ -755,18 +768,6 @@ const Formgenerated = () => {
             handleFieldClick(newField, fields.length);
         }
     };
-
-    const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
-    const fieldsAdded = useRef(false);
-
-    useEffect(() => {
-        if (fields.length === 0 && !fieldsAdded.current) {
-            fieldsAdded.current = true;
-            defaultFields.forEach((type) => {
-                addInputField(type);
-            });
-        }
-    }, [fields]);
 
     const handleAddHeading = (level, text) => {
         const headingField = {
@@ -1782,7 +1783,7 @@ const Formgenerated = () => {
 
     const handleOptionChange = (event) => {
         setSubmissionOption(event.target.value);
-     
+
     };
 
     const handleTimerChange = (event) => {
@@ -1999,18 +2000,18 @@ const Formgenerated = () => {
         const fetchStatusBrand = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
-                console.log("Fetched status:", response.data.status); 
+                console.log("Fetched status:", response.data.status);
                 setActiveBrand(response.data.status);
             } catch (error) {
                 console.error("Error fetching brand logo status:", error);
             }
         };
-    
+
         if (shop) {
             fetchStatusBrand();
         }
     }, [shop, apiUrl]);
-    
+
     return (
         <div>
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
@@ -2055,24 +2056,29 @@ const Formgenerated = () => {
                 <div className='builder-contain-h3'>
                     <h3>Forms</h3>
                 </div>
-                <div className='builder_form_name'>
-                    <h1>Form Name</h1>
-                    <input
-                        type="text"
-                        value={formTitle}
-                        onChange={(e) => setFormTitle(e.target.value)}
-                        placeholder="Enter Name"
-                    />
-                    <div className='btn_form_bulider'>
-                        <div className="form-submission-wrp">
-                            <button className="cancle-form-btn" onClick={handlelistForm}>Cancel</button>
+                <div className='builder_form_name form-title'>
+                    <div className='builder_form_name-input-title'>
+                        <h1>Form Name</h1>
+                        <input
+                            type="text"
+                            value={formTitle}
+                            onChange={(e) => setFormTitle(e.target.value)}
+                            placeholder="Enter Name"
+                        />
+                    </div>
+                    <div className='form-builder-btns-wraped'>
+                        <div className='btn_form_bulider'>
+                            <div className="form-submission-wrp">
+                                <button className="cancle-form-btn" onClick={handlelistForm}>Cancel</button>
+                            </div>
+                            <div className="form-submission-wrp">
+                                <button className="create-form-btn action_btn" onClick={handleCreate}>{isEditing ? 'Update' : 'Save'}</button>
+                            </div>
                         </div>
-                        <div className="form-submission-wrp">
-                            <button className="create-form-btn action_btn" onClick={handleCreate}>{isEditing ? 'Update' : 'Save'}</button>
-                        </div>
+                        <div className='form-Elements-btn form email' onClick={handleFieldInput}>Form Elements</div>
                     </div>
                 </div>
-                <div className='form-Elements-btn email' onClick={handleFieldInput}>Form Elements</div>
+
                 <div className='builder-forms_rapp'>
                     <div className="builder-wrp">
                         <div className="controls-main-wrp">
@@ -2612,7 +2618,7 @@ const Formgenerated = () => {
                             <div className='form_builder_build some'>
                                 <div id='bg_change' className="form-builder-wrp" style={{ position: 'relative' }}>
                                     <div id="bg_change_background" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}></div>
-                                      {activeBrand === 'active' && <div className='form_builder-brand-logos'><img src={brandlogos} alt="" /></div>}
+                                    {activeBrand === 'active' && <div className='form_builder-brand-logos'><img src={brandlogos} alt="" /></div>}
                                     <div id="formBuilder" className="form-builder forms-wrapping" >
                                         {fields.length > 0 ? (fields.map((field, index) => {
                                             if (!field) {
@@ -2683,10 +2689,14 @@ const Formgenerated = () => {
                                                                     {field.description}
                                                                 </div>
                                                                 {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
+                                                                    <div
+                                                                        id="form-drag"
+                                                                        className={`form-builder-drag-drop ${((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) ? 'drag-active' : ''}`}
+                                                                    >
                                                                         <img src={drop} alt="Drag" />
                                                                     </div>
                                                                 )}
+
                                                             </div>
                                                         </div>
                                                     )}
@@ -3672,7 +3682,7 @@ const Formgenerated = () => {
                                                                     />
                                                                     <span className="slider"></span>
                                                                 </label>
-                                                                
+
                                                                 {/* <div style={{ marginBottom: '5px', fontWeight: 'bold', color: '#33cba2' }}>
                                                                     {enabledFields[field.id] ? field.onValue || "On" : field.offValue || "Off"}
                                                                 </div> */}

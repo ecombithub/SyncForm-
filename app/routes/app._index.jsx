@@ -237,17 +237,20 @@ function Index() {
     fetchPaymentPlan();
   }, [shop]);
   
-
   const handleCreateForm = () => {
-    console.log("User plan:", userPlan?.activePlan?.plan); 
-    
-    if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+    console.log("User plan:", userPlan?.activePlan?.plan);
+    console.log("Created forms length:", createdForms.length); 
+
+    if (userPlan?.activePlan?.plan === 'free' && createdForms.length >= 1) {
+        console.log("Conditions met, showing upgrade popup");
         setUpgradePopup(true);
         return;
     }
-    
+    console.log("Conditions not met, navigating to create form page");
     navigator('/app/forms/new');
 };
+
+
 
   const handleCancle = () => {
     setUpgradePopup(false);
