@@ -255,8 +255,6 @@ export default function EmailTemplate() {
 
                 const sendResponse = await axios.post(`${apiUrl}/send/api`, payload);
 
-                window.location.reload();
-
                 console.log('Response from send API:', sendResponse.data);
             } else {
                 console.log('No matching data found for templateId:', form.templateId);
@@ -939,7 +937,6 @@ export default function EmailTemplate() {
             alert("Something went wrong while checking your plan or templates.");
         }
     };
-
 
     return (
         <>

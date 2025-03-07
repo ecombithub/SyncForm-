@@ -9,12 +9,23 @@
     onsubmit="
       submitFormData(event, '{{ block.id }}', 'formID',
       'formTitleValue', 'formshopValue', 'shopNameHeading',
-      'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', this)
+      'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', this)
     "
   ></form>
 </div>
 
 <style>
+  .form_builder_app input {
+    font-size: 15px !important;
+}
+
+.form_builder_app select {
+  font-size: 15px !important;
+}
+
+.form_builder_app textarea {
+  font-size: 15px !important;
+}
   img.form-builder-wred-starr-requid {
     width: 7px;
     top: 3px;
@@ -659,13 +670,14 @@
       const submissionOption =formData.submissionOption;
       const thankYouTimer =formData.thankYouTimer;
       const formUrl =formData.url;
+      const emailsubject = formData.styles.subject;
 
       console.log('Formshop:', formshop);
       container.empty();
            $('#formData-{{ block.id }}').attr('onsubmit', 
         `submitFormData(event, '{{ block.id }}', '${formID}',
          '${formTitle}', '${formshop}', '${shopNameHeading}', '${toggleStatus}', '${editorValue}', 
-         '${submissionOption}', '${thankYouTimer}','${formUrl}', this)`);
+         '${submissionOption}', '${thankYouTimer}','${formUrl}','${emailsubject}', this)`);
 
       async function getBrandLogo(formshop) {
         try {
@@ -767,7 +779,7 @@
           const inputBgColor = formData.styles.inputBgColor;
           const inputStyle = formData.styles.inputstyle;
           const inputWidth = formData.styles.inputwidth;
-          const emailsubject = formData.styles.subject;
+         
           const maxDescriptionHeight = formData.styles.maxDescriptionHeight;
 
           const fieldHtml = `
@@ -1670,6 +1682,7 @@
       submissionOption,
       thankYouTimer,
       formUrl,
+      emailsubject,
       button
     ) {
       event.preventDefault();
@@ -1683,6 +1696,7 @@
       console.log('submissionOption:', submissionOption);
       console.log('thankYouTimer:', thankYouTimer);
       console.log('formUrl:', formUrl);
+      console.log('emailsubject:', emailsubject);
       
       const container = $('#formData-' + blockId);
       const formData = {
@@ -1701,6 +1715,18 @@
         formData.currentUrl = window.location.href;
       } else if (toggleStatus === 'Disabled') {
         console.log('Form submission is disabled');
+      }
+
+      const emailField = $('#formData-' + blockId + ' input[type="email"]');
+      const emailValue = emailField.val().trim(); 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (emailField.length === 0 || emailValue === '') {
+        formData.email = 'no email';
+      } else if (!emailRegex.test(emailValue)) {
+        return false;
+      } else {
+        formData.email = emailValue;
       }
 
       let isValid = true;
@@ -1888,7 +1914,8 @@
 
       if (!isValid) return;
       console.log('Final Fields Collected:', formData.fields);
-     {% comment %} 
+    
+      {% comment %} 
       if (formData.fields.length === 0) {
         alert('Please fill in at least one field before submitting.');
         console.log('Submission blocked: No fields provided.');
@@ -1986,7 +2013,7 @@
           }, 2000);
 
           if (editorValue) {
-            const editorValueDisplay = `<p>${editorValue}</p>`;
+            const editorValueDisplay = `<div style="color: green; font-size: 14px;">${editorValue}</div>`;
             const messageElement = $(editorValueDisplay);
             $('#formData-' + blockId).append(messageElement);
 

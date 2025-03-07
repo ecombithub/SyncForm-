@@ -838,7 +838,8 @@ const Formdata = () => {
                                                     padding: `${form.styles.padding}px`,
                                                     margin: `${form.styles.marginForm}px 0`,
                                                     backgroundColor: 'transparent',
-                                                    border: 0
+                                                    border: 0,
+                                                    boxShadow:0
                                                 }}
                                                 className="form-details"
                                             >
@@ -858,6 +859,8 @@ const Formdata = () => {
                                                         borderWidth: form.styles.borderWidth,
                                                         borderStyle: form.styles.borderStyle,
                                                         borderColor: form.styles.borderColor,
+                                                        boxShadow: form.styles.boxShadow
+                                                      
 
                                                     }}
                                                 ></div>

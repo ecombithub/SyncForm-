@@ -223,6 +223,19 @@ span.upload-btn {
     margin-bottom: 10px;
 }
 
+.input-field input {
+    font-size: 15px;
+}
+
+.input-field textarea {
+    font-size: 15px;
+}
+
+.input-field select {
+    font-size: 15px;
+}
+
+
 .modal-costomer .loaddr img {
     width: 10%;
 }
@@ -2329,7 +2342,7 @@ button.cancle-form-btn {
     right: 13px;
     display: flex;
     gap: 0px;
-    z-index: 99;
+    z-index: 999;
 }
 
 .form-builder-wred-starr-requid {
@@ -4931,6 +4944,7 @@ button.remove-options img {
     border-radius: 0 4px 4px 0;
     width: 40px;
     top: 0;
+    z-index: 99;
 }
 
 .upload-area-hidden {

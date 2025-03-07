@@ -269,9 +269,9 @@ const Formgenerated = () => {
     const [borderWidth, setBorderWidth] = useState('0px');
     const [borderStyle, setBorderStyle] = useState('solid');
     const [isFormBuilderVisible, setIsFormBuilderVisible] = useState(false);
-    const [submissionOption, setSubmissionOption] = useState('');
-    const [thankYouTimer, setThankYouTimer] = useState('');
-    const [editorValue, setEditorValue] = useState('');
+    const [submissionOption, setSubmissionOption] = useState('Thank you! Your submission has been received successfully');
+    const [thankYouTimer, setThankYouTimer] = useState('5');
+    const [editorValue, setEditorValue] = useState('Thank you! Your submission has been received successfully.');
     const [url, setUrl] = useState('');
     const [ReactQuill, setReactQuill] = useState(null);
     const [isDropdownVisible, setDropdownVisible] = useState(false);
@@ -648,7 +648,7 @@ const Formgenerated = () => {
             backgroundColor: existingField ? existingField.backgroundColor : '#45A7F6',
             btnwidth: type === 'button' ? '150' : undefined,
             buttonHeight: existingField?.buttonHeight || '40px',
-            inputPadding: "10px",
+            inputPadding: "15px 10px",
             inputBorderRadious: "4",
             buttontext: type === 'button' ? '16' : undefined,
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
@@ -1782,9 +1782,7 @@ const Formgenerated = () => {
 
     const handleOptionChange = (event) => {
         setSubmissionOption(event.target.value);
-        if (event.target.value !== 'Allow only one entry at a time') {
-            setThankYouTimer('');
-        }
+     
     };
 
     const handleTimerChange = (event) => {
@@ -2597,6 +2595,7 @@ const Formgenerated = () => {
                                                                     value={borderRadius}
                                                                     onChange={(e) => updateBorderRadius(e.target.value)}
                                                                     min={0}
+                                                                    max={30}
                                                                 />
                                                             </div>
                                                         </div>
@@ -2783,7 +2782,7 @@ const Formgenerated = () => {
                                                                                 }
                                                                             },
                                                                             null,
-                                                                            field.headingText || field.text
+                                                                            field.headingText || field.text || 'Add Heading'
                                                                         )}
                                                                     </div>
                                                                 </label>
