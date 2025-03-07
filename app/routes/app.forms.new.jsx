@@ -51,6 +51,7 @@ import multiimg from '../images/multiimg.png';
 import multiimg1 from '../images/multiimg1.png';
 import star from '../images/star1.png';
 import edit from '../images/edit.png';
+import brandlogos from '../images/brandlogos.png';
 
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
@@ -61,21 +62,37 @@ import 'react-phone-input-2/lib/style.css';
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
-    const { shop, accessToken } = session;
-    const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
+
+    const shop = session?.shop || null;
+    const accessToken = session?.accessToken || null;
+
+    if (!shop || !accessToken) {
+        console.error("Error: Missing shop or access token in session.");
+        return {
+            assets: [],
+            shop: null,
+            apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
+            shopData: null,
+            error: true,
+            accessToken: null,
+            errorMessage: "Missing shop or access token in session.",
+        };
+    }
+
     const response = {
         assets: [],
         shop,
-        apiUrl,
+        apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
+        shopData: null,
         error: false,
         accessToken,
         errorMessage: ''
     };
 
-    console.log(shop);
+    console.log("Shop:", shop);
 
     try {
-
+        // Fetch Assets
         const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
             method: 'GET',
             headers: {
@@ -91,6 +108,38 @@ export const loader = async ({ request }) => {
 
         const assetData = await assetResponse.json();
         response.assets = assetData.assets || [];
+
+        // Fetch Shop Data
+        const shopQuery = `
+        {
+          shop {
+            name
+            email
+            myshopifyDomain
+            primaryDomain {
+              host
+            }
+          }
+        }`;
+
+        const shopResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/graphql.json`, {
+            method: 'POST',
+            headers: {
+                'X-Shopify-Access-Token': accessToken,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: shopQuery }),
+        });
+
+        if (!shopResponse.ok) {
+            const errorText = await shopResponse.text();
+            throw new Error(`Failed to fetch shop data: ${errorText}`);
+        }
+
+        const shopData = await shopResponse.json();
+        response.shopData = shopData.data.shop;
+
+        console.log("Shop Data-all pages:", response.shopData);
 
     } catch (err) {
         console.error("Error fetching data:", err.message);
@@ -226,7 +275,7 @@ const Formgenerated = () => {
     const [url, setUrl] = useState('');
     const [ReactQuill, setReactQuill] = useState(null);
     const [isDropdownVisible, setDropdownVisible] = useState(false);
-    const { shop, apiUrl } = useLoaderData() || {};
+    const { shop, apiUrl,shopData } = useLoaderData() || {};
     const [showFieldInput, setShowFieldInput] = useState(false);
     const [showFieldPro, setShowFieldPro] = useState(false);
     const [inputRadious, setInputRadious] = useState('4');
@@ -262,7 +311,14 @@ const Formgenerated = () => {
     const [signlePreview, setSignlePreview] = useState('off');
     const [multiIamgePreview, setMultiIamgePreview] = useState('off');
     const [upgradePopup, setUphradePopup] = useState(false);
+    const [activeBrand, setActiveBrand] = useState('');
+    const [marginForm, setMarginForm] = useState('10');
+    const [linkaline, setLinkaline] = useState('');
+    const [linkTarget,setLinkTarget] = useState('_self');
 
+    const shopName = shopData.name;
+    console.log('Shop Name:', shopName);
+    
 
     const handleToggleImagePreview = () => {
         setImagePreview(prevState => (prevState === 'on' ? 'off' : 'on'));
@@ -411,6 +467,8 @@ const Formgenerated = () => {
         if (formBuilder) {
             formBuilder.style.width = formWidth;
             formBuilder.style.padding = `${padding}px`;
+            formBuilder.style.margin = ` ${marginForm}px 0`;
+
         }
 
         if (backgroundDiv) {
@@ -448,7 +506,7 @@ const Formgenerated = () => {
             }
         }
 
-    }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth, padding, borderRadius, boxShadow, fields.length]);
+    }, [backgroundColor, imageFile, opacityForm, backgroundImage, borderWidth, borderStyle, borderColor, formWidth,marginForm, padding, borderRadius, boxShadow, fields.length]);
 
     useEffect(() => {
         const formBuilder = document.getElementById('bg_image');
@@ -472,6 +530,7 @@ const Formgenerated = () => {
             setBoxShadow(styles.boxShadow || '');
             setFormWidth(styles.width || '1200px');
             setPadding(styles.padding || '20px');
+            setMarginForm(styles.marginForm || '10');
             setBorderRadius(styles.borderRadius || '0');
             setBorder(styles.border || '1px');
             const borderWidthValue = styles.border ? styles.border.split(' ')[0] : '1px';
@@ -636,7 +695,7 @@ const Formgenerated = () => {
 
 
     const handleToggleChange = () => {
-        if (![ 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        if (!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUphradePopup(true);
             return;
         }
@@ -697,17 +756,17 @@ const Formgenerated = () => {
         }
     };
 
-    // const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
-    // const fieldsAdded = useRef(false);
+    const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
+    const fieldsAdded = useRef(false);
 
-    // useEffect(() => {
-    //     if (fields.length === 0 && !fieldsAdded.current) {
-    //         fieldsAdded.current = true;
-    //         defaultFields.forEach((type) => {
-    //             addInputField(type);
-    //         });
-    //     }
-    // }, [fields]);
+    useEffect(() => {
+        if (fields.length === 0 && !fieldsAdded.current) {
+            fieldsAdded.current = true;
+            defaultFields.forEach((type) => {
+                addInputField(type);
+            });
+        }
+    }, [fields]);
 
     const handleAddHeading = (level, text) => {
         const headingField = {
@@ -1319,6 +1378,7 @@ const Formgenerated = () => {
                 boxShadow,
                 width: formWidth,
                 padding,
+                marginForm,
                 inputRadious,
                 inputstyle,
                 labelColor,
@@ -1334,7 +1394,8 @@ const Formgenerated = () => {
                 borderWidth: borderWidth,
                 borderStyle: borderStyle,
                 subject,
-                maxDescriptionHeight
+                maxDescriptionHeight,
+                shopName
             },
             submissionOption: submissionOption || "defaultOption",
             thankYouTimer: thankYouTimer || 0,
@@ -1550,6 +1611,10 @@ const Formgenerated = () => {
     }, [editMode]);
 
     const handleFileChange = (event) => {
+        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUphradePopup(true);
+            return;
+        }
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -1565,7 +1630,10 @@ const Formgenerated = () => {
 
     const handleBackgroundFileDrop = (e) => {
         e.preventDefault();
-
+        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUphradePopup(true);
+            return;
+        }
         if (e.dataTransfer.files.length > 0) {
             const file = e.dataTransfer.files[0];
             const event = { target: { files: [file] } };
@@ -1597,6 +1665,17 @@ const Formgenerated = () => {
             formBuilder.style.opacityForm = opacityForm;
         }
     }
+
+    const updateMargin = (newMargin) => {
+        const marginValue = Math.min(Math.max(Number(newMargin), 0), 30);
+        setMarginForm(marginValue);
+
+        const formBuilder = document.getElementById('bg_change');
+        if (formBuilder) {
+            formBuilder.style.padding = `${marginValue}px`;
+        }
+    };
+
     const updatePadding = (newPadding) => {
         const paddingValue = Math.min(Math.max(Number(newPadding), 0), 30);
         setPadding(paddingValue);
@@ -1918,6 +1997,22 @@ const Formgenerated = () => {
     }
 
 
+    useEffect(() => {
+        const fetchStatusBrand = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
+                console.log("Fetched status:", response.data.status); 
+                setActiveBrand(response.data.status);
+            } catch (error) {
+                console.error("Error fetching brand logo status:", error);
+            }
+        };
+    
+        if (shop) {
+            fetchStatusBrand();
+        }
+    }, [shop, apiUrl]);
+    
     return (
         <div>
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
@@ -2034,9 +2129,9 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('textarea')}><span className='form_builder_field_img'><img src={text1} alt="" /></span> <span><h4>Textarea</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('url')}><span className='form_builder_field_img'><img src={url1} alt="" /></span> <span><h4>Url</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('file')} ><span className='form_builder_field_img'><img src={single} alt="" /></span> <span><h4>File Upload</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-file'); }}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-file'); }}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi File Upload</h4></span></button> {!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={singleimage} alt="" /></span> <span><h4>Images</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-image'); }}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-image'); }}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi Image</h4></span></button>{!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('toggle')}><span className='form_builder_field_img'><img src={toggle} alt="" /></span> <span><h4>Toggle</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
@@ -2091,7 +2186,7 @@ const Formgenerated = () => {
                                                                     <div
                                                                         className='option-content'
                                                                         onClick={() => {
-                                                                            if (!['pro','pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                            if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                 setUphradePopup(true);
                                                                                 return;
                                                                             }
@@ -2110,12 +2205,12 @@ const Formgenerated = () => {
 
                                                                 {submissionOption === 'Hide form and show thank you message' && (
                                                                     <div className='option-content'
-                                                                    onClick={() => {
-                                                                        if (!['pro','pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
-                                                                            setUphradePopup(true);
-                                                                            return;
-                                                                        }
-                                                                    }}
+                                                                        onClick={() => {
+                                                                            if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                setUphradePopup(true);
+                                                                                return;
+                                                                            }
+                                                                        }}
                                                                     >
                                                                         <div className='admin-input'>
                                                                             <div className='admin-label'>
@@ -2284,6 +2379,17 @@ const Formgenerated = () => {
                                                                         </span>
                                                                     </div>
                                                                 </div>
+                                                            </div>
+
+                                                            <div className='edit_setting_bg form'>
+                                                                <label>Margin:</label>
+                                                                <input
+                                                                    type='number'
+                                                                    value={marginForm}
+                                                                    onChange={(e) => updateMargin(e.target.value)}
+                                                                    min={0}
+                                                                    max={30}
+                                                                />
                                                             </div>
 
                                                             <div className='edit_setting_bg form'>
@@ -2507,7 +2613,7 @@ const Formgenerated = () => {
                             <div className='form_builder_build some'>
                                 <div id='bg_change' className="form-builder-wrp" style={{ position: 'relative' }}>
                                     <div id="bg_change_background" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}></div>
-
+                                      {activeBrand === 'active' && <div className='form_builder-brand-logos'><img src={brandlogos} alt="" /></div>}
                                     <div id="formBuilder" className="form-builder forms-wrapping" >
                                         {fields.length > 0 ? (fields.map((field, index) => {
                                             if (!field) {
@@ -3567,6 +3673,7 @@ const Formgenerated = () => {
                                                                     />
                                                                     <span className="slider"></span>
                                                                 </label>
+                                                                
                                                                 {/* <div style={{ marginBottom: '5px', fontWeight: 'bold', color: '#33cba2' }}>
                                                                     {enabledFields[field.id] ? field.onValue || "On" : field.offValue || "Off"}
                                                                 </div> */}
@@ -3757,9 +3864,9 @@ const Formgenerated = () => {
                                                                             width: '100%', opacity: field.opacity || 1, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
 
                                                                         }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => setHoveredFieldId(null)}
-                                                                    >
+                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                            onMouseLeave={() => setHoveredFieldId(null)}
+                                                                        >
                                                                             <input
                                                                                 type="range"
                                                                                 className="name"

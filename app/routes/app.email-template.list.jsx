@@ -570,9 +570,9 @@ export default function EmailTemplate() {
                     <div>
                         {field.products && field.products.length > 0 ? (
                             <div
-                                className={`product-grid ${viewMode === 'mobile' ? 'mobile-view' : 'desktop-view'}`}
+                                className={`product-grid ${matchedData?.styles?.viewMode === 'mobile' ? 'mobile-view' : 'desktop-view'}`}
                                 style={{
-                                    display: 'grid',
+                                    display:  matchedData?.styles?.viewMode === 'mobile' ? 'block' : 'grid',
                                     gridTemplateColumns: `repeat(${field.productsPerRow}, 1fr)`,
                                     gap: '20px',
                                     padding: `${field.productPadding}px`,
@@ -580,14 +580,13 @@ export default function EmailTemplate() {
                                     borderWidth: `${field.productBorderWidth}px`,
                                     borderStyle: field.productBorderStyle,
                                     borderColor: field.productBorderColor,
-                                    fontSize: `${field.productFontSize}px`,
                                     color: field.productTextColor,
                                     fontFamily: field.productfamily,
                                     lineHeight: `${field.productline}px`
                                 }}
                             >
                                 {field.products.map((product, index) => (
-                                    <div key={index} className="product-item" style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'center' }}>
+                                    <div key={index} className="product-item" style={{ display: 'flex',marginBottom:  matchedData?.styles?.viewMode === 'mobile' ? '15px' : '0', flexDirection: 'column', gap: '10px', textAlign: 'center' }}>
 
                                         {product.image ? (
                                             <div className="images-gallery">
@@ -601,7 +600,7 @@ export default function EmailTemplate() {
                                             <p>No image available</p>
                                         )}
                                         <div>
-                                            <h6 style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</h6>
+                                            <p style={{ fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>{product.title}</p>
                                             {field.showPrice && (
                                                 <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>Price: ${product.price}</p>
                                             )}

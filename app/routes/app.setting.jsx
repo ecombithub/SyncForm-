@@ -8,8 +8,6 @@ import axios from 'axios';
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
-    console.log("Session Data:", session);
-
     const shop = session?.shop || null;
     const accessToken = session?.accessToken || null;
 
@@ -96,8 +94,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function Setting() {
-    const { shop, apiUrl } = useLoaderData() || {};
-    const shopData = { email: 'sahil@hubsyntax.com' };
+    const { shop, apiUrl,shopData } = useLoaderData() || {};
     const [status, setStatus] = useState('disactive');
     const [numberValue, setNumberValue] = useState(3);
     const [email, setEmail] = useState('');
@@ -105,7 +102,10 @@ export default function Setting() {
     const [message, setMessage] = useState('');
     const [userPlan, setUserPlan] = useState(null);
     const [upgradePopup, setUpgradePopup] = useState(false);
+    const [activeBrand, setActiveBrand] = useState('active');
+
     const navigator = useNavigate();
+    console.log(shopData);
 
     useEffect(() => {
         const fetchStatus = async () => {
@@ -145,7 +145,6 @@ export default function Setting() {
             console.log("Response data:", response.data);
             setUserPlan(response.data);
             console.log("User plan set:", response.data);
-            await fetchForms(response.data);
             console.log("Forms fetched successfully with user plan data.");
         } catch (error) {
             console.error("Error fetching payment plan:", error);
@@ -224,6 +223,41 @@ export default function Setting() {
         }
     };
 
+    const handleBrandLogo = async () => {
+        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUpgradePopup(true);
+            return;
+        }
+    
+        const newStatus = activeBrand === 'active' ? 'disactive' : 'active';
+        setActiveBrand(newStatus); 
+    
+        try {
+            await fetch(`${apiUrl}/api/brandLogo`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus, shop }),
+            });
+        } catch (error) {
+            console.error('Error updating brand logo status:', error);
+        }
+    };
+    
+    useEffect(() => {
+        const fetchStatusBrand = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
+                setActiveBrand(response.data.status);
+            } catch (error) {
+                console.error("Error fetching brand logo status:", error);
+            }
+        };
+    
+        if (shop) {
+            fetchStatusBrand();
+        }
+    }, [shop, apiUrl]);
+    
     return (
         <>
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
@@ -255,6 +289,21 @@ export default function Setting() {
                                 </div>
                             </div>
                             <span>Enable this option to get notified once a particular number of form submissions are completed, you will automatically receive an email containing a CSV file. This file contains all collected data without manually exporting.</span>
+                        </div>
+                        <div className='form_builder_complte_toggle_wraped'>
+                            <div className='form_builder_action_status'>
+                                <p>Brand Logo</p>
+                                <div className="toggle-switched">
+                                    <input
+                                        type="checkbox"
+                                        id="status-toggle"
+                                        checked={activeBrand === 'active'}
+                                        onChange={handleBrandLogo}
+                                        className="toggle-checkboxed"
+                                    />
+                                </div>
+                            </div>
+                            <span>This option toggles the app logo display in your form. When enabled, the logo does not appear on the form, providing a cleaner look.</span>
                         </div>
 
                         <div className='form_builder_complte_toggle_wraped'>

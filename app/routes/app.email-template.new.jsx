@@ -793,15 +793,6 @@ const EmailTemplateCreate = () => {
         handleSaveSocialIcons();
     }, [selectedIcons, customIcons]);
 
-    const handleToggleIcon = (icon) => {
-        setSelectedIcons((prevIcons) => ({
-            ...prevIcons,
-            [icon]: {
-                ...prevIcons[icon],
-                isHidden: !prevIcons[icon]?.isHidden,
-            },
-        }));
-    };
 
     const handleIconUrlChange = (e, icon) => {
         setSelectedIcons((prevIcons) => ({
@@ -846,13 +837,42 @@ const EmailTemplateCreate = () => {
         );
     };
 
-    const toggleCustomIconVisibility = (index) => {
-        setCustomIcons((prevIcons) =>
-            prevIcons.map((icon, i) =>
-                i === index ? { ...icon, isHidden: !icon.isHidden } : icon
-            )
-        );
+    const handleToggleIcon = (icon) => {
+        setSelectedIcons((prevIcons) => {
+            const updatedIcons = {
+                ...prevIcons,
+                [icon]: {
+                    ...prevIcons[icon],
+                    isHidden: !prevIcons[icon]?.isHidden,
+                },
+            };
+    
+            checkAndRemoveAllFields(updatedIcons, customIcons);
+            return updatedIcons;
+        });
     };
+    
+    const toggleCustomIconVisibility = (index) => {
+        setCustomIcons((prevIcons) => {
+            const updatedIcons = prevIcons.map((icon, i) =>
+                i === index ? { ...icon, isHidden: !icon.isHidden } : icon
+            );
+    
+            checkAndRemoveAllFields(selectedIcons, updatedIcons);
+            return updatedIcons;
+        });
+    };
+    
+    const checkAndRemoveAllFields = (updatedSelectedIcons, updatedCustomIcons) => {
+        const visibleSelectedIcons = Object.values(updatedSelectedIcons).some(icon => !icon.isHidden);
+        const visibleCustomIcons = updatedCustomIcons.some(icon => !icon.isHidden);
+    
+        if (!visibleSelectedIcons && !visibleCustomIcons) {
+            console.log("All icons are hidden. Removing all fields.");
+            setFields([]); 
+        }
+    };
+    
 
     const handleImageUpload = (e, fieldId) => {
         const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
@@ -1482,51 +1502,58 @@ const EmailTemplateCreate = () => {
 
             const templateElement = document.getElementById('template-container');
 
-            if (templateElement) {
-                const htmlToImage = await import('html-to-image');
-                try {
+    if (templateElement) {
+        const htmlToImage = await import('html-to-image');
+        try {
+            const clonedElement = templateElement.cloneNode(true);
+            clonedElement.style.margin = '0'; 
 
-                    const dataUrl = await htmlToImage.toPng(templateElement);
+            document.body.appendChild(clonedElement);
 
-                    const formData = {
-                        templateId,
-                        shop,
-                        form_ids: selectedFormIds.map(id => String(id)),
-                        title: trimmedTitle,
-                        fields: updatedFields,
-                        createdAt: timestamp,
-                        TemplateImage: dataUrl,
-                        styles: {
-                            backgroundImage,
-                            backgroundColor,
-                            borderRadious,
-                            templatePadding,
-                            textAlign,
-                            fontFamily,
-                            width: viewMode === 'desktop' ? '800px' : '400px',
-                            dividerColor,
-                            viewMode
-                        },
-                    };
-                    console.log(dataUrl);
-                    const response = id
-                        ? await axios.put(`${apiUrl}/update/${id}`, formData)
-                        : await axios.post(`${apiUrl}/send/api`, formData);
+            const dataUrl = await htmlToImage.toPng(clonedElement);
 
-                    console.log('Form saved successfully with title:', trimmedTitle);
-                    const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
-                    console.log(successMessage, response.data);
+            document.body.removeChild(clonedElement);
 
-                    if (!id) {
-                        resetFormState();
-                    }
+            const formData = {
+                templateId,
+                shop,
+                form_ids: selectedFormIds.map(id => String(id)),
+                title: trimmedTitle,
+                fields: updatedFields,
+                createdAt: timestamp,
+                TemplateImage: dataUrl,
+                styles: {
+                    backgroundImage,
+                    backgroundColor,
+                    borderRadious,
+                    templatePadding,
+                    textAlign,
+                    fontFamily,
+                    width: viewMode === 'desktop' ? '800px' : '400px',
+                    dividerColor,
+                    viewMode,
+                },
+            };
 
-                    setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
+            console.log(dataUrl);
+            const response = id
+                ? await axios.put(`${apiUrl}/update/${id}`, formData)
+                : await axios.post(`${apiUrl}/send/api`, formData);
 
-                } catch (error) {
-                    console.error('Error generating template image:', error);
-                }
+            console.log('Form saved successfully with title:', trimmedTitle);
+            const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
+            console.log(successMessage, response.data);
+
+            if (!id) {
+                resetFormState();
             }
+
+            setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
+
+        } catch (error) {
+            console.error('Error generating template image:', error);
+        }
+    }
         } catch (error) {
             console.error('Error saving form:', error);
             if (error.response) {
@@ -1535,6 +1562,7 @@ const EmailTemplateCreate = () => {
         }
 
     };
+
 
     const resetFormState = () => {
         setFields([]);
@@ -3332,7 +3360,6 @@ const EmailTemplateCreate = () => {
                                                                                     borderWidth: `${field.productBorderWidth}px`,
                                                                                     borderStyle: field.productBorderStyle,
                                                                                     borderColor: field.productBorderColor,
-                                                                                    fontSize: `${field.productFontSize}px`,
                                                                                     color: field.productTextColor,
                                                                                     width: '100%',
                                                                                     fontFamily: field.productfamily,
@@ -3354,14 +3381,14 @@ const EmailTemplateCreate = () => {
                                                                                             <p>No image available</p>
                                                                                         )}
                                                                                         <div style={{ display: 'grid', gap: '10px', marginBottom: '10px' }}>
-                                                                                            <span style={{ letterSpacing: `${field.productLetterSpacing}px`, fontWeight: field.productWeight }}>
+                                                                                            <p style={{ letterSpacing: `${field.productLetterSpacing}px`, fontWeight: field.productWeight }}>
                                                                                                 {product.title.length > 15 ? `${product.title.slice(0, 15)}...` : product.title}
-                                                                                            </span>
+                                                                                            </p>
 
                                                                                             {field.showPrice && product.price && (
-                                                                                                <span style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
+                                                                                                <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
                                                                                                     ${product.price}
-                                                                                                </span>
+                                                                                                </p>
                                                                                             )}
                                                                                         </div>
 
@@ -8635,7 +8662,7 @@ const EmailTemplateCreate = () => {
                                                                                         {customIcons.length > 0 && (
                                                                                             <div style={{ marginBottom: '20px' }}>
                                                                                                 {customIcons.map((icon, index) => (
-                                                                                                    <div key={index} className='form-builder-chaneging-wrap  '>
+                                                                                                    <div key={index} className='form-builder-chaneging-wrap social-icons-img'>
                                                                                                         <div className='form-builder-chaneging-wrap socal'>
                                                                                                             <div className='custom-checkbox'>
                                                                                                                 <input
@@ -8662,7 +8689,7 @@ const EmailTemplateCreate = () => {
                                                                                                             <button className='rm-btn'
                                                                                                                 onClick={() => handleCustomIconRemove(index)}
                                                                                                             >
-                                                                                                                Remove Icon
+                                                                                                               <img src={remove} alt="" />
                                                                                                             </button>
                                                                                                         </div>
                                                                                                     </div>
@@ -8670,7 +8697,7 @@ const EmailTemplateCreate = () => {
                                                                                                 ))}
                                                                                             </div>
                                                                                         )}
-                                                                                        <button className='add-forms icons' onClick={() => setShowFileUpload((prev) => !prev)}> Add Icon </button>
+                                                                                        <button className='add-forms icons' style={{cursor:'pointer'}} onClick={() => setShowFileUpload((prev) => !prev)}> Add Icon </button>
                                                                                         {showFileUpload && !uploadedImage && (
                                                                                             <div className='form-builder-chaneging-wrap file'>
                                                                                                 <label>Uplaod Image</label>

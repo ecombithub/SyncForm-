@@ -262,7 +262,7 @@ function Index() {
       <div className="form_builder_dashboard">
         <div className="container">
           <div className="form-builder-customer_title">
-            <h2>SyncForm</h2>
+            <h2>Dashboard</h2>
           </div>
           <div className="form_build_contact">
             <div className="form_build_count">
@@ -314,7 +314,7 @@ function Index() {
               <h4>Create New Form</h4>
               <p>Creating a new form is a straightforward process. Simply select and customize fields to suit your needs, and launch your form in minutes.</p>
               <div className="form_build_app_bottm second">
-                <div className="form_build_app_btn" style={{ cursor: "pointer" }} onClick={handleCreateForm}>
+                <div className="form_build_app_btn btn-one" style={{ cursor: "pointer" }} onClick={handleCreateForm}>
                   <p>New Form</p>
                 </div>
 
@@ -338,7 +338,7 @@ function Index() {
               <div className="form_build_app_bottm second">
                 <div className="form_build_app_btn">
                   <a href={`https://${shop}/admin/themes/${activeThemeId}/editor/?context=apps`} target='_blank' rel="">
-                    <div className="form_build_app_btn">
+                    <div className="form_build_app_btn btn-two">
                       <p>Theme editor</p>
                     </div>
                   </a>
@@ -353,7 +353,7 @@ function Index() {
               <h4>Knowledgebase</h4>
               <p>A resource hub provides detailed guides, troubleshooting steps and support to help users for form creation and integration.</p>
               <div className="form_build_app_bottm second know ">
-                <div className="form_build_app_btn">
+                <div className="form_build_app_btn btn-three">
                   <p>Knowledge base</p>
                 </div>
                 <div className="form_build_app_img">

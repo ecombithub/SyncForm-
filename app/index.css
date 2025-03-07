@@ -229,7 +229,13 @@ span.upload-btn {
 
 .form-build-toggle {
     display: block;
+}
 
+.form_builder-brand-logos {
+    position: absolute;
+    z-index: 99;
+    bottom: 5px;
+    right: 10px;
 }
 
 .modal-costomer .loaddr {
@@ -2754,13 +2760,35 @@ button.copy-btn.first {
     padding: 15px 0;
     max-width: 90%;
 }
-
-.form_build_app_bottm.second .form_build_app_btn p {
+.form_build_app_btn.btn-two p {
     color: #6FB0DF !important;
 }
 
-.form_build_app_bottm.third p {
-    color: #46B7D3 !important;
+.form_build_app_btn.btn-three p {
+    color: #46B7D3;
+}
+
+.form-builder-chaneging-wrap.social-icons-img {
+    position: relative;
+} 
+
+.form-builder-chaneging-wrap.social-icons-img button.rm-btn {
+    padding: 0 !important;
+    position: absolute;
+    top: 9px;
+    width: 23px;
+    left: 65px;
+}
+
+.form-builder-chaneging-wrap.social-icons-img button.rm-btn img {
+    width: 100%;
+}
+
+.img-socal-costom {
+    width: 60px !important;
+    border: 1px solid #6bd49b !important;
+    padding: 15px;
+    border-radius: 4px;
 }
 
 .form_build_new_base .form_build_app_btn p {

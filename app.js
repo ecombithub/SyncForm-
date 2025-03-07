@@ -46,6 +46,217 @@ const upload = multer({ storage: storage });
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
+const CostomerRequest = new mongoose.Schema({
+  myshopify_domain: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  shopify_id: { type: Number, required: true }, 
+  name: { type: String, required: false }, 
+});
+
+const CostomerRequestdata = mongoose.model("costomerRequests", CostomerRequest);
+
+app.post("/api/CostomerRequest", async (req, res) => {
+  console.log("✅ Received Webhook Data in Backend:", JSON.stringify(req.body, null, 2));
+  console.log("🔍 Incoming Headers:", req.headers);
+
+  const topic = req.headers["x-shopify-topic"]?.toLowerCase();
+  console.log("🔔 Extracted Webhook Topic:", topic);
+
+  const allowedTopics = ["customers/redact", "customers/data_request", "shop/redact"];
+  if (!allowedTopics.includes(topic)) {
+      console.log("❌ Unrecognized Webhook Topic:", topic);
+      return res.status(400).json({ error: "Invalid Webhook Topic" });
+  }
+
+  const { shop_id, shop_domain, customer } = req.body;
+
+  if (!shop_id || !shop_domain || (topic !== "shop/redact" && !customer?.email)) {
+      console.log("❌ Invalid Payload Structure:", req.body);
+      return res.status(400).json({ error: "Invalid Data" });
+  }
+
+  try {
+      const existingRequest = await CostomerRequestdata.findOne({ myshopify_domain: shop_domain });
+
+      if (!existingRequest) {
+          const newRequest = new CostomerRequestdata({
+              shopify_id: shop_id,
+              myshopify_domain: shop_domain,
+              email: customer?.email || "N/A",
+              name: customer?.name || "Unknown",
+          });
+
+          await newRequest.save();
+          console.log("✅ Data Successfully Saved to MongoDB");
+      } else {
+          console.log("⚠️ Duplicate Entry Found: Skipping Database Insertion");
+      }
+      const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+              user: "sahil@hubsyntax.com",
+              pass: "wqnr gaom dgzq asyu",
+          },
+      });
+
+      const mailOptions = {
+          from: "sahil@hubsyntax.com",
+          to: "sahil@hubsyntax.com",
+          subject: `Shopify Webhook Received: ${topic}`,
+          text: `
+          🔔 Webhook Topic: ${topic}
+          🏬 Shop ID: ${shop_id}
+          🌐 Shop Domain: ${shop_domain}
+          📧 Customer Email: ${customer?.email || "N/A"}
+          👤 Customer Name: ${customer?.name || "Unknown"}
+          `,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log("📧 Email Sent Successfully!");
+
+      return res.json({ success: true, message: "Email sent successfully!" });
+
+  } catch (error) {
+      console.error("❌ Error:", error);
+      res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+
+const StoreSchema = new mongoose.Schema({
+  myshopify_domain: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Store = mongoose.model("Stores", StoreSchema);
+
+app.post("/api/store", async (req, res) => {
+  console.log("Received Body:", req.body);
+
+  if (!req.body || !req.body.myshopify_domain) {
+    return res.status(400).json({ success: false, message: "Invalid request body" });
+  }
+
+  try {
+
+    let store = await Store.findOne({ myshopify_domain: req.body.myshopify_domain });
+
+    if (store) {
+      console.log("Store found in DB:", req.body.myshopify_domain);
+
+      if (!req.body.uninstalled) {
+        req.body.uninstalled = true;
+      }
+      const HtmlText = `
+        <html>
+         <head>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+      <style>
+        body {
+          font-family: 'Montserrat', sans-serif;
+        }
+      </style>
+      </head>
+     <body>
+      <div style="background-color: #f3f3f3; padding: 50px; text-align: center;">
+        <div style="background-color: white; max-width: 50%; margin: 0 auto; padding: 50px;font-family: 'Montserrat', sans-serif;">
+          <div><img src = "https://cdn.shopify.com/s/files/1/0679/9022/5150/files/Logo-SyncForm_1.svg?v=1741247523"style = "width:170px" ></div> 
+          <p style="font-weight:600; font-size:18px">As you uninstall the app, the running subscriptions of your store will be paused and will be deleted after 48 hours. You can install the app within 48 hours if you want to continue the subscriptions.</p>
+          <p> ${req.body.myshopify_domain}</p>
+          <p>Thank you.</p>
+        </div>
+      </div>
+   </body>
+   </html>
+    `;
+      if (req.body.uninstalled) {
+        try {
+          let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'sahil@hubsyntax.com',
+              pass: 'wqnr gaom dgzq asyu'  
+            }
+          });
+
+          await transporter.sendMail({
+            from: '"Syncform" <sahil@hubsyntax.com>',
+            to: req.body.email,
+            subject: 'Shopify App Uninstall Notification',
+            html: HtmlText
+          });
+
+          console.log('Uninstall email sent successfully');
+        } catch (error) {
+          console.error('Error sending email:', error);
+        }
+      }
+
+      return res.json({ success: true, message: "Store found", store });
+    }
+
+    store = new Store({
+      myshopify_domain: req.body.myshopify_domain,
+      email: req.body.email,
+    });
+
+    await store.save();
+    console.log("New store created:", store);
+    const HtmlText = `
+     <html>
+     <head>
+     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+    <style>
+     body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    </style>
+     </head>
+    <body>
+     <div style="background-color: #f3f3f3; padding: 50px; text-align: center;">
+    <div style="background-color: white; max-width: 50%; margin: 0 auto; padding: 50px;font-family: 'Montserrat', sans-serif;">
+      <div><img src = "https://cdn.shopify.com/s/files/1/0679/9022/5150/files/Logo-SyncForm_1.svg?v=1741247523"style = "width:170px" ></div> 
+      <p style="font-weight:600; font-size:18px">As you uninstall the app, the running subscriptions of your store will be paused and will be deleted after 48 hours. You can install the app within 48 hours if you want to continue the subscriptions.</p>
+      <p> ${req.body.myshopify_domain}</p>
+      <p>Thank you.</p>
+    </div>
+  </div>
+     </body>
+</html>
+`;
+    try {
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'sahil@hubsyntax.com',
+          pass: 'wqnr gaom dgzq asyu'  
+        }
+      });
+
+      await transporter.sendMail({
+        from: '"Syncform" <sahil@hubsyntax.com>',
+        to: req.body.email,
+        subject: 'Shopify App Uninstall Notification',
+        html: HtmlText
+      });
+
+      console.log('New store creation email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+
+    return res.json({ success: true, message: "Store created successfully", store });
+
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return res.status(500).json({ success: false, message: "Error processing store data", error });
+  }
+});
+
+
 const formCreateSchema = new mongoose.Schema({
   formId: { type: String, required: true },
   title: { type: String, required: true },
@@ -132,6 +343,7 @@ const formCreateSchema = new mongoose.Schema({
     boxShadow: { type: String, default: '' },
     width: { type: String, default: '100%' },
     padding: { type: String, default: '0' },
+    marginForm: { type: String, default: '0' },
     borderColor: { type: String, default: '' },
     borderRadius: { type: String, default: '0' },
     borderWidth: { type: String, default: '1px' },
@@ -146,7 +358,7 @@ const formCreateSchema = new mongoose.Schema({
     opacityForm: { type: String, default: '1' },
     subject: { type: String, default: '' },
     maxDescriptionHeight: { type: Number, default: 0 },
-    
+    shopName: { type: String, default: '' },
   },
   submissionOption: { type: String, required: true },
   thankYouTimer: { type: Number },
@@ -792,6 +1004,10 @@ const templateSchema = new mongoose.Schema({
   TemplateAll: { type: Object, required: false },
   email: { type: String, required: true },
   subject: { type: String, required: false },
+  formFields: { type: Object, required: false },
+  title: { type: Object, required: false },
+  shop: { type: Object, required: false },
+  shopowner: { type: String, required: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -815,6 +1031,55 @@ const fontfamily = new mongoose.Schema({
 });
 
 const Fontfamily = mongoose.model('font_familys', fontfamily);
+
+const brandLogo = new mongoose.Schema({
+  status: { type: String, required: true },
+  shop: { type: String, required: true },
+});
+
+const BrandLogoStatus = mongoose.model('brandLogos', brandLogo);
+
+app.get('/data/brandLogo/:shop', async (req, res) => { 
+  try {
+    const { shop } = req.params;
+
+    const brandLogo = await BrandLogoStatus.findOne({ shop });
+
+    if (!brandLogo) {
+      return res.status(404).json({ message: 'Brand logo status not found' });
+    }
+
+    res.status(200).json({ status: brandLogo.status });
+  } catch (error) {
+    console.error("Error fetching brand logo status:", error);
+    res.status(500).json({ message: 'Error fetching brand logo status', error: error.message });
+  }
+});
+
+app.post('/api/brandLogo', async (req, res) => {
+  try {
+    const { status, shop } = req.body;
+
+    const existingEntry = await BrandLogoStatus.findOneAndUpdate(
+      { shop }, 
+      { status }, 
+      { new: true } 
+    );
+
+    if (existingEntry) {
+      return res.status(200).json({ message: 'Status updated successfully!', data: existingEntry });
+    }
+
+    const newEntry = new BrandLogoStatus({ status, shop });
+    await newEntry.save();
+
+    res.status(201).json({ message: 'New shop entry created successfully!', data: newEntry });
+
+  } catch (error) {
+    console.error('Error processing the request:', error);
+    res.status(500).json({ message: 'Error processing the request', error });
+  }
+});
 
 app.get('/font-family', async (req, res) => {
   try {
@@ -879,11 +1144,11 @@ app.post('/email-submit', async (req, res) => {
 
 app.post('/api/template', async (req, res) => {
   try {
-    const { TemplateAll, email,subject } = req.body;
-    console.log('Received template data:', TemplateAll, 'Email:', email,subject);
-    const newTemplate = new Template({ TemplateAll, email,subject });
+    const { TemplateAll, email,subject,formFields,title,shop,shopowner,createdAt } = req.body;
+    console.log('Received template data:', TemplateAll, 'Email:', email,subject,formFields,title,shop,shopowner,createdAt);
+    const newTemplate = new Template({ TemplateAll, email,subject,formFields,title,shop,shopowner,createdAt });
     await newTemplate.save();
-    await sendEmail(email, TemplateAll, subject);
+    await sendEmail(email, TemplateAll, subject,formFields,title,shop,shopowner,createdAt);
     res.status(200).json({ message: 'Template data received and stored successfully!' });
   } catch (error) {
     console.error('Error receiving template data:', error);
@@ -952,7 +1217,7 @@ app.get('/get-settings', async (req, res) => {
 });
 
 
-const sendEmail = async (email, TemplateAll,subject) => {
+const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopowner,createdAt) => {
   try {
     console.log('Preparing to send email');
     console.log('Email:', email);
@@ -1115,30 +1380,29 @@ const sendEmail = async (email, TemplateAll,subject) => {
 
             case 'description':
               return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
-            case 'button': {
-              return `
-                  <div style="background-color: ${field.buttonbgColor || '#008CBA'}; text-align: ${field.buttonaline || TemplateAll.styles.textAlign};">
-                    <a href="${field.buttonUrll || '#'}" target="_blank" style="text-decoration: none;">
-                      <button style="
-                        background-color: ${field.buttonColor || '#008CBA'};
-                        padding: ${field.buttonPadding || '10px 20px'}px;
-                        height: ${field.buttonHeight || '40'}px;
-                        min-width: ${field.buttonWidth || 'auto'}px;
-                        font-size: ${field.buttonFontSize || '16'}px;
-                        border: ${field.buttonBorderWidth || '0'}px 
-                                ${field.buttonBorderStyle || 'none'} 
-                                ${field.buttonBorderColor || '#000'};
-                        color: ${field.buttonTextColor || '#fff'};
-                        cursor: pointer;
-                        border-radius: ${field.buttonradious}px;
-                        font-weight: ${field.buttonweight || 'bold'}; 
-                        font-family:${field.buttonfamily || '"Poppins", sans-serif'};
-                      ">
-                        ${field.buttonLabel || 'Click Here'}
-                      </button>
-                    </a>
-                  </div>`;
+              case 'button': {
+                return `
+                    <div style="font-family:${field.buttonfamily || 'Arial, sans-serif'}; background-color: ${field.buttonbgColor || '#008CBA'}; text-align: ${field.buttonaline || 'left'};">
+                        <a href="${field.buttonUrll || '#'}" target="_blank" style="text-decoration: none;">
+                            <button style="
+                                background-color: ${field.buttonColor || '#008CBA'};
+                                padding: ${field.buttonPadding || '10px 20px'}px;
+                                height: ${field.buttonHeight || '40'}px;
+                                min-width: ${field.buttonWidth || 'auto'}px;
+                                font-size: ${field.buttonFontSize || '16'}px;
+                                border: ${field.buttonBorderWidth || '0'}px ${field.buttonBorderStyle || 'none'} ${field.buttonBorderColor || '#000'};
+                                color: ${field.buttonTextColor || '#fff'};
+                                cursor: pointer;
+                                border-radius: ${field.buttonradious || '4'}px;
+                                font-weight: ${field.buttonweight || 'bold'};
+                            ">
+                                ${field.buttonLabel || 'Click Here'}
+                            </button>
+                        </a>
+                    </div>
+                `;
             }
+            
             case 'Multicolumn': {
               const columnsPerRow = field.columnsPerRow || 1;
               let columnCount = 0;
@@ -1195,7 +1459,7 @@ const sendEmail = async (email, TemplateAll,subject) => {
                       <button style="
                         margin-top: 20px;
                         background-color: ${field.Multibtnbg || '#007BFF'};
-                          font-family:${field.Multibtnfamily || '"Poppins", sans-serif'};
+                        font-family:${field.Multibtnfamily || '"Poppins", sans-serif'};
                         border-width: ${field.MultibtnBorderWidth || 2}px;
                         border-style: ${field.MultibtnBorderStyle || 'solid'};
                         border-color: ${field.MultibtnBorderColor || '#000'};
@@ -1260,7 +1524,6 @@ const sendEmail = async (email, TemplateAll,subject) => {
                   ${field.costumText}
                 </div>`;
             }
-
             case 'split-group': {
               const value = field.value || '';
               const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');
@@ -1268,34 +1531,37 @@ const sendEmail = async (email, TemplateAll,subject) => {
               let childrenHtml = field.children
                   .map((child) => {
                       return `
-                      <div style="width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : child.width}; padding: ${child.splitPadding || 0}px; text-align: ${child.splitTextAlin || 'left'}; letter-spacing: ${child.splitletter || 1}px;">
-                          ${
+                    <div style="width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%'}; 
+                      padding: ${child.splitPadding || 0}px; 
+                       text-align: ${child.splitTextAlin || 'left'}; 
+                       letter-spacing: ${child.splitletter || 1}px;">
+                      ${
                               child.add === 'image'
                                   ? `<img src=${child.value} alt="Uploaded Preview" style="width: 100%; height: auto;" />`
                                   : `<div style="width: 100%;">
                                       ${child.value}
                                       ${field.showbtnsplit ? `
-                                      <a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                                      <button style="
-                                          margin-top: 20px;
-                                          background-color: ${field.splitbtnbg || '#007BFF'};
-                                          font-size: ${child.splitbtnfont || 14}px;
-                                          color: ${field.splitbtncolor || '#FFF'};
-                                          height: ${child.splitbtnheight || 40}px;
-                                          min-width: ${child.splitbtnwidth || 100}px;
-                                          border-radius: ${child.splitbtnradious || 0}px;
-                                          border-width: ${child.splitBorderWidth || 2}px;
-                                          border-style: ${field.splitBorderStyle || 'solid'};
-                                          border-color: ${field.splitBorderColor || '#000'};
-                                          
-                                          cursor: pointer;
-                                          font-family: ${field.splitbtnfamily || '"Poppins", sans-serif'};
-                                          font-weight: ${field.splitbtnWeight || 'bold'}; 
-                                      ">
-                                          ${child.splitbtn || 'Click Me'}
-                                      </button>
-                                  </a>` : ''}
-                                  </div>`
+                         <a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                        <button style="
+                            margin-top: 20px;
+                            background-color: ${field.splitbtnbg || '#007BFF'};
+                            font-size: ${child.splitbtnfont || 14}px;
+                            color: ${field.splitbtncolor || '#FFF'};
+                            min-height: ${child.splitbtnheight || 40}px;
+                            min-width: ${child.splitbtnwidth || 100}px;
+                            border-radius: ${child.splitbtnradious || 0}px;
+                            border-width: ${child.splitBorderWidth || 2}px;
+                            border-style: ${field.splitBorderStyle || 'solid'};
+                            border-color: ${field.splitBorderColor || '#000'};
+                            padding: 10px 20px;
+                            cursor: pointer;
+                            font-weight: ${field.splitbtnWeight || 'bold'}; 
+                        ">
+                            ${child.splitbtn || 'Click Me'}
+                        </button>
+                    </a>` : ''
+                }
+                 </div>`
                           }
                       </div>
                       `;
@@ -1336,79 +1602,97 @@ const sendEmail = async (email, TemplateAll,subject) => {
               `;
           }
           
-          
-            case 'product':
-              return `
-                <div>
-                  ${field.products && field.products.length > 0 ? `
-                    <table role="presentation" cellspacing="0" cellpadding="0" style="width: 100%; border-spacing: 0;">
-                      <tr>
-                        ${field.products.map((product, index) => `
-                          <td style="
-                            width: ${100 / field.productsPerRow}%;
-                            padding: ${field.productPadding}px;
-                            text-align: center;
-                            background-color: ${field.productbg};
-                            border-width: ${field.productBorderWidth}px;
-                            border-style: ${field.productBorderStyle};
-                            border-color: ${field.productBorderColor};
-                            font-size: ${field.productFontSize}px;
-                            color: ${field.productTextColor};
-                            font-family:${field.productfamily || '"Poppins", sans-serif'};
-                            line-height:${field.productline}px;
-                          ">
-                            ${product.image ? `
-                              <div class="images-gallery">
-                                <img
-                                  src="${product.image}"
-                                  alt="${product.title || 'Product Image'}"
-                                  style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;"
-                                />
-                              </div>
-                            ` : '<p>No image available</p>'}
-            
-                            <div>
-                              <h4 style=" margin-top: 10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                                ${product.title}
-                              </h4>
-            
-                              ${field.showPrice && product.price ? `
-                                <p style=" margin-top:10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                                  Price: $${product.price}
-                                </p>
-                              ` : ''}
-            
-                              ${field.showbtnn ? `
-                                <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                                  <button
-                                    style="
-                                      margin-top: 10px;
-                                      font-size: ${field.productfontSize}px;
-                                      min-width: ${field.productwidth}px;
-                                      height: ${field.productheight}px;
-                                      font-family:${field.productbtnfamily || '"Poppins", sans-serif'};
-                                      background-color: ${field.productbackgroundColor};
-                                      border-width: ${field.productbtnBorderWidth}px;
-                                      border-style: ${field.productbtnBorderStyle};
-                                      border-color: ${field.productbtnBorderColor};
-                                      color: ${field.productbtnbg};
-                                      border-radius: ${field.productradious}px;
-                                      cursor: pointer;
-                                    "
-                                    class="show-btn-product"
-                                  >
-                                    ${field.productLabel || 'Buy Now'}
-                                  </button>
-                                </a>
-                              ` : ''}
-                            </div>
-                          </td>
-                        `).join('')}
-                      </tr>
-                    </table>
-                  ` : '<p>No products available</p>'}
+        
+          case 'product':
+            return `
+              <div>
+                ${field.products && field.products.length > 0 ? `
+                  <table role="presentation" cellspacing="0" cellpadding="0" 
+    style="
+        border-spacing: 10px;
+        width: 100%; 
+        border-width: ${field.productBorderWidth}px;
+        border-style: ${field.productBorderStyle};
+        border-color: ${field.productBorderColor};
+        padding: ${field.productPadding}px;
+        text-align: center;
+        background-color: ${field.productbg};
+        font-size: ${field.productFontSize}px;
+        color: ${field.productTextColor};
+        line-height: ${field.productline}px;
+    ">
+  ${(() => {
+      const isMobile = TemplateAll?.styles?.viewMode === 'mobile';
+      let productsPerRow = isMobile ? 1 : field.productsPerRow;
+      
+      let rows = [];
+      for (let i = 0; i < field.products.length; i += field.productsPerRow) {
+        rows.push(field.products.slice(i, i + field.productsPerRow));
+      }
+      return rows.map(row => `
+        <tr >
+          ${row.map(product => `
+            <td style="
+              padding: 15px; 
+               text-align: center;
+                ${isMobile ? 'display: block; width: 100%;' : ''}
+                      ">
+              ${product.image ? `
+                <div class="images-gallery">
+                  <img
+                    src="${product.image}"
+                    alt="${product.title || 'Product Image'}"
+                    style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;"
+                  />
                 </div>
-              `;
+              ` : '<p>No image available</p>'}
+
+              <div>
+                <p style="font-family:${field.productfamily || '"Poppins", sans-serif'}; margin-top: 10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                  ${product.title}
+                </p>
+
+                ${field.showPrice && product.price ? `
+                  <p style="font-family:${field.productfamily || '"Poppins", sans-serif'}; margin-top:10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                    Price: $${product.price}
+                  </p>
+                ` : ''}
+
+                ${field.showbtnn ? `
+                  <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                    <button
+                      style="
+                        margin-top: 10px;
+                        font-size: ${field.productfontSize}px;
+                        min-width: ${field.productwidth}px;
+                        height: ${field.productheight}px;
+                        font-family:${field.productbtnfamily || '"Poppins", sans-serif'};
+                        background-color: ${field.productbackgroundColor};
+                        border-width: ${field.productbtnBorderWidth}px;
+                        border-style: ${field.productbtnBorderStyle};
+                        border-color: ${field.productbtnBorderColor};
+                        color: ${field.productbtnbg};
+                        border-radius: ${field.productradious}px;
+                        cursor: pointer;
+                      "
+                      class="show-btn-product"
+                    >
+                      ${field.productLabel || 'Buy Now'}
+                    </button>
+                  </a>
+                ` : ''}
+              </div>
+            </td>
+          `).join('')}
+        </tr>
+      `).join('');
+  })()}
+</table>
+
+                ` : '<p>No products available</p>'}
+              </div>
+            `;
+          
               case 'divider':
                 return `
                   <div style="background-color: ${field.dividerbgColor || 'transparent'}; width: 100%;">
@@ -1609,14 +1893,36 @@ const sendEmail = async (email, TemplateAll,subject) => {
       </body>
     </html>
   `;
+
+  const formattedDate = createdAt 
+  ? new Date(createdAt).toLocaleString() 
+  : "N/A";
+
+  const formFieldsHtml = formFields
+  .map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`)
+  .join('');
     const adminHtmlContent = `
       <html>
-        <body>
-          <h1>New form submission from ${email}</h1>
-          <div>
-          </div>
-        </body>
-      </html>
+     <body>
+    <div style="font-family: 'Poppins', sans-serif;width: 100%; max-width: 60%; margin: auto; border: 1px solid grey;border-radius:4px; background-color: white; padding: 20px; color: black;">
+      <div>Hi <strong>${shopowner}</strong>,</div>
+      <div>Your form "<strong>${title}</strong>" has been successfully submitted. Now, you can start collecting responses.</div>
+      <div>
+        <p><strong>Form Details:</strong></p>
+        <p>Form Name: <strong>${title}</strong></p>
+        <p>Created: ${formattedDate}</p>
+        ${formFieldsHtml}
+        <p>Embed the form in your store.</p>
+        <p>Track responses in the app dashboard.</p>
+
+        <p>Let us know if you need any assistance.</p>
+        <p>Best Regards,</p>
+        <p><strong>Sync Form Builder</strong></p>
+      </div>
+    </div>
+   </body>
+   </html>
+
     `;
     const transporter = nodemailer.createTransport({
       service: 'gmail',

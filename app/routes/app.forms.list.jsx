@@ -250,6 +250,7 @@ const Formdata = () => {
             setFormWidth(form.styles.width);
             setBackgroundImage(form.styles.backgroundImage);
             setBorderColor(form.styles.borderColor);
+            setMarginForm(form.styles.marginForm);
             setPadding(form.styles.padding);
             setBorderRadius(form.styles.borderRadius);
             setSubject(subject);
@@ -835,6 +836,7 @@ const Formdata = () => {
                                                     ...form.styles,
                                                     position: 'relative',
                                                     padding: `${form.styles.padding}px`,
+                                                    margin: `${form.styles.marginForm}px 0`,
                                                     backgroundColor: 'transparent',
                                                     border: 0
                                                 }}
@@ -866,20 +868,21 @@ const Formdata = () => {
                                                             {field.type === 'name' && <input type="name" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'text' && <input type="text" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'textarea' && <textarea placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
-                                                            {field.type === 'description' && <p style={{ paddingLeft:`${field.textPadding}px`,paddingRight:`${field.textPadding}px`, fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
+                                                            {field.type === 'description' && <p style={{ paddingLeft: `${field.textPadding}px`, paddingRight: `${field.textPadding}px`, fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
                                                             {field.type === 'toggle' && (
                                                                 <div className='form-build-toggle'>
-                                                                    <div style={{ color: form.styles.labelColor }} >
-                                                                        {field.label}
-                                                                    </div>
+
                                                                     <label className="custom-toggle">
                                                                         <input type="checkbox" aria-label={field.label} required={field.required} disabled={field.disabled} readOnly={field.readonly} />
                                                                         <span className="slider"></span>
                                                                     </label>
+                                                                    <div style={{ color: form.styles.labelColor }} >
+                                                                        {field.label}
+                                                                    </div>
 
                                                                 </div>
                                                             )}
-                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, lineHeight:`${field.headingLineheight}px`, color: field.colorHeading, textAlign: field.textHeading }} >{field.text}</field.level></div>}
+                                                            {field.type === 'heading' && <div className='email-templates-wredd'>  <field.level style={{ fontSize: `${field.fontSize || ''}px`, lineHeight: `${field.headingLineheight}px`, color: field.colorHeading, textAlign: field.textHeading }} >{field.text}</field.level></div>}
                                                             {field.type === 'number' && <input type="number" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'multi-file' && (
                                                                 field.multiOptions[field.id] === 'option1' ? (
@@ -1021,17 +1024,17 @@ const Formdata = () => {
 
                                                             {field.type === 'link' && (
                                                                 <div>
-                                                                <a
-                                                                    href={field.linkUrl}
-                                                                    target={field.linkTarget}
-                                                                    style={{
-                                                                        fontSize:`${field.linkfontsize}px`,  
-                                                                        textDecoration: 'none',
-                                                                        textAlign: field.linkaline,
-                                                                        padding: field.padding,
-                                                                    }}
-                                                                    dangerouslySetInnerHTML={{ __html: field.linktext }}
-                                                                />
+                                                                    <a
+                                                                        href={field.linkUrl}
+                                                                        target={field.linkTarget}
+                                                                        style={{
+                                                                            fontSize: `${field.linkfontsize}px`,
+                                                                            textDecoration: 'none',
+                                                                            textAlign: field.linkaline,
+                                                                            padding: field.padding,
+                                                                        }}
+                                                                        dangerouslySetInnerHTML={{ __html: field.linktext }}
+                                                                    />
                                                                 </div>
                                                             )}
                                                             {field.type === 'images' && (field.imageOptions[field.id] === 'option1' ? (
@@ -1198,7 +1201,7 @@ const Formdata = () => {
                                                                 </div>
                                                             )}
                                                             {(field.type !== 'heading' && field.type !== 'description') && (
-                                                                <div className='description' style={{ whiteSpace: 'pre-line',wordBreak: 'break-word', minHeight: `${form.styles.maxDescriptionHeight}px` }}>
+                                                                <div className='description' style={{ whiteSpace: 'pre-line', wordBreak: 'break-word', minHeight: `${form.styles.maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
                                                             )}

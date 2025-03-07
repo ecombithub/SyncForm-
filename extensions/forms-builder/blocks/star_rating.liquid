@@ -2,19 +2,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
 
-
-
 <div class="form_builder_app {{ block.id }}" id="formBuilderApp-{{ block.id }}">
-  <div style="background-size: cover;" id="formData-{{ block.id }}"></div>
+  <form
+    id="formData-{{ block.id }}"
+    style="background-size: cover;"
+    onsubmit="
+      submitFormData(event, '{{ block.id }}', 'formID',
+      'formTitleValue', 'formshopValue', 'shopNameHeading',
+      'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', this)
+    "
+  ></form>
 </div>
 
 <style>
- 
   img.form-builder-wred-starr-requid {
     width: 7px;
     top: 3px;
     height: 7px;
     margin-left: 5px;
+  }
+
+  .form_radio_flex input {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
+  .form_checkbox_flex input {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  img.form-builder-wred-starr-requid.toggle {
+    position: absolute;
   }
 
   .input-field.input-gap label {
@@ -31,6 +51,12 @@
 
   .form_builder_app ul {
     padding: 0;
+  }
+
+  img.brand-logos {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
   }
 
   @media screen and (max-width: 540px) {
@@ -58,6 +84,20 @@
   }
 </style>
 <script>
+
+  document.addEventListener("DOMContentLoaded", function() {
+    var appEmbedBlock = document.querySelector('[data-block-handle="floating_image"]');
+    var formBlocks = document.querySelectorAll('[id^="formBuilderApp-"]'); 
+
+    formBlocks.forEach(function(formBlock) {
+        if (appEmbedBlock) {
+            formBlock.style.display = "block";
+        } else {
+            formBlock.style.display = "none";
+        }
+    });
+});
+
   function toggleDropdown(event, fieldName) {
     event.preventDefault();
     const dropdown = document.getElementById(`dropdown-${fieldName}`);
@@ -614,10 +654,40 @@
       const formID = formData.formId || 'Unknown ID';
       const formshop = formData.shop || 'Form shop';
       const toggleStatus = formData.toggleStatus || 'toggleStatus';
+      const shopNameHeading = formData.styles.shopName || 'toggleStatus';
+      const editorValue = formData.editorValue;
+      const submissionOption =formData.submissionOption;
+      const thankYouTimer =formData.thankYouTimer;
+      const formUrl =formData.url;
 
       console.log('Formshop:', formshop);
       container.empty();
+           $('#formData-{{ block.id }}').attr('onsubmit', 
+        `submitFormData(event, '{{ block.id }}', '${formID}',
+         '${formTitle}', '${formshop}', '${shopNameHeading}', '${toggleStatus}', '${editorValue}', 
+         '${submissionOption}', '${thankYouTimer}','${formUrl}', this)`);
 
+      async function getBrandLogo(formshop) {
+        try {
+          const response = await fetch(`https://apps.syncform.app/data/brandLogo/${formshop}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          
+          const BrandLogo = await response.json();
+          if (BrandLogo.status === "active") {
+            container.append(`
+              <img class="brand-logos" src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/brandlogos.png?v=1741174088">
+            `);
+          }
+      
+        } catch (error) {
+          console.error("Error fetching brand logo:", error);
+        }
+      }
+      
+      getBrandLogo(formshop);
+      
       if (formData.styles) {
         console.log('Form styles:', formData.styles);
 
@@ -649,10 +719,13 @@
           position: 'relative',
           width: '100%',
           maxWidth: formData.styles.width || '100%',
-          padding: formData.styles.padding || '20px',
+          padding: formData.styles.padding || '',
           margin: 'auto',
+          marginTop: `${formData.styles.marginForm}px`,
+          marginBottom: `${formData.styles.marginForm}px`   
         });
       }
+
       container.append(`<h2 style="display:none">${formshop}</h2>`);
       container.append(`<h2 style="display:none">${formTitle}</h2>`);
       container.append(`<h2 style="display:none">${toggleStatus}</h2>`);
@@ -736,7 +809,9 @@
                        inputStyle,
                        inputWidth,
                        emailsubject,
-                       maxDescriptionHeight
+                       labelColor,
+                       maxDescriptionHeight,
+                       shopNameHeading
                      )}
                   </div>
                   `;
@@ -755,34 +830,36 @@
       container.append('<div class="clear-float"></div>');
     }
 
-    window.validatePassword = function (input, minLength) {
-      const passwordStatus = input.dataset.passwordStatus;
+    window.validatePassword = function (input) {
+      const passwordStatus = input.dataset.passwordStatus; 
+      const passwordCharacter = input.dataset.passwordCharacter;
       const password = input.value;
-      const errorMessage = input.nextElementSibling.nextElementSibling;
-
+      const errorMessage = input.nextElementSibling.nextElementSibling; 
+  
+      const minLength = parseInt(passwordCharacter, 10) || 6; 
       let isValid = password.length >= minLength;
       let errorText = `Password must be at least ${minLength} characters long.`;
-
+  
       if (passwordStatus === 'on') {
-        const hasNumber = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-        if (!hasNumber || !hasSpecialChar) {
-          isValid = false;
-          errorText = `Password must be at least ${minLength} characters long, include at least one number, and one special character.`;
-        }
+          const hasNumber = /\d/.test(password);
+          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+          if (!hasNumber || !hasSpecialChar) {
+              isValid = false;
+              errorText = `Password must be at least ${minLength} characters long, include at least one number, and one special character.`;
+          }
       }
-
+  
       if (!isValid) {
-        errorMessage.textContent = errorText;
-        errorMessage.style.display = 'block';
+          errorMessage.textContent = errorText;
+          errorMessage.style.display = 'block';
       } else {
-        errorMessage.style.display = 'none';
+          errorMessage.style.display = 'none';
       }
-
+  
       return isValid;
-    };
-
+  };
+  
     window.togglePasswordVisibility = function (icon) {
       const input = icon.previousElementSibling;
       if (input.type === 'password') {
@@ -811,7 +888,9 @@
       inputStyle,
       inputWidth,
       emailsubject,
-      maxDescriptionHeight
+      labelColor,
+      maxDescriptionHeight,
+      shopNameHeading
     ) {
       const uniqueId = field.id || generateUniqueId();
 
@@ -826,13 +905,14 @@
           }" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" /> <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'toggle':
           return `
-            <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
+          <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
               <input 
                 type="checkbox" 
+                name="${field.label || 'toggle'}" 
                 ${
                   field.readonly ? 'readonly' : ''
                 } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} 
-                style="display: none;" 
+               
                 aria-label="${field.label || 'Toggle'}" 
                  onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
                   this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)'; 
@@ -863,17 +943,37 @@
                 border-radius: 50%;
                 transform: translateX(0);
               "></span>
-            </label> <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description || ''}</div>`;
+            </label><div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description || ''}</div>`;
 
-        case 'textarea':
-          return `<textarea placeholder="${
-            field.placeholder || ''
-          }" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  name="w3review" rows="4" cols="50" style="width:100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Textarea'}">
-        
-          </textarea> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+            case 'textarea':
+            return `
+              <textarea 
+                id="${field.name || 'textarea-field'}"
+                name="${field.name || 'textarea-field'}"
+                placeholder="${field.placeholder || ''}"
+                ${field.readonly ? 'readonly' : ''}
+                ${field.required ? 'required' : ''}
+                ${field.disabled ? 'disabled' : ''}
+                rows="4" cols="50"
+                style="
+                  width:100%;
+                  padding: ${field.inputPadding || '8px'};
+                  border-radius: ${inputRadius}px;
+                  border-color: ${inputBorderColor};
+                  background-color: ${inputBgColor};
+                  border-width: ${inputWidth}px;
+                  border-style: ${inputStyle};
+                "
+                aria-label="${field.label || 'Textarea'}"
+              ></textarea> 
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+                ${field.description}
+              </div>
+            `;
+          
         case 'checkbox':
           return `
-                <div style="width:100%;padding: ${
+                <div class = "checkbox-button" style="width:100%;padding: ${
                   field.inputPadding
                 };border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
@@ -895,7 +995,7 @@
               `;
         case 'radio':
           return `
-                  <div style="width:100%;padding: ${
+                  <div class = "radio-button" style="width:100%;padding: ${
                     field.inputPadding
                   };border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
                   ${field.options
@@ -915,17 +1015,19 @@
                 </div>
                   <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
-              case 'select':
-              const options = `
+        case 'select':
+          const options = `
                   <div class="custom-select-option" data-value="" style="font-weight: bold; color: #888;">
                       Select an option
                   </div>
                   ${field.options
-                      .map(option => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`)
-                      .join('')}
+                    .map(
+                      (option) => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
+                    )
+                    .join('')}
               `;
-          
-          return `
+
+           return `
                 <div class="custom-select-container" style="position: relative;">
                   <div class="custom-select-box" ${
                     field.readonly ? 'readonly' : ''
@@ -941,7 +1043,7 @@
                       placeholder="Search..."
                       style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: ${
                         inputRadius || '4px'
-                      }; border: 1px solid #ccc;"
+                      }px; border: 1px solid #ccc;"
                       oninput="filterOptions(event, '${field.name}')"
                     />
                     <div class="options-container" style = "cursor : pointer">
@@ -956,14 +1058,14 @@
             field.readonly ? 'readonly' : ''
           } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="border: 1px solid ${field.dividerColor}; width: 100%;" /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'description':
-          return `<p style="font-size: ${field.textSize || '16px'}px; 
+          return `<span style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
                   line-height:${field.textlineheight}px;
                   padding-left: ${field.textPadding || '5'}px;
                   padding-right: ${field.textPadding || '5'}px;
-                  text-align: ${field.textAline || 'center'};">
+                  text-align: ${field.textAline || 'left'};">
                   ${field.text || 'Default description'}
-                  </p>`;
+                  </span>`;
         case 'heading':
           let fontSize = '';
           if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(field.level)) {
@@ -1019,16 +1121,16 @@
             `;
           } else if (field.fileOptions[field.id] === 'option2') {
             fileInputHTML = `
-            <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+            <div class="drag-and-drop-text third" style="text-align: center;"  >
                 <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 20px;" 
                 onclick="handleClickImages('file-input-${field.id}')"
                 ondragover="handleDragOverimages(event)"
                   ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.ImagePreview}')">  
-                 <input type="file" accept="image/*" id="file-input-${
+                 <input type="file" ${field.readonly ? 'readonly' : ''} ${
+              field.required ? 'required' : ''
+            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
                    field.id
-                 }" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${
+                 }" style="opacity:0;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${
               field.ImagePreview
             }')" />
                   <div class='form-builder-changes-file-wraped'>
@@ -1045,18 +1147,18 @@
             `;
           } else if (field.fileOptions[field.id] === 'option3') {
             fileInputHTML = `
-            <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+            <div class="drag-and-drop-text first" style="text-align: center;"  >
                <div class='form-builder-chaneging-wrap file' style="border-radius: 10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
                  field.width === '25%' ? '20px' : '20px'
                };" 
                onclick="handleClickImages('file-input-${field.id}')"
                ondragover="handleDragOverimages(event)"
                 ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.ImagePreview}')">  
-                 <input type="file" accept="image/*" id="file-input-${
+                 <input type="file"${field.readonly ? 'readonly' : ''} ${
+                field.required ? 'required' : ''
+                } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
                    field.id
-                 }" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${
+                 }" style="opacity:0;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}','${
               field.ImagePreview
             }')" />
              <div class="form-builder-changes-file-wraped" style="display: flex; gap: 10px; justify-content: center; align-items: center;">
@@ -1106,18 +1208,18 @@
             `;
           } else if (field.multiOptions[field.id] === 'option2') {
             multifileInputHTML = `
-              <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+              <div class="drag-and-drop-text first" style="text-align: center;"  >
                 <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
                   field.width === '25%' ? '20px' : '20px'
                 };" 
                 onclick="handleClickmulti('file-input-${field.id}')"
                  ondragover="handleDragOverfile(event)"
                  ondrop="handleDropfile(event, '${field.id}', '${field.label}','${field.multifilePreview}')">
-                  <input type="file" accept="image/*" id="file-input-${
+                  <input type="file" ${field.readonly ? 'readonly' : ''} ${
+                 field.required ? 'required' : ''
+                 } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
                     field.id
-                  }" style="display: none;" multiple onchange="handleMultiInputChange(event, '${field.id}','${
+                  }" style="opacity:0;" multiple onchange="handleMultiInputChange(event, '${field.id}','${
               field.label
             }','${field.multifilePreview}')" />
                   <div class="form-builder-changes-file-wraped">
@@ -1146,18 +1248,18 @@
             `;
           } else if (field.multiOptions[field.id] === 'option3') {
             multifileInputHTML = `
-                <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+                <div class="drag-and-drop-text third" style="text-align: center;"  >
         <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
           field.width === '25%' ? '20px' : '20px'
         };"
           onclick="handleClickmulti('file-input-${field.id}')"
         ondragover="handleDragOverfile(event)"
         ondrop="handleDropfile(event, '${field.id}', '${field.label}','${field.multifilePreview}')">
-        <input type="file" accept="image/*" id="file-input-${
+        <input type="file" ${field.readonly ? 'readonly' : ''} ${
+              field.required ? 'required' : ''
+            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
           field.id
-        }" style="display: none;" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${
+        }" style="opacity:0;" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${
               field.multifilePreview
             }')"/>
           <div class="form-builder-changes-file-wraped">
@@ -1257,7 +1359,8 @@
                 background-color: ${inputBgColor}; border-width: ${inputWidth}px;
                 border-style: ${inputStyle}" 
                 data-password-status="${field.passwordStatus}" 
-                oninput="validatePassword(this, ${field.passwordCharacter || 6})"
+                data-password-character="${field.passwordCharacter || 6}"
+                oninput="validatePassword(this, this.dataset.passwordCharacter)"
               />
                <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/pass.png?v=1740467283" 
                onclick="togglePasswordVisibility(this)" 
@@ -1288,22 +1391,28 @@
           return `<input type="time" ${
             field.readonly ? 'readonly' : ''
           } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
-        case 'link':
+          case 'link':
           return `
-        <a
-        href="${field.linkUrl || '#'}"
-        target="${field.linkTarget || '_blank'}"
-         style="
-          width: 100%;
-          text-decoration: none;
-          font-size:${field.linkfontsize}px;
-          text-align: ${field.linkaline || 'left'};
-          padding: ${field.padding || '0'};
-          "
-             >${
-               field.linktext || 'Default Link Text'
-             } <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div></a>
-      `;
+            <a
+              href="${field.linkUrl || '#'}"
+              target="${field.linkTarget || '_blank'}"
+              style="
+                display: block; /* Ensures it takes full width */
+                width: 100%;
+                text-decoration: none;
+                font-size: ${field.linkfontsize}px;
+                text-align: ${field.linkaline || 'left'};
+                padding: ${field.padding || '0'};
+                color:black;
+              "
+            >
+              ${(field.linktext || 'Default Link Text').replace(/<\/?p>/g, '')}
+            </a>
+            <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+              ${field.description}
+            </div>
+          `;
+        
         case 'images':
           let imagesInputHTML = '';
           if (field.imageOptions[field.id] === 'option1') {
@@ -1323,16 +1432,16 @@
           } else if (field.imageOptions[field.id] === 'option2') {
             imagesInputHTML = `
       
-          <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+          <div class="drag-and-drop-text third" style="text-align: center;"  >
             <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 20px;" 
               onclick="handleClickImages('file-input-${field.id}')"
                ondragover="handleDragOverimages(event)"
               ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.signlePreview}')"> 
-              <input type="file" accept="image/*" id="file-input-${
+              <input type="file" ${field.readonly ? 'readonly' : ''} ${
+              field.required ? 'required' : ''
+            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
                 field.id
-              }" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}' , '${
+              }" style="opacity:0;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}' , '${
               field.signlePreview
             }')" />
               <div class='form-builder-changes-file-wraped'>
@@ -1349,9 +1458,7 @@
         `;
           } else if (field.imageOptions[field.id] === 'option3') {
             imagesInputHTML = `
-        <div class="drag-and-drop-text first" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+        <div class="drag-and-drop-text first" style="text-align: center;"  >
           <div class="form-builder-chaneging-wrap file" 
         style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${
           field.width === '25%' ? '20px' : '20px'
@@ -1359,9 +1466,11 @@
         onclick="handleClickImages('file-input-${field.id}')"
         ondragover="handleDragOverimages(event)"
         ondrop="handleDropimages(event, '${field.id}', '${field.label}', '${field.signlePreview}')"> 
-        <input type="file" accept="image/*" id="file-input-${
+        <input type="file" ${field.readonly ? 'readonly' : ''} ${
+              field.required ? 'required' : ''
+            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
           field.id
-        }" style="display: none;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}', '${
+        }" style="opacity:0;" onchange="handleSingleInputChange(event, '${field.id}', '${field.label}', '${
               field.signlePreview
             }')" />
          <div class="form-builder-changes-file-wraped" 
@@ -1419,18 +1528,18 @@
             `;
           } else if (field.multiimagesOptions[field.id] === 'option2') {
             multiimageInputHTML = `
-              <div class="drag-and-drop-text first multi-imagess" style="text-align: center;" ${
-                field.readonly ? 'readonly' : ''
-              } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} >
+              <div class="drag-and-drop-text first multi-imagess" style="text-align: center;"  >
                 <div class="form-builder-chaneging-wrap file " style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${
                   field.width === '25%' ? '20px' : '20px'
                 };"
                  onclick="handleClickmulti('file-input-${field.id}')"
                  ondragover="handleDragOver(event)"
                  ondrop="handleDrop(event, '${field.id}','${field.label}','${field.multiIamgePreview}')">
-                  <input type="file" accept="image/*" id="file-input-${
+                  <input type="file" ${
+                field.readonly ? 'readonly' : ''
+              } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
                     field.id
-                  }" style="display: none;" multiple onchange="handleFileInputChange(event, '${field.id}','${
+                  }" style="opacity:0;" multiple onchange="handleFileInputChange(event, '${field.id}','${
               field.label
             }','${field.multiIamgePreview}')" />
                   <div class="form-builder-changes-file-wraped">
@@ -1453,18 +1562,18 @@
             `;
           } else if (field.multiimagesOptions[field.id] === 'option3') {
             multiimageInputHTML = `
-              <div class="drag-and-drop-text third" style="text-align: center;" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} >
+              <div class="drag-and-drop-text third" style="text-align: center;"  >
              <div class="drag-and-drop-text first multi-imagess" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${
                field.width === '25%' ? '20px' : '20px'
              };"
          onclick="handleClickmulti('file-input-${field.id}')"
           ondragover="handleDragOver(event)"
           ondrop="handleDrop(event, '${field.id}','${field.label}','${field.multiIamgePreview}')">
-            <input type="file" accept="image/*" id="file-input-${
+            <input type="file"${field.readonly ? 'readonly' : ''} ${
+              field.required ? 'required' : ''
+            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
               field.id
-            }" style="display: none;" multiple onchange="handleFileInputChange(event, '${field.id}', '${
+            }" style="opacity:0;" multiple onchange="handleFileInputChange(event, '${field.id}', '${
               field.label
             }','${field.multiIamgePreview}')"/>
          <div class="form-builder-changes-file-wraped">
@@ -1499,23 +1608,28 @@
               ${field.description ? `<span style="margin-top: 8px;">${field.description}</span>` : ''}
             </div>
           `;
-
-        case 'slider':
+          case 'slider':
           return `<input 
                     type="range" 
-                    ${
-                      field.readonly ? 'readonly' : ''
-                    } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} 
-                    placeholder="${field.placeholder || ''}" 
+                    id="${field.name || 'slider-field'}"
+                    name="${field.name || 'slider-field'}"
+                    ${field.required ? 'required' : ''} 
+                    ${field.disabled ? 'disabled' : ''} 
+                    min="${field.min || 0}" 
+                    max="${field.max || 100}" 
+                    step="${field.step || 1}" 
+                    value="${field.value || field.min || 0}" 
                     style="width: 100%;" 
-                    min="${field.min}" 
-                    max="${field.max}" 
-                    step="${field.step}" 
-                    /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
-        case 'button':
+                  />
+                  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+                    ${field.description || ''}
+                  </div>`;
+        
+           case 'button':
           return `
               <div style= "text-align:${field.buttonaline}">
                 <button
+                  type="submit"
                   style="background-color: ${
                     field.backgroundColor || '#007bff'
                   }; min-height: ${field.buttonHeight || '40px'}; 
@@ -1526,11 +1640,9 @@
                     border-style: ${field.buttonBorderStyle || 'solid'};
                     border-color: ${field.buttonBorderColor || '#000'};
                     border-radius: ${field.btnradious}px;
+                    cursor:pointer;
                     color:${field.btncolor}"
-                    data-url="${formUrl}"
-                    onclick="submitFormData(event,'{{ block.id }}', this, '${
-                      editorValue || ''
-                    }', '${submissionOption || ''}', '${thankYouTimer || ''}', '${formshop}','${formTitle}', '${toggleStatus}','${emailsubject}')">
+                  ">
                   ${field.label || 'Submit'}
                 </button>
               </div>
@@ -1549,36 +1661,37 @@
     window.submitFormData = function (
       event,
       blockId,
-      button,
+      formID,
+      formTitle,
+      formshop,
+      shopNameHeading,
+      toggleStatus,
       editorValue,
       submissionOption,
       thankYouTimer,
-      formshop,
-      formTitle,
-      toggleStatus,
-      emailsubject
+      formUrl,
+      button
     ) {
       event.preventDefault();
-      const container = $('#formData-' + blockId);
-      const formID = container.find('p').first().text().split(': ')[1];
-      console.log('Editor Value:', editorValue);
-      console.log('Submission Option:', submissionOption);
-      console.log('Thank You Timer:', thankYouTimer);
-      console.log('form_id:', formID);
+      console.log('formID:', formID);
+      console.log('submitFormData triggered');
+      console.log('formTitle:', formTitle); 
       console.log('formshop:', formshop);
+      console.log('shopNameHeading:', shopNameHeading);
       console.log('toggleStatus:', toggleStatus);
-      console.log('email-subject', emailsubject);
-      console.log('images-all', uploadeImages);
-      console.log('images', uploadedFiles);
-      console.log('uploaded-multi', uploadedmulti);
-
+      console.log('Editor Value:', editorValue);
+      console.log('submissionOption:', submissionOption);
+      console.log('thankYouTimer:', thankYouTimer);
+      console.log('formUrl:', formUrl);
+      
+      const container = $('#formData-' + blockId);
       const formData = {
         id: formID,
         shop: formshop || 'defaultShopName',
         title: formTitle || 'defaultTitle',
         fields: [],
         send: currentTimestamp,
-        url: $(button).data('url') || '',
+        url: formUrl,
         editorValue: editorValue,
         thankYouTimer: thankYouTimer,
       };
@@ -1590,66 +1703,51 @@
         console.log('Form submission is disabled');
       }
 
-      const emailField = $('#formData-' + blockId + ' input[type="email"]');
-      const emailValue = emailField.val().trim();
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (emailField.length === 0 || emailValue === '') {
-        formData.email = 'no email';
-      } else if (!emailRegex.test(emailValue)) {
-        alert('Please enter a valid email address.');
-        return false;
-      } else {
-        formData.email = emailValue;
-      }
-
       let isValid = true;
-
-      $('#formData-' + blockId + ' input[required]').each(function () {
-        if (!$(this).val().trim()) {
-          isValid = false;
-          $(this).css('border-color', 'red');
-        } else {
-          $(this).css('border-color', '');
-        }
-      });
-
-      if (!isValid) {
-        alert('Please fill in all required fields.');
-        return false;
-      }
 
       let uploadedFileNames = new Set();
       let uniqueImageFileNames = new Set();
       let uniqueImageImagesNames = new Set();
-      $('#formData-' + blockId + ' .input-field').each(function () {
-        const fieldName = $(this).find('label').text().trim();
+       $('#formData-' + blockId + ' .input-field').each(function () {
+        const fieldName = $(this).children('label').first().text().trim();
         const input = $(this).find('input, select, textarea');
         const dropdown = $(this).find('.custom-select-box span:first-child');
         const fieldId = input.attr('id') || generateUniqueId();
 
         if (input.length > 0 && input.attr('type') === 'password') {
           const passwordValue = input.val().trim();
+      
           if (passwordValue.length === 0) {
-            return true;
+              return true; 
           }
-
-          const minLength = parseInt(input.attr('data-password-status')) || 6;
-          const isPasswordValid = validatePassword(input[0], minLength);
-
+          const minLength = input[0].dataset.passwordStatus;
+          console.log('minLength from dataset:', minLength);
+      
+          let parsedMinLength = parseInt(minLength, 10);
+          if (isNaN(parsedMinLength)) {
+              parsedMinLength = parseInt(input.attr('data-password-status'), 10) || 6; 
+              console.log('Using fallback parsedMinLength:', parsedMinLength);
+          }
+      
+          console.log('Parsed minLength:', parsedMinLength);
+      
+          const isPasswordValid = validatePassword(input[0], parsedMinLength);
+      
           if (!isPasswordValid) {
-            isValid = false;
-
-            if (!window.passwordAlertShown) {
-              alert('Password does not meet the required conditions.');
-              window.passwordAlertShown = true;
-            }
-
-            return false;
+              isValid = false;
+      
+              const errorMessageElement = document.getElementById('password-error');
+              if (errorMessageElement) {
+                  errorMessageElement.textContent = `Password must be at least ${parsedMinLength} characters long.`;
+                  errorMessageElement.style.display = 'block';
+              }
+      
+              return false;
           }
-        }
-
+      }
+    
         window.passwordAlertShown = false;
+
         let fieldValue;
         let imagesFieldExists = false;
         let allFileNames = [];
@@ -1659,15 +1757,21 @@
         if (dropdown.length > 0) {
           fieldValue = dropdown.text().trim();
         } else if (input.is(':radio')) {
-          fieldValue = $('input[name="' + input.attr('name') + '"]:checked').val();
+          fieldValue = $('input[name="' + input.attr('name') + '"]:checked')
+              .siblings('label')
+              .text()
+              .trim(); 
+  
+          console.log(`Radio Group: ${fieldName}, Selected Value:`, fieldValue);
         } else if (input.is(':checkbox')) {
           fieldValue = [];
-          $(this)
-            .find('input[type="checkbox"]:checked')
-            .each(function () {
-              fieldValue.push($(this).val());
-            });
-          fieldValue = fieldValue.join(', ');
+          $(this).find('input[type="checkbox"]:checked').each(function () {
+              let checkboxLabel = $(this).siblings('label').text().trim();
+              fieldValue.push(checkboxLabel); 
+          });
+  
+          console.log(`Checkbox Group: ${fieldName}, Selected Values:`, fieldValue);
+          fieldValue = fieldValue.join(', '); 
         } else if (input.attr('type') === 'file') {
           fieldValue = [];
 
@@ -1784,12 +1888,12 @@
 
       if (!isValid) return;
       console.log('Final Fields Collected:', formData.fields);
-
+     {% comment %} 
       if (formData.fields.length === 0) {
         alert('Please fill in at least one field before submitting.');
         console.log('Submission blocked: No fields provided.');
         return false;
-      }
+      } {% endcomment %}
 
       console.log('Form Data:', JSON.stringify(formData));
 
@@ -1800,7 +1904,15 @@
         data: JSON.stringify(formData),
         success: function (response) {
           console.log('Form submitted successfully:', response);
-          alert('Form submitted successfully!');
+          {% comment %} alert('Form submitted successfully:', response); {% endcomment %}
+         
+          if (formUrl && formUrl.trim() !== '' && formUrl !== 'undefined') {
+            console.log('Opening form URL:', formUrl); 
+            window.open(formUrl, '_blank'); 
+         } else {
+            console.log('No valid form URL provided.');
+          }
+    
           $(this).find('ul').empty();
           const toggleInput = $('#formData-' + blockId + ' input[type="checkbox"]');
           toggleInput.prop('checked', false);
@@ -1837,6 +1949,11 @@
                       TemplateAll: matchingForm,
                       email: formData.email,
                       subject: emailsubject,
+                      formFields: formData.fields,
+                      title: formTitle || 'defaultTitle',
+                      shop: formshop || 'defaultShopName',
+                      shopowner:shopNameHeading ||'defaultShopName' ,
+                      createdAt: currentTimestamp,
                     }),
                     success: function (templateResponse) {
                       console.log('Template data sent successfully:', templateResponse);
@@ -1860,8 +1977,7 @@
           } else {
             console.log('Form ID is not available');
           }
-          const formUrl = $(button).data('url');
-
+          
           const successMessage = '<p id="success-message">Form submitted successfully!</p>';
           const successElement = $(successMessage);
 
@@ -1918,12 +2034,7 @@
             }, timerDuration);
           }
 
-          if (formUrl && formUrl !== 'undefined') {
-            window.open(formUrl);
-          } else {
-            console.log('No valid form URL provided.');
-          }
-
+          
           $(
             '#formData-' + blockId + ' input, #formData-' + blockId + ' textarea, #formData-' + blockId + ' select'
           ).val('');
@@ -1956,36 +2067,3 @@
   "settings": [{ "type": "text", "id": "formId", "label": "Form ID" }]
 }
 {% endschema %}
-
-
-{% comment %}
-  {% schema %}
-  {
-    "name": "App Embed",
-    "target": "body",
-    "settings": [
-      {
-        "type": "header",
-        "content": "Form Submission"
-      },
-      {
-        "type": "color",
-        "id": "colour",
-        "label": "Button Text Colour",
-        "default": "#ff0000"
-      },
-      {
-        "type": "color",
-        "id": "bgcolour",
-        "label": "Button Background Colour",
-        "default": "#ff0000"
-      },
-      {
-        "type": "text",
-        "id": "formId",
-        "label": "Form ID"
-      }
-    ]
-  }
-  {% endschema %}
-{% endcomment %}

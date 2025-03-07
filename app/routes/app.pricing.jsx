@@ -60,7 +60,7 @@ export const action = async ({ request }) => {
                                     "Unknown Plan",
                     price: selectedPlan === "pro" ? 4.99 :
                         selectedPlan === "pro_yearly" ? 49.99 :
-                            selectedPlan === "pro_plus" ? 9.99 :
+                            selectedPlan === "pro_plus" ? 14.99 :
                                 selectedPlan === "pro_plus_yearly" ? 149.99 : 0,
                     return_url: `https://${shop}/admin/apps/form-builder-hub/app/pricing`,
                     trial_days: 7,
@@ -428,7 +428,7 @@ export default function Pricing() {
                                     <div className='before-adding'>
                                         <h2>$4.99<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>$9.99</span><span className='monthly-number'>/mo</span>
+                                            <span className='strikethrough'>14.99</span><span className='monthly-number'>/mo</span>
 
                                         </p>
                                     </div>
@@ -503,9 +503,9 @@ export default function Pricing() {
 
                                     <p>Pro +</p>
                                     <div className='before-adding'>
-                                        <h2>$9.99<span className='monthly-number'>/mo</span></h2>
+                                        <h2>14.99<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>$19.99</span><span className='monthly-number'>/mo</span>
+                                            <span className='strikethrough'>$49.99</span><span className='monthly-number'>/mo</span>
                                         </p>
                                     </div>
 
@@ -756,7 +756,7 @@ export default function Pricing() {
                                     <div className='before-adding'>
                                         <h2>$49.99<span className='monthly-number'>/year</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>$1050.00</span><span className='monthly-number'>/year</span>
+                                            <span className='strikethrough'>$149.99</span><span className='monthly-number'>/year</span>
                                         </p>
                                     </div>
 
