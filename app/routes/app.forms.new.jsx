@@ -621,17 +621,17 @@ const Formgenerated = () => {
 
     }, [location.state]);
 
-    const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
-    const fieldsAdded = useRef(false);
+    // const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
+    // const fieldsAdded = useRef(false);
 
-    useEffect(() => {
-        if (fields.length === 0 && !fieldsAdded.current) {
-            fieldsAdded.current = true;
-            defaultFields.forEach((type) => {
-                addInputField(type);
-            });
-        }
-    }, [fields]);
+    // useEffect(() => {
+    //     if (fields.length === 0 && !fieldsAdded.current) {
+    //         fieldsAdded.current = true;
+    //         defaultFields.forEach((type) => {
+    //             addInputField(type);
+    //         });
+    //     }
+    // }, [fields]);
 
     const createInputField = (type, options = [], isFieldEnabled = true, existingField = null) => {
         const baseField = {
@@ -4299,7 +4299,7 @@ const Formgenerated = () => {
                                                 <div className='builder_block_blank'>
                                                     <img src={vecter1} alt="" />
                                                     <div className='builder-block-img-forms-paragraph'>
-                                                        <p>Let's create the forms.</p>
+                                                        <p>Let's create the Forms.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -5466,7 +5466,7 @@ const Formgenerated = () => {
                         </div>
                     </div>)}
             </div>
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
         </div>
     );
 };

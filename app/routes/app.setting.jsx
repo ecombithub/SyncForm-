@@ -103,6 +103,7 @@ export default function Setting() {
     const [userPlan, setUserPlan] = useState(null);
     const [upgradePopup, setUpgradePopup] = useState(false);
     const [activeBrand, setActiveBrand] = useState('active');
+    const [numberPopup, setNumberPopup] = useState(false);
 
     const navigator = useNavigate();
     console.log(shopData);
@@ -133,7 +134,7 @@ export default function Setting() {
         if (value >= 3) {
             setNumberValue(value);
         } else {
-            alert("Enter at least 3 forms.");
+           setNumberPopup(true);
         }
     };
 
@@ -257,6 +258,12 @@ export default function Setting() {
             fetchStatusBrand();
         }
     }, [shop, apiUrl]);
+
+ 
+    const handleNumbercancle =()=>{
+        setNumberPopup(false);
+    }
+
     
     return (
         <>
@@ -269,6 +276,17 @@ export default function Setting() {
                     </div>
                 </div>
             </div>}
+
+            {numberPopup && <div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp records-number '>
+                    <p>Enter At Least 50 Records</p>
+                    
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleNumbercancle}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>}
+
             <div className='form_builder_setting_page'>
                 <div className="container">
                     <div className="form_builder_setting_title">
@@ -315,7 +333,7 @@ export default function Setting() {
                                         value={numberValue}
                                         onChange={handleNumberChange}
                                     />
-                                    <label>Enter at least 10 forms.</label>
+                                    <label>Enter at least 10 records</label>
                                 </div>
                             </div>
                             <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 50 submissions, but you can adjust it to a higher number based on your needs.</span>
@@ -356,7 +374,7 @@ export default function Setting() {
 
                     </div>
                 </div>
-                <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+                <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
             </div>
         </>
     );

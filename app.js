@@ -1268,10 +1268,9 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                 });
 
 
-                    const headingStyle = `
+    const headingStyle = `
     background-image: url('${field.headingbgImage || ''}');
     background-size: cover;
-    background-position: center;
     border-width: ${field.headingBorderWidth || 1}px;
     border-style: ${field.headingBorderStyle || 'solid'};
     border-color: ${field.headingBorderColor || '#000'};
@@ -1293,7 +1292,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     color: ${field.headerbtncolor || '#fff'};
     border-radius: ${field.headingbtnradious || 4}px;
     padding: ${field.headingbtnPadding || 10}px;
-    font-weight: ${field.headingbtnheight || 'bold'};
+    font-weight: ${field.headingbtnweight || 'bold'};
     margin-top: 20px;
     cursor: pointer;
     font-family: ${field.headingbtnfamily || '"Poppins", sans-serif'};
@@ -1307,7 +1306,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
         <tr>
           <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || TemplateAll.styles.textAlign}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
             <div style="width: 100%; text-align: ${field.headingTextAlign || TemplateAll.styles.textAlign};">
-              <HeadingTag style="
+              <${HeadingTag} style="
                 font-size: ${field.headingFontSize || 30}px;
                 color: ${field.headingColor || '#000'};
                 font-weight: ${field.headingFontWeight || 'bold'};
@@ -1316,7 +1315,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                 text-align: ${field.headingTextAlign || TemplateAll.styles.textAlign};
               ">
                 ${field.headingText || ''}
-              </HeadingTag>
+              </${HeadingTag}>
               <div style="
                 font-size: ${field.headingsubheading || 14}px;
                 color: ${field.subheadingColor || '#000'};
@@ -1602,7 +1601,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
               `;
           }
           
-        
           case 'product':
             return `
               <div>
@@ -1842,26 +1840,29 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
       h2{
          font-size: 30px;
            line-height: 40px;
-        
+     
        }
       h3{
          font-size: 26px;
-            line-height: 30px;
+           line-height: 30px;
       }
          
        h4{
        font-size: 22px;
       line-height: 25px;
+       font-weight:500;
        }
 
        h5{
        font-size: 20px;
          line-height: 20px;
+         font-weight:500;
        }
 
         h6{
        font-size: 18px;
          line-height: 18px;
+       font-weight:500;
        }
 
        p{

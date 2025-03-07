@@ -716,6 +716,7 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
 .form_build_last_pages .pagination ul.xs\:mt-0.mt-2.inline-flex.items-center.-space-x-px {
     display: flex;
     gap: 14px;
+    justify-content: center;
 }
 
 .form_build_last_pages .pagination ul.xs\:mt-0.mt-2.inline-flex.items-center.-space-x-px li {
@@ -5701,6 +5702,18 @@ button.rm-btn.showfirst img {
     border-bottom: 1px solid #F0F0F0;
 }
 
+.form_builder_plan_upgrade_popup_wrapp.records-number {
+    padding: 75px;
+    font-size: 30px;
+    background-image: url(./images/number001.png);
+    background-size: cover;
+
+}
+
+.form_builder_plan_upgrade_popup_wrapp.records-number p {
+    line-height: 35px;
+}
+
 .form_builder_action_number input[type="number"] {
     border: 1px solid #B5B7C0;
     text-align: left;
@@ -5714,7 +5727,7 @@ button.rm-btn.showfirst img {
 
 .form_builder_action_number {
     display: grid;
-    width: 9%;
+    width: 10%;
     font-size: 11px;
 }
 
@@ -6039,6 +6052,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1024px) {
+    .form_builder_support .form_builder_convert .form_builder_blogs h3 {
+        font-size: 15px;
+        padding: 10px 0;
+    }
     button.cancle-form-btn {
         padding: 8px 15px;
         width: 80px;
@@ -7111,6 +7128,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .form_build_contact .form_build_count p {
+        font-size: 20px;
+        line-height: 28px;
+    }
     .builder_form_name-input-title {
         width: 40%;
     }
@@ -7210,7 +7231,7 @@ button.form_email_btn {
     }
 
     .form_build_app_img img {
-        width: 80%;
+        width: 100%;
     }
 
     .formId-copy-popup-Id img {
@@ -7391,6 +7412,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    
+    .form-tota-customer-element p {
+        font-size: 16px;
+    }
     .builder_form_name-input-title {
         width: 50%;
     }
@@ -7428,6 +7453,7 @@ button.form_email_btn {
     .form_build_count {
         color: white;
         margin-bottom: 20px;
+        text-align: center;
     }
 
     .form_build_contact {
@@ -7505,6 +7531,9 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:395px) {
+    .table-header {
+        grid-template-columns: 1fr 1.5fr 1fr;
+    }
    
     .form_build_new_base {
         padding: 20px 20px;

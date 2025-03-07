@@ -985,7 +985,7 @@ export default function Pricing() {
                 <button>View All Features</button>
                 </div>
             </div>
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
         </div>
     );
 }

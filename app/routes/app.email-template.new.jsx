@@ -475,7 +475,7 @@ const EmailTemplateCreate = () => {
             splitbtnurl: type === 'split' ? '' : undefined,
             splitbtnfamily: type === 'split' ? '' : undefined,
             splitbtnheight: type === 'split' ? '35' : undefined,
-            splitbtnWeight: type === 'split' ? '300' : undefined,
+            splitbtnWeight: type === 'split' ? '100' : undefined,
             splitbtnwidth: type === 'split' ? '80' : undefined,
             splitletter: type === 'split' ? '0' : undefined,
             splitlineheight: type === 'split' ? '20' : undefined,
@@ -2801,7 +2801,7 @@ const EmailTemplateCreate = () => {
                                                                                                                     borderWidth: `${child.splitBorderWidth}px`,
                                                                                                                     borderStyle: field.splitBorderStyle,
                                                                                                                     borderColor: field.splitBorderColor,
-                                                                                                                    fontWeight: field.splitbtnWeight,
+                                                                                                                    fontWeight: field.splitbtnWeight || 100,
 
                                                                                                                 }}>
                                                                                                                     {child.splitbtn}</button>
@@ -9181,7 +9181,7 @@ const EmailTemplateCreate = () => {
                     </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>HubsyntaxApp</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
         </div >
     );
 };
