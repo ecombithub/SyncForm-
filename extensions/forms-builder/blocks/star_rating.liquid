@@ -15,6 +15,16 @@
 </div>
 
 <style>
+
+  .form_builder_app input {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.form_builder_app textarea {
+  outline: none !important;
+  box-shadow: none !important;
+}
   .form_builder_app input {
     font-size: 15px !important;
 }
@@ -1065,10 +1075,14 @@
                 </div>
                  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
-        case 'divider':
-          return `<hr ${
-            field.readonly ? 'readonly' : ''
-          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="border: 1px solid ${field.dividerColor}; width: 100%;" /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+              case 'divider':
+              return `<div style="display: flex; justify-content: ${field.dividerAline}">
+                        <hr style="border: 1px solid ${field.dividerColor}; width: ${field.dividerWidth}; margin:0;" /> 
+                        <div class="description" 
+                             style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+                             ${field.description}
+                        </div>
+                      </div>`;            
         case 'description':
           return `<span style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
@@ -1718,7 +1732,7 @@
       }
 
       const emailField = $('#formData-' + blockId + ' input[type="email"]');
-      const emailValue = emailField.val().trim(); 
+      const emailValue = emailField.length ? emailField.val() : '';
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (emailField.length === 0 || emailValue === '') {

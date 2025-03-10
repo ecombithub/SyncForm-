@@ -5,8 +5,8 @@ import vecter1 from '../images/vecter1.png';
 import oplus from '../images/oplus.png';
 import rplus from '../images/rplus.png';
 import yplus from '../images/yplus.png';
-import right from '../images/right.png';
-import left from '../images/left.png';
+import right from '../images/right1.png';
+import left from '../images/left1.png';
 import search12 from '../images/search12.png'
 import copy22 from '../images/copy222.png'
 import cancle1 from '../images/cancle1.png'
@@ -1157,7 +1157,7 @@ const Formdata = () => {
                                                             }}> <label>{field.label}</label> </button></div>}
 
                                                             {field.type === 'divider' && (
-                                                                <hr required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: '100%' }} />
+                                                                <div style={{display:'flex', justifyContent: field.dividerAline}}><hr required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ border: '1px solid ' + (field.dividerColor || '#000'),width: field.dividerWidth, margin:'0' }} /></div>
                                                             )}
                                                             {field.type === 'radio' && (
                                                                 <div style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
@@ -1225,7 +1225,7 @@ const Formdata = () => {
                     </div>
                 </div >
             )}
-            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+          <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </>
     );
 };

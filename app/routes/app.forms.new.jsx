@@ -690,6 +690,8 @@ const Formgenerated = () => {
             linkfontsize: type === 'link' ? '14' : undefined,
             linkTarget: type === 'link' ? '_self' : undefined,
             textPadding: type === 'description' ? '10' : undefined,
+            dividerAline: type === 'divider' ? 'left' : undefined,
+            dividerWidth: type === 'divider' ? '100%' : undefined,
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
@@ -2052,7 +2054,7 @@ const Formgenerated = () => {
                     </div>
                 </div>
             )}
-            <div className="builder-container text">
+            <div className="builder-container forms text">
                 <div className='builder-contain-h3'>
                     <h3>Forms</h3>
                 </div>
@@ -2075,7 +2077,7 @@ const Formgenerated = () => {
                                 <button className="create-form-btn action_btn" onClick={handleCreate}>{isEditing ? 'Update' : 'Save'}</button>
                             </div>
                         </div>
-                        <div className='form-Elements-btn form email' onClick={handleFieldInput}>Form Elements</div>
+                        <div className='form-Elements-btn form ' onClick={handleFieldInput}>Form Elements</div>
                     </div>
                 </div>
 
@@ -4225,9 +4227,11 @@ const Formgenerated = () => {
                                                                 <label style={{ color: labelColor }}>
 
                                                                     {/* {field.label || "divider"} */}
-                                                                    <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: '100%' }} />
-                                                                    <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
-                                                                        {field.description}
+                                                                    <div style={{ justifyContent: field.dividerAline,display:"flex" }}>
+                                                                        <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: field.dividerWidth }} />
+                                                                        <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
+                                                                            {field.description}
+                                                                        </div>
                                                                     </div>
                                                                 </label>
                                                                 {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
@@ -4437,17 +4441,43 @@ const Formgenerated = () => {
                                                                 </div>
                                                             )}
                                                             {selectedField.type === 'divider' && (
-                                                                <div className="checkbox-option bg-colors">
-                                                                    <label>Divider Color</label>
-                                                                    <div className="color-picker-container">
-                                                                        <span className="color-code">{selectedField.dividerColor}</span>
-                                                                        <input
-                                                                            type="color"
-                                                                            value={selectedField.dividerColor}
-                                                                            onChange={(e) => updateFieldProperty('dividerColor', e.target.value)}
-                                                                        />
+                                                                <>
+                                                                    <div className="checkbox-option bg-colors">
+                                                                        <label>Divider Color</label>
+                                                                        <div className="color-picker-container">
+                                                                            <span className="color-code">{selectedField.dividerColor}</span>
+                                                                            <input
+                                                                                type="color"
+                                                                                value={selectedField.dividerColor}
+                                                                                onChange={(e) => updateFieldProperty('dividerColor', e.target.value)}
+                                                                            />
+                                                                        </div>
                                                                     </div>
-                                                                </div>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Divider Width</label>
+                                                                        <select
+                                                                            value={selectedField.dividerWidth}
+                                                                            onChange={(e) => updateFieldProperty('dividerWidth', e.target.value)}
+                                                                        >
+                                                                            <option value="25%">25%</option>
+                                                                            <option value="50%">50%</option>
+                                                                            <option value="75%">75%</option>
+                                                                            <option value="100%">100%</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className="form-builder-chaneging-wrap">
+                                                                        <label>Divider Position</label>
+                                                                        <select
+                                                                            value={selectedField.dividerAline}
+                                                                            onChange={(e) => updateFieldProperty('dividerAline', e.target.value, selectedField.id)}
+                                                                        >
+                                                                            <option value="">Select text align</option>
+                                                                            <option value="left">Left</option>
+                                                                            <option value="center">Center</option>
+                                                                            <option value="right">Right</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </>
                                                             )}
 
 
@@ -4501,7 +4531,7 @@ const Formgenerated = () => {
                                                                                 </div>
                                                                             </div>
                                                                             <div className="form-builder-chaneging-wrap">
-                                                                                <label>Text Align </label>
+                                                                                <label>Button Position</label>
                                                                                 <select
                                                                                     value={selectedField.buttonaline}
                                                                                     onChange={(e) => updateFieldProperty('buttonaline', e.target.value, selectedField.id)}
@@ -4883,7 +4913,7 @@ const Formgenerated = () => {
                                                                     />
                                                                 </div>
                                                             )}
-                                                            {selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
+                                                            {selectedField.type !== 'divider' & selectedField.type !== 'heading' && selectedField.type !== 'button' && selectedField.type !== 'description' && (
                                                                 <div className="form-builder-chaneging-wrap">
                                                                     <label>Input Width</label>
                                                                     <select
@@ -5157,7 +5187,7 @@ const Formgenerated = () => {
                                                                 </>
                                                             )}
                                                         </div>
-                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'link' && (
+                                                        {selectedField.type !== 'heading' && selectedField.type !== 'description' && selectedField.type !== 'button' && selectedField.type !== 'divider' && selectedField.type !== 'link' && (
                                                             <div className='form_builder_option_select'>
                                                                 <h3>Options</h3>
                                                                 <div className='form-builder-options-container'>
@@ -5466,7 +5496,7 @@ const Formgenerated = () => {
                         </div>
                     </div>)}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </div>
     );
 };

@@ -4,8 +4,8 @@ import axios from 'axios';
 import { Link, useNavigate } from '@remix-run/react';
 import search12 from '../images/search12.png';
 import down from '../images/down.png';
-import left from '../images/left.png';
-import right from '../images/right.png';
+import left from '../images/left1.png';
+import right from '../images/right1.png';
 import yplus from '../images/yplus.png';
 import cancle1 from '../images/cancle1.png'
 import rplus from '../images/rplus.png';
@@ -446,7 +446,6 @@ export default function EmailTemplate() {
                         padding: `${field.headingPadding}px`,
                     }}>
                         <HeadingTag style={{
-                            fontSize: `${field.headingFontSize}px`,
                             color: field.headingColor,
                             letterSpacing: `${field.headingLetterSpacing}px`,
                             textAlign: field.headingTextAlign ? field.headingTextAlign : '',
@@ -1345,7 +1344,7 @@ export default function EmailTemplate() {
                 </div>
 
             )}
-            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+           <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </>
     );
 }

@@ -295,6 +295,8 @@ const formCreateSchema = new mongoose.Schema({
     buttonBorderWidth: { type: String, required: false },
     buttonBorderStyle: { type: String, required: false },
     textSize: { type: String, required: false },
+    dividerAline: { type: String, required: false },
+    dividerWidth: { type: String, required: false },
     textAline: { type: String, required: false },
     textColor: { type: String, required: false },
     textlineheight: { type: String, required: false },
@@ -1270,6 +1272,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
     const headingStyle = `
     background-image: url('${field.headingbgImage || ''}');
+    background-color: ${field.headingbg || '#ffffff'};
     background-size: cover;
     border-width: ${field.headingBorderWidth || 1}px;
     border-style: ${field.headingBorderStyle || 'solid'};
@@ -1295,7 +1298,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     font-weight: ${field.headingbtnweight || 'bold'};
     margin-top: 20px;
     cursor: pointer;
-    font-family: ${field.headingbtnfamily || '"Poppins", sans-serif'};
+    font-family: ${field.headingbtnfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
   `;
 
   const HeadingTag = field.headingLevel || 'h1'; 
@@ -1307,7 +1310,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
           <td align="center" valign="middle" style="text-align: ${field.headingTextAlign || TemplateAll.styles.textAlign}; vertical-align: middle; padding: ${field.headingPadding || '20px'}px;">
             <div style="width: 100%; text-align: ${field.headingTextAlign || TemplateAll.styles.textAlign};">
               <${HeadingTag} style="
-                font-size: ${field.headingFontSize || 30}px;
                 color: ${field.headingColor || '#000'};
                 font-weight: ${field.headingFontWeight || 'bold'};
                 font-family: ${field.headingfamily || '"Poppins", sans-serif'};
@@ -1365,7 +1367,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   display: flow-root;
                   text-decoration: ${field.richline || 'none'};
                   font-size: ${field.richFontsize || '16'}px;
-                  font-family:${field.richFontfamily};
+                  font-family: ${field.richFontfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
                   letter-spacing: ${field.richspace || 0}px; 
                   background-color: ${field.richbgcolor || '#fff'};
                   padding-left: ${field.richleftPadding || '10'}px;
@@ -1381,7 +1383,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
               return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
               case 'button': {
                 return `
-                    <div style="font-family:${field.buttonfamily || 'Arial, sans-serif'}; background-color: ${field.buttonbgColor || '#008CBA'}; text-align: ${field.buttonaline || 'left'};">
+                    <div style=" font-family: ${field.buttonfamily.replace(/"/g, '') || '"Poppins", sans-serif'}; background-color: ${field.buttonbgColor || '#008CBA'}; text-align: ${field.buttonaline || 'left'};">
                         <a href="${field.buttonUrll || '#'}" target="_blank" style="text-decoration: none;">
                             <button style="
                                 background-color: ${field.buttonColor || '#008CBA'};
@@ -1447,7 +1449,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                     background-color: ${field.Multicolumnbgcolor || 'transparent'};
                     color: ${field.MultiColor || '#000'};
                     border-radius: ${field.Multiborderradious || 0}px;
-                    font-family:${field.Multifamily || '"Poppins", sans-serif'};
+                    font-family: ${field.Multifamily.replace(/"/g, '') || '"Poppins", sans-serif'};
                     letter-spacing:${field.Multiletter || 0}px;
                   ">
                   ${column.image ? `<img src="${column.image}" alt="Column ${index}" style="width: ${field.Multiimgwidth || 100}%; height: auto;" />` : ''}
@@ -1457,17 +1459,17 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                     <a href="${column.Multibtnurl || '#'}" target="_blank" style="text-decoration: none;">
                       <button style="
                         margin-top: 20px;
-                        background-color: ${field.Multibtnbg || '#007BFF'};
-                        font-family:${field.Multibtnfamily || '"Poppins", sans-serif'};
-                        border-width: ${field.MultibtnBorderWidth || 2}px;
+                        background-color: ${field.Multibtnbg || '#FFFFFF'};
+                        font-family: ${field.Multibtnfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
+                        border-width: ${field.MultibtnBorderWidth || 1}px;
                         border-style: ${field.MultibtnBorderStyle || 'solid'};
                         border-color: ${field.MultibtnBorderColor || '#000'};
                         min-width: ${field.Multibtnweight || 100}px;
                         height: ${field.Multibtnheight || 40}px;
                         color: ${field.Multibtncolor || '#000'};
-                        border-radius: ${field.Multibtnradious || 0}px;
+                        border-radius: ${field.Multibtnradious || 2}px;
                         font-size: ${field.Multibtnfont || 14}px;
-                         font-weight: ${field.MultiWeight || 'bold'}; 
+                         font-weight: ${field.MultiWeight || '100'}; 
                         cursor: pointer;
                       ">
                         ${column.Multibtnlable || 'Click'}
@@ -1516,7 +1518,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   color: ${field.costumColor};
                   padding: ${field.costumPadding || 0}px;
                   line-height:${field.costumline}px;
-                  font-family:${field.costomfamily || '"Poppins", sans-serif'};
+                  font-family: ${field.costomfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
                   font-weight: ${field.costumfontweight || 'bold'}; 
                   letter-spacing: ${field.costumLetter || 1}px; 
                 ">
@@ -1526,43 +1528,50 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
             case 'split-group': {
               const value = field.value || '';
               const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');
-          
+        
               let childrenHtml = field.children
                   .map((child) => {
+                      let childVerticalAlign = ['top', 'middle', 'bottom', 'center', 'end'].includes(child.splittext)
+                          ? (child.splittext === 'center' ? 'middle' : child.splittext === 'end' ? 'bottom' : child.splittext)
+                          : 'top';
+          
                       return `
-                    <div style="width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%'}; 
-                      padding: ${child.splitPadding || 0}px; 
-                       text-align: ${child.splitTextAlin || 'left'}; 
-                       letter-spacing: ${child.splitletter || 1}px;">
-                      ${
-                              child.add === 'image'
-                                  ? `<img src=${child.value} alt="Uploaded Preview" style="width: 100%; height: auto;" />`
-                                  : `<div style="width: 100%;">
-                                      ${child.value}
-                                      ${field.showbtnsplit ? `
-                         <a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                        <button style="
-                            margin-top: 20px;
-                            background-color: ${field.splitbtnbg || '#007BFF'};
-                            font-size: ${child.splitbtnfont || 14}px;
-                            color: ${field.splitbtncolor || '#FFF'};
-                            min-height: ${child.splitbtnheight || 40}px;
-                            min-width: ${child.splitbtnwidth || 100}px;
-                            border-radius: ${child.splitbtnradious || 0}px;
-                            border-width: ${child.splitBorderWidth || 2}px;
-                            border-style: ${field.splitBorderStyle || 'solid'};
-                            border-color: ${field.splitBorderColor || '#000'};
-                            padding: 10px 20px;
-                            cursor: pointer;
-                            font-weight: ${field.splitbtnWeight || 'bold'}; 
-                        ">
-                            ${child.splitbtn || 'Click Me'}
-                        </button>
-                    </a>` : ''
-                }
-                 </div>`
-                          }
-                      </div>
+                          <td style="
+                              width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%'};
+                              padding: ${child.splitPadding || 0}px;
+                              text-align: ${child.splitTextAlin || 'left'};
+                              letter-spacing: ${child.splitletter || 1}px;
+                              vertical-align: ${childVerticalAlign};
+                          ">
+                              ${
+                                  child.add === 'image'
+                                      ? `<img src= ${child.value} alt="Uploaded Preview" style="width: 100%; height: auto;" />`
+                                      : `<div style="width: 100%;">
+                                          ${child.value}
+                                          ${field.showbtnsplit ? `
+                                              <a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                                                  <button style="
+                                                      margin-top: 20px;
+                                                      background-color: ${field.splitbtnbg || '#FFFFFFF'};
+                                                      font-size: ${child.splitbtnfont || 14}px;
+                                                      color: ${field.splitbtncolor || '#000'};
+                                                      min-height: ${child.splitbtnheight || 35}px;
+                                                      min-width: ${child.splitbtnwidth || 80}px;
+                                                      border-radius: ${child.splitbtnradious || 2}px;
+                                                      border-width: ${child.splitBorderWidth || 1}px;
+                                                      border-style: ${field.splitBorderStyle || 'solid'};
+                                                      border-color: ${field.splitBorderColor || '#000'};
+                                                      font-weight: ${field.splitbtnWeight || 100};
+                                                      font-family: ${field.splitbtnfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
+                                                      cursor: pointer;
+                                                  ">
+                                                      ${child.splitbtn || 'Click Me'}
+                                                  </button>
+                                              </a>` : ''
+                                          }
+                                      </div>`
+                              }
+                          </td>
                       `;
                   })
                   .join('');
@@ -1577,7 +1586,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                       font-size: ${field.splittextSize || 14}px;
                       line-height: ${field.splitlineheight || 30}px;
                       font-family: ${field.splitfamily || 'Poppins'};
-                     
                   ">
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="
                           width: 100%;
@@ -1586,20 +1594,13 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                           color: ${field.splitColor || '#000'};
                       ">
                           <tr>
-                              <td style=" display:${TemplateAll?.styles?.viewMode === 'mobile' ? 'block' : 'flex'};
-                                  vertical-align: ${['top', 'middle', 'bottom', 'center', 'end'].includes(field.splittext) 
-                                      ? (field.splittext === 'center' ? 'middle' : field.splittext === 'end' ? 'bottom' : field.splittext) 
-                                      : 'top'};
-                                  text-align: ${field.splitTextAlin || 'left'};
-                              ">
-                                  ${childrenHtml}
-                                  
-                              </td>
+                              ${childrenHtml}
                           </tr>
                       </table>
                   </div>
               `;
           }
+          
           
           case 'product':
             return `
@@ -1618,6 +1619,8 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
         font-size: ${field.productFontSize}px;
         color: ${field.productTextColor};
         line-height: ${field.productline}px;
+        font-family: ${field.productfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
+        
     ">
   ${(() => {
       const isMobile = TemplateAll?.styles?.viewMode === 'mobile';
@@ -1646,12 +1649,12 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
               ` : '<p>No image available</p>'}
 
               <div>
-                <p style="font-family:${field.productfamily || '"Poppins", sans-serif'}; margin-top: 10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                <p  margin-top: 10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
                   ${product.title}
                 </p>
 
                 ${field.showPrice && product.price ? `
-                  <p style="font-family:${field.productfamily || '"Poppins", sans-serif'}; margin-top:10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
+                  <p  margin-top:20px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
                     Price: $${product.price}
                   </p>
                 ` : ''}
@@ -1660,11 +1663,11 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   <a href="${field.buttonUrl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
                     <button
                       style="
-                        margin-top: 10px;
+                        margin-top: 15px;
                         font-size: ${field.productfontSize}px;
                         min-width: ${field.productwidth}px;
                         height: ${field.productheight}px;
-                        font-family:${field.productbtnfamily || '"Poppins", sans-serif'};
+                        font-family: ${field.productbtnfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
                         background-color: ${field.productbackgroundColor};
                         border-width: ${field.productbtnBorderWidth}px;
                         border-style: ${field.productbtnBorderStyle};
@@ -1691,15 +1694,20 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
               </div>
             `;
           
-              case 'divider':
-                return `
-                  <div style="background-color: ${field.dividerbgColor || 'transparent'}; width: 100%;">
-                    <hr style="border-color: ${field.dividerColor || '#000'}; width: ${field.dividerWidth || '100%'};
-                      border-width: ${field.dividerHeight || '1px'};
-                      margin:auto;
-                      margin-left: ${field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'left' ? '0' : ''};
-                      margin-right: ${field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : ''}" />
-                  </div>`;              
+            case 'divider':
+              return `
+                <div style="background-color: ${field.dividerbgColor || 'transparent'}; width: 100%;">
+                  <hr style="
+                    border-color: ${field.dividerColor || '#000'};
+                    width: ${field.dividerWidth || '100%'}%;
+                    border-width: ${parseInt(field.dividerHeight, 10) || 1}px; 
+                    border-style: solid;
+                    margin: auto;
+                    margin-left: ${field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'left' ? '0' : 'auto'};
+                    margin-right: ${field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : 'auto'};
+                  " />
+                </div>`;
+                       
 
             case 'html convert':
               return `<div style=" font-family:${field.htmlfamily || '"Poppins", sans-serif'}  text-align: ${field.htmlaline || TemplateAll.styles.textAlign}; color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
@@ -1936,14 +1944,14 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     const adminMailOptions = {
       from: emailUser,
       to: emailUser,
-      subject: subject,
+      subject: subject || 'New Form Submission! SyncForm',
       html: adminHtmlContent,
     };
 
     const userMailOptions = {
       from: emailUser,
       to: email,
-      subject: subject,
+      subject: subject || 'New Form Submission! SyncForm',
       html: userHtmlContent,
       attachments,
     };

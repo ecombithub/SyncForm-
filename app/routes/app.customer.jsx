@@ -6,9 +6,9 @@ import customer3 from '../images/customer3.png';
 import arrow from '../images/arrow.png';
 import search12 from '../images/search12.png';
 import down from '../images/down.png';
-import left from '../images/left.png';
-import right from '../images/right.png';
-import dropicon from '../images/dropicon.png';
+import left from '../images/left1.png';
+import right from '../images/right1.png';
+import dropicon from '../images/download.png';
 import cancleimg from '../images/cancleimg.png';
 import { format } from 'date-fns';
 import React, { useEffect, useRef, useState } from 'react';
@@ -760,7 +760,7 @@ function Customer() {
                                 </nav>
                             </div>
                         </div>
-                        <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+                        <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
                     </div>
                 </div>
             )}

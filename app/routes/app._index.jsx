@@ -176,19 +176,19 @@ function Index() {
   useEffect(() => {
     const fetchPaymentPlan = async () => {
       try {
-          console.log("Fetching payment plan...");
-          const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+        console.log("Fetching payment plan...");
+        const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
-          console.log("Response data:", response.data);
-          setUserPlan(response.data);
-          console.log("User plan set:", response.data);
-          await fetchForms(response.data);
-          console.log("Forms fetched successfully with user plan data.");
+        console.log("Response data:", response.data);
+        setUserPlan(response.data);
+        console.log("User plan set:", response.data);
+        await fetchForms(response.data);
+        console.log("Forms fetched successfully with user plan data.");
       } catch (error) {
-          console.error("Error fetching payment plan:", error);
+        console.error("Error fetching payment plan:", error);
 
       }
-  };
+    };
 
     const fetchForms = async (userPlan) => {
       try {
@@ -236,19 +236,19 @@ function Index() {
 
     fetchPaymentPlan();
   }, [shop]);
-  
+
   const handleCreateForm = () => {
     console.log("User plan:", userPlan?.activePlan?.plan);
-    console.log("Created forms length:", createdForms.length); 
+    console.log("Created forms length:", createdForms.length);
 
     if (userPlan?.activePlan?.plan === 'free' && createdForms.length >= 1) {
-        console.log("Conditions met, showing upgrade popup");
-        setUpgradePopup(true);
-        return;
+      console.log("Conditions met, showing upgrade popup");
+      setUpgradePopup(true);
+      return;
     }
     console.log("Conditions not met, navigating to create form page");
     navigator('/app/forms/new');
-};
+  };
 
 
 
@@ -356,9 +356,11 @@ function Index() {
               <h4>Knowledgebase</h4>
               <p>A resource hub provides detailed guides, troubleshooting steps and support to help users for form creation and integration.</p>
               <div className="form_build_app_bottm second know ">
+                <a href="https://syncform.app/index.html" target='_blank'>
                 <div className="form_build_app_btn btn-three">
                   <p>Knowledge base</p>
                 </div>
+                </a>
                 <div className="form_build_app_img">
                   <img src={Vector3} alt="" />
                 </div>
@@ -366,7 +368,7 @@ function Index() {
             </div>
 
           </div>
-          <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+          <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </div>
 
       </div>

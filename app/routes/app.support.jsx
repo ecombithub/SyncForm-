@@ -141,9 +141,9 @@ export default function Support() {
                         <h4>Knowledge base</h4>
                         <p>In case you have any questions or difficulties setting up the app, you can check our Knowledge base.</p>
                         <div className="form_builder_support_btn">
-                            <div className="form_builder_support_btn_first">
+                            <a href="https://syncform.app/pricing.html" target='_blank'><div className="form_builder_support_btn_first">
                                 <p>Knowledge base</p>
-                            </div>
+                            </div></a>
                             {/* <div className="form_builder_support_btn_second">
                                 <p>Roadmap</p>
                             </div> */}
@@ -166,8 +166,9 @@ export default function Support() {
                 </div>
                 <div className="form_builder_convert">
                     <div className="form_builder_blogs">
+                    <a href="https://syncform.app/blogs/add-form-builder-app.html" target='_blank'>
                         <img src={add} alt="" />
-                        <h3>How to Add Form Builder App on Shopify Store?</h3>
+                        <h3>How to Add SyncForm on Shopify Store?</h3>
                         <div className='form_build_blog_btn'>
                             <div className="form_blog_data oct">
                                 October 05, 2024
@@ -176,8 +177,11 @@ export default function Support() {
                                 Read more
                             </div>
                         </div>
+                        </a>
                     </div>
+                    
                     <div className="form_builder_blogs">
+                    <a href="https://syncform.app/blogs/create-form.html" target='_blank'>
                         <img src={create} alt="" />
                         <h3>How to Create Form in Form Builder</h3>
                         <div className='form_build_blog_btn'>
@@ -188,8 +192,10 @@ export default function Support() {
                                 Read more
                             </div>
                         </div>
+                        </a>
                     </div>
                     <div className="form_builder_blogs">
+                    <a href="https://syncform.app/blogs/track-and-analyze-form-submission.html" target='_blank'>
                         <img src={track} alt="" />
                         <h3>How to Track and Analyze Form Submissions in Shopity</h3>
                         <div className='form_build_blog_btn'>
@@ -200,6 +206,7 @@ export default function Support() {
                                 Read more
                             </div>
                         </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -261,7 +268,7 @@ export default function Support() {
                 </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </div>
     )
 }

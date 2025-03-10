@@ -7,6 +7,7 @@ import divider2 from '../images/divider0.png';
 import btn from '../images/btn0.png';
 import emailtemp from '../images/emailtemp.png';
 import phonem from '../images/phonem.png';
+import cancle1 from '../images/disconnect.png'
 import desk from '../images/desk.png';
 import socail from '../images/socail0.png';
 import htmlicon from '../images/htmlicon0.png';
@@ -251,6 +252,8 @@ const EmailTemplateCreate = () => {
     const [ismultiTextAdded, setIsmultiTextAdded] = useState(false);
     const [isproductTextAdded, setIsproductTextAdded] = useState(false);
     const [iscostomTextAdded, setIscostomTextAdded] = useState(false);
+    const [disconnectForm, setDisconnectForm] = useState(false);
+    const [disconnectFormId, setDisconnectFormId] = useState(null);
 
     useEffect(() => {
         const fetchFonts = async () => {
@@ -375,7 +378,7 @@ const EmailTemplateCreate = () => {
             headingbtnwidth: type === 'heading' ? '100' : undefined,
             headingbtnheight: type === 'heading' ? '35' : undefined,
             headingbtnweight: type === 'heading' ? '300' : undefined,
-            headingbtnfamily: type === 'heading' ? '' : undefined,
+            headingbtnfamily: type === 'heading' ? '"Poppins", sans-serif' : undefined,
             headerbtn: type === 'heading' ? 'Click Now' : undefined,
             headingsubheading: type === 'heading' ? '16' : undefined,
             headeropacity: type === 'heading' ? '1' : undefined,
@@ -431,7 +434,7 @@ const EmailTemplateCreate = () => {
             dividerWidth: type === 'divider' ? '100' : undefined,
             dividerheight: type === 'divider' ? '1' : undefined,
             buttonColor: type === 'button' ? '#007BFF' : undefined,
-            buttonfamily: type === 'button' ? '' : undefined,
+            buttonfamily: type === 'button' ? '"Poppins", sans-serif' : undefined,
             buttonweight: type === 'button' ? '300' : undefined,
             buttonbgColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonTextColor: type === 'button' ? '#FFFFFF' : undefined,
@@ -452,7 +455,7 @@ const EmailTemplateCreate = () => {
             socalIconPadding: type === 'socalicon' ? 10 : undefined,
             socalIcongap: type === 'socalicon' ? 5 : undefined,
             socalIconbg: type === 'socalicon' ? '#FFFFFF' : undefined,
-            socaliconTextAlign: type === 'socalicon' ? "" : undefined,
+            socaliconTextAlign: type === 'socalicon' ? "left" : undefined,
             htmlColor: type === 'html convert' ? '#000' : undefined,
             htmllineheight: type === 'html convert' ? '25' : undefined,
             htmlaline: type === 'html convert' ? '' : undefined,
@@ -473,7 +476,7 @@ const EmailTemplateCreate = () => {
             splitbtnfont: type === 'split' ? '14' : undefined,
             splitbtncolor: type === 'split' ? '#000' : undefined,
             splitbtnurl: type === 'split' ? '' : undefined,
-            splitbtnfamily: type === 'split' ? '' : undefined,
+            splitbtnfamily: type === 'split' ? '"Poppins", sans-serif' : undefined,
             splitbtnheight: type === 'split' ? '35' : undefined,
             splitbtnWeight: type === 'split' ? '100' : undefined,
             splitbtnwidth: type === 'split' ? '80' : undefined,
@@ -504,7 +507,7 @@ const EmailTemplateCreate = () => {
             imgBorderWidth: type === 'images' ? '0' : undefined,
             imgBorderStyle: type === 'images' ? 'solid' : undefined,
             productPadding: type === 'product' ? 10 : undefined,
-            productfamily: type === 'product' ? '' : undefined,
+            productfamily: type === 'product' ? '"Poppins", sans-serif' : undefined,
             productline: type === 'product' ? '10' : undefined,
             productbg: type === 'product' ? '#FFFFFF' : undefined,
             productBorderColor: type === 'product' ? '#000000' : undefined,
@@ -521,7 +524,7 @@ const EmailTemplateCreate = () => {
             productradious: type === 'product' ? '3' : undefined,
             productLabel: type === 'product' ? 'Shop Now' : undefined,
             productfontSize: type === 'product' ? '12' : undefined,
-            productbtnfamily: type === 'product' ? '' : undefined,
+            productbtnfamily: type === 'product' ? '"Poppins", sans-serif' : undefined,
             productwidth: type === 'product' ? '80' : undefined,
             productheight: type === 'product' ? '30' : undefined,
             productbackgroundColor: type === 'product' ? '#007BFF' : undefined,
@@ -533,7 +536,7 @@ const EmailTemplateCreate = () => {
             richFontsize: type === 'richtext' ? "14" : undefined,
             richlineheight: type === 'richtext' ? "30" : undefined,
             richspace: type === 'richtext' ? "0" : undefined,
-            richFontfamily: type === 'richtext' ? "" : undefined,
+            richFontfamily: type === 'richtext' ? '"Poppins", sans-serif' : undefined,
             richbgcolor: type === 'richtext' ? "#FFFFFF" : undefined,
             richtextcolor: type === 'richtext' ? "#000" : undefined,
             richTextAlign: type === 'richtext' ? "" : undefined,
@@ -548,11 +551,11 @@ const EmailTemplateCreate = () => {
             Multicolumnbgcolor: type === 'Multicolumn' ? '#FFFFFFF' : undefined,
             Multibgcolor: type === 'Multicolumn' ? '#FFFFFFF' : '',
             Multitext: type === 'Multicolumn' ? 'center' : '',
-            Multifamily: type === 'Multicolumn' ? '' : '',
+            Multifamily: type === 'Multicolumn' ? '"Poppins", sans-serif' : '',
             Multiletter: type === 'Multicolumn' ? '0' : '',
             Multiheight: type === 'Multicolumn' ? '20' : '',
             Multigap: type === 'Multicolumn' ? '10' : '',
-            Multibtnfamily: type === 'Multicolumn' ? '' : '',
+            Multibtnfamily: type === 'Multicolumn' ? '"Poppins", sans-serif' : '',
             MultiColor: type === 'Multicolumn' ? '#000000' : undefined,
             MultibtnBorderColor: type === 'Multicolumn' ? '#000000' : undefined,
             MultibtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
@@ -560,8 +563,8 @@ const EmailTemplateCreate = () => {
             Multibtnheight: type === 'Multicolumn' ? '40' : undefined,
             Multibtnradious: type === 'Multicolumn' ? '2' : undefined,
             Multibtnweight: type === 'Multicolumn' ? '100' : undefined,
-            MultiWeight: type === 'Multicolumn' ? '300' : undefined,
-            Multibtnbg: type === 'Multicolumn' ? '#FFFFFFF' : 'undefined',
+            MultiWeight: type === 'Multicolumn' ? '100' : undefined,
+            Multibtnbg: type === 'Multicolumn' ? '#FFFFFF' : 'undefined',
             Multibtnlable: type === 'Multicolumn' ? 'Click' : 'undefined',
             Multibtncolor: type === 'Multicolumn' ? '#000000' : undefined,
             Multibtnfont: type === 'Multicolumn' ? '14' : undefined,
@@ -572,10 +575,10 @@ const EmailTemplateCreate = () => {
             costumFont: type === 'costum' ? '14' : undefined,
             costumColor: type === 'costum' ? '#000000' : undefined,
             costumBg: type === 'costum' ? '#FFFFFF' : undefined,
-            costumAline: type === 'costum' ? '' : undefined,
+            costumAline: type === 'costum' ? 'left' : undefined,
             costumline: type === 'costum' ? '25' : undefined,
             costumPadding: type === 'costum' ? '0' : undefined,
-            costomfamily: type === 'costum' ? '' : undefined,
+            costomfamily: type === 'costum' ? '"Poppins", sans-serif' : undefined,
             costumfontweight: type === 'costum' ? '' : undefined,
             costumLetter: type === 'costum' ? '0' : undefined,
         };
@@ -588,11 +591,11 @@ const EmailTemplateCreate = () => {
             newField = createInputField('images');
             setFields((prevFields) => [...prevFields, newField]);
             setSelectedFieldId(newField.id);
-            if (window.innerWidth < 540){
-                setIsimagesTextAdded(true); 
-            setTimeout(() => {
-                setIsimagesTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsimagesTextAdded(true);
+                setTimeout(() => {
+                    setIsimagesTextAdded(false);
+                }, 3000);
             }
             if (window.innerWidth > 1400) {
                 handleFieldClick(newField.id);
@@ -602,11 +605,11 @@ const EmailTemplateCreate = () => {
             setEditorValue('');
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540){
-                setIsHeadingAdded(true); 
-            setTimeout(() => {
-                setIsHeadingAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsHeadingAdded(true);
+                setTimeout(() => {
+                    setIsHeadingAdded(false);
+                }, 3000);
             }
             setSelectedFieldId(newField.id);
             if (window.innerWidth > 1400) {
@@ -616,20 +619,20 @@ const EmailTemplateCreate = () => {
             toggleColorPicker();
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540){
-                setIsdividerTextAdded(true); 
-            setTimeout(() => {
-                setIsdividerTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsdividerTextAdded(true);
+                setTimeout(() => {
+                    setIsdividerTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'button') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540){
-                setIsbuttonTextAdded(true); 
-            setTimeout(() => {
-                setIsbuttonTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsbuttonTextAdded(true);
+                setTimeout(() => {
+                    setIsbuttonTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'socalicon') {
             newField = createInputField('socalicon');
@@ -644,20 +647,20 @@ const EmailTemplateCreate = () => {
 
                 return updatedFields;
             });
-            if (window.innerWidth < 540){
-                setIssocialTextAdded(true); 
-            setTimeout(() => {
-                setIssocialTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIssocialTextAdded(true);
+                setTimeout(() => {
+                    setIssocialTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'html convert') {
             newField = createInputField(type, type === 'html convert' ? '<h1>Your HTML Here</h1>' : '');
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540){
-                setIshtmlTextAdded(true); 
-            setTimeout(() => {
-                setIshtmlTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIshtmlTextAdded(true);
+                setTimeout(() => {
+                    setIshtmlTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'split') {
             const parentId = generateUniqueId();
@@ -679,21 +682,21 @@ const EmailTemplateCreate = () => {
             if (splitFields.length > 0 && window.innerWidth > 1400) {
                 handleFieldClick(splitFields[0].id);
             }
-            if (window.innerWidth < 540){
-                setIssplitTextAdded(true); 
-            setTimeout(() => {
-                setIssplitTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIssplitTextAdded(true);
+                setTimeout(() => {
+                    setIssplitTextAdded(false);
+                }, 3000);
             }
         }
         else if (type === 'spacer') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540){
-                setIsspacerTextAdded(true); 
-            setTimeout(() => {
-                setIsspacerTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsspacerTextAdded(true);
+                setTimeout(() => {
+                    setIsspacerTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'video') {
             newField = createInputField(type);
@@ -706,11 +709,11 @@ const EmailTemplateCreate = () => {
             setIsPopupOpen(true);
             setSelectedProducts([])
             setSearchTerm('');
-            if (window.innerWidth < 540){
-                setIsproductTextAdded(true); 
-            setTimeout(() => {
-                setIsproductTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsproductTextAdded(true);
+                setTimeout(() => {
+                    setIsproductTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'Multicolumn') {
             const id = generateUniqueId();
@@ -727,31 +730,31 @@ const EmailTemplateCreate = () => {
                 }
                 return updatedFields;
             });
-            if (window.innerWidth < 540){
-                setIsmultiTextAdded(true); 
-            setTimeout(() => {
-                setIsmultiTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsmultiTextAdded(true);
+                setTimeout(() => {
+                    setIsmultiTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'richtext') {
             newField = createInputField('richtext');
             setFields((prevFields) => [...prevFields, newField]);
             setCurrentFieldId(newField.id);
             setEditorValueed('');
-            if (window.innerWidth < 540){
-                setIsRichTextAdded(true); 
-            setTimeout(() => {
-                setIsRichTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIsRichTextAdded(true);
+                setTimeout(() => {
+                    setIsRichTextAdded(false);
+                }, 3000);
             }
         } else if (type === 'costum') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540){
-                setIscostomTextAdded(true); 
-            setTimeout(() => {
-                setIscostomTextAdded(false);
-            }, 3000);
+            if (window.innerWidth < 540) {
+                setIscostomTextAdded(true);
+                setTimeout(() => {
+                    setIscostomTextAdded(false);
+                }, 3000);
             }
         }
         if (newField && newField.id && window.innerWidth > 1400) {
@@ -846,33 +849,33 @@ const EmailTemplateCreate = () => {
                     isHidden: !prevIcons[icon]?.isHidden,
                 },
             };
-    
+
             checkAndRemoveAllFields(updatedIcons, customIcons);
             return updatedIcons;
         });
     };
-    
+
     const toggleCustomIconVisibility = (index) => {
         setCustomIcons((prevIcons) => {
             const updatedIcons = prevIcons.map((icon, i) =>
                 i === index ? { ...icon, isHidden: !icon.isHidden } : icon
             );
-    
+
             checkAndRemoveAllFields(selectedIcons, updatedIcons);
             return updatedIcons;
         });
     };
-    
+
     const checkAndRemoveAllFields = (updatedSelectedIcons, updatedCustomIcons) => {
         const visibleSelectedIcons = Object.values(updatedSelectedIcons).some(icon => !icon.isHidden);
         const visibleCustomIcons = updatedCustomIcons.some(icon => !icon.isHidden);
-    
+
         if (!visibleSelectedIcons && !visibleCustomIcons) {
             console.log("All icons are hidden. Removing all fields.");
-            setFields([]); 
+            setFields([]);
         }
     };
-    
+
 
     const handleImageUpload = (e, fieldId) => {
         const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
@@ -1048,83 +1051,86 @@ const EmailTemplateCreate = () => {
         fetchConnectedForms();
     }, [formDataAdd]);
 
+
     const handleFormSelect = async (e) => {
-        const title = e.target.value.trim();
-        const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
+    const title = e.target.value.trim();
+    const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
 
-        if (selectedForm) {
-            try {
+    if (selectedForm) {
+        try {
+            const isFormIdMatched = formData?.form_ids?.includes(selectedForm.formId);
 
-                const isFormIdMatched = formData?.form_ids?.includes(selectedForm.formId);
+            if (isFormIdMatched) {
+                console.log(`Form ID ${selectedForm.formId} is found in formData.form_ids`);
 
-                if (isFormIdMatched) {
-                    console.log(`Form ID ${selectedForm.formId} is found in formData.form_ids`);
+                const checkResponse = await fetch(`${apiUrl}/check-form-connected/${selectedForm.formId}`);
+                const checkData = await checkResponse.json();
 
-                    const checkResponse = await fetch(`${apiUrl}/check-form-connected/${selectedForm.formId}`);
-                    const checkData = await checkResponse.json();
-
-                    if (checkData.isConnected) {
-                        const confirmUnlink = window.confirm('Do you want to unlink it?');
-                        if (confirmUnlink) {
-                            const unlinkResponse = await fetch(
-                                `${apiUrl}/unlink-template/${selectedForm.formId}`,
-                                { method: 'PUT' }
-                            );
-
-                            if (unlinkResponse.ok) {
-                                alert('Template unlinked from form.');
-                                setConnectedForms((prevForms) =>
-                                    prevForms.filter((id) => id !== selectedForm.formId)
-                                );
-                            } else {
-                                alert('Failed to unlink template.');
-                            }
-                        } else {
-                            return;
-                        }
-                    }
-                } else {
-                    console.log(`Form ID ${selectedForm.formId} is NOT found in formData.form_ids`);
+                if (checkData.isConnected) {
+                    setDisconnectForm(true);
+                    setDisconnectFormId(selectedForm.formId);
+                    return; 
                 }
-
-                const response = await fetch(`${apiUrl}/get/data`);
-                const tempeltedata = await response.json();
-                const tempeltedataArray = tempeltedata?.data;
-
-                if (tempeltedataArray && Array.isArray(tempeltedataArray)) {
-                    const isFormConnected = tempeltedataArray.some((template) =>
-                        template.form_ids.includes(selectedForm.formId)
-                    );
-
-                    if (isFormConnected) {
-                        alert(`The form "${selectedForm.title}" is already connected to another template and cannot be connected to a different one.`);
-                        return;
-                    }
-                } else {
-                    throw new Error('Invalid data received from /get/data.');
-                }
-
-                setSelectedFormIds((prevFormIds) => {
-                    if (prevFormIds.includes(selectedForm.formId)) {
-                        return prevFormIds.filter((id) => id !== selectedForm.formId);
-                    } else {
-                        return [...prevFormIds, selectedForm.formId];
-                    }
-                });
-
-                setSelectedTitles((prevSelectedTitles) => {
-                    if (prevSelectedTitles.includes(title)) {
-                        return prevSelectedTitles.filter((t) => t !== title);
-                    } else {
-                        return [...prevSelectedTitles, title];
-                    }
-                });
-            } catch (error) {
-                console.error('Error checking or unlinking form connection:', error);
-                alert('An error occurred while processing the form connection.');
+            } else {
+                console.log(`Form ID ${selectedForm.formId} is NOT found in formData.form_ids`);
             }
+
+            const response = await fetch(`${apiUrl}/get/data`);
+            const tempeltedata = await response.json();
+            const tempeltedataArray = tempeltedata?.data;
+
+            if (tempeltedataArray && Array.isArray(tempeltedataArray)) {
+                const isFormConnected = tempeltedataArray.some((template) =>
+                    template.form_ids.includes(selectedForm.formId)
+                );
+
+                if (isFormConnected) {
+                    alert(`The form "${selectedForm.title}" is already connected to another template and cannot be connected to a different one.`);
+                    return;
+                }
+            } else {
+                throw new Error('Invalid data received from /get/data.');
+            }
+
+            setSelectedFormIds((prevFormIds) =>
+                prevFormIds.includes(selectedForm.formId)
+                    ? prevFormIds.filter((id) => id !== selectedForm.formId)
+                    : [...prevFormIds, selectedForm.formId]
+            );
+
+            setSelectedTitles((prevSelectedTitles) =>
+                prevSelectedTitles.includes(title)
+                    ? prevSelectedTitles.filter((t) => t !== title)
+                    : [...prevSelectedTitles, title]
+            );
+        } catch (error) {
+            console.error('Error checking or unlinking form connection:', error);
+            alert('An error occurred while processing the form connection.');
         }
-    };
+    }
+};
+
+const handleConfirmUnlink = async () => {
+    if (!disconnectFormId) return;
+
+    try {
+        const unlinkResponse = await fetch(`${apiUrl}/unlink-template/${disconnectFormId}`, { method: 'PUT' });
+
+        if (unlinkResponse.ok) {
+            console.log('Template unlinked from form.');
+            setConnectedForms((prevForms) => prevForms.filter((id) => id !== disconnectFormId));
+        } else {
+            alert('Failed to unlink template.');
+        }
+    } catch (error) {
+        console.error('Error unlinking form:', error);
+        alert('An error occurred while unlinking the form.');
+    }
+
+ 
+    setDisconnectForm(false);
+    setDisconnectFormId(null);
+};
 
 
     useEffect(() => {
@@ -1305,7 +1311,7 @@ const EmailTemplateCreate = () => {
                 headeropacity: field.headeropacity || '',
                 headerbtncolor: field.headerbtncolor || null,
                 headerbtn: field.headerbtn || null,
-                headingbtnfamily: field.headingbtnfamily,
+                headingbtnfamily: field.headingbtnfamily  || '"Poppins", sans-serif',
                 headingLevel: field.headingLevel || null,
                 headingbtnPadding: field.headingbtnPadding || 10,
                 headingbtntopPadding: field.headingbtntopPadding || 10,
@@ -1314,7 +1320,7 @@ const EmailTemplateCreate = () => {
                 headingsubheading: field.headingsubheading || 16,
                 headingbtnFontSize: field.headingbtnFontSize || 16,
                 headingbtnheight: field.headingbtnheight || 40,
-                headingbtnweight: field.headingbtnweight,
+                headingbtnweight: field.headingbtnweight || 300,
                 headingbtnBorderWidth: field.headingbtnBorderWidth || 1,
                 headingbtnBorderStyle: field.headingbtnBorderStyle || 'solid',
                 headingbtnBorderColor: field.headingbtnBorderColor || '#000',
@@ -1329,7 +1335,7 @@ const EmailTemplateCreate = () => {
                 richspace: field.richspace,
                 richlineheight: field.richlineheight,
                 richbgcolor: field.richbgcolor,
-                richFontfamily: field.richFontfamily,
+                richFontfamily: field.richFontfamily || '"Poppins", sans-serif',
                 richtextcolor: field.richtextcolor,
                 richline: field.richline,
                 richleftPadding: field.richleftPadding || 10,
@@ -1366,8 +1372,8 @@ const EmailTemplateCreate = () => {
                 dividerheight: field.dividerheight || '1',
                 buttonbgColor: field.buttonbgColor || '',
                 buttonColor: field.buttonColor || '#007BFF',
-                buttonweight: field.buttonweight,
-                buttonfamily: field.buttonfamily,
+                buttonweight: field.buttonweight || 300,
+                buttonfamily: field.buttonfamily || '"Poppins", sans-serif',
                 buttonFontSize: field.buttonFontSize || 16,
                 buttonTextColor: field.buttonTextColor || '#fff',
                 buttonLetterSpacing: field.buttonLetterSpacing || 0,
@@ -1383,8 +1389,8 @@ const EmailTemplateCreate = () => {
                 socalIconWidth: field.socalIconWidth || 30,
                 socalIconPadding: field.socalIconPadding || 10,
                 socalIcongap: field.socalIcongap || '',
-                socalIconbg: field.socalIconbg || '#FFFFFFF',
-                socaliconTextAlign: field.socaliconTextAlign || '',
+                socalIconbg: field.socalIconbg || '#FFFFFF',
+                socaliconTextAlign: field.socaliconTextAlign || 'left',
                 htmlFontSize: field.htmlFontSize || 16,
                 htmlPadding: field.htmlPadding || 10,
                 htmlColor: field.htmlColor || '#000',
@@ -1392,18 +1398,18 @@ const EmailTemplateCreate = () => {
                 htmlaline: field.htmlaline,
                 splitbg: field.splitbg || '',
                 splitbtn: field.splitbtn || '',
-                splitbtnbg: field.splitbtnbg || '',
-                splitbtnfont: field.splitbtnfont || '',
-                splitbtncolor: field.splitbtncolor || '',
+                splitbtnbg: field.splitbtnbg || '#FFFFFF',
+                splitbtnfont: field.splitbtnfont || '14',
+                splitbtncolor: field.splitbtncolor || '#000',
                 splitbtnurl: field.splitbtnurl || '',
-                splitbtnfamily: field.splitbtnfamily,
-                splitbtnheight: field.splitbtnheight || '',
-                splitbtnWeight: field.splitbtnWeight,
-                splitbtnwidth: field.splitbtnwidth || '',
+                splitbtnfamily: field.splitbtnfamily ||  '"Poppins", sans-serif',
+                splitbtnheight: field.splitbtnheight || '35',
+                splitbtnWeight: field.splitbtnWeight || 100,
+                splitbtnwidth: field.splitbtnwidth || '80',
                 splitletter: field.splitletter || '',
                 splitlineheight: field.splitlineheight || '',
                 splitfamily: field.splitfamily || '',
-                splitbtnradious: field.splitbtnradious || '',
+                splitbtnradious: field.splitbtnradious || '2',
                 splitheight: field.splitheight || '',
                 width: field.width || '100%',
                 spacerHeight: field.spacerHeight || 20,
@@ -1424,7 +1430,7 @@ const EmailTemplateCreate = () => {
                 imgBorderStyle: field.imgBorderStyle || 'solid',
                 imgBorderColor: field.imgBorderColor || '#000',
                 productPadding: field.productPadding || 10,
-                productfamily: field.productfamily,
+                productfamily: field.productfamily  || '"Poppins", sans-serif',
                 productline: field.productline,
                 productbg: field.productbg || '#ffff',
                 productBorderWidth: field.productBorderWidth || 0,
@@ -1441,7 +1447,7 @@ const EmailTemplateCreate = () => {
                 productradious: field.productradious || 0,
                 productLabel: field.productLabel || 'Shop Now',
                 productfontSize: field.productfontSize || '12',
-                productbtnfamily: field.productbtnfamily,
+                productbtnfamily: field.productbtnfamily || '"Poppins", sans-serif',
                 productwidth: field.productwidth || 80,
                 productheight: field.productheight || 30,
                 productbackgroundColor: field.productbackgroundColor || '#007BFF',
@@ -1451,44 +1457,44 @@ const EmailTemplateCreate = () => {
                 Multicolumnbgcolor: field.Multicolumnbgcolor || '',
                 Multibgcolor: field.Multibgcolor || '',
                 Multitext: field.Multitext || '',
-                Multifamily: field.Multifamily || '',
+                Multifamily: field.Multifamily || '"Poppins", sans-serif',
                 Multiletter: field.Multiletter,
                 Multiheight: field.Multiheight,
                 Multigap: field.Multigap || '',
-                Multibtnfamily: field.Multibtnfamily,
+                Multibtnfamily: field.Multibtnfamily || '"Poppins", sans-serif',
                 Multibtnlable: field.Multibtnlable || '',
-                Multibtncolor: field.Multibtncolor || '',
+                Multibtncolor: field.Multibtncolor || '#0000',
                 Multibtnbg: field.Multibtnbg || '',
-                Multibtnweight: field.Multibtnweight || '',
-                MultiWeight: field.MultiWeight,
-                Multibtnheight: field.Multibtnheight || '',
-                Multibtnradious: field.Multibtnradious || '',
-                Multibtnfont: field.Multibtnfont || '',
+                Multibtnweight: field.Multibtnweight || '100',
+                MultiWeight: field.MultiWeight|| 100,
+                Multibtnheight: field.Multibtnheight || '40',
+                Multibtnradious: field.Multibtnradious || '2',
+                Multibtnfont: field.Multibtnfont || '14',
                 Multibtnurl: field.Multibtnurl || '',
                 MulticolumnbtnBorderColor: field.MulticolumnbtnBorderColor || '',
                 MulticolumnbtnBorderWidth: field.MulticolumnbtnBorderWidth || '',
                 MulticolumnbtnBorderStyle: field.MulticolumnbtnBorderStyle || '',
-                MultibtnBorderColor: field.MultibtnBorderColor || '',
+                MultibtnBorderColor: field.MultibtnBorderColor || '#00000',
                 Multiimgwidth: field.Multiimgwidth || '',
                 Multiborderradious: field.Multiborderradious || '',
                 MultiColor: field.MultiColor || '',
-                MultibtnBorderWidth: field.MultibtnBorderWidth || '',
-                MultibtnBorderStyle: field.MultibtnBorderStyle || '',
+                MultibtnBorderWidth: field.MultibtnBorderWidth || '1',
+                MultibtnBorderStyle: field.MultibtnBorderStyle || 'solid',
                 MulticolumnPadding: field.MulticolumnPadding || '',
                 MultiPadding: field.MultiPadding || '',
-                splitBorderColor: field.splitBorderColor || '',
-                splitBorderWidth: field.splitBorderWidth || '',
-                splitBorderStyle: field.splitBorderStyle || '',
+                splitBorderColor: field.splitBorderColor || '#000',
+                splitBorderWidth: field.splitBorderWidth || '1',
+                splitBorderStyle: field.splitBorderStyle || 'solid',
                 splittextSize: field.splittextSize || '',
                 showbtnmulti: showbtnmulti || false,
                 costumText: field.costumText,
                 costumFont: field.costumFont,
                 costumColor: field.costumColor,
                 costumBg: field.costumBg,
-                costumAline: field.costumAline,
-                costumline: field.costumline,
-                costumPadding: field.costumPadding,
-                costomfamily: field.costomfamily,
+                costumAline: field.costumAline || 'left',
+                costumline: field.costumline || 25,
+                costumPadding: field.costumPadding || 0,
+                costomfamily : field.costomfamily  || '"Poppins", sans-serif',
                 costumfontweight: field.costumfontweight,
                 costumLetter: field.costumLetter,
 
@@ -1502,58 +1508,63 @@ const EmailTemplateCreate = () => {
 
             const templateElement = document.getElementById('template-container');
 
-    if (templateElement) {
-        const htmlToImage = await import('html-to-image');
-        try {
-            const clonedElement = templateElement.cloneNode(true);
-            clonedElement.style.margin = '0'; 
+            if (templateElement) {
+                const htmlToImage = await import('html-to-image');
+                try {
+                    const clonedElement = templateElement.cloneNode(true);
+                    clonedElement.style.margin = '0';
+                    clonedElement.style.width = viewMode === 'desktop' ? '800px' : '400px';
 
-            document.body.appendChild(clonedElement);
+                    let dataUrl;
 
-            const dataUrl = await htmlToImage.toPng(clonedElement);
+                    if (viewMode !== 'desktop') {
+                        document.body.appendChild(clonedElement);
+                        await new Promise((resolve) => setTimeout(resolve, 100));
+                        dataUrl = await htmlToImage.toPng(clonedElement);
+                        document.body.removeChild(clonedElement);
+                    } else {
+                        dataUrl = await htmlToImage.toPng(templateElement);
+                    }
+                    const formData = {
+                        templateId,
+                        shop,
+                        form_ids: selectedFormIds.map(id => String(id)),
+                        title: trimmedTitle,
+                        fields: updatedFields,
+                        createdAt: timestamp,
+                        TemplateImage: dataUrl,
+                        styles: {
+                            backgroundImage,
+                            backgroundColor,
+                            borderRadious,
+                            templatePadding,
+                            textAlign,
+                            fontFamily,
+                            width: clonedElement.style.width,
+                            dividerColor,
+                            viewMode,
+                        },
+                    };
 
-            document.body.removeChild(clonedElement);
+                    console.log(dataUrl);
+                    const response = id
+                        ? await axios.put(`${apiUrl}/update/${id}`, formData)
+                        : await axios.post(`${apiUrl}/send/api`, formData);
 
-            const formData = {
-                templateId,
-                shop,
-                form_ids: selectedFormIds.map(id => String(id)),
-                title: trimmedTitle,
-                fields: updatedFields,
-                createdAt: timestamp,
-                TemplateImage: dataUrl,
-                styles: {
-                    backgroundImage,
-                    backgroundColor,
-                    borderRadious,
-                    templatePadding,
-                    textAlign,
-                    fontFamily,
-                    width: viewMode === 'desktop' ? '800px' : '400px',
-                    dividerColor,
-                    viewMode,
-                },
-            };
+                    console.log('Form saved successfully with title:', trimmedTitle);
+                    const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
+                    console.log(successMessage, response.data);
 
-            console.log(dataUrl);
-            const response = id
-                ? await axios.put(`${apiUrl}/update/${id}`, formData)
-                : await axios.post(`${apiUrl}/send/api`, formData);
+                    if (!id) {
+                        resetFormState();
+                    }
 
-            console.log('Form saved successfully with title:', trimmedTitle);
-            const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
-            console.log(successMessage, response.data);
+                    setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
 
-            if (!id) {
-                resetFormState();
+                } catch (error) {
+                    console.error('Error generating template image:', error);
+                }
             }
-
-            setExistingTitles(prevTitles => [...prevTitles, trimmedTitle]);
-
-        } catch (error) {
-            console.error('Error generating template image:', error);
-        }
-    }
         } catch (error) {
             console.error('Error saving form:', error);
             if (error.response) {
@@ -2262,6 +2273,7 @@ const EmailTemplateCreate = () => {
 
     return (
         <div>
+
             {isLoading && (
                 <div className="skeleton-wrapper fade-in">
                     <div className="container skeleton-wred">
@@ -2332,19 +2344,19 @@ const EmailTemplateCreate = () => {
                             </div>
                         </div>
                         <div className='email-templete-btns-wrapedd'>
-                        <div className='btn_form_bulider'>
-                            <div className="form-submission-wrp">
-                                <button className="cancle-form-btn" onClick={handleCancle} >Cancel</button>
+                            <div className='btn_form_bulider'>
+                                <div className="form-submission-wrp">
+                                    <button className="cancle-form-btn" onClick={handleCancle} >Cancel</button>
+                                </div>
+                                <div className="form-submission-wrp">
+                                    <button className="create-form-btn action_btn" onClick={createOrUpdateForm} >Save</button>
+                                </div>
+
                             </div>
-                            <div className="form-submission-wrp">
-                                <button className="create-form-btn action_btn" onClick={createOrUpdateForm} >Save</button>
-                            </div>
-                            
-                        </div>
-                        <div className='form-Elements-btn email' onClick={handleFieldInput}>Email Elements</div>
+                            <div className='form-Elements-btn email' onClick={handleFieldInput}>Email Elements</div>
                         </div>
                     </div>
-                    
+
                     <div className='builder-forms_rapp'>
                         <div className="builder-wrp">
                             <div className="controls-main-wrp email-tempalte">
@@ -2676,12 +2688,11 @@ const EmailTemplateCreate = () => {
                                                                                 textAlign: field.headingTextAlign || '',
                                                                                 padding: `${field.headingPadding}px`,
 
-
                                                                             }}>
                                                                                 {React.createElement(HeadingTag, {
                                                                                     style: {
                                                                                         fontWeight: field.headingFontWeight,
-                                                                                        fontSize: `${field.headingFontSize || ''}px`,
+                                                                                        // fontSize: `${field.headingFontSize || ''}px`,
                                                                                         color: field.headingColor,
                                                                                         fontFamily: field.headingfamily,
                                                                                         letterSpacing: `${field.headingLetterSpacing}px`,
@@ -2709,7 +2720,7 @@ const EmailTemplateCreate = () => {
                                                                                                 console.log("Button clicked, but no navigation.");
                                                                                             }}
                                                                                             style={{
-                                                                                                fontFamily: field.headingbtnfamily,
+                                                                                                fontFamily: field.headingbtnfamily ||'"Poppins", sans-serif' ,
                                                                                                 background: field.headerbtnbg,
                                                                                                 color: field.headerbtncolor,
                                                                                                 height: `${field.headingbtnheight}px`,
@@ -2790,7 +2801,7 @@ const EmailTemplateCreate = () => {
                                                                                                         {field.showbtnsplit && (
                                                                                                             <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
                                                                                                                 <button style={{
-                                                                                                                    fontFamily: field.splitbtnfamily,
+                                                                                                                    fontFamily: field.splitbtnfamily ||  '"Poppins", sans-serif',
                                                                                                                     marginTop: "20px",
                                                                                                                     backgroundColor: field.splitbtnbg,
                                                                                                                     fontSize: `${child.splitbtnfont}px`,
@@ -3017,7 +3028,7 @@ const EmailTemplateCreate = () => {
                                                                                     paddingTop: `${field.richtopPadding}px`,
                                                                                     paddingBottom: `${field.richtopPadding}px`,
                                                                                     textDecoration: field.richline,
-                                                                                    fontFamily: field.richFontfamily,
+                                                                                    fontFamily: field.richFontfamily || '"Poppins", sans-serif',
                                                                                     whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                                                                                     width: '100%'
 
@@ -3124,8 +3135,8 @@ const EmailTemplateCreate = () => {
                                                                                         borderColor: field.buttonBorderColor,
                                                                                         letterSpacing: `${field.buttonLetterSpacing}px`,
                                                                                         borderRadius: `${field.buttonradious}px`,
-                                                                                        fontWeight: field.buttonweight,
-                                                                                        fontFamily: field.buttonfamily
+                                                                                        fontWeight: field.buttonweight || 300,
+                                                                                        fontFamily: field.buttonfamily || '"Poppins", sans-serif'
                                                                                     }}
                                                                                 >
                                                                                     {field.buttonLabel}
@@ -3171,7 +3182,7 @@ const EmailTemplateCreate = () => {
                                                                                 textAlign: field.costumAline,
                                                                                 lineHeight: `${field.costumline}px`,
                                                                                 padding: `${field.costumPadding}px`,
-                                                                                fontFamily: field.costomfamily,
+                                                                                fontFamily: field.costomfamily || '"Poppins", sans-serif' ,
                                                                                 fontWeight: field.costumfontweight,
                                                                                 letterSpacing: `${field.costumLetter}px`
                                                                             }}>
@@ -3261,7 +3272,7 @@ const EmailTemplateCreate = () => {
                                                                                             textAlign: field.Multitext,
                                                                                             color: field.MultiColor,
                                                                                             borderRadius: `${field.Multiborderradious}px`,
-                                                                                            fontFamily: field.Multifamily,
+                                                                                            fontFamily: field.Multifamily || '"Poppins", sans-serif',
                                                                                             letterSpacing: `${field.Multiletter}px`,
                                                                                             overflow: 'hidden',
                                                                                             display: 'block'
@@ -3290,7 +3301,7 @@ const EmailTemplateCreate = () => {
                                                                                             <a href={field.columnData[index].Multibtnurl} target="_blank" onClick={(e) => e.preventDefault()}>
                                                                                                 <button
                                                                                                     style={{
-                                                                                                        fontFamily: field.Multibtnfamily,
+                                                                                                        fontFamily: field.Multibtnfamily || '"Poppins", sans-serif' || '"Poppins", sans-serif',
                                                                                                         marginTop: '20px',
                                                                                                         backgroundColor: field.Multibtnbg || '#FFFFFF',
                                                                                                         borderWidth: `${field.MultibtnBorderWidth || 1}px`,
@@ -3301,7 +3312,7 @@ const EmailTemplateCreate = () => {
                                                                                                         color: field.Multibtncolor,
                                                                                                         borderRadius: `${field.Multibtnradious || 2}px`,
                                                                                                         fontSize: `${field.Multibtnfont || '14'}px`,
-                                                                                                        fontWeight: field.MultiWeight
+                                                                                                        fontWeight: field.MultiWeight|| 100
                                                                                                     }}
                                                                                                 >
                                                                                                     {field.columnData[index].Multibtnlable}
@@ -3366,7 +3377,7 @@ const EmailTemplateCreate = () => {
                                                                                     borderColor: field.productBorderColor,
                                                                                     color: field.productTextColor,
                                                                                     width: '100%',
-                                                                                    fontFamily: field.productfamily,
+                                                                                    fontFamily: field.productfamily || '"Poppins", sans-serif',
                                                                                     lineHeight: `${field.productline}px`
                                                                                 }}
                                                                             >
@@ -3384,7 +3395,7 @@ const EmailTemplateCreate = () => {
                                                                                         ) : (
                                                                                             <p>No image available</p>
                                                                                         )}
-                                                                                        <div style={{ display: 'grid', gap: '10px', marginBottom: '10px' }}>
+                                                                                        <div style={{ display: 'grid', gap: '0px', marginBottom: '10px' }}>
                                                                                             <p style={{ letterSpacing: `${field.productLetterSpacing}px`, fontWeight: field.productWeight }}>
                                                                                                 {product.title.length > 15 ? `${product.title.slice(0, 15)}...` : product.title}
                                                                                             </p>
@@ -3403,7 +3414,7 @@ const EmailTemplateCreate = () => {
                                                                                                         fontSize: `${field.productfontSize}px`,
                                                                                                         minWidth: `${field.productwidth}px`,
                                                                                                         height: `${field.productheight}px`,
-                                                                                                        fontFamily: field.productbtnfamily,
+                                                                                                        fontFamily: field.productbtnfamily || '"Poppins", sans-serif',
                                                                                                         backgroundColor: field.productbackgroundColor,
                                                                                                         borderWidth: `${field.productbtnBorderWidth}px`,
                                                                                                         borderStyle: field.productbtnBorderStyle,
@@ -3515,7 +3526,7 @@ const EmailTemplateCreate = () => {
                                                 <div className='form_qucik'>
                                                     <p>Quick setup Settings</p>
                                                     <div className="form-builder-propertites-save-topions" onClick={hanldeCanclepro} >
-                                                        save
+                                                        Save
                                                     </div>
                                                 </div>
                                                 <div className='form_build_propertities emails'>
@@ -3826,7 +3837,7 @@ const EmailTemplateCreate = () => {
                                                                                 <div className="form-builder-chaneging-wrap number">
                                                                                     <label>Font-Family</label>
                                                                                     <select
-                                                                                        value={field.Multifamily}
+                                                                                        value={field.Multifamily || '"Poppins", sans-serif'}
                                                                                         onChange={(e) => {
                                                                                             setFields((prevFields) =>
                                                                                                 prevFields.map((f) =>
@@ -4151,7 +4162,7 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Font-Weight</label>
                                                                                         <select
-                                                                                            value={field.MultiWeight}
+                                                                                            value={field.MultiWeight || 100}
                                                                                             onChange={(e) => {
                                                                                                 setFields(prevFields =>
                                                                                                     prevFields.map(f =>
@@ -4200,7 +4211,7 @@ const EmailTemplateCreate = () => {
                                                                                     <div className="form-builder-chaneging-wrap number">
                                                                                         <label>  Font-Family</label>
                                                                                         <select
-                                                                                            value={field.Multibtnfamily}
+                                                                                            value={field.Multibtnfamily || '"Poppins", sans-serif'}
                                                                                             onChange={(e) => {
                                                                                                 setFields((prevFields) =>
                                                                                                     prevFields.map((f) =>
@@ -4715,7 +4726,7 @@ const EmailTemplateCreate = () => {
                                                                                 <div className="form-builder-chaneging-wrap number">
                                                                                     <label>Font-Family</label>
                                                                                     <select
-                                                                                        value={field.productfamily}
+                                                                                        value={field.productfamily || '"Poppins", sans-serif'}
                                                                                         onChange={(e) => {
                                                                                             setFields((prevFields) =>
                                                                                                 prevFields.map((f) =>
@@ -5024,7 +5035,7 @@ const EmailTemplateCreate = () => {
                                                                                     <div className="form-builder-chaneging-wrap number">
                                                                                         <label>  Font-Family</label>
                                                                                         <select
-                                                                                            value={field.productbtnfamily}
+                                                                                            value={field.productbtnfamily || '"Poppins", sans-serif'}
                                                                                             onChange={(e) => {
                                                                                                 setFields((prevFields) =>
                                                                                                     prevFields.map((f) =>
@@ -5889,7 +5900,7 @@ const EmailTemplateCreate = () => {
                                                                                         <div className="form-builder-chaneging-wrap number">
                                                                                             <label>  Font-Family</label>
                                                                                             <select
-                                                                                                value={field.headingbtnfamily}
+                                                                                                value={field.headingbtnfamily || '"Poppins", sans-serif'}
                                                                                                 onChange={(e) => {
                                                                                                     setFields((prevFields) =>
                                                                                                         prevFields.map((f) =>
@@ -6122,7 +6133,7 @@ const EmailTemplateCreate = () => {
                                                                                                     );
                                                                                                 }}
                                                                                             >
-                                                                                                <option value="100">Thin</option>
+                                                                                              
                                                                                                 <option value="500">Medium</option>
                                                                                                 <option value="600">Semi Bold</option>
                                                                                                 <option value="700">Bold</option>
@@ -6818,7 +6829,7 @@ const EmailTemplateCreate = () => {
                                                                                 <div className="form-builder-chaneging-wrap number">
                                                                                     <label>  Font-Family</label>
                                                                                     <select
-                                                                                        value={field.costomfamily}
+                                                                                        value={field.costomfamily || '"Poppins", sans-serif'}
                                                                                         onChange={(e) => {
                                                                                             setFields((prevFields) =>
                                                                                                 prevFields.map((f) =>
@@ -7565,7 +7576,7 @@ const EmailTemplateCreate = () => {
                                                                                     <label>Text Align </label>
                                                                                     <select
                                                                                         onChange={(e) => {
-                                                                                            const newValue = e.target.value; 
+                                                                                            const newValue = e.target.value;
                                                                                             setFields((prevFields) =>
                                                                                                 prevFields.map((f) => {
                                                                                                     if (f.type === "split-group") {
@@ -7659,7 +7670,7 @@ const EmailTemplateCreate = () => {
                                                                                     <div className="form-builder-chaneging-wrap number">
                                                                                         <label>  Font-Family</label>
                                                                                         <select
-                                                                                            value={field.splitbtnfamily}
+                                                                                            value={field.splitbtnfamily || '"Poppins", sans-serif'}
                                                                                             onChange={(e) => {
                                                                                                 setFields((prevFields) =>
                                                                                                     prevFields.map((f) =>
@@ -8211,7 +8222,7 @@ const EmailTemplateCreate = () => {
                                                                             </div>
                                                                             <div className='setting_bg_email_templetes_white'>
                                                                                 <div className='form-builder-chaneging-wrap'>
-                                                                                    <label>Text Align </label>
+                                                                                    <label>Button Position </label>
                                                                                     <select
                                                                                         value={field.buttonaline}
                                                                                         onChange={(e) => {
@@ -8308,7 +8319,7 @@ const EmailTemplateCreate = () => {
                                                                                 <div className="form-builder-chaneging-wrap number">
                                                                                     <label>  Font-Family</label>
                                                                                     <select
-                                                                                        value={field.buttonfamily}
+                                                                                        value={field.buttonfamily || '"Poppins", sans-serif' }
                                                                                         onChange={(e) => {
                                                                                             setFields((prevFields) =>
                                                                                                 prevFields.map((f) =>
@@ -8693,7 +8704,7 @@ const EmailTemplateCreate = () => {
                                                                                                             <button className='rm-btn'
                                                                                                                 onClick={() => handleCustomIconRemove(index)}
                                                                                                             >
-                                                                                                               <img src={remove} alt="" />
+                                                                                                                <img src={remove} alt="" />
                                                                                                             </button>
                                                                                                         </div>
                                                                                                     </div>
@@ -8701,7 +8712,7 @@ const EmailTemplateCreate = () => {
                                                                                                 ))}
                                                                                             </div>
                                                                                         )}
-                                                                                        <button className='add-forms icons' style={{cursor:'pointer'}} onClick={() => setShowFileUpload((prev) => !prev)}> Add Icon </button>
+                                                                                        <button className='add-forms icons' style={{ cursor: 'pointer' }} onClick={() => setShowFileUpload((prev) => !prev)}> Add Icon </button>
                                                                                         {showFileUpload && !uploadedImage && (
                                                                                             <div className='form-builder-chaneging-wrap file'>
                                                                                                 <label>Uplaod Image</label>
@@ -9023,12 +9034,19 @@ const EmailTemplateCreate = () => {
                         </div>
                     )}
                 </div>
-                {showImagePopup && (
+
+                {disconnectForm && (
                     <div className="popup">
-                        <div className="popup-content">
-                            <h3>Upload Image</h3>
-                            <input type="file" accept="image/*" onChange={handleImageUpload} />
-                            <button onClick={() => setShowImagePopup(false)}>Close</button>
+                        <div className="popup-content templete-popup-disconnect">
+                            <div className='form-builder-email-templete-popup'>
+                                <div className='form-builder-email-email-cancle-btn' onClick={()=>setDisconnectForm(false)}><img src={cancle1} alt="" /></div>
+                                <p>Disconnect Email Template?</p>
+                                <span>Are you sure you want to remove this email template from the form?</span>
+                                <div className='form-builder-email-templete-popup-buttons'>
+                                    <p className='form-builder-email-btn' onClick={handleConfirmUnlink}>Yes</p>
+                                    <p className='form-builder-email-btn no' onClick={()=>setDisconnectForm(false)}>No</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -9181,7 +9199,7 @@ const EmailTemplateCreate = () => {
                     </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span> | Privacy policy | Terms and conditions</div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </div >
     );
 };
