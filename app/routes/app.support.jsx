@@ -141,7 +141,7 @@ export default function Support() {
                         <h4>Knowledge base</h4>
                         <p>In case you have any questions or difficulties setting up the app, you can check our Knowledge base.</p>
                         <div className="form_builder_support_btn">
-                            <a href="https://syncform.app/pricing.html" target='_blank'><div className="form_builder_support_btn_first">
+                            <a href="https://syncform.app/index.html" target='_blank'><div className="form_builder_support_btn_first">
                                 <p>Knowledge base</p>
                             </div></a>
                             {/* <div className="form_builder_support_btn_second">

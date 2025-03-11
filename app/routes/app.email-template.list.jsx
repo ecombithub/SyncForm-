@@ -650,6 +650,7 @@ export default function EmailTemplate() {
                     <img src={field.value} alt={field.label} style={{
                         width: `${field.imgWidth}%`,
                         padding: `${field.imgPadding}px`,
+                        verticalAlign:'bottom',
                     }} />
                 </div>;
             case 'richtext':
@@ -703,7 +704,6 @@ export default function EmailTemplate() {
                                         fontFamily: field.Multifamily,
                                         letterSpacing: `${field.Multiletter}px`,
                                          display:'block'
-
                                     }}
                                 >
                                     {column.image && (
@@ -804,7 +804,7 @@ export default function EmailTemplate() {
                                                                 fontFamily: field.splitbtnfamily,
                                                                 backgroundColor: field.splitbtnbg,
                                                                 fontSize: `${child.splitbtnfont}px`,
-                                                                color: field.splitbtncolor,
+                                                                color: field.splitbtncolor || "#000",
                                                                 height: `${child.splitbtnheight}px`,
                                                                 minWidth: `${child.splitbtnwidth}px`,
                                                                 borderRadius: `${child.splitbtnradious}px`,
@@ -1029,7 +1029,7 @@ export default function EmailTemplate() {
                                     </div>
                                     <div className="show_forms_all">
                                         <span className="name_build">
-                                            Shot by :
+                                            Sort by :
                                             <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleFormNames}>
                                                 Email name <span className="form-short">
                                                     <img src={down} alt="" />
@@ -1150,7 +1150,7 @@ export default function EmailTemplate() {
 
                                         <div className="show_forms_all">
                                             <span className="name_build">
-                                                Shot by :
+                                              Sort by :
                                                 <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleTemplate}>
                                                     Email name <span className="form-short">
                                                         <img src={down} alt="" />

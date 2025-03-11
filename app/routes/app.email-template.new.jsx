@@ -277,7 +277,6 @@ const EmailTemplateCreate = () => {
     };
 
 
-
     useEffect(() => {
         if (formData) {
             console.log('Form data received:', formData);
@@ -354,7 +353,10 @@ const EmailTemplateCreate = () => {
             console.log('Products per row:', formData.fields[0]?.productsPerRow);
             const columnCount = parseInt(formData.styles.columnCount) || '';
             setColumnCount(columnCount);
-
+            setSelectedIcons(prevIcons => {
+                console.log("Updating selectedIcons to:", prevIcons);
+                return prevIcons; 
+            });
         }
     }, [formData]);
 
@@ -849,34 +851,38 @@ const EmailTemplateCreate = () => {
                     isHidden: !prevIcons[icon]?.isHidden,
                 },
             };
-
-            checkAndRemoveAllFields(updatedIcons, customIcons);
+    
+            checkAndRemoveSocialIconFields(updatedIcons, customIcons);
             return updatedIcons;
         });
     };
-
+    
     const toggleCustomIconVisibility = (index) => {
         setCustomIcons((prevIcons) => {
             const updatedIcons = prevIcons.map((icon, i) =>
                 i === index ? { ...icon, isHidden: !icon.isHidden } : icon
             );
-
-            checkAndRemoveAllFields(selectedIcons, updatedIcons);
+    
+            checkAndRemoveSocialIconFields(selectedIcons, updatedIcons);
             return updatedIcons;
         });
     };
-
-    const checkAndRemoveAllFields = (updatedSelectedIcons, updatedCustomIcons) => {
+    
+    const checkAndRemoveSocialIconFields = (updatedSelectedIcons, updatedCustomIcons) => {
         const visibleSelectedIcons = Object.values(updatedSelectedIcons).some(icon => !icon.isHidden);
         const visibleCustomIcons = updatedCustomIcons.some(icon => !icon.isHidden);
-
+    
         if (!visibleSelectedIcons && !visibleCustomIcons) {
-            console.log("All icons are hidden. Removing all fields.");
-            setFields([]);
+            console.log("All social icons are hidden. Removing only social icon fields.");
+    
+            setFields((prevFields) => {
+                const newFields = prevFields.filter(field => field.type !== "socalicon"); // Corrected type
+                console.log("Updated fields:", newFields); // Debugging log
+                return newFields;
+            });
         }
     };
-
-
+    
     const handleImageUpload = (e, fieldId) => {
         const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
         if (file) {
@@ -8620,7 +8626,7 @@ const handleConfirmUnlink = async () => {
                                                                                             <div className='custom-checkbox socalicons'>
                                                                                                 <input
                                                                                                     type="checkbox"
-                                                                                                    checked={!selectedIcons.facebook.isHidden}
+                                                                                                    checked={!selectedIcons.facebook.isHidden }
                                                                                                     onChange={() => handleToggleIcon('facebook')}
                                                                                                 />
                                                                                                 <i class="fa fa-facebook-square" aria-hidden="true"></i>

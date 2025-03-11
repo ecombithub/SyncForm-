@@ -550,7 +550,7 @@ function Customer() {
                                     </div>
                                     <div className='show_forms_all'>
                                         <span className='name_build'>
-                                            Shot by  :
+                                            Sort by  :
                                             <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
                                                 Forms name <span className='form-short'><img src={down} alt="" /></span>
                                             </span>

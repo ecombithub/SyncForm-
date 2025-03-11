@@ -1017,6 +1017,7 @@ const Formdata = () => {
                                                                             borderColor: form.styles.inputborderColor,
                                                                             backgroundColor: form.styles.inputBgColor,
                                                                             width: '100%',
+                                                                             height:'50px'
                                                                         }}
                                                                         buttonStyle={{
                                                                             borderRadius: `${form.styles.inputRadious}px`,

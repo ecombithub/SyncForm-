@@ -12,6 +12,7 @@
       'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', this)
     "
   ></form>
+  <div id="nofieldValue" style="display: none; color: red; font-size: 14px;"></div>
 </div>
 
 <style>
@@ -64,6 +65,7 @@
   .input-field.input-gap .iti__flag-container {
     border: 1px solid grey;
     border-radius: 5px;
+    width:44px;
   }
 
   .form_builder_app .iti__flag {
@@ -681,6 +683,7 @@
       const thankYouTimer =formData.thankYouTimer;
       const formUrl =formData.url;
       const emailsubject = formData.styles.subject;
+    
 
       console.log('Formshop:', formshop);
       container.empty();
@@ -1697,6 +1700,7 @@
       thankYouTimer,
       formUrl,
       emailsubject,
+      nofieldValue,
       button
     ) {
       event.preventDefault();
@@ -1929,13 +1933,21 @@
       if (!isValid) return;
       console.log('Final Fields Collected:', formData.fields);
     
-      {% comment %} 
+    
       if (formData.fields.length === 0) {
-        alert('Please fill in at least one field before submitting.');
+        const noFieldElement = document.getElementById('nofieldValue');
+        if (noFieldElement) {
+            noFieldElement.textContent = 'Please fill in at least one field before submitting.';
+            noFieldElement.style.display = 'block';
+    
+            setTimeout(() => {
+                noFieldElement.style.display = 'none';
+            }, 3000);
+        }
         console.log('Submission blocked: No fields provided.');
         return false;
-      } {% endcomment %}
-
+    }
+    
       console.log('Form Data:', JSON.stringify(formData));
 
       $.ajax({
@@ -2049,7 +2061,8 @@
           if (submissionOption === 'Hide form and show thank you message') {
             $('#formData-' + blockId).empty();
             if (editorValue) {
-              const editorValueDisplay = `<p>${editorValue}</p>`;
+              const editorValueDisplay = `<div style="font-size: 14px; color: green;">${editorValue}</div>`;
+
               $('#formData-' + blockId).append(editorValueDisplay);
             }
             const container = $('#formData-' + blockId);

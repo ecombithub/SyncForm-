@@ -306,8 +306,8 @@ const Formgenerated = () => {
     const [imageOptions, setImageOptions] = useState({});
     const [multiimagesOptions, setMultiimagesOptions] = useState({});
     const [maxDescriptionHeight, setMaxDescriptionHeight] = useState(0);
-    const [ImagePreview, setImagePreview] = useState('off');
-    const [multifilePreview, setMultifilePreview] = useState('off');
+    const [ImagePreview, setImagePreview] = useState({});
+    const [multifilePreview, setMultifilePreview] = useState({});
     const [signlePreview, setSignlePreview] = useState('off');
     const [multiIamgePreview, setMultiIamgePreview] = useState('off');
     const [upgradePopup, setUphradePopup] = useState(false);
@@ -319,21 +319,32 @@ const Formgenerated = () => {
     const shopName = shopData.name;
     console.log('Shop Name:', shopName);
 
-
-    const handleToggleImagePreview = () => {
-        setImagePreview(prevState => (prevState === 'on' ? 'off' : 'on'));
+    const handleToggleImagePreview = (fieldId) => {
+        setImagePreview((prevState) => ({
+            ...prevState,
+            [fieldId]: prevState[fieldId] === 'on' ? 'off' : 'on',
+        }));
     };
 
-    const handleToggleMiltiPreview = () => {
-        setMultifilePreview(prevState => (prevState === 'on' ? 'off' : 'on'));
+    const handleToggleMiltiPreview = (fieldId) => {
+        setMultifilePreview((prevState) => ({
+            ...prevState,
+            [fieldId]: prevState[fieldId] === 'on' ? 'off' : 'on',
+        }));
     };
 
-    const handleToggleSinglePreview = () => {
-        setSignlePreview(prevState => (prevState === 'on' ? 'off' : 'on'));
+    const handleToggleSinglePreview = (fieldId) => {
+        setSignlePreview((prevState) => ({
+            ...prevState,
+            [fieldId]: prevState[fieldId] === 'on' ? 'off' : 'on',
+        }));
     };
 
-    const handleToggleMultiPreview = () => {
-        setMultiIamgePreview(prevState => (prevState === 'on' ? 'off' : 'on'));
+    const handleToggleMultiPreview = (fieldId) => {
+        setMultiIamgePreview((prevState) => ({
+            ...prevState,
+            [fieldId]: prevState[fieldId] === 'on' ? 'off' : 'on',
+        }));
     };
 
 
@@ -577,10 +588,15 @@ const Formgenerated = () => {
                 if (fileOptions) {
                     setFileOptions(fileOptions.fileOptions || '');
                 }
-                const ImageField = fields.find(field => field.type === 'file');
-                if (ImageField) {
-                    setImagePreview(ImageField.ImagePreview || 'off');
+                const ImageField = fields.filter(field => field.type === 'file');
+                if (ImageField.length > 0) {
+                    const previewState = {};
+                    ImageField.forEach(field => {
+                        previewState[field.id] = field.ImagePreview || 'off';
+                    });
+                    setImagePreview(previewState);
                 }
+
             }
 
             if (fields && fields.length > 0) {
@@ -588,9 +604,14 @@ const Formgenerated = () => {
                 if (multiOptions) {
                     setMultiOptions(multiOptions.multiOptions || '');
                 }
-                const multiFile = fields.find(field => field.type === 'multi-file');
-                if (multiFile) {
-                    setMultifilePreview(multiFile.multifilePreview || 'off');
+
+                const multiFile = fields.filter(field => field.type === 'multi-file');
+                if (multiFile.length > 0) {
+                    const previewState = {};
+                    multiFile.forEach(field => {
+                        previewState[field.id] = field.multifilePreview || 'off';
+                    });
+                    setMultifilePreview(previewState);
                 }
             }
 
@@ -599,9 +620,13 @@ const Formgenerated = () => {
                 if (imageOptions) {
                     setImageOptions(imageOptions.imageOptions || '');
                 }
-                const singleImage = fields.find(field => field.type === 'images');
-                if (singleImage) {
-                    setSignlePreview(singleImage.signlePreview || 'off');
+                const singleImage = fields.filter(field => field.type === 'images');
+                if (singleImage.length > 0) {
+                    const previewState = {};
+                    singleImage.forEach(field => {
+                        previewState[field.id] = field.signlePreview || 'off';
+                    });
+                    setSignlePreview(previewState);
                 }
             }
 
@@ -610,9 +635,13 @@ const Formgenerated = () => {
                 if (multiimagesOptions) {
                     setMultiimagesOptions(multiimagesOptions.multiimagesOptions || '');
                 }
-                const multiImage = fields.find(field => field.type === 'multi-image');
-                if (multiImage) {
-                    setMultiIamgePreview(multiImage.multiIamgePreview || 'off');
+                const multiImage = fields.filter(field => field.type === 'multi-image');
+                if (multiImage.length > 0) {
+                    const previewState = {};
+                    multiImage.forEach(field => {
+                        previewState[field.id] = field.multiIamgePreview || 'off';
+                    });
+                    setMultiIamgePreview(previewState);
                 }
             }
 
@@ -769,7 +798,12 @@ const Formgenerated = () => {
         if (window.innerWidth > 1024) {
             handleFieldClick(newField, fields.length);
         }
+
+        if (window.innerWidth <= 768) {
+            setShowFieldInput(false);
+        }
     };
+
 
     const handleAddHeading = (level, text) => {
         const headingField = {
@@ -1257,7 +1291,7 @@ const Formgenerated = () => {
                     return {
                         ...field,
                         fileOptions: fileOptions,
-                        ImagePreview: ImagePreview
+                        ImagePreview: ImagePreview[field.id] || 'off'
                     };
                 }
 
@@ -1265,7 +1299,7 @@ const Formgenerated = () => {
                     return {
                         ...field,
                         multiOptions: multiOptions,
-                        multifilePreview: multifilePreview
+                        multifilePreview: multifilePreview[field.id] || 'off'
                     };
                 }
 
@@ -1273,7 +1307,7 @@ const Formgenerated = () => {
                     return {
                         ...field,
                         imageOptions: imageOptions,
-                        signlePreview: signlePreview
+                        signlePreview: signlePreview[field.id] || 'off'
                     };
                 }
 
@@ -1281,7 +1315,7 @@ const Formgenerated = () => {
                     return {
                         ...field,
                         multiimagesOptions: multiimagesOptions,
-                        multiIamgePreview: multiIamgePreview
+                        multiIamgePreview: multiIamgePreview[field.id] || 'off'
                     };
                 }
 
@@ -3480,6 +3514,7 @@ const Formgenerated = () => {
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
                                                                             backgroundColor: inputBgColor,
+                                                                            height: '50px'
                                                                         }}
                                                                         buttonStyle={{
                                                                             borderRadius: `${inputRadious}px`,
@@ -4227,7 +4262,7 @@ const Formgenerated = () => {
                                                                 <label style={{ color: labelColor }}>
 
                                                                     {/* {field.label || "divider"} */}
-                                                                    <div style={{ justifyContent: field.dividerAline,display:"flex" }}>
+                                                                    <div style={{ justifyContent: field.dividerAline, display: "flex" }}>
                                                                         <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: field.dividerWidth }} />
                                                                         <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                             {field.description}
@@ -4571,7 +4606,7 @@ const Formgenerated = () => {
                                                                                     onChange={(e) => updateFieldProperty('btnwidth', e.target.value)}
                                                                                     placeholder="e.g., 150"
                                                                                     min={0}
-                                                                                    max={100}
+                                                                                    max={500}
                                                                                 />
                                                                             </div>
                                                                             <div className='checkbox-option'>
@@ -5200,18 +5235,17 @@ const Formgenerated = () => {
                                                                                         <label className="toggle-switch">
                                                                                             <input
                                                                                                 type="checkbox"
-                                                                                                checked={ImagePreview === 'on'}
-                                                                                                onChange={handleToggleImagePreview}
+                                                                                                checked={ImagePreview[selectedField.id] === 'on'}
+                                                                                                onChange={() => handleToggleImagePreview(selectedField.id)}
                                                                                             />
                                                                                             <span className="slider"></span>
                                                                                         </label>
                                                                                     </div>
-
                                                                                 </div>
                                                                             </div>
-
                                                                         </>
                                                                     )}
+
                                                                     {selectedField.type === 'multi-file' && (
                                                                         <>
                                                                             <div className="form-builder-chaneging-wrap">
@@ -5221,8 +5255,9 @@ const Formgenerated = () => {
                                                                                         <label className="toggle-switch">
                                                                                             <input
                                                                                                 type="checkbox"
-                                                                                                checked={multifilePreview === 'on'}
-                                                                                                onChange={handleToggleMiltiPreview}
+                                                                                                checked={multifilePreview[selectedField.id] === 'on'}
+                                                                                                onChange={() => handleToggleMiltiPreview(selectedField.id)}
+
                                                                                             />
                                                                                             <span className="slider"></span>
                                                                                         </label>
@@ -5241,8 +5276,9 @@ const Formgenerated = () => {
                                                                                         <label className="toggle-switch">
                                                                                             <input
                                                                                                 type="checkbox"
-                                                                                                checked={signlePreview === 'on'}
-                                                                                                onChange={handleToggleSinglePreview}
+                                                                                                checked={signlePreview[selectedField.id] === 'on'}
+                                                                                                onChange={() => handleToggleSinglePreview(selectedField.id)}
+
                                                                                             />
                                                                                             <span className="slider"></span>
                                                                                         </label>
@@ -5262,8 +5298,9 @@ const Formgenerated = () => {
                                                                                         <label className="toggle-switch">
                                                                                             <input
                                                                                                 type="checkbox"
-                                                                                                checked={multiIamgePreview === 'on'}
-                                                                                                onChange={handleToggleMultiPreview}
+                                                                                                checked={multiIamgePreview[selectedField.id] === 'on'}
+                                                                                                onChange={() => handleToggleMultiPreview(selectedField.id)}
+
                                                                                             />
                                                                                             <span className="slider"></span>
                                                                                         </label>

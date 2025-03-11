@@ -1504,6 +1504,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   <img 
                     src="${field.value}" 
                     alt="${field.label || 'Image'}" 
+                    vertical-align: bottom;
                     style="width: ${field.imgWidth || 100}%;"
                   />
                 </div>`;
