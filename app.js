@@ -1504,8 +1504,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   <img 
                     src="${field.value}" 
                     alt="${field.label || 'Image'}" 
-                    vertical-align: bottom;
-                    style="width: ${field.imgWidth || 100}%;"
+                    style="width: ${field.imgWidth || 100}%; vertical-align: bottom;"
                   />
                 </div>`;
             }
@@ -2050,9 +2049,9 @@ app.post('/user-email', async (req, res) => {
         const mailOptions = {
           from: 'sahil@hubsyntax.com',
           to: shopData.email,
-          subject: 'Form Data CSV',
+          subject: `Congrats! Your Form has Reached ${numberValueParsed} Submission`,
           text: `We’re excited to inform you that your form, has successfully reached ${numberValueParsed}  submissions! This milestone indicates growing engagement from your customers.
-Thank you for using our Form Builder HuB app to connect with your customer. If you have any questions or need further assistance, please feel free to reach out.`,
+Thank you for using our SyncForm app to connect with your customer. If you have any questions or need further assistance, please feel free to reach out.`,
           attachments: [
             {
               filename: 'formData.csv',

@@ -5,9 +5,9 @@ import { useState } from 'react';
 import axios from 'axios';
 import '../index.css';
 import star from '../images/star1.png';
-import add from '../images/add.png';
-import create from '../images/create.png';
-import track from '../images/track.png';
+import add from '../images/blog13.jpg';
+import create from '../images/blog12.jpg';
+import track from '../images/blog14.jpeg';
 
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";

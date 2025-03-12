@@ -23,7 +23,7 @@ import toggle from '../images/toggle0.png';
 import url1 from '../images/url10.png';
 import date from '../images/date0.png';
 import slider from '../images/slider0.png';
-import multifile12 from '../images/multifile12.png';
+import multifile12 from '../images/11.png';
 import multifile1 from '../images/multifile1.png';
 import image from '../images/image-0.png';
 import link1 from '../images/link10.png';
@@ -52,6 +52,7 @@ import multiimg1 from '../images/multiimg1.png';
 import star from '../images/star1.png';
 import edit from '../images/edit.png';
 import brandlogos from '../images/brandlogos.png';
+
 
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
@@ -315,6 +316,7 @@ const Formgenerated = () => {
     const [marginForm, setMarginForm] = useState('10');
     const [linkaline, setLinkaline] = useState('');
     const [linkTarget, setLinkTarget] = useState('_self');
+    const [passwordpopop, setPasswordpopup] = useState(false);
 
     const shopName = shopData.name;
     console.log('Shop Name:', shopName);
@@ -2000,8 +2002,47 @@ const Formgenerated = () => {
             ...fieldToCopy,
             id: generateUniqueId(),
         };
-        setFields(prevFields => [...prevFields, copiedField]);
+
+        setFields(prevFields => {
+            const updatedFields = [...prevFields, copiedField];
+
+            // Count the number of 'file' and 'multi-file' fields in the updated fields
+            const fileFieldsCount = updatedFields.filter(field => field.type === 'file').length;
+            const multiFileFieldsCount = updatedFields.filter(field => field.type === 'multi-file').length;
+
+            console.log(`Number of file fields copied: ${fileFieldsCount}`);
+            console.log(`Number of multi-file fields copied: ${multiFileFieldsCount}`);
+
+            if (fieldToCopy.type === 'file') {
+                const newFileOption = fileFieldsCount === 1 ? 'option1' : fileOptions[fieldId] || 'option1';
+                setFileOptions(prevOptions => ({
+                    ...prevOptions,
+                    [copiedField.id]: newFileOption,
+                }));
+            } else if (fieldToCopy.type === 'multi-file') {
+                const newMultiFileOption = multiFileFieldsCount === 1 ? 'option1' : multiOptions[fieldId] || 'option1';
+                setMultiOptions(prevOptions => ({
+                    ...prevOptions,
+                    [copiedField.id]: newMultiFileOption,
+                }));
+            } else if (fieldToCopy.type === 'multi-image') {
+                const newMultiimageOption = multiFileFieldsCount === 1 ? 'option1' : multiimagesOptions[fieldId] || 'option1';
+                setMultiimagesOptions(prevOptions => ({
+                    ...prevOptions,
+                    [copiedField.id]: newMultiimageOption,
+                }));
+            } else if (fieldToCopy.type === 'images') {
+                const newMultiOption = multiFileFieldsCount === 1 ? 'option1' : imageOptions[fieldId] || 'option1';
+                setImageOptions(prevOptions => ({
+                    ...prevOptions,
+                    [copiedField.id]: newMultiOption,
+                }));
+            }
+
+            return updatedFields;
+        });
     };
+
 
     const fetchPaymentPlan = async () => {
         try {
@@ -2050,6 +2091,17 @@ const Formgenerated = () => {
 
     return (
         <div>
+
+            {passwordpopop && (
+                <div className='form_builder_plan_upgrade_popup '>
+                    <div className='form_builder_plan_upgrade_popup_wrapp password-popup'>
+                        <p>Minimum password length should be 6 character</p>
+                        <div className="form_builder_upgrade_popup_cancle" onClick={() => setPasswordpopup(false)}>
+                            <img src={cancleimg} alt="" />
+                        </div>
+                    </div>
+                </div>)}
+
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>
                     <p>Need to Upgrade Your Plan To Create More Form</p>
@@ -2176,7 +2228,7 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button> </div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('slider')}><span className='form_builder_field_img'><img src={slider} alt="" /></span> <span><h4>Slider</h4></span></button> </div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro','pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro','pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                             </div>
                                         ) : (
                                             <div className='form-scroll-bar'>
@@ -2669,23 +2721,25 @@ const Formgenerated = () => {
                                                     onClick={() => handleFieldClick(field, index)}
                                                 >
                                                     {field.type === 'name' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            width: "100%",
-                                                            border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
+                                                        <div
+                                                            className={`input-field ${field.customClass}`}
+                                                            style={{
+                                                                width: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
                                                                     ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                             onMouseLeave={() => {
                                                                 if (!(selectedField && selectedField.id === field.id)) {
                                                                     setHoveredFieldId(null);
                                                                 }
-                                                            }} >
+                                                            }}>
 
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
@@ -2700,13 +2754,6 @@ const Formgenerated = () => {
                                                                             borderColor: inputborderColor,
                                                                             backgroundColor: inputBgColor,
                                                                             opacity: field.opacity || 1,
-
-                                                                        }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
                                                                         }}
                                                                         type="text"
                                                                         className="name"
@@ -2716,26 +2763,19 @@ const Formgenerated = () => {
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
                                                                         onChange={(e) => updateFieldProperty('name', e.target.value, field.id)}
-
                                                                     />
-
                                                                 </label>
 
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div
-                                                                        id="form-drag"
-                                                                        className={`form-builder-drag-drop ${((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) ? 'drag-active' : ''}`}
-                                                                    >
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
-
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
+
 
                                                     {field.type === 'text' && (
                                                         <div className={`input-field ${field.customClass}`} style={{
@@ -2780,11 +2820,9 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
@@ -2833,11 +2871,9 @@ const Formgenerated = () => {
                                                                     </div>
                                                                 </label>
                                                             </div>
-                                                            {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                <div id='form-drag' className='form-builder-drag-drop'>
-                                                                    <img src={drop} alt="Drag" />
-                                                                </div>
-                                                            )}
+                                                            <div
+                                                                id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                            </div>
                                                         </div>
                                                     )}
                                                     {field.type === 'description' && (
@@ -2932,11 +2968,9 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -2994,11 +3028,9 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -3048,11 +3080,9 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+                                                                    <div
+                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -3102,11 +3132,9 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -3214,11 +3242,9 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+                                                                    <div
+                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -3266,6 +3292,45 @@ const Formgenerated = () => {
                                                                                 onClick={(e) => e.preventDefault()}
                                                                             />
                                                                         ) : multiOptions[field.id] === 'option2' ? (
+                                                                            <div className="drag-and-drop-text third multifile-second" onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                                onMouseLeave={() => {
+                                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                                        setHoveredFieldId(null);
+                                                                                    }
+                                                                                }}
+                                                                                onClick={(e) => e.preventDefault()}
+                                                                                style={{
+                                                                                    border: (hoveredFieldId === field.id) ? '1px solid #33cba2' : '1px solid transparent',
+                                                                                    backgroundColor: hoveredFieldId === field.id ? '#e7f9f4' : 'transparent',
+                                                                                }}>
+                                                                                <div className='form-builder-chaneging-wrap file'>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined }}>
+                                                                                        <img src={multifile12} alt="" />
+                                                                                        <div className='email-files drop'>
+                                                                                            <h3 style={{
+                                                                                                color: "#404b52",
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                            }}>Drag & drop files or <span style={{ color: '#14b25c', textDecoration: 'underline' }}>Browse</span></h3>
+                                                                                            <p style={{
+                                                                                                color: '#676767',
+                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                                maxWidth: field.width === '25%' ? '100%' : undefined,
+                                                                                                marginBottom: field.width === '25%' ? '30px' : undefined,
+                                                                                            }}>Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, Al, Word, PPT</p>
+                                                                                            <span className='form-builder-changes-file-button'
+                                                                                                style={{
+                                                                                                    fontSize: field.width === '25%' ? '12px' : undefined,
+                                                                                                    padding: field.width === '25%' ? '10px 20px' : undefined,
+                                                                                                }}
+                                                                                            >Upload files</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : multiOptions[field.id] === 'option3' ? (
                                                                             <div className="drag-and-drop-text third  multifile-second" onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                                 onMouseLeave={() => {
                                                                                     if (!(selectedField && selectedField.id === field.id)) {
@@ -3297,56 +3362,16 @@ const Formgenerated = () => {
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        ) : multiOptions[field.id] === 'option3' ? (
-                                                                            <div className="drag-and-drop-text third multifile-second" onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                                onMouseLeave={() => {
-                                                                                    if (!(selectedField && selectedField.id === field.id)) {
-                                                                                        setHoveredFieldId(null);
-                                                                                    }
-                                                                                }}
-                                                                                onClick={(e) => e.preventDefault()}
-                                                                                style={{
-                                                                                    border: (hoveredFieldId === field.id) ? '1px solid #33cba2' : '1px solid transparent',
-                                                                                    backgroundColor: hoveredFieldId === field.id ? '#e7f9f4' : 'transparent',
-                                                                                }}>
-                                                                                <div className='form-builder-chaneging-wrap file'>
-                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
-                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined }}>
-                                                                                        <img src={multifile12} alt="" />
-                                                                                        <div className='email-files drop'>
-                                                                                            <h3 style={{
-                                                                                                color: "#404b52",
-                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
-                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
-                                                                                            }}>Drag & drop files or <span style={{ color: '#79c27c', textDecoration: 'underline' }}>Browse</span></h3>
-                                                                                            <p style={{
-                                                                                                color: '#676767',
-                                                                                                fontSize: field.width === '25%' ? '11px' : undefined,
-                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
-                                                                                                maxWidth: field.width === '25%' ? '100%' : undefined,
-                                                                                                marginBottom: field.width === '25%' ? '30px' : undefined,
-                                                                                            }}>Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, Al, Word, PPT</p>
-                                                                                            <span className='form-builder-changes-file-button'
-                                                                                                style={{
-                                                                                                    fontSize: field.width === '25%' ? '12px' : undefined,
-                                                                                                    padding: field.width === '25%' ? '10px 20px' : undefined,
-                                                                                                }}
-                                                                                            >Upload files</span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
+
                                                                         ) : null}
                                                                     </label>
 
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+                                                                    <div
+                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
 
                                                                 {selectedFiles.length > 0 && (
@@ -3369,31 +3394,40 @@ const Formgenerated = () => {
                                                     </div>
 
                                                     {field.type === 'number' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
+                                                        <div
+                                                            className={`input-field ${field.customClass}`}
+                                                            style={{
+                                                                width: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
                                                                     ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}>
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }}
+                                                        >
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
-                                                                    {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                    {field.label}
+                                                                    {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                     <input
                                                                         style={{
-                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            width: '100%',
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${inputRadious}px`,
+                                                                            borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
-                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                        }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
+                                                                            backgroundColor: inputBgColor,
+                                                                            opacity: field.opacity || 1,
                                                                         }}
                                                                         type="text"
                                                                         className="name"
@@ -3403,52 +3437,62 @@ const Formgenerated = () => {
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
                                                                         onInput={(e) => {
-                                                                            const sanitizedValue = e.target.value.replace(/[a-zA-Z]/g, '');
+
+                                                                            const sanitizedValue = e.target.value.replace(/[^\d]/g, '');
                                                                             e.target.value = sanitizedValue;
                                                                             updateFieldProperty('Number', sanitizedValue, field.id);
                                                                         }}
                                                                     />
-
                                                                 </label>
 
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+
+                                                                <div
+                                                                    id="form-drag"
+                                                                    className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                >
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
+
                                                     {field.type === 'email' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
+                                                        <div
+                                                            className={`input-field ${field.customClass}`}
+                                                            style={{
+                                                                width: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
                                                                     ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}>
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }}
+                                                        >
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
-
                                                                     {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                     <input
                                                                         style={{
-                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            width: '100%',
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${inputRadious}px`,
+                                                                            borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
-                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                        }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
+                                                                            backgroundColor: inputBgColor,
+                                                                            opacity: field.opacity || 1,
                                                                         }}
                                                                         type="email"
                                                                         className="name"
@@ -3463,14 +3507,16 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag"
+                                                                    className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                >
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
+
                                                     {field.type === 'phone' && (
                                                         <div className={`input-field phone-edit ${field.customClass}`} style={{
                                                             width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
@@ -3530,41 +3576,45 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
                                                     {field.type === 'password' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
+                                                        <div
+                                                            className={`input-field ${field.customClass}`}
+                                                            style={{
+                                                                width: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
                                                                     ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}>
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }}
+                                                        >
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
-
                                                                     {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                     <input
                                                                         style={{
-                                                                            padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${inputRadious}px`,
+                                                                            borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
-                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                        }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
+                                                                            backgroundColor: inputBgColor,
+                                                                            opacity: field.opacity || 1,
                                                                         }}
                                                                         type="password"
                                                                         className="name"
@@ -3579,40 +3629,51 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag"
+                                                                    className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                >
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
+
                                                     {field.type === 'url' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
+                                                        <div
+                                                            className={`input-field ${field.customClass}`}
+                                                            style={{
+                                                                width: "100%",
+                                                                border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                    ? '1px solid #33cba2'
+                                                                    : '1px solid transparent',
+                                                                backgroundColor: selectedField && selectedField.id === field.id
                                                                     ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}>
+                                                                    : hoveredFieldId === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : 'transparent',
+                                                            }}
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => {
+                                                                if (!(selectedField && selectedField.id === field.id)) {
+                                                                    setHoveredFieldId(null);
+                                                                }
+                                                            }}
+                                                        >
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
-                                                                    {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                    {field.label}
+                                                                    {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                     <input
                                                                         style={{
-                                                                            width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                            width: '100%',
+                                                                            padding: field.inputPadding,
+                                                                            borderRadius: `${inputRadious}px`,
+                                                                            borderWidth: `${inputwidth}px`,
                                                                             borderStyle: inputstyle,
                                                                             borderColor: inputborderColor,
-                                                                            backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                        }}
-                                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                        onMouseLeave={() => {
-                                                                            if (!(selectedField && selectedField.id === field.id)) {
-                                                                                setHoveredFieldId(null);
-                                                                            }
+                                                                            backgroundColor: inputBgColor,
+                                                                            opacity: field.opacity || 1,
                                                                         }}
                                                                         type="url"
                                                                         className="name"
@@ -3628,14 +3689,17 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+
+                                                                <div
+                                                                    id="form-drag"
+                                                                    className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                >
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
+
                                                     {field.type === 'location' && (
                                                         <div className={`input-field ${field.customClass}`} style={{
                                                             width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
@@ -3677,11 +3741,9 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
@@ -3727,43 +3789,49 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
 
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'date' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{
-                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                    ? '1px solid #33cba2'
-                                                                    : '1px solid transparent',
-                                                                backgroundColor: selectedField && selectedField.id === field.id
-                                                                    ? '#e7f9f4'
-                                                                    : hoveredFieldId === field.id
+                                                            <div
+                                                                className={`input-field ${field.customClass}`}
+                                                                style={{
+                                                                    width: "100%",
+                                                                    border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
                                                                         ? '#e7f9f4'
-                                                                        : 'transparent',
-                                                            }}>
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                }}
+                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                onMouseLeave={() => {
+                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                        setHoveredFieldId(null);
+                                                                    }
+                                                                }}
+                                                            >
                                                                 <div>
                                                                     <label style={{ color: labelColor }}>
-
-                                                                        {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                        {field.label}
+                                                                        {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                         <input
                                                                             style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                width: '100%',
+                                                                                padding: field.inputPadding,
+                                                                                borderRadius: `${inputRadious}px`,
+                                                                                borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
                                                                                 borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
+                                                                                backgroundColor: inputBgColor,
+                                                                                opacity: field.opacity || 1,
                                                                             }}
                                                                             type="date"
                                                                             className="name"
@@ -3779,43 +3847,54 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+
+                                                                    <div
+                                                                        id="form-drag"
+                                                                        className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                    >
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
                                                     </div>
+
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'datetime' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{
-                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                    ? '1px solid #33cba2'
-                                                                    : '1px solid transparent',
-                                                                backgroundColor: selectedField && selectedField.id === field.id
-                                                                    ? '#e7f9f4'
-                                                                    : hoveredFieldId === field.id
+                                                            <div
+                                                                className={`input-field ${field.customClass}`}
+                                                                style={{
+                                                                    width: "100%",
+                                                                    border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
                                                                         ? '#e7f9f4'
-                                                                        : 'transparent',
-                                                            }}>
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                }}
+                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                onMouseLeave={() => {
+                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                        setHoveredFieldId(null);
+                                                                    }
+                                                                }}
+                                                            >
                                                                 <div>
                                                                     <label style={{ color: labelColor }}>
-
-                                                                        {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                        {field.label}
+                                                                        {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                         <input
                                                                             style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                width: '100%',
+                                                                                padding: field.inputPadding,
+                                                                                borderRadius: `${inputRadious}px`,
+                                                                                borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
                                                                                 borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
+                                                                                backgroundColor: inputBgColor,
+                                                                                opacity: field.opacity || 1,
                                                                             }}
                                                                             type="datetime-local"
                                                                             className="name"
@@ -3827,46 +3906,58 @@ const Formgenerated = () => {
                                                                             onChange={(e) => updateFieldProperty('datetime', e.target.value, field.id)}
                                                                         />
                                                                     </label>
+
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+
+                                                                    <div
+                                                                        id="form-drag"
+                                                                        className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                    >
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
                                                     </div>
+
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'time' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{
-                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                    ? '1px solid #33cba2'
-                                                                    : '1px solid transparent',
-                                                                backgroundColor: selectedField && selectedField.id === field.id
-                                                                    ? '#e7f9f4'
-                                                                    : hoveredFieldId === field.id
+                                                            <div
+                                                                className={`input-field ${field.customClass}`}
+                                                                style={{
+                                                                    width: "100%",
+                                                                    border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
                                                                         ? '#e7f9f4'
-                                                                        : 'transparent',
-                                                            }}>
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                }}
+                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                onMouseLeave={() => {
+                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                        setHoveredFieldId(null);
+                                                                    }
+                                                                }}
+                                                            >
                                                                 <div>
                                                                     <label style={{ color: labelColor }}>
-
-                                                                        {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                        {field.label}
+                                                                        {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                         <input
                                                                             style={{
-                                                                                width: '100%', padding: field.inputPadding, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                                width: '100%',
+                                                                                padding: field.inputPadding,
+                                                                                borderRadius: `${inputRadious}px`,
+                                                                                borderWidth: `${inputwidth}px`,
                                                                                 borderStyle: inputstyle,
                                                                                 borderColor: inputborderColor,
-                                                                                backgroundColor: inputBgColor, opacity: field.opacity || 1,
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                            onMouseLeave={() => {
-                                                                                if (!(selectedField && selectedField.id === field.id)) {
-                                                                                    setHoveredFieldId(null);
-                                                                                }
+                                                                                backgroundColor: inputBgColor,
+                                                                                opacity: field.opacity || 1,
                                                                             }}
                                                                             type="time"
                                                                             className="name"
@@ -3882,15 +3973,18 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+
+                                                                    <div
+                                                                        id="form-drag"
+                                                                        className={`form-builder-drag-drop ${hoveredFieldId === field.id || (selectedField && selectedField.id === field.id) ? 'drag-active' : ''}`}
+                                                                    >
+                                                                        <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
                                                     </div>
+
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'slider' && (
                                                             <div className={`input-field ${field.customClass}`} style={{
@@ -3933,11 +4027,9 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+                                                                    <div
+                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -4047,11 +4139,9 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+                                                                    <div
+                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -4162,11 +4252,9 @@ const Formgenerated = () => {
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                        <div id='form-drag' className='form-builder-drag-drop'>
-                                                                            <img src={drop} alt="Drag" />
-                                                                        </div>
-                                                                    )}
+                                                                    <div
+                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                    </div>
                                                                 </div>
                                                                 {selectedimage.length > 0 && (
                                                                     <div className="selected-files">
@@ -4233,11 +4321,9 @@ const Formgenerated = () => {
                                                                 <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                     {field.description}
                                                                 </div>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -4269,11 +4355,9 @@ const Formgenerated = () => {
                                                                         </div>
                                                                     </div>
                                                                 </label>
-                                                                {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                    <div id='form-drag' className='form-builder-drag-drop'>
-                                                                        <img src={drop} alt="Drag" />
-                                                                    </div>
-                                                                )}
+                                                                <div
+                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                </div>
                                                             </div>
 
                                                         )}
@@ -4303,11 +4387,9 @@ const Formgenerated = () => {
                                                                     {field.description}
                                                                 </div>
                                                             </div>
-                                                            {((selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)) && (
-                                                                <div id='form-drag' className='form-builder-drag-drop'>
-                                                                    <img src={drop} alt="Drag" />
-                                                                </div>
-                                                            )}
+                                                            <div
+                                                                id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                            </div>
                                                         </div>
                                                     )}
 
@@ -5011,25 +5093,29 @@ const Formgenerated = () => {
                                                                 <div className='form-builder-chaneging-wrap password-wrapped'>
                                                                     <label>Password Options</label>
                                                                     <div className="form-builder-chaneging-wrap number password-creater character">
-                                                                        <div className='form-builder-chaneging-wrap-lable-passwoerd'>
-                                                                            <label>Min Character </label>
-                                                                            <p>Enter at least 6 character </p></div>
+                                                                        <div className="form-builder-chaneging-wrap-lable-passwoerd">
+                                                                            <label>Min Character</label>
+                                                                            <p>Enter at least 6 characters</p>
+                                                                        </div>
                                                                         <input
-                                                                            type="number"
-                                                                            min="6"
+                                                                            type="text"
                                                                             value={selectedField.passwordCharacter}
                                                                             onChange={(e) => {
-                                                                                const newValue = parseInt(e.target.value, 10);
+                                                                                const newValue = e.target.value;
+                                                                                const numericValue = Number(newValue);
 
-                                                                                if (newValue < 6) {
-                                                                                    alert("Minimum password length should be 6 characters.");
-                                                                                    updateFieldProperty('passwordCharacter', "6");
-                                                                                } else {
-                                                                                    updateFieldProperty('passwordCharacter', `${newValue}`);
+                                                                                if (!isNaN(numericValue) && numericValue < 6) {
+                                                                                    setPasswordpopup(true);
+                                                                                    updateFieldProperty('passwordCharacter', 6);
+                                                                                } else if (!isNaN(numericValue)) {
+                                                                                    updateFieldProperty('passwordCharacter', numericValue);
                                                                                 }
                                                                             }}
                                                                         />
+
+
                                                                     </div>
+
                                                                     <div className="form-builder-chaneging-wrap number password-creater">
                                                                         <div className='form-builder-chaneging-wrap-lable-passwoerd'>
                                                                             <label>Enable/Disable strong password</label>

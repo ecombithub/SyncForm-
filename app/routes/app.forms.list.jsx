@@ -9,8 +9,8 @@ import right from '../images/right1.png';
 import left from '../images/left1.png';
 import search12 from '../images/search12.png'
 import copy22 from '../images/copy222.png'
-import cancle1 from '../images/cancle1.png'
-import multifile12 from '../images/multifile12.png';
+import cancle1 from '../images/disconnect.png'
+import multifile12 from '../images/11.png';
 import multifile1 from '../images/multifile1.png';
 import multiimg from '../images/multiimg.png';
 import multiimg1 from '../images/multiimg1.png';
@@ -494,6 +494,7 @@ const Formdata = () => {
         }
         return uniqueId;
     };
+    
 
     return (
         <>
@@ -658,7 +659,7 @@ const Formdata = () => {
                                                             {currentForms.filter(form => form.status === view).map(form => (
                                                                 <tr key={form.formId}>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" >
-                                                                        <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} >{form.title}
+                                                                        <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} > {form.title.length > 10 ? `${form.title.substring(0, 10)}...` : form.title}
                                                                             <div class="noUi-tooltip">Edit</div>
                                                                         </div>
                                                                     </th>
@@ -668,7 +669,8 @@ const Formdata = () => {
                                                                         scope="col"
                                                                     >
                                                                         <div className="form-builder-wrpp-show-Polaris">
-                                                                            <div className='form-builder-form-id'>{form.formId}</div>
+                                                                        <span className="full-id">{form.formId}</span>
+                                                                        <span className="short-id">{form.formId.substring(0, 8)}...</span>
                                                                             <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
                                                                                 <img src={copy22} alt="" />
                                                                             </div>
@@ -839,7 +841,7 @@ const Formdata = () => {
                                                     margin: `${form.styles.marginForm}px 0`,
                                                     backgroundColor: 'transparent',
                                                     border: 0,
-                                                    boxShadow:0
+                                                    boxShadow: 0
                                                 }}
                                                 className="form-details"
                                             >
@@ -860,7 +862,7 @@ const Formdata = () => {
                                                         borderStyle: form.styles.borderStyle,
                                                         borderColor: form.styles.borderColor,
                                                         boxShadow: form.styles.boxShadow
-                                                      
+
 
                                                     }}
                                                 ></div>
@@ -891,6 +893,35 @@ const Formdata = () => {
                                                                 field.multiOptions[field.id] === 'option1' ? (
                                                                     <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
                                                                 ) : field.multiOptions[field.id] === 'option2' ? (
+                                                                    <div className="drag-and-drop-text third multifile-second">
+                                                                        <div className='form-builder-chaneging-wrap file'>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.width === '25%' ? '20px' : undefined }}>
+                                                                                <img src={multifile12} alt="" />
+                                                                                <div className='email-files drop'>
+                                                                                    <h3 style={{
+                                                                                        color: "#404b52",
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                    }}>Drag & drop files or <span style={{ color: '#14b25c', textDecoration: 'underline' }}>Browse</span></h3>
+                                                                                    <p style={{
+                                                                                        color: '#676767',
+                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                        maxWidth: field.width === '25%' ? '100%' : undefined,
+                                                                                        marginBottom: field.width === '25%' ? '30px' : undefined,
+                                                                                    }}>Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, Al, Word, PPT</p>
+                                                                                    <span className='form-builder-changes-file-button'
+                                                                                        style={{
+                                                                                            fontSize: field.width === '25%' ? '12px' : undefined,
+                                                                                            padding: field.width === '25%' ? '10px 20px' : undefined,
+                                                                                        }}
+                                                                                    >Upload files</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : field.multiOptions[field.id] === 'option3' ? (
                                                                     <div className="drag-and-drop-text third  multifile-second">
                                                                         <div className='form-builder-chaneging-wrap file multifile1 '>
                                                                             <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
@@ -912,35 +943,7 @@ const Formdata = () => {
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                ) : field.multiOptions[field.id] === 'option3' ? (
-                                                                    <div className="drag-and-drop-text third multifile-second">
-                                                                        <div className='form-builder-chaneging-wrap file'>
-                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
-                                                                            <div className='form-builder-changes-file-wraped' required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.width === '25%' ? '20px' : undefined }}>
-                                                                                <img src={multifile12} alt="" />
-                                                                                <div className='email-files drop'>
-                                                                                    <h3 style={{
-                                                                                        color: "#404b52",
-                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
-                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
-                                                                                    }}>Drag & drop files or <span style={{ color: '#79c27c', textDecoration: 'underline' }}>Browse</span></h3>
-                                                                                    <p style={{
-                                                                                        color: '#676767',
-                                                                                        fontSize: field.width === '25%' ? '11px' : undefined,
-                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
-                                                                                        maxWidth: field.width === '25%' ? '100%' : undefined,
-                                                                                        marginBottom: field.width === '25%' ? '30px' : undefined,
-                                                                                    }}>Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, Al, Word, PPT</p>
-                                                                                    <span className='form-builder-changes-file-button'
-                                                                                        style={{
-                                                                                            fontSize: field.width === '25%' ? '12px' : undefined,
-                                                                                            padding: field.width === '25%' ? '10px 20px' : undefined,
-                                                                                        }}
-                                                                                    >Upload files</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+
                                                                 ) : null
                                                             )}
                                                             {field.type === 'file' && (
@@ -1017,7 +1020,7 @@ const Formdata = () => {
                                                                             borderColor: form.styles.inputborderColor,
                                                                             backgroundColor: form.styles.inputBgColor,
                                                                             width: '100%',
-                                                                             height:'50px'
+                                                                            height: '50px'
                                                                         }}
                                                                         buttonStyle={{
                                                                             borderRadius: `${form.styles.inputRadious}px`,
@@ -1158,7 +1161,7 @@ const Formdata = () => {
                                                             }}> <label>{field.label}</label> </button></div>}
 
                                                             {field.type === 'divider' && (
-                                                                <div style={{display:'flex', justifyContent: field.dividerAline}}><hr required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ border: '1px solid ' + (field.dividerColor || '#000'),width: field.dividerWidth, margin:'0' }} /></div>
+                                                                <div style={{ display: 'flex', justifyContent: field.dividerAline }}><hr required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: field.dividerWidth, margin: '0' }} /></div>
                                                             )}
                                                             {field.type === 'radio' && (
                                                                 <div style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }}>
@@ -1226,7 +1229,7 @@ const Formdata = () => {
                     </div>
                 </div >
             )}
-          <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
         </>
     );
 };

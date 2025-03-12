@@ -1030,13 +1030,14 @@ button.procduct-canclebtn img {
 
 .form-builder-icon-delete {
     position: absolute;
-    top: 5px;
-    right: 30px;
+    top: -16px;
+    right: 15px;
     cursor: pointer;
 }
 
 .form-builder-icon-delete img {
     position: fixed;
+    width: 30px;
 }
 
 
@@ -2695,15 +2696,32 @@ span.name_build span {
 }
 
 .form-names-list.show {
-    max-height: 500px;
+    max-height: 290px;
     opacity: 1;
     z-index: 99;
+    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    border: 1px solid #dddbdb;
 }
+
+
+.form_builder_customer .form_building_popupshow {
+    height: 70vh;
+    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
 
 .form-names-list div {
     padding: 8px 12px;
     cursor: pointer;
     transition: background-color 0.2s;
+}
+
+span.short-id {
+    display: none;
 }
 
 .form-names-list div:hover {
@@ -2724,7 +2742,7 @@ span.name_build span {
 
 .form-names-list {
     position: absolute;
-    background: #afa5a5;
+    background: #F6F6F6;
     color: #4a4a4a;
     width: 100%;
     left: 0;
@@ -4132,6 +4150,21 @@ button.btn-templates {
     border-radius: 10px;
     width: 100%;
     max-width: 50%;
+    position: relative;
+}
+
+.form_builder_delete_icon {
+    position: absolute;
+    right: -8px;
+    top: -12px;
+}
+
+.form_builder_delete_icon img {
+    width: 100%;
+}
+
+.form_builder_delete_icon {
+    width: 30px;
 }
 
 .form-builder-delete-popup .form-builder-create-wrped.popup .form-builder-delete-popup-pop .form_builder_delete_text_flex {
@@ -4149,12 +4182,18 @@ button.btn-templates {
 
 .form-builder-delete-popup .form_delete_btn {
     padding: 20px;
-    float: right;
+    display: flex;
+    justify-content: center;
     display: flex;
     gap: 10px;
     font-size: 13px;
     font-weight: 600;
 
+}
+
+.form_builder_delete_text {
+    text-align: center;
+    width: 100%;
 }
 
 .form-builder-delete-popup .form_delete_btn .form_delete {
@@ -4329,13 +4368,27 @@ button.btn-templates {
     float: right;
     cursor: pointer;
     position: absolute;
-    right: 3%;
-    top: 1%;
+    right: 13px;
+    top: -16px;
     z-index: 9999;
+}
+
+.form_builder_plan_upgrade_popup_wrapp.password-popup {
+    background-image: url(/app/images/passwordpopup.png);
+    height: 220px;
+    max-width: 27%;
+    display: flex;
+}
+
+.form_builder_plan_upgrade_popup_wrapp.password-popup p {
+    max-width: 79%;
+    font-size: 24px;
+    font-weight: 600;
 }
 
 .email-template-reviw-popup .form-builder-icon-deleted img {
     position: fixed;
+    width: 30px;
 }
 
 .email-template-section .form-builder-create.section-wrp {
@@ -4538,7 +4591,7 @@ span.form-builder-changes-file-button {
     background: #00ac4f;
     border-radius: 31px;
     padding: 5px 22px;
-    font-size: 17px;
+    font-size: 15px;
     border: 0;
 }
 
@@ -5049,7 +5102,7 @@ button.remove-options img {
     background: #23c66d;
     height: 100%;
     padding: 10px;
-    transition: height 0.2s ease;
+    /* transition: height 0.2s ease; */
     border-radius: 0 4px 4px 0;
     width: 40px;
     top: 0;
@@ -5897,6 +5950,10 @@ button.form_email_btn {
         padding: 0 20px;
     }
 
+    .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 40%;
+    }
+
     .email-campaing-templates .forms_build_flex-wraped {
         margin-bottom: 30px;
     }
@@ -6086,6 +6143,14 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1280px) {
+    span.full-id {
+        display: none;
+    }
+
+    span.short-id {
+        display: block;
+    }
+
     .form_build_new_base {
         padding: 20px 20px;
     }
@@ -6145,6 +6210,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1024px) {
+    .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 60%;
+    }
+
     .builder-container.forms.text .checkbox-option.bg-colors {
         display: block;
         margin: 0;
@@ -6153,6 +6222,7 @@ button.form_email_btn {
     .builder-container.forms.text .edit_setting_bg.form .checkbox-option.bg-colors label {
         line-height: 30px;
     }
+
     .builder-container.forms.text .color-picker-container {
         padding: 1px 5px;
         width: 100%;
@@ -6890,18 +6960,20 @@ button.form_email_btn {
         margin-bottom: 20px;
     }
 
-    .form_build_cancle_option {
-        position: absolute;
-        top: -4%;
-        right: -6%;
-    }
-
     .email-template-section .pagination {
         padding: 75px 0 40px 0px;
     }
 }
 
 @media screen and (max-width: 768px) {
+    .form_build_cancle_option {
+        right: -3%;
+        top: 0;
+    }
+    .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 90%;
+    }
+
     .form-builder-wrap-popup-inputs.requid-fields .popup-content {
         max-width: 60% !important;
     }
@@ -7123,6 +7195,7 @@ button.form_email_btn {
         gap: 20px;
         justify-content: left;
     }
+
     .email-templete-use-add .form-builder-search-bar {
         width: 100% !important;
         max-width: 45% !important;
@@ -7293,6 +7366,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .form_builder_plan_upgrade_popup_wrapp.password-popup p {
+        max-width: 90%;
+    }
+
     .form-builder-email-templete-popup {
         max-width: 100%;
     }
@@ -7857,6 +7934,13 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:390px) {
+    .form_builder_plan_upgrade_popup_wrapp.password-popup p {
+        max-width: 100%;
+        font-size: 19px;
+        font-weight: 600;
+        line-height: 23px;
+    }
+
     .email-template-section .email-tempalte-your .form-builder-search-bar {
         width: 45% !important;
     }
@@ -8208,7 +8292,7 @@ button.form_email_btn {
     padding-top: 15px;
 }
 
-.form-builder-chaneging-wrap.number.password-creater input[type="number"] {
+.form-builder-chaneging-wrap.number.password-creater input[type="text"] {
     width: 54px;
     text-align: center;
 }
@@ -8220,11 +8304,6 @@ button.form_email_btn {
 .form-builder-chaneging-wrap-lable-passwoerd p {
     font-size: 11px;
 }
-
-
-
-
-
 
 
 .switch-form-builder {
@@ -8270,4 +8349,17 @@ button.form_email_btn {
 
 .switch-form-builder input:checked+.slider-switch-form-builder::before {
     transform: translateX(21px);
+}
+
+
+.form-builder-drag-drop {
+    display: none;
+}
+
+.input-field:hover .form-builder-drag-drop {
+    display: flex;
+}
+
+.shwo-unlimited-form-data img.show-img {
+    width: 21px;
 }

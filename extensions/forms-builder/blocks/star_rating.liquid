@@ -13,98 +13,234 @@
     "
   ></form>
   <div id="nofieldValue" style="display: none; color: red; font-size: 14px;"></div>
+  <div id="single-file" style="display: none;">
+    <div id="form-builder-popup">
+      <div id="form-builder-popup-file">
+        <p>Maximum allowed size is 50MB</p>
+        <div class="form-builder-close">
+          <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/cancleimg.png?v=1741704074" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="multies-upload-file" style="display: none;">
+    <div id="form-builder-popup">
+      <div id="form-builder-popup-file">
+        <p>Maximum allowed size is 25MB</p>
+        <div class="form-builder-multies-close">
+          <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/cancleimg.png?v=1741704074" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="multies-upload-file-files-all" style="display: none;">
+    <div id="form-builder-popup">
+      <div id="form-builder-popup-file" class = "form-builder-files-max">
+        <p>You can only upload a maximum of 10 files</p>
+        <div class="form-builder-files-all-close">
+          <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/cancleimg.png?v=1741704074" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>
-
-  .form_builder_app input {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-.form_builder_app textarea {
-  outline: none !important;
-  box-shadow: none !important;
-}
-  .form_builder_app input {
-    font-size: 15px !important;
-}
-
-.form_builder_app select {
-  font-size: 15px !important;
-}
-
-.form_builder_app textarea {
-  font-size: 15px !important;
-}
-  img.form-builder-wred-starr-requid {
-    width: 7px;
-    top: 3px;
-    height: 7px;
-    margin-left: 5px;
+  .form-builder-files-max{
+    background-image: url("https://cdn.shopify.com/s/files/1/0682/5974/1942/files/Group_1000001946_bd1a3027-33f7-412b-83d5-9ab3b98af53e.png?v=1741709386")!important;
   }
-
-  .form_radio_flex input {
-    width: 20px;
-    height: 20px;
-    margin: 0;
-  }
-  .form_checkbox_flex input {
-    margin: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  img.form-builder-wred-starr-requid.toggle {
+  .form-builder-close img {
+    width: 100%;
+    } 
+  .form-builder-close {
     position: absolute;
-  }
+    right: -13px;
+    top: -11px;
+    width: 30px;
+    cursor: pointer;
+  } 
 
-  .input-field.input-gap label {
-    display: flex;
-  }
-  .input-field.input-gap .iti__flag-container {
-    border: 1px solid grey;
-    border-radius: 5px;
-    width:44px;
-  }
+  .form-builder-files-all-close img {
+    width: 100%;
+  } 
 
-  .form_builder_app .iti__flag {
-    display: block !important;
-  }
-
-  .form_builder_app ul {
-    padding: 0;
-  }
-
-  img.brand-logos {
+  .form-builder-files-all-close{
     position: absolute;
-    right: 10px;
-    bottom: 10px;
+    right: -13px;
+    top: -11px;
+    width: 30px;
+    cursor: pointer;
   }
 
-  @media screen and (max-width: 540px) {
-    .form_builder_app .form-builder-changes-file-wraped .email-files.drop {
-      width: 50% !important;
+  .form-builder-multies-close img {
+    width: 100%;
+    }  
+
+  .form-builder-multies-close{
+    position: absolute;
+    right: -13px;
+    top: -11px;
+    width: 30px;
+    cursor: pointer;
+  }
+    #form-builder-popup {
+      position: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       margin: auto;
-    }
-    .form-builder-chaneging-wrap.file .email-files.drop.files {
-      width: 100% !important;
-    }
-
-    .form-builder-chaneging-wrap.file .email-files.drop.files p {
-      max-width: 80% !important;
-      margin-bottom: 20px !important;
-    }
-    .form-builder-chaneging-wrap.file .email-files.drop.files span {
-      padding: 10px 12px !important;
-    }
-
-    .drag-and-drop-text.first.multi-imagess h3 {
-      margin-bottom: 20px !important;
-      font-size: 16px !important;
-      line-height: 20px !important;
-    }
+      width: 100%;
+      max-width: 100%;
+      top: 0%;
+      background-color: rgba(0, 0, 0, 0.5);
+      height: 100vh;
+      z-index: 99999;
   }
+
+  div#form-builder-popup-file p {
+    max-width: 50%;
+    font-size: 30px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 38px;
+}
+
+  #form-builder-popup-file {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+      background-color:white;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-image: url("https://cdn.shopify.com/s/files/1/0682/5974/1942/files/Group_1000001961.png?v=1741705190");
+      width: 526px;
+      height: 293px;
+      border-radius: 20px;
+  }
+
+  #form-builder-popup-file button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+
+  #form-builder-popup-file button:hover {
+      background-color: #d32f2f;
+  }
+      .email-files.drop.files h2 {
+        margin: 0;
+     }
+      .form_builder_app .iti__arrow {
+        display: block !important;
+    }
+
+      .form_builder_app input {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .form_builder_app textarea {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+      .form_builder_app input {
+        font-size: 15px !important;
+    }
+
+    .form_builder_app select {
+      font-size: 15px !important;
+    }
+
+    .form_builder_app textarea {
+      font-size: 15px !important;
+    }
+      img.form-builder-wred-starr-requid {
+        width: 7px;
+        top: 3px;
+        height: 7px;
+        margin-left: 5px;
+      }
+
+      .form_radio_flex input {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+      }
+      .form_checkbox_flex input {
+        margin: 0;
+        width: 20px;
+        height: 20px;
+      }
+
+      img.form-builder-wred-starr-requid.toggle {
+        position: absolute;
+      }
+
+      .input-field.input-gap label {
+        display: flex;
+      }
+      .input-field.input-gap .iti__flag-container {
+        border: 1px solid grey;
+        border-radius: 5px;
+        width:44px;
+      }
+
+      .form_builder_app .iti__flag {
+        display: block !important;
+      }
+
+      .form_builder_app ul {
+        padding: 0;
+      }
+
+      img.brand-logos {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+      }
+
+      @media screen and (max-width: 640px) {
+        .small-width {
+          width: 50% !important;
+        }
+      }
+
+      @media screen and (max-width: 540px) {
+        .form_builder_app .form-builder-changes-file-wraped .email-files.drop {
+          width: 50% !important;
+          margin: auto;
+        }
+        .form-builder-chaneging-wrap.file .email-files.drop.files {
+          width: 100% !important;
+        }
+
+        .form-builder-chaneging-wrap.file .email-files.drop.files p {
+          max-width: 80% !important;
+          margin-bottom: 20px !important;
+        }
+        .form-builder-chaneging-wrap.file .email-files.drop.files span {
+          padding: 10px 12px !important;
+        }
+
+        .drag-and-drop-text.first.multi-imagess h3 {
+          margin-bottom: 20px !important;
+          font-size: 16px !important;
+          line-height: 20px !important;
+        }
+      }
+
+      @media screen and (max-width: 540px) {
+      .small-width {
+        width: 100% !important;
+    }
+    }
+    }
 </style>
 <script>
 
@@ -121,64 +257,68 @@
     });
 });
 
-  function toggleDropdown(event, fieldName) {
-    event.preventDefault();
-    const dropdown = document.getElementById(`dropdown-${fieldName}`);
-    const selectBox = dropdown.previousElementSibling;
-    const arrowSpan = selectBox.querySelector('span:last-child');
+function toggleDropdown(event, fieldId) {
+  event.preventDefault();
+  const dropdown = document.getElementById(`dropdown-${fieldId}`);
+  const selectBox = dropdown.previousElementSibling;
+  const arrowSpan = selectBox.querySelector('span:last-child');
 
-    const isVisible = dropdown.style.display === 'block';
-    dropdown.style.display = isVisible ? 'none' : 'block';
-    arrowSpan.textContent = isVisible ? '▼' : '▲';
-  }
+  const isVisible = dropdown.style.display === 'block';
+  dropdown.style.display = isVisible ? 'none' : 'block';
 
-  document.addEventListener('click', function (event) {
-    const selectContainers = document.querySelectorAll('.custom-select-container');
+  arrowSpan.innerHTML = isVisible
+    ? '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373"style = "width:15px;">'
+    : '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/5yhh.png?v=1741756624" style = "width:15px;">';
+}
 
-    selectContainers.forEach((container) => {
-      if (!container.contains(event.target)) {
-        const dropdown = container.querySelector('.custom-select-dropdown');
-        if (dropdown) {
-          dropdown.style.display = 'none';
+document.addEventListener('click', function (event) {
+  const selectContainers = document.querySelectorAll('.custom-select-container');
 
-          const selectBox = container.querySelector('.custom-select-box');
-          const arrowSpan = selectBox.querySelector('span:last-child');
-          arrowSpan.textContent = '▼';
-        }
+  selectContainers.forEach((container) => {
+    if (!container.contains(event.target)) {
+      const dropdown = container.querySelector('.custom-select-dropdown');
+      if (dropdown) {
+        dropdown.style.display = 'none';
+
+        const selectBox = container.querySelector('.custom-select-box');
+        const arrowSpan = selectBox.querySelector('span:last-child');
+        arrowSpan.innerHTML = '▼';
       }
-    });
-  });
-
-  function filterOptions(event, fieldName) {
-    const searchInput = event.target.value.toLowerCase();
-    const optionsContainer = document.querySelector(`#dropdown-${fieldName} .options-container`);
-    const options = optionsContainer.querySelectorAll('.custom-select-option');
-
-    options.forEach((option) => {
-      const text = option.textContent.toLowerCase();
-      option.style.display = text.includes(searchInput) ? 'block' : 'none';
-    });
-  }
-
-  document.addEventListener('click', function (event) {
-    if (event.target.classList.contains('custom-select-option')) {
-      const selectedValue = event.target.getAttribute('data-value');
-      const selectedLabel = event.target.textContent;
-
-      const selectBox = event.target
-        .closest('.custom-select-container')
-        .querySelector('.custom-select-box span:first-child');
-      selectBox.textContent = selectedLabel;
-
-      const dropdown = event.target.closest('.custom-select-dropdown');
-      dropdown.style.display = 'none';
-
-      const arrowSpan = selectBox.nextElementSibling;
-      arrowSpan.textContent = '▼';
-
-      console.log('Selected Value:', selectedValue);
     }
   });
+});
+
+
+function filterOptions(event, fieldId) {
+  const searchInput = event.target.value.toLowerCase();
+  const optionsContainer = document.querySelector(`#dropdown-${fieldId} .options-container`);
+  const options = optionsContainer.querySelectorAll('.custom-select-option');
+
+  options.forEach((option) => {
+    const text = option.textContent.toLowerCase();
+    option.style.display = text.includes(searchInput) ? 'block' : 'none';
+  });
+}
+
+document.addEventListener('click', function (event) {
+  if (event.target.classList.contains('custom-select-option')) {
+    const selectedValue = event.target.getAttribute('data-value');
+    const selectedLabel = event.target.textContent;
+
+    const selectBox = event.target
+      .closest('.custom-select-container')
+      .querySelector('.custom-select-box span:first-child');
+    selectBox.textContent = selectedLabel;
+
+    const dropdown = event.target.closest('.custom-select-dropdown');
+    dropdown.style.display = 'none';
+
+    const arrowSpan = selectBox.nextElementSibling;
+    arrowSpan.textContent = '▼';
+
+    console.log('Selected Value:', selectedValue);
+  }
+});
 
   var handleClickImages = (fileInputId) => {
     const fileInput = document.getElementById(fileInputId);
@@ -199,11 +339,23 @@
     const validFiles = Array.from(files).filter((file) => {
       if (file.size > maxSize) {
         console.error(`File "${file.name}" exceeds the 50MB limit.`);
-        alert(`File "${file.name}" is too large. Maximum allowed size is 50MB.`);
+        const fileMessageDiv = document.getElementById('single-file');
+        if (fileMessageDiv) {
+        fileMessageDiv.style.display = 'block'; 
+        }
         return false;
       }
       return true;
     });
+    const closeButton = document.querySelector('.form-builder-close');
+    if (closeButton) {
+    closeButton.addEventListener('click', () => {
+        const fileMessageDiv = document.getElementById('single-file');
+        if (fileMessageDiv) {
+            fileMessageDiv.style.display = 'none';
+        }
+    });
+   }
 
     if (validFiles.length > 0) {
       displayimagesNames(validFiles, fieldId, fieldLabel, fieldImagePreview, fieldsignlePreview);
@@ -230,11 +382,25 @@
     const validFiles = Array.from(files).filter((file) => {
       if (file.size > maxSize) {
         console.error(`File "${file.name}" exceeds the 50MB limit.`);
-        alert(`File "${file.name}" is too large. Maximum allowed size is 50MB.`);
+        const fileMessageDiv = document.getElementById('single-file');
+        if (fileMessageDiv) {
+        fileMessageDiv.style.display = 'block'; 
+        }
         return false;
       }
       return true;
     });
+
+    const closeButton = document.querySelector('.form-builder-close');
+    if (closeButton) {
+    closeButton.addEventListener('click', () => {
+        const fileMessageDiv = document.getElementById('single-file');
+        if (fileMessageDiv) {
+            fileMessageDiv.style.display = 'none';
+        }
+    });
+   }
+
 
     if (validFiles.length > 0) {
       displayimagesNames(validFiles, fieldId, fieldLabel, fieldImagePreview, fieldsignlePreview);
@@ -245,12 +411,13 @@
 
   function displayimagesNames(files, fieldId, fieldLabel, fieldImagePreview, fieldsignlePreview) {
     let fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
-
+  
     if (!fileNamesList) {
       console.log(`Element with id "file-names-list-${fieldId}" not found. Creating it.`);
       const formBuilderContainer = document
         .querySelector(`#file-input-${fieldId}`)
         .closest('.form-builder-chaneging-wrap');
+      
       if (formBuilderContainer) {
         const ul = document.createElement('ul');
         ul.id = `file-names-list-${fieldId}`;
@@ -258,74 +425,79 @@
         fileNamesList = ul;
       }
     }
-
+  
     fileNamesList.innerHTML = '';
-
+  
     if (!uploadeImages[fieldId]) {
       uploadeImages[fieldId] = [];
     }
-
-    console.log(`Field Label: ${fieldLabel} (Field ID: ${fieldId}) - Uploading files:`);
-
+  
     Array.from(files).forEach((file) => {
       if (uploadeImages[fieldId].some((existingFile) => existingFile.name === file.name)) {
         console.warn(`File "${file.name}" already added. Skipping.`);
         return;
       }
-
+  
       const li = document.createElement('li');
+      li.style.border = '1px solid #ddd';
+      li.style.padding = '8px';
+      li.style.marginBottom = '5px';
       li.style.display = 'flex';
       li.style.justifyContent = 'space-between';
       li.style.alignItems = 'center';
+      li.style.gap = '20px'; 
 
       const fileName = document.createElement('span');
       fileName.textContent = file.name;
       fileName.style.flex = '1';
-
+  
       const removeButton = document.createElement('button');
       removeButton.style.padding = '0';
       removeButton.style.border = 'none';
       removeButton.style.background = 'none';
-
+  
       const reader = new FileReader();
       reader.onload = function (e) {
         const imagePreview = document.createElement('img');
         imagePreview.style.width = '40px';
         imagePreview.style.maxHeight = '40px';
-        imagePreview.style.marginRight = '10px';
         imagePreview.src = e.target.result;
-
+  
         uploadeImages[fieldId].push({
           name: file.name,
           base64: e.target.result,
           label: fieldLabel,
         });
 
-        removeButton.onclick = () => {
-          removeFile(file.name, fieldId, fileNamesList, li);
+        const removeImage = document.createElement('img');
+        removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
+        removeImage.alt = 'Remove';
+        removeImage.style.width = '20px';
+        removeImage.style.height = '20px';
+        removeImage.style.cursor = 'pointer';
+  
+        removeImage.onclick = () => {
+          uploadeImages[fieldId] = uploadeImages[fieldId].filter((uploadedFile) => uploadedFile.name !== file.name);
+          li.remove();
+          console.log(`Removed file: ${file.name}`);
         };
 
         li.appendChild(fileName);
-        if (fieldImagePreview === 'on') {
-          imagePreview.src = e.target.result;
+        if (fieldImagePreview === 'on' || fieldsignlePreview === 'on') {
           li.appendChild(imagePreview);
         }
-        if (fieldsignlePreview === 'on') {
-          imagePreview.src = e.target.result;
-          li.appendChild(imagePreview);
-        }
-
-        li.appendChild(removeButton);
+  
+        li.appendChild(removeImage);
         fileNamesList.appendChild(li);
       };
-
+  
       reader.readAsDataURL(file);
-
+  
       console.log(`Field Label: ${fieldLabel} - Added file: ${file.name}`);
     });
-
+  
     console.log('Final Uploaded Files:', uploadeImages);
-  }
+}
 
   function handleClickmulti(fileInputId) {
     const fileInput = document.getElementById(fileInputId);
@@ -345,18 +517,44 @@
     const maxSize = 25 * 1024 * 1024;
 
     if (files.length > maxFiles) {
-      alert('You can only upload a maximum of 10 files.');
+      const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+      if (fileMessageDiv1) {
+        fileMessageDiv1.style.display = 'block'; 
+      }
       return;
     }
 
     const validFiles = Array.from(files).filter((file) => {
       if (file.size > maxSize) {
         console.error(`File "${file.name}" exceeds the 25MB limit.`);
-        alert(`File "${file.name}" is too large. Maximum allowed size is 25MB.`);
+        const fileMessageDiv = document.getElementById('multies-upload-file');
+        if (fileMessageDiv) {
+        fileMessageDiv.style.display = 'block'; 
+        }
         return false;
       }
       return true;
     });
+
+    const closeButton1 = document.querySelector('.form-builder-files-all-close');
+    if (closeButton1) {
+        closeButton1.addEventListener('click', () => {
+            const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+            if (fileMessageDiv1) {
+                fileMessageDiv1.style.display = 'none'; 
+            }
+        });
+    }
+
+    const closeButton = document.querySelector('.form-builder-multies-close');
+    if (closeButton) {
+    closeButton.addEventListener('click', () => {
+        const fileMessageDiv = document.getElementById('multies-upload-file');
+        if (fileMessageDiv) {
+            fileMessageDiv.style.display = 'none';
+        }
+    });
+   }
 
     if (validFiles.length > 0) {
       console.log('Valid files:', validFiles);
@@ -380,27 +578,53 @@
 
     const files = event.dataTransfer.files;
     const maxFiles = 10;
-    const maxSize = 25 * 1024 * 1024;
+    const maxSize = 25 * 1024 * 1024; 
 
-    if (files.length > 10) {
-      alert('You can only drop a maximum of 10 files at a time.');
-      return;
+    if (files.length > maxFiles) {
+      const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+      if (fileMessageDiv1) {
+        fileMessageDiv1.style.display = 'block'; 
+      }
+      return; 
     }
 
     const validFiles = Array.from(files).filter((file) => {
       if (file.size > maxSize) {
-        console.error(`File "${file.name}" exceeds the 25MB limit.`);
-        alert(`File "${file.name}" is too large. Maximum allowed size is 25MB.`);
-        return false;
+        console.error(`File "${file.name}" exceeds the 25MB limit.`); 
+        const fileMessageDiv = document.getElementById('multies-upload-file');
+        if (fileMessageDiv) {
+          fileMessageDiv.style.display = 'block';
+        }
+        return false; 
       }
-      return true;
+      return true; 
     });
+
+    const closeButton1 = document.querySelector('.form-builder-files-all-close');
+    if (closeButton1) {
+        closeButton1.addEventListener('click', () => {
+            const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+            if (fileMessageDiv1) {
+                fileMessageDiv1.style.display = 'none';
+            }
+        });
+    }
+
+    const closeButton = document.querySelector('.form-builder-multies-close');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            const fileMessageDiv = document.getElementById('multies-upload-file');
+            if (fileMessageDiv) {
+                fileMessageDiv.style.display = 'none'; 
+            }
+        });
+    }
 
     if (validFiles.length > 0) {
       console.log('Valid files:', validFiles);
-      displayFileNames(validFiles, fieldId, fieldLabel, fieldmultifilePreview);
+      displayFileNames(validFiles, fieldId, fieldLabel, fieldmultifilePreview); 
     }
-  }
+}
 
   var uploadedmulti = {};
 
@@ -438,6 +662,7 @@
       li.style.display = 'flex';
       li.style.justifyContent = 'space-between';
       li.style.alignItems = 'center';
+      li.style.gap = '20px'; 
 
       const fileName = document.createElement('span');
       fileName.textContent = file.name;
@@ -521,13 +746,54 @@
 
   function handleFileInputChange(event, fieldId, fieldLabel, fieldmultiIamgePreview) {
     const files = event.target.files;
-    if (files.length > 10) {
-      alert('You can only upload a maximum of 10 files.');
+    const maxFiles = 10;
+    const maxSize = 25 * 1024 * 1024;
+
+    if (files.length > maxFiles) {
+      const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+      if (fileMessageDiv1) {
+        fileMessageDiv1.style.display = 'block'; 
+      }
       return;
     }
 
-    console.log('Files from file input:', files);
-    displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
+    const validFiles = Array.from(files).filter((file) => {
+      if (file.size > maxSize) {
+        console.error(`File "${file.name}" exceeds the 25MB limit.`);
+        const fileMessageDiv = document.getElementById('multies-upload-file');
+        if (fileMessageDiv) {
+        fileMessageDiv.style.display = 'block'; 
+        }
+        return false;
+      }
+      return true;
+    });
+
+    const closeButton1 = document.querySelector('.form-builder-files-all-close');
+    if (closeButton1) {
+        closeButton1.addEventListener('click', () => {
+            const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+            if (fileMessageDiv1) {
+                fileMessageDiv1.style.display = 'none';
+            }
+        });
+    }
+
+    const closeButton = document.querySelector('.form-builder-multies-close');
+    if (closeButton) {
+    closeButton.addEventListener('click', () => {
+        const fileMessageDiv = document.getElementById('multies-upload-file');
+        if (fileMessageDiv) {
+            fileMessageDiv.style.display = 'none';
+        }
+    });
+   }
+
+    if (validFiles.length > 0) {
+      console.log('Valid files:', validFiles);
+      displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
+    }
+ 
   }
 
   function handleDrop(event, fieldId, fieldLabel, fieldmultiIamgePreview) {
@@ -545,12 +811,51 @@
     }
 
     const files = event.dataTransfer.files;
-    if (files.length > 10) {
-      alert('You can only drop a maximum of 10 files at a time.');
-      return;
+    const maxFiles = 10;
+    const maxSize = 25 * 1024 * 1024; 
+    if (files.length > maxFiles) {
+      const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+      if (fileMessageDiv1) {
+        fileMessageDiv1.style.display = 'block'; 
+      }
     }
-    displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
-  }
+
+    const validFiles = Array.from(files).filter((file) => {
+      if (file.size > maxSize) {
+        console.error(`File "${file.name}" exceeds the 25MB limit.`); 
+        const fileMessageDiv = document.getElementById('multies-upload-file');
+        if (fileMessageDiv) {
+          fileMessageDiv.style.display = 'block'; 
+        }
+        return false; 
+      }
+      return true; 
+    });
+
+    const closeButton1 = document.querySelector('.form-builder-files-all-close');
+    if (closeButton1) {
+        closeButton1.addEventListener('click', () => {
+            const fileMessageDiv1 = document.getElementById('multies-upload-file-files-all');
+            if (fileMessageDiv1) {
+                fileMessageDiv1.style.display = 'none';
+            }
+        });
+    }
+
+    const closeButton = document.querySelector('.form-builder-multies-close');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            const fileMessageDiv = document.getElementById('multies-upload-file');
+            if (fileMessageDiv) {
+                fileMessageDiv.style.display = 'none'; 
+            }
+        });
+    }
+
+    if (validFiles.length > 0) {
+      displayImage(validFiles, fieldId, fieldLabel, fieldmultiIamgePreview);
+    }
+}
 
   var uploadedFiles = {};
 
@@ -578,6 +883,7 @@
       li.style.display = 'flex';
       li.style.justifyContent = 'space-between';
       li.style.alignItems = 'center';
+      li.style.gap = '20px'; 
 
       const fileName = document.createElement('span');
       fileName.textContent = file.name;
@@ -795,12 +1101,14 @@
          
           const maxDescriptionHeight = formData.styles.maxDescriptionHeight;
 
+          const screenWidth = window.innerWidth;
+          const smallScreenClass = screenWidth < 640 ? 'small-screen' : '';
+
           const fieldHtml = `
                   <div key="${field.id}" style= "width: ${
             field.width
           }; ${floatStyle} margin-bottom: ${inputGap}px;"class="${`input-field ${field.customClass} input-gap ${
-            parseFloat(field.width) <= 50 ? 'small-width' : ''
-          }`}">
+            parseFloat(field.width) <= 50 ? 'small-width' : ''} ${smallScreenClass}` }">
                       ${
                         field.type !== 'heading' &&
                         field.type !== 'description' &&
@@ -921,11 +1229,11 @@
 
       switch (field.type) {
         case 'name':
-          return `<input type="text" placeholder="${
+          return `<input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '')"  placeholder="${
             field.placeholder || ''
           }"  ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Name'}" /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div> `;
         case 'text':
-          return `<input type="text" placeholder="${
+          return `<input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '')"  placeholder="${
             field.placeholder || ''
           }" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" /> <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'toggle':
@@ -973,6 +1281,7 @@
             case 'textarea':
             return `
               <textarea 
+                oninput="this.value = this.value.replace(/[0-9]/g, '')" 
                 id="${field.name || 'textarea-field'}"
                 name="${field.name || 'textarea-field'}"
                 placeholder="${field.placeholder || ''}"
@@ -988,6 +1297,7 @@
                   background-color: ${inputBgColor};
                   border-width: ${inputWidth}px;
                   border-style: ${inputStyle};
+                  font-family: inherit;
                 "
                 aria-label="${field.label || 'Textarea'}"
               ></textarea> 
@@ -1040,43 +1350,37 @@
                 </div>
                   <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
-        case 'select':
-          const options = `
-                  <div class="custom-select-option" data-value="" style="font-weight: bold; color: #888;">
-                      Select an option
-                  </div>
-                  ${field.options
-                    .map(
-                      (option) => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
-                    )
-                    .join('')}
+              case 'select':
+              const options = `
+                <div class="custom-select-option" data-value="" style="font-weight: bold; color: #888;">
+                    Select an option
+                </div>
+                ${field.options
+                  .map(
+                    (option) => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
+                  )
+                  .join('')}
               `;
-
-           return `
+            
+              return `
                 <div class="custom-select-container" style="position: relative;">
-                  <div class="custom-select-box" ${
-                    field.readonly ? 'readonly' : ''
-                  } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color :${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle}; cursor: pointer;" onclick="toggleDropdown(event, '${field.name}')">
-                    <span>${field.label || 'Select Input'}</span><span style = "float: right">▼</span>
+                  <div class="custom-select-box" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color :${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle}; cursor: pointer;" onclick="toggleDropdown(event, '${field.id}')">
+                    <span>${field.label || 'Select Input'}</span><span style="float: right"><img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373"style = "width:15px;"></span>
                   </div>
-                  <div id="dropdown-${
-                    field.name
-                  }" class="custom-select-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; border: 1px solid ${inputBorderColor || '#ccc'}; background-color: #fff; padding: 5px; z-index: 100;">
+                  <div id="dropdown-${field.id}" class="custom-select-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; border: 1px solid ${inputBorderColor || '#ccc'}; background-color: #fff; padding: 5px; z-index: 100;">
                     <input
                       type="text"
-                      id="search-${field.name}"
+                      id="search-${field.id}"
                       placeholder="Search..."
-                      style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: ${
-                        inputRadius || '4px'
-                      }px; border: 1px solid #ccc;"
-                      oninput="filterOptions(event, '${field.name}')"
+                      style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: ${inputRadius || '4px'}px; border: 1px solid #ccc;"
+                      oninput="filterOptions(event, '${field.id}')"
                     />
-                    <div class="options-container" style = "cursor : pointer">
+                    <div class="options-container" style="cursor: pointer">
                       ${options}
                     </div>
                   </div>
                 </div>
-                 <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
+                <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
               case 'divider':
               return `<div style="display: flex; justify-content: ${field.dividerAline}">
@@ -1130,7 +1434,7 @@
         case 'number':
           return `<input  ${
             field.readonly ? 'readonly' : ''
-          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}   oninput="this.value = this.value.replace(/[^0-9]/g, '')"   type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'file':
           let fileInputHTML = '';
 
@@ -1170,7 +1474,8 @@
                   </div>
                 </div>
               </div>
-          <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
+               <ul id="file-names-list-${field.id}" style="margin-top: 8px;"></ul>
+           <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
               field.description
             }</div>
             `;
@@ -1212,6 +1517,7 @@
                  </div>
                </div>
            </div>
+              <ul id="file-names-list-${field.id}" style="margin-top: 8px;"></ul>
               
              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
               field.description
@@ -1237,7 +1543,51 @@
             `;
           } else if (field.multiOptions[field.id] === 'option2') {
             multifileInputHTML = `
-              <div class="drag-and-drop-text first" style="text-align: center;"  >
+             <div class="drag-and-drop-text third" style="text-align: center;"  >
+        <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
+          field.width === '25%' ? '20px' : '20px'
+        };"
+          onclick="handleClickmulti('file-input-${field.id}')"
+         ondragover="handleDragOverfile(event)"
+         ondrop="handleDropfile(event, '${field.id}', '${field.label}','${field.multifilePreview}')">
+         <input type="file" ${field.readonly ? 'readonly' : ''} ${
+              field.required ? 'required' : ''
+            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
+          field.id
+        }" style="opacity:0;" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${
+              field.multifilePreview
+            }')"/>
+          <div class="form-builder-changes-file-wraped">
+         <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/11.png?v=1741747901" alt="" style="display: inline;" />
+         <div class ='email-files drop files' style="margin-top: 20px;">
+           <h3 style="color: #404b52;font-weight: bold; font-size: ${
+            field.width === '25%' ? '11px' : '19px'
+          }; line-height: ${
+              field.width === '25%' ? '16px' : '40px'
+            };">Drag & drop files or <span style="color:#14b25c; text-decoration: underline;">Browse</span></h3>
+          <p style="color: #676767; font-size: ${field.width === '25%' ? '11px' : '15px'}; max-width: ${
+              field.width === '25%' ? '100%' : '53%'
+            }; margin: auto; 
+             line-height: ${field.width === '25%' ? '16px' : '23px'}; margin-bottom: 40px; font-weight: 550;">
+            Supported formats: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word, PPT
+          </p>
+          <span style="background: #4fae52; color: white !important; padding: ${
+            field.width === '25%' ? '10px 20px' : '10px 70px'
+          }; 
+             border-radius: 4px; border: 1px solid #209324;font-size: ${field.width === '25%' ? '12px' : '14px'};">
+             Upload files
+           </span>
+          </div>
+             </div>
+          </div>
+           </div>
+              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
+              field.description
+            }</div> 
+            `;
+          } else if (field.multiOptions[field.id] === 'option3') {
+            multifileInputHTML = `
+            <div class="drag-and-drop-text first" style="text-align: center;"  >
                 <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
                   field.width === '25%' ? '20px' : '20px'
                 };" 
@@ -1254,11 +1604,11 @@
                   <div class="form-builder-changes-file-wraped">
                     <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/mut2.png?v=1739350278" alt="" style="display: inline;" />
                    <div class ='email-files drop files' style="margin-top: 20px; margin-bottom: 30px;">
-                     <h2 style="font-weight: ${field.width === '25%' ? '500' : '600px'}; font-size: ${
-              field.width === '25%' ? '11px' : '18px'
+                     <h2 style="font-weight: ${field.width === '25%' ? '600' : '600px'}; font-size: ${
+              field.width === '25%' ? '14px' : '18px'
             };"> Drag & Drop <span style="color:#09ae54;">images,</span></h2>
-                     <h2 style="font-weight: ${field.width === '25%' ? '500' : '600px'}; font-size: ${
-              field.width === '25%' ? '11px' : '18px'
+                     <h2 style="font-weight: ${field.width === '25%' ? '600' : '600px'}; font-size: ${
+              field.width === '25%' ? '14px' : '18px'
             };"><span style="color:#09ae54;">videos,</span> or any <span style="color:#09ae54;" >file</span></h2>
                      </div>
                     <span class="form-builder-changes-file-button" style="background: #00ac4f; border-radius: 31px;
@@ -1273,51 +1623,7 @@
               </div>
               <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
               field.description
-            }</div>
-            `;
-          } else if (field.multiOptions[field.id] === 'option3') {
-            multifileInputHTML = `
-                <div class="drag-and-drop-text third" style="text-align: center;"  >
-        <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
-          field.width === '25%' ? '20px' : '20px'
-        };"
-          onclick="handleClickmulti('file-input-${field.id}')"
-        ondragover="handleDragOverfile(event)"
-        ondrop="handleDropfile(event, '${field.id}', '${field.label}','${field.multifilePreview}')">
-        <input type="file" ${field.readonly ? 'readonly' : ''} ${
-              field.required ? 'required' : ''
-            } ${field.disabled ? 'disabled' : ''} accept="image/*" id="file-input-${
-          field.id
-        }" style="opacity:0;" multiple onchange="handleMultiInputChange(event, '${field.id}','${field.label}','${
-              field.multifilePreview
-            }')"/>
-          <div class="form-builder-changes-file-wraped">
-        <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/multifile.png?v=1739350277" alt="" style="display: inline;" />
-        <div class ='email-files drop files' style="margin-top: 20px;">
-          <h3 style="color: #404b52;font-weight: bold; font-size: ${
-            field.width === '25%' ? '11px' : '19px'
-          }; line-height: ${
-              field.width === '25%' ? '16px' : '40px'
-            };">Drag & drop files or <span style="color: #79c27c; text-decoration: underline;">Browse</span></h3>
-          <p style="color: #676767; font-size: ${field.width === '25%' ? '11px' : '15px'}; max-width: ${
-              field.width === '25%' ? '100%' : '53%'
-            }; margin: auto; 
-             line-height: ${field.width === '25%' ? '16px' : '23px'}; margin-bottom: 40px; font-weight: 550;">
-            Supported formats: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word, PPT
-          </p>
-          <span style="background: #4fae52; color: white !important; padding: ${
-            field.width === '25%' ? '10px 20px' : '10px 70px'
-          }; 
-             border-radius: 4px; border: 1px solid #209324;font-size: ${field.width === '25%' ? '12px' : '14px'};">
-             Upload files
-          </span>
-        </div>
-         </div>
-         </div>
-      </div>
-              <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
-              field.description
-            }</div>
+            }</div> 
             `;
           }
           return `
@@ -1481,6 +1787,7 @@
               </div>
             </div>
           </div>
+          <ul id="file-names-list-${field.id}" style="margin-top: 8px;"></ul>
           <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
               field.description
             }</div>
@@ -1532,6 +1839,7 @@
         </div>
         </div>
          </div>
+         <ul id="file-names-list-${field.id}" style="margin-top: 8px;"></ul>
           <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
               field.description
             }</div>
@@ -1616,7 +1924,7 @@
           Drag & Drop <span style="color : #00ac4f;">images,</span>
         </h3>
         <span class="form-builder-changes-file-button" style="background: #00ac4f; border-radius: 31px; padding: 5px 22px; font-size: ${
-          field.width === '25%' ? '16px' : '17px'
+          field.width === '25%' ? '16px' : '15px'
         }; border: 0;color: white;display: inline-block;text-align: center;">
           Upload
         </span>

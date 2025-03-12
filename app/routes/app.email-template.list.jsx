@@ -7,7 +7,7 @@ import down from '../images/down.png';
 import left from '../images/left1.png';
 import right from '../images/right1.png';
 import yplus from '../images/yplus.png';
-import cancle1 from '../images/cancle1.png'
+import cancle1 from '../images/disconnect.png'
 import rplus from '../images/rplus.png';
 import copy12 from '../images/copy12.png'
 import { format } from 'date-fns';
@@ -95,7 +95,7 @@ export default function EmailTemplate() {
     const [upgradePopup, setUphradePopup] = useState(false);
 
     const fetchForms = async () => {
-        setLoading(true);
+        setIsLoading(true);
         try {
             const response = await axios.get(`${apiUrl}/get/base64`);
             let fetchedData = response.data.data || [];
@@ -136,10 +136,9 @@ export default function EmailTemplate() {
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
-
 
     const handlePreviw1 = async (form) => {
         try {
@@ -378,18 +377,19 @@ export default function EmailTemplate() {
     }, []);
 
     const handlePageChange = (page) => {
+        if (page < 1 || page > total) return; 
         setCurrentPage(page);
     };
 
     const handlePage = (page) => {
+        if (page < 1 || page > total) return; 
         setCurrent(page);
     };
-
 
     const filteredForms = formsData.filter((form) =>
         form.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    const totalPages = Math.ceil(filteredForms.length / formsPerPage);
+    const totalPages = Math.ceil(filteredForms.length / formsPerPage)|| 1;
 
     const currentForms = filteredForms.slice(
         (currentPage - 1) * formsPerPage,
@@ -399,7 +399,7 @@ export default function EmailTemplate() {
     const filteredtemplate = newformsData.filter((form) =>
         form.title.toLowerCase().includes(searchTempalte.toLowerCase())
     );
-    const total = Math.ceil(filteredtemplate.length / formsPer);
+    const total = Math.ceil(filteredtemplate.length / formsPer) || 1;
 
     const currenttemplate = filteredtemplate.slice(
         (current - 1) * formsPer,
@@ -1038,7 +1038,7 @@ export default function EmailTemplate() {
                                         </span>
                                         <div className={`form-names-list ${showFormNames ? 'show' : ''}`}>
                                             <div onClick={handleSelectAllForms}>All Templates</div>
-                                            {currentForms.map(form => (
+                                            {filteredForms.map(form => (
                                                 <div key={form.id} onClick={() => handleSelectFormName(form.title)}>
                                                     {form.title}
                                                 </div>
@@ -1052,9 +1052,10 @@ export default function EmailTemplate() {
                                     {filteredForms.length === 0 ? (
                                         <p>No template available.</p>
                                     ) : (
-                                        currentForms
-                                            .filter(form => selectedFormName ? form.title === selectedFormName : true)
-                                            .map((form) => (
+                                        (selectedFormName
+                                            ? filteredForms.filter(form => form.title === selectedFormName)
+                                            : currentForms
+                                        ).map((form) => (
                                                 <div
                                                     key={form.createdAt}
                                                     className="email-templates"
@@ -1159,7 +1160,7 @@ export default function EmailTemplate() {
                                             </span>
                                             <div className={`form-names-list ${showtemplate ? 'show' : ''}`}>
                                                 <div onClick={handleSelectAlltemplate}>All Templates</div>
-                                                {currenttemplate.map(form => (
+                                                 {filteredtemplate.map(form => (
                                                     <div key={form.id} onClick={() => handleSelectTemplate(form.title)}>
                                                         {form.title}
                                                     </div>
@@ -1177,7 +1178,10 @@ export default function EmailTemplate() {
                                         {filteredtemplate.length === 0 ? (
                                             <p>No template available.</p>
                                         ) : (
-                                            currenttemplate.filter(form => selectedTemplate ? form.title === selectedTemplate : true).map((form) => (
+                                            (selectedTemplate
+                                                ? filteredtemplate.filter(form => form.title === selectedTemplate)
+                                                : currenttemplate
+                                             ).map((form) => (
                                                 <div key={form.createdAt} className="email-templates">
                                                     <div className='email-tempalte-text'
                                                     >
@@ -1242,7 +1246,7 @@ export default function EmailTemplate() {
                                                 <button
                                                     type="button"
                                                     disabled={currentPage === total}
-                                                    onClick={() => handlePage(currentPage + 1)}
+                                                    onClick={() => handlePage(current + 1)}
                                                 >
                                                     <img src={right} alt="Next" />
                                                 </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Sortable from 'sortablejs';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 import { useLocation } from 'react-router-dom';
 import image from '../images/image-0.png';
 import divider2 from '../images/divider0.png';
@@ -435,13 +436,13 @@ const EmailTemplateCreate = () => {
             dividerbgColor: type === 'divider' ? '#FFFFFF' : undefined,
             dividerWidth: type === 'divider' ? '100' : undefined,
             dividerheight: type === 'divider' ? '1' : undefined,
-            buttonColor: type === 'button' ? '#007BFF' : undefined,
+            buttonColor: type === 'button' ? '#45a7f6' : undefined,
             buttonfamily: type === 'button' ? '"Poppins", sans-serif' : undefined,
             buttonweight: type === 'button' ? '300' : undefined,
             buttonbgColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonTextColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonFontSize: type === 'button' ? 16 : undefined,
-            buttonPadding: type === 'button' ? 10 : undefined,
+            buttonPadding: type === 'button' ? 0 : undefined,
             buttonWidth: type === 'button' ? 100 : undefined,
             buttonHeight: type === 'button' ? 40 : undefined,
             buttonradious: type === 'button' ? 2 : undefined,
@@ -529,7 +530,7 @@ const EmailTemplateCreate = () => {
             productbtnfamily: type === 'product' ? '"Poppins", sans-serif' : undefined,
             productwidth: type === 'product' ? '80' : undefined,
             productheight: type === 'product' ? '30' : undefined,
-            productbackgroundColor: type === 'product' ? '#007BFF' : undefined,
+            productbackgroundColor: type === 'product' ? '#45a7f6' : undefined,
             additionalButtons: [],
             displayStyle: 'flex',
             richline: type === 'richtext' ? 'line-Trough' : undefined,
@@ -1162,8 +1163,8 @@ const handleConfirmUnlink = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/check-title/${trimmedTitle}`);
                 if (response.data.exists) {
-
-                    trimmedTitle = `${trimmedTitle}-${format(new Date(), "yyyyMMddHHmmss")}`;
+                    const randomNum = Math.floor(100 + Math.random() * 900)
+                    trimmedTitle = `${trimmedTitle}-${randomNum}`;
                 }
             } catch (error) {
                 console.error('Error checking title:', error);
@@ -1377,7 +1378,7 @@ const handleConfirmUnlink = async () => {
                 dividerWidth: field.dividerWidth || '100',
                 dividerheight: field.dividerheight || '1',
                 buttonbgColor: field.buttonbgColor || '',
-                buttonColor: field.buttonColor || '#007BFF',
+                buttonColor: field.buttonColor || '#45a7f6',
                 buttonweight: field.buttonweight || 300,
                 buttonfamily: field.buttonfamily || '"Poppins", sans-serif',
                 buttonFontSize: field.buttonFontSize || 16,
@@ -1390,7 +1391,7 @@ const handleConfirmUnlink = async () => {
                 buttonWidth: field.buttonWidth || 150,
                 buttonHeight: field.buttonHeight || 40,
                 buttonradious: field.buttonradious || 40,
-                buttonPadding: field.buttonPadding || 10,
+                buttonPadding: field.buttonPadding || 0,
                 socalIconHeight: field.socalIconHeight || 30,
                 socalIconWidth: field.socalIconWidth || 30,
                 socalIconPadding: field.socalIconPadding || 10,
@@ -1456,7 +1457,7 @@ const handleConfirmUnlink = async () => {
                 productbtnfamily: field.productbtnfamily || '"Poppins", sans-serif',
                 productwidth: field.productwidth || 80,
                 productheight: field.productheight || 30,
-                productbackgroundColor: field.productbackgroundColor || '#007BFF',
+                productbackgroundColor: field.productbackgroundColor || '#45a7f6',
                 buttonLabel: field.buttonLabel || '',
                 buttonaline: field.buttonaline || '',
                 fontsizeMulticolumn: field.fontsizeMulticolumn || 14,

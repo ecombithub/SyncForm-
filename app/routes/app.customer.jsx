@@ -79,6 +79,23 @@ function Customer() {
     const [currentFormsed, setCurrentForms] = useState([]);
     const [upgradePopup, setUphradePopup] = useState(false);
     const [userPlan, setUserPlan] = useState(null);
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 430) {
+                setIsSmallScreen(true);
+            } else {
+                setIsSmallScreen(false);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchForms = async () => {
@@ -248,14 +265,19 @@ function Customer() {
             submission
         }));
     }).filter(item => {
-        const fullName = item.submission.fields.find(f => f.name === 'Full name')?.value ||
-            `${item.submission.fields.find(f => f.name === 'First name')?.value || ''} ${item.submission.fields.find(f => f.name === 'Last name')?.value || ''}`.trim().toLowerCase();
-
-        const email = item.submission.fields.find(f => f.name === 'Email')?.value.toLowerCase() || '';
-
-        return fullName.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase());
+        if (selectedFormName) {
+            return item.title === selectedFormName;
+        }
+        if (!searchTerm.trim()) return true;
+    
+        const firstName = item.submission.fields.find(f => f.name === 'First name')?.value || '';
+        const lastName = item.submission.fields.find(f => f.name === 'Last name')?.value || '';
+        const fullName = item.submission.fields.find(f => f.name === 'Full name')?.value || `${firstName} ${lastName}`.trim();
+        const email = item.submission.fields.find(f => f.name === 'Email')?.value || '';
+    
+        return fullName.toLowerCase().includes(searchTerm.toLowerCase()) || email.toLowerCase().includes(searchTerm.toLowerCase());
     });
-
+    
     const totalPages = Math.ceil(filteredForms.length / formsPerPage);
     const currentForms = filteredForms.slice((currentPage - 1) * formsPerPage, currentPage * formsPerPage);
 
@@ -418,24 +440,24 @@ function Customer() {
         fetchPaymentPlan();
     }, []);
 
-  
+
     const handleCancle = () => {
         setUphradePopup(false);
     }
-    
+
 
     const handleUpgrade = () => {
         navigate('/app/pricing');
     }
 
     const handleshowPopup = () => {
-        if (!['pro','pro_plus', 'pro_yearly','pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUphradePopup(true);
             return;
         }
         setShowpop(!showpop);
     };
-    
+
     return (
         <>
 
@@ -542,7 +564,7 @@ function Customer() {
                                             <img src={search12} alt="" />
                                         </div>
                                     </div>
-                                    <div className="form_builder_download"onClick={handleshowPopup}>
+                                    <div className="form_builder_download" onClick={handleshowPopup}>
                                         <p>Download all CSV</p>
                                     </div>
                                     <div className="form_builder_download icon" onClick={handleShowPop}>
@@ -685,36 +707,41 @@ function Customer() {
                                     </div>
                                     <div className="table-row">
                                         {currentForms.length > 0 ? (
-                                            currentForms
-                                                .filter(item => selectedFormName ? item.title === selectedFormName : true)
-                                                .map((item, index) => {
-                                                    const email = item.submission.fields.find(f => f.name === 'Email')?.value || 'N/A';
-                                                    const phone = item.submission.fields.find(f => f.name === 'Phone')?.value || 'N/A';
-                                                    const fullName = item.submission.fields.find(f => f.name === 'Full name')?.value ||
-                                                        `${item.submission.fields.find(f => f.name === 'First name')?.value || ''} 
-                                                      ${item.submission.fields.find(f => f.name === 'Last name')?.value || ''}`.trim() || 'N/A';
-                                                    const country = item.submission.fields.find(f => f.name === 'Country')?.value || 'N/A';
-                                                    const formTitle = item.formTitle || item.title;
+                                            currentForms.map((item, index) => {
+                                                const submissionFields = item.submission?.fields || [];
+                                                const email = submissionFields.find(f => f.name === 'Email')?.value || 'N/A';
+                                                const phone = submissionFields.find(f => f.name === 'Phone')?.value || 'N/A';
+                                                const fullName =
+                                                    submissionFields.find(f => f.name === 'Full name')?.value ||
+                                                    `${submissionFields.find(f => f.name === 'First name')?.value || ''} 
+                                                   ${submissionFields.find(f => f.name === 'Last name')?.value || ''}`.trim() || 'N/A';
+                                                const country = submissionFields.find(f => f.name === 'Country')?.value || 'N/A';
+                                                const formTitle = item.formTitle || item.title;
 
-                                                    return (
-                                                        <div key={index} className="table-row-data">
-                                                            <div className="data_forms">{formTitle}</div>
-                                                            <div className="data_forms">{email}</div>
-                                                            <div className="data_forms phone-forms">{phone}</div>
-                                                            <div className="data_forms">{fullName}</div>
-                                                            <div className="data_forms phone-forms">{country}</div>
-                                                            <div className="data_forms phone-forms">
-                                                                <div className="form-detail-status">
-                                                                    <span>Active</span>
-                                                                </div>
+                                                return (
+                                                    <div key={index} className="table-row-data">
+                                                        <div className="data_forms">
+                                                            {isSmallScreen ? `${formTitle.substring(0, 10)}...` : formTitle}
+                                                        </div>
+                                                        <div className="data_forms">
+                                                            {isSmallScreen ? `${email.substring(0, 10)}...` : email}
+                                                        </div>
+                                                        <div className="data_forms phone-forms">{phone}</div>
+                                                        <div className="data_forms">{fullName}</div>
+                                                        <div className="data_forms phone-forms">{country}</div>
+                                                        <div className="data_forms phone-forms">
+                                                            <div className="form-detail-status">
+                                                                <span>Active</span>
                                                             </div>
                                                         </div>
-                                                    );
-                                                })
+                                                    </div>
+                                                );
+                                            })
                                         ) : (
-                                            <div>No forms found</div>
+                                            <div>No forms available</div>
                                         )}
                                     </div>
+
 
                                 </div>
                             </div>
