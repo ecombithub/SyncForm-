@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "9a390d651825c642518ca581ba64c579"
-application_url = "https://estimate-revenge-gibson-male.trycloudflare.com"
+application_url = "https://apps.syncform.app"
 embedded = true
 name = "SyncForm"
 handle = "syncForm"
@@ -16,11 +16,11 @@ api_version = "2024-07"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
-  uri = "https://diff-du-royal-millennium.trycloudflare.com/webhooks/app/uninstalled"
+  uri = "https://apps.syncform.app/webhooks/app/uninstalled"
 
   [[webhooks.subscriptions]]
   compliance_topics = [ "customers/redact", "customers/data_request", "shop/redact" ]
-  uri = "https://diff-du-royal-millennium.trycloudflare.com/webhooks/compliance"
+  uri = "https://apps.syncform.app/webhooks/compliance"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
@@ -28,9 +28,9 @@ scopes = "read_customers,read_orders,read_products,read_themes,write_customers,w
 
 [auth]
 redirect_urls = [
-  "https://estimate-revenge-gibson-male.trycloudflare.com/auth/callback",
-  "https://estimate-revenge-gibson-male.trycloudflare.com/auth/shopify/callback",
-  "https://estimate-revenge-gibson-male.trycloudflare.com/api/auth/callback"
+  "https://apps.syncform.app/auth/callback",
+  "https://apps.syncform.app/auth/shopify/callback",
+  "https://apps.syncform.app/api/auth/callback"
 ]
 
 [pos]
