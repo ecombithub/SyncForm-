@@ -8356,6 +8356,11 @@ button.form_email_btn {
     transform: translateX(21px);
 }
 
+.form_builder_complte_forms .form_build_inputs a {
+    text-decoration: none;
+}
+
+
 
 .form-builder-drag-drop {
     display: none;

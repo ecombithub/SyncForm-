@@ -104,18 +104,18 @@ export default function EmailTemplate() {
 
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             setUserPlan(planResponse.data);
-            console.log("User Plan:", planResponse.data);
+            // console.log("User Plan:", planResponse.data);
 
             if (planResponse.data?.plan === "free" && planResponse.data.status === "active") {
                 if (fetchedData.length > 1) {
                     const [firstTemplate, ...formsToDelete] = fetchedData;
 
-                    console.log("Forms to delete:", formsToDelete);
+                    // console.log("Forms to delete:", formsToDelete);
 
                     await Promise.all(formsToDelete.map(async (form) => {
                         const idToDelete = form.formId || form.templateId || form._id;
                         if (idToDelete) {
-                            console.log("Deleting Form ID:", idToDelete);
+                            // console.log("Deleting Form ID:", idToDelete);
                             try {
                                 await axios.delete(`${apiUrl}/delete/${idToDelete}`);
                             } catch (err) {
@@ -132,7 +132,7 @@ export default function EmailTemplate() {
 
             fetchedData = fetchedData.slice().reverse();
             setFormsData(fetchedData);
-            console.log("Final templates:", fetchedData);
+            // console.log("Final templates:", fetchedData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
         } finally {
@@ -152,10 +152,10 @@ export default function EmailTemplate() {
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
 
             if (matchedData) {
-                console.log("Matched data:", matchedData);
+                // console.log("Matched data:", matchedData);
                 setMatchedData(matchedData);
             } else {
-                console.log("No matching data found for templateId:", form.templateId);
+               
                 setMatchedData(null);
             }
         } catch (error) {
@@ -179,10 +179,9 @@ export default function EmailTemplate() {
             const matchedData = fetchedData.find(item => item.templateId === form.templateId);
 
             if (matchedData) {
-                console.log("Matched data:", matchedData);
+                // console.log("Matched data:", matchedData);
                 setMatchedData(matchedData);
             } else {
-                console.log("No matching data found for templateId:", form.templateId);
                 setMatchedData(null);
             }
         } catch (error) {
@@ -223,7 +222,7 @@ export default function EmailTemplate() {
             const fetchedData = response.data.data || [];
             const reversedData = fetchedData.slice().reverse();
             setNewFormsData(reversedData);
-            console.log("Filtered data fetchedData", fetchedData);
+            // console.log("Filtered data fetchedData", fetchedData);
         } catch (error) {
             setError(`Error fetching forms: ${error.message}`);
         } finally {
@@ -258,10 +257,10 @@ export default function EmailTemplate() {
                 fetchForms();
 
             } else {
-                console.log('No matching data found for templateId:', form.templateId);
+                // console.log('No matching data found for templateId:', form.templateId);
             }
         } catch (error) {
-            console.error('Error sending template data:', error.message);
+            // console.error('Error sending template data:', error.message);
             alert('Error sending template');
         } finally {
             setLoading(false);
@@ -276,7 +275,7 @@ export default function EmailTemplate() {
         setTimeout(async () => {
             try {
                 const response = await axios.delete(`${apiUrl}/delete/${formToDelete}`);
-                console.log(response.data.message);
+                // console.log(response.data.message);
 
                 setFormsData((prevForms) =>
                     prevForms.filter((form) => form.templateId !== formToDelete)
@@ -319,15 +318,10 @@ export default function EmailTemplate() {
             const base64Forms = base64Response.data.data || [];
             const dataForms = dataResponse.data.data || [];
 
-            console.log('Fetched base64 Forms:', base64Forms);
-            console.log('Fetched Data Forms:', dataForms);
-
             const base64Form = base64Forms.find(form => form.templateId === template.templateId);
             const dataForm = dataForms.find(form => form.templateId === template.templateId);
 
             if (base64Form && dataForm) {
-                console.log('Matching form found in both responses:', dataForm);
-
                 const copiedForm = {
                     ...dataForm,
                     templateId: generateUniqueFormId(),
@@ -346,7 +340,7 @@ export default function EmailTemplate() {
 
                 const response = await axios.post(`${apiUrl}/copy-email`, copiedForm);
 
-                console.log('Response from /copy-email API:', response);
+                // console.log('Response from /copy-email API:', response);
 
                 if (response.status === 201) {
                     setFormsData((prevForms) => [...prevForms, response.data]);
@@ -934,7 +928,7 @@ export default function EmailTemplate() {
 
         } catch (error) {
             console.error("Error checking plan or templates:", error);
-            alert("Something went wrong while checking your plan or templates.");
+            // alert("Something went wrong while checking your plan or templates.");
         }
     };
 

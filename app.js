@@ -56,6 +56,17 @@ const CostomerRequest = new mongoose.Schema({
 
 const CostomerRequestdata = mongoose.model("costomerRequests", CostomerRequest);
 
+const shopDataSchema = new mongoose.Schema({
+  myshopifyDomain: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
+  name: { type: String, required: true },
+  primaryDomain: {
+    host: { type: String, required: true }
+  }
+});
+
+const StoreShopData = mongoose.model('store ShopDatas', shopDataSchema);
+
 app.post("/api/CostomerRequest", async (req, res) => {
   console.log("✅ Received Webhook Data in Backend:", JSON.stringify(req.body, null, 2));
   console.log("🔍 Incoming Headers:", req.headers);
@@ -77,6 +88,16 @@ app.post("/api/CostomerRequest", async (req, res) => {
   }
 
   try {
+      const existingShop = await StoreShopData.findOne({ myshopifyDomain: shop_domain });
+
+      if (!existingShop) {
+          console.log("❌ No matching shop found for the domain:", shop_domain);
+          return res.status(404).json({ error: "Shop not found" });
+      }
+      
+      console.log("✅ Matching Shop Found:", existingShop);
+      console.log("✅ Matching Shop Found: Email -", existingShop.email);
+
       const existingRequest = await CostomerRequestdata.findOne({ myshopify_domain: shop_domain });
 
       if (!existingRequest) {
@@ -92,24 +113,25 @@ app.post("/api/CostomerRequest", async (req, res) => {
       } else {
           console.log("⚠️ Duplicate Entry Found: Skipping Database Insertion");
       }
+
       const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
               user: "syncform@hubsyntax.com",
-              pass: "jaaf dnhy rndg rpic",
+              pass: "jaaf dnhy rndg rpic", 
           },
       });
 
       const mailOptions = {
           from: "syncform@hubsyntax.com",
-          to: "syncform@hubsyntax.com",
+          to:existingShop.email,
           subject: `Shopify Webhook Received: ${topic}`,
           text: `
            Webhook Topic: ${topic}
            Shop ID: ${shop_id}
-          Shop Domain: ${shop_domain}
+           Shop Domain: ${shop_domain}
            Customer Email: ${customer?.email || "N/A"}
-          Customer Name: ${customer?.name || "Unknown"}
+           Customer Name: ${customer?.name || "Unknown"}
           `,
       };
 
@@ -124,6 +146,37 @@ app.post("/api/CostomerRequest", async (req, res) => {
   }
 });
 
+app.post('/store-shopData', async (req, res) => {
+  try {
+    const { myshopifyDomain,email, name, primaryDomain } = req.body;
+    if (!primaryDomain || !primaryDomain.host) {
+      return res.status(400).json({ message: 'Host is required in primaryDomain' });
+    }
+
+    const newShop = new StoreShopData({
+      myshopifyDomain,
+      email,
+      name,
+      primaryDomain: { host: primaryDomain.host }
+    });
+   
+    await newShop.save();
+    
+    res.status(201).json({ message: 'Shop data added successfully', shop: newShop });
+    
+  } catch (error) {
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: 'Shop with this myshopifyDomain already exists',
+        error: error.message
+      });
+    }
+
+    console.error(error);
+    res.status(500).json({ message: 'Error adding shop data', error });
+  }
+});
 
 const StoreSchema = new mongoose.Schema({
   myshopify_domain: { type: String, required: true, unique: true },

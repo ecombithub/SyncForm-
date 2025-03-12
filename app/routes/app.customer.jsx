@@ -105,7 +105,7 @@ function Customer() {
                 const matchedForms = forms.filter(form => form.shop === shop);
                 setCurrentForms(matchedForms);
             } catch (error) {
-                console.error('Error fetching forms:', error);
+                // console.error('Error fetching forms:', error);
             }
         };
 
@@ -145,10 +145,10 @@ function Customer() {
                     setTotalSubmissionCount(totalSubmissions);
                     setUniqueEmailCount(totalUniqueEmails);
                 } else {
-                    console.log("No matching forms found for the shop.");
+                    // console.log("No matching forms found for the shop.");
                 }
             } catch (error) {
-                console.error("Error fetching forms:", error);
+                // console.error("Error fetching forms:", error);
             } finally {
                 setLoading(false);
             }
@@ -185,14 +185,14 @@ function Customer() {
                     setCreatedForms(formsWithUniqueEmails);
 
                     formsWithUniqueEmails.forEach(form => {
-                        console.log(`Form Title: ${form.title}, Form ID: ${form.id}`);
+                        // console.log(`Form Title: ${form.title}, Form ID: ${form.id}`);
                         form.uniqueSubmissions.forEach(submission => {
                             const emailField = submission.fields.find(field => field.name === "Email");
                             const timestamp = new Date(submission.timestamp);
                             const formattedDate = format(timestamp, 'yyyy-MM-dd hh:mm:ss a');
 
                             if (emailField) {
-                                console.log(`  Unique Email: ${emailField.value}, Date and Time: ${formattedDate}`);
+                                // console.log(`  Unique Email: ${emailField.value}, Date and Time: ${formattedDate}`);
                             }
                         });
                     });
@@ -422,14 +422,14 @@ function Customer() {
 
     const fetchPaymentPlan = async () => {
         try {
-            console.log("Fetching payment plan...");
+           
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
-            console.log("Response data:", response.data);
+            // console.log("Response data:", response.data);
             setUserPlan(response.data);
-            console.log("User plan set:", response.data);
+            // console.log("User plan set:", response.data);
 
-            console.log("Forms fetched successfully with user plan data.");
+            // console.log("Forms fetched successfully with user plan data.");
         } catch (error) {
             console.error("Error fetching payment plan:", error);
 

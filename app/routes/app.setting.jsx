@@ -94,7 +94,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function Setting() {
-    const { shop, apiUrl,shopData } = useLoaderData() || {};
+    const { shop, apiUrl, shopData } = useLoaderData() || {};
     const [status, setStatus] = useState('disactive');
     const [numberValue, setNumberValue] = useState(3);
     const [email, setEmail] = useState('');
@@ -134,7 +134,7 @@ export default function Setting() {
         if (value >= 3) {
             setNumberValue(value);
         } else {
-           setNumberPopup(true);
+            setNumberPopup(true);
         }
     };
 
@@ -168,7 +168,7 @@ export default function Setting() {
     const handleUpgrade = () => {
         navigator('/app/pricing');
     }
-    
+
     const handleCancle = () => {
         setUpgradePopup(false);
     }
@@ -229,10 +229,10 @@ export default function Setting() {
             setUpgradePopup(true);
             return;
         }
-    
+
         const newStatus = activeBrand === 'active' ? 'disactive' : 'active';
-        setActiveBrand(newStatus); 
-    
+        setActiveBrand(newStatus);
+
         try {
             await fetch(`${apiUrl}/api/brandLogo`, {
                 method: 'POST',
@@ -243,7 +243,7 @@ export default function Setting() {
             console.error('Error updating brand logo status:', error);
         }
     };
-    
+
     useEffect(() => {
         const fetchStatusBrand = async () => {
             try {
@@ -253,18 +253,18 @@ export default function Setting() {
                 console.error("Error fetching brand logo status:", error);
             }
         };
-    
+
         if (shop) {
             fetchStatusBrand();
         }
     }, [shop, apiUrl]);
 
- 
-    const handleNumbercancle =()=>{
+
+    const handleNumbercancle = () => {
         setNumberPopup(false);
     }
 
-    
+
     return (
         <>
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
@@ -280,7 +280,7 @@ export default function Setting() {
             {numberPopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp records-number '>
                     <p>Enter At Least 50 Records</p>
-                    
+
                     <div className="form_builder_upgrade_popup_cancle" onClick={handleNumbercancle}>
                         <img src={cancleimg} alt="" />
                     </div>
@@ -365,7 +365,15 @@ export default function Setting() {
                                         placeholder='Your Password'
                                         required
                                     />
-                                    <span> <p>Note:An app password is a security code that allows authorized  apps access to your email and different from your email password. To generate App Password click here.</p> </span>
+                                    <span>
+                                        <p>
+                                            Note: An app password is a security code that allows authorized apps access to your email and is different from your email password. To generate an App Password,
+                                            <a target='_blank' href="https://syncform.app/blogs/generate-app-password.html">
+                                                <span style={{ fontFamily: "italic" }}>Click here</span>
+                                            </a>.
+                                        </p>
+                                    </span>
+
                                 </div>
                             </div>
                             <button className='form_email_btn' type="submit">Submit</button>

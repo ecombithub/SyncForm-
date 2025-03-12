@@ -280,16 +280,14 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         if (formData) {
-            console.log('Form data received:', formData);
-            console.log('Fields:', formData.fields);
-
+           
             if (formData.fields && formData.fields.length > 0) {
                 const field = formData.fields[0];
 
                 if (field.columnData) {
-                    console.log('Column Data:', field.columnData);
+                   
                 } else {
-                    console.log('Column Data not found in the first field');
+                    
                 }
             } else {
                 console.log('No fields found in formData');
@@ -298,11 +296,11 @@ const EmailTemplateCreate = () => {
             if (Array.isArray(formData.fields)) {
                 const validFields = formData.fields.map(field => {
                     if (!field.id) {
-                        console.warn('Field missing ID:', field);
+                       
                     }
 
                     if (field.type === 'product') {
-                        console.log('Price for product field:', field.price);
+                        // console.log('Price for product field:', field.price);
                         if (field.showPrice === true) {
                             setShowPrice(true);
                         }
@@ -311,14 +309,14 @@ const EmailTemplateCreate = () => {
                         }
                     }
                     if (field.type === 'split') {
-                        console.log('split for split field:', field.price);
+                        // console.log('split for split field:', field.price);
                         if (field.showbtnsplit === true) {
                             setShowbtnsplit(true);
                         }
                     }
 
                     if (field.type === 'Multicolumn') {
-                        console.log('split for split field:', field.price);
+                        // console.log('split for split field:', field.price);
                         if (field.showbtnmulti === true) {
                             setShowbtnmulti(true);
                         }
@@ -328,7 +326,7 @@ const EmailTemplateCreate = () => {
 
                 setFields(validFields);
             }
-            console.log('ViewMode:', formData.styles?.viewMode);
+            // console.log('ViewMode:', formData.styles?.viewMode);
 
             if (formData.styles && formData.styles.viewMode) {
                 setViewMode(formData.styles.viewMode);
@@ -351,11 +349,11 @@ const EmailTemplateCreate = () => {
             setProductsPerRow(productsPerRow);
             const coloumPerRow = formData.fields[0]?.columnsPerRow || 3;
             setColumnsPerRow(coloumPerRow);
-            console.log('Products per row:', formData.fields[0]?.productsPerRow);
+            // console.log('Products per row:', formData.fields[0]?.productsPerRow);
             const columnCount = parseInt(formData.styles.columnCount) || '';
             setColumnCount(columnCount);
             setSelectedIcons(prevIcons => {
-                console.log("Updating selectedIcons to:", prevIcons);
+                // console.log("Updating selectedIcons to:", prevIcons);
                 return prevIcons; 
             });
         }
@@ -363,7 +361,7 @@ const EmailTemplateCreate = () => {
 
     const createInputField = (type, add, parentId, initialValue = '') => {
         const id = generateUniqueId();
-        console.log(`Creating field of type ${type} with ID: ${id}`);
+        // console.log(`Creating field of type ${type} with ID: ${id}`);
 
         return {
             id,
@@ -874,11 +872,11 @@ const EmailTemplateCreate = () => {
         const visibleCustomIcons = updatedCustomIcons.some(icon => !icon.isHidden);
     
         if (!visibleSelectedIcons && !visibleCustomIcons) {
-            console.log("All social icons are hidden. Removing only social icon fields.");
+           
     
             setFields((prevFields) => {
-                const newFields = prevFields.filter(field => field.type !== "socalicon"); // Corrected type
-                console.log("Updated fields:", newFields); // Debugging log
+                const newFields = prevFields.filter(field => field.type !== "socalicon"); 
+             
                 return newFields;
             });
         }
@@ -943,8 +941,7 @@ const EmailTemplateCreate = () => {
     };
 
     const handleEditorChange = (value, fieldId) => {
-        console.log("Editor value changed:", value);
-        console.log("Active field ID:", fieldId);
+     
         setFields((prevFields) => {
             const updatedFields = prevFields.map((field) =>
                 field.id === fieldId
@@ -995,11 +992,10 @@ const EmailTemplateCreate = () => {
     };
 
     const removeField = (id) => {
-        console.log('Attempting to remove field with ID:', id);
         setFields((prevFields) => {
             const newFields = prevFields.filter(field => field.id !== id);
             setEmailFieldPopup(false)
-            console.log('Remaining fields after removal:', newFields);
+
             return newFields;
         });
     };
@@ -1009,7 +1005,7 @@ const EmailTemplateCreate = () => {
         axios
             .get(`${apiUrl}/get-forms`)
             .then((res) => {
-                console.log('API Response:', res.data);
+
                 const filteredData = res.data.filter((form) => form.shop === shop);
                 setFormDataAdd(filteredData);
             })
@@ -1019,7 +1015,6 @@ const EmailTemplateCreate = () => {
     useEffect(() => {
         if (formDataAdd.length > 0) {
             const formIds = formDataAdd.map((form) => form.formId);
-            console.log('All form IDs:', formIds);
         }
     }, [formDataAdd]);
 
@@ -1068,8 +1063,7 @@ const EmailTemplateCreate = () => {
             const isFormIdMatched = formData?.form_ids?.includes(selectedForm.formId);
 
             if (isFormIdMatched) {
-                console.log(`Form ID ${selectedForm.formId} is found in formData.form_ids`);
-
+                
                 const checkResponse = await fetch(`${apiUrl}/check-form-connected/${selectedForm.formId}`);
                 const checkData = await checkResponse.json();
 
@@ -1124,7 +1118,7 @@ const handleConfirmUnlink = async () => {
         const unlinkResponse = await fetch(`${apiUrl}/unlink-template/${disconnectFormId}`, { method: 'PUT' });
 
         if (unlinkResponse.ok) {
-            console.log('Template unlinked from form.');
+         
             setConnectedForms((prevForms) => prevForms.filter((id) => id !== disconnectFormId));
         } else {
             alert('Failed to unlink template.');
@@ -1558,10 +1552,9 @@ const handleConfirmUnlink = async () => {
                         ? await axios.put(`${apiUrl}/update/${id}`, formData)
                         : await axios.post(`${apiUrl}/send/api`, formData);
 
-                    console.log('Form saved successfully with title:', trimmedTitle);
+                   
                     const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
-                    console.log(successMessage, response.data);
-
+                    
                     if (!id) {
                         resetFormState();
                     }
@@ -1807,13 +1800,12 @@ const handleConfirmUnlink = async () => {
     };
 
     const handleSaveClick = () => {
-        console.log('Selected Products:', selectedProducts);
-
+        
         setIsPopupOpen(false);
     };
 
     const handleClosePopup = () => {
-        console.log('Before Clearing: ', selectedProducts);
+       
         setLastProductFieldId('');
         setEmailFieldPopup(false);
 
@@ -1907,16 +1899,12 @@ const handleConfirmUnlink = async () => {
     }
 
     useEffect(() => {
-        console.log('isPopupOpen:', isPopupOpen);
-        console.log('selectedProduct:', selectedProduct);
+       
     }, [isPopupOpen, selectedProduct]);
 
 
     const handleAddProductToSelected = (fieldId, fieldTitle, fieldImage, products) => {
-        console.log("Field ID:", fieldId);
-        console.log("Field Title:", fieldTitle);
-        console.log("Products:", products);
-        console.log("Image:", fieldImage);
+       
         setLastProductFieldId(fieldId);
         setPopupFieldTitle(fieldTitle);
 
@@ -1985,7 +1973,6 @@ const handleConfirmUnlink = async () => {
     };
 
     const RemoveImage = (fieldId) => {
-        console.log(`Removing image for field with ID: ${fieldId}`);
         setFields((prevFields) =>
             prevFields.map((field) =>
                 field.id === fieldId
@@ -2641,7 +2628,6 @@ const handleConfirmUnlink = async () => {
                                                     {fields
                                                         .filter((field) => field && field.id && field.type)
                                                         .map((field) => {
-                                                            console.log('Rendering field:', field);
                                                             if (field.type === 'heading') {
                                                                 const HeadingTag = field.headingLevel || 'h1';
 

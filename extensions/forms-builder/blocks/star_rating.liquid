@@ -815,7 +815,7 @@ document.addEventListener('click', function (event) {
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `http://localhost:4001/get-form/${id}`,
+        url: `https://apps.syncform.app/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           console.log('Fetched form data:', data);
@@ -857,7 +857,7 @@ document.addEventListener('click', function (event) {
 
       async function getBrandLogo(formshop) {
         try {
-          const response = await fetch(`http://localhost:4001/data/brandLogo/${formshop}`);
+          const response = await fetch(`https://apps.syncform.app/data/brandLogo/${formshop}`);
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -1093,23 +1093,24 @@ document.addEventListener('click', function (event) {
           return `<input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '')"  placeholder="${
             field.placeholder || ''
           }" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%;padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} " aria-label="${field.label || 'Text Input'}" /> <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
-        case 'toggle':
+          case 'toggle':
           return `
-          <label style="display: inline-block; position: relative; width: 50px; height: 24px;">
+            <label style="display: flex; position: relative; width: 50px; height: 24px;">
               <input 
                 type="checkbox" 
                 name="${field.label || 'toggle'}" 
-                ${
-                  field.readonly ? 'readonly' : ''
-                } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} 
-               
+                ${field.readonly ? 'readonly' : ''} 
+                ${field.required ? 'required' : ''} 
+                ${field.disabled ? 'disabled' : ''} 
                 aria-label="${field.label || 'Toggle'}" 
-                 onchange="this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
-                  this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)'; 
+                onchange="
+                  this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
+                  this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';
                   togglevalue = this.checked ? '${field.onValue}' : '${field.offValue}';
-                   console.log('Toggle Value:', togglevalue); "
+                  console.log('Toggle Label:', this.getAttribute('aria-label'));
+                  console.log('Toggle Value:', togglevalue || 'none');
+                "
               />
-             
               <span style="
                 position: absolute;
                 cursor: pointer;
@@ -1133,8 +1134,10 @@ document.addEventListener('click', function (event) {
                 border-radius: 50%;
                 transform: translateX(0);
               "></span>
-            </label><div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description || ''}</div>`;
-
+            </label>
+            <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description || ''}</div>
+          `;
+        
             case 'textarea':
             return `
               <textarea 
@@ -1294,7 +1297,6 @@ document.addEventListener('click', function (event) {
           } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}   oninput="this.value = this.value.replace(/[^0-9]/g, '')"   type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'file':
           let fileInputHTML = '';
-
           if (field.fileOptions[field.id] === 'option1') {
             fileInputHTML = `
               <input  type="file" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${
@@ -1312,7 +1314,7 @@ document.addEventListener('click', function (event) {
             `;
           } else if (field.fileOptions[field.id] === 'option2') {
             fileInputHTML = `
-            <div class="drag-and-drop-text third" style="text-align: center;"  >
+            <div class="drag-and-drop-text third" style="text-align: center; color:black;"  >
                 <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 20px;" 
                 onclick="handleClickImages('file-input-${field.id}')"
                 ondragover="handleDragOverimages(event)"
@@ -1327,7 +1329,7 @@ document.addEventListener('click', function (event) {
                   <div class='form-builder-changes-file-wraped'>
                     <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/singlefile.png?v=1739342645" alt="" style="display: inline;" />
                     <div class='email-files drop' style="margin-top: 10px;">
-                      <p style="font-size: 15px; font-weight: 600;">Drag & Drop your files here</p>
+                      <p style="font-size: 15px; font-weight: 600; color:black;">Drag & Drop your files here</p>
                     </div>
                   </div>
                 </div>
@@ -1340,7 +1342,7 @@ document.addEventListener('click', function (event) {
             `;
           } else if (field.fileOptions[field.id] === 'option3') {
             fileInputHTML = `
-            <div class="drag-and-drop-text first" style="text-align: center;"  >
+            <div class="drag-and-drop-text first" style="text-align: center; color:black;"  >
                <div class='form-builder-chaneging-wrap file' style="border-radius: 10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
                  field.width === '25%' ? '20px' : '20px'
                };" 
@@ -1369,7 +1371,7 @@ document.addEventListener('click', function (event) {
                      ? '26%'
                      : field.width || '60%'
                  };">
-                 <p style="font-size:${field.width === '25%' ? '11px' : '15px'}; text-align: ${
+                 <p style="font-size:${field.width === '25%' ? '11px' : '15px'};color:black; text-align: ${
               field.width === '25%' ? 'left' : ''
             };">Drop Files Here or <span style="color: #00ac4f;">browse for files.</span></p>
                 </div>
@@ -1404,7 +1406,7 @@ document.addEventListener('click', function (event) {
             `;
           } else if (field.multiOptions[field.id] === 'option2') {
             multifileInputHTML = `
-             <div class="drag-and-drop-text third" style="text-align: center;"  >
+             <div class="drag-and-drop-text third" style="text-align: center; color:black;"  >
         <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
           field.width === '25%' ? '20px' : '20px'
         };"
@@ -1450,7 +1452,7 @@ document.addEventListener('click', function (event) {
             `;
           } else if (field.multiOptions[field.id] === 'option3') {
             multifileInputHTML = `
-            <div class="drag-and-drop-text first" style="text-align: center;"  >
+            <div class="drag-and-drop-text first" style="text-align: center; color:black;"  >
                 <div class="form-builder-chaneging-wrap file" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding:${
                   field.width === '25%' ? '20px' : '20px'
                 };" 
@@ -1469,10 +1471,10 @@ document.addEventListener('click', function (event) {
                    <div class ='email-files drop files' style="margin-top: 20px; margin-bottom: 30px;">
                      <h2 style="font-weight: ${field.width === '25%' ? '600' : '600px'}; font-size: ${
               field.width === '25%' ? '14px' : '18px'
-            };"> Drag & Drop <span style="color:#09ae54;">images,</span></h2>
+            }; color:black;"> Drag & Drop <span style="color:#09ae54;">images,</span></h2>
                      <h2 style="font-weight: ${field.width === '25%' ? '600' : '600px'}; font-size: ${
               field.width === '25%' ? '14px' : '18px'
-            };"><span style="color:#09ae54;">videos,</span> or any <span style="color:#09ae54;" >file</span></h2>
+            };"><span style="color:#09ae54;">videos,</span> <span style="color:black;"> or any </span> <span style="color:#09ae54;" >file</span></h2>
                      </div>
                     <span class="form-builder-changes-file-button" style="background: #00ac4f; border-radius: 31px;
                      padding: 5px 22px; font-size: ${
@@ -1632,7 +1634,7 @@ document.addEventListener('click', function (event) {
           } else if (field.imageOptions[field.id] === 'option2') {
             imagesInputHTML = `
       
-          <div class="drag-and-drop-text third" style="text-align: center;"  >
+          <div class="drag-and-drop-text third" style="text-align: center; color:black;"  >
             <div class='form-builder-chaneging-wrap file' style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: 20px;" 
               onclick="handleClickImages('file-input-${field.id}')"
                ondragover="handleDragOverimages(event)"
@@ -1647,7 +1649,7 @@ document.addEventListener('click', function (event) {
               <div class='form-builder-changes-file-wraped'>
                 <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/singleimage0.png?v=1739353222" alt="" style="display: inline;" />
                 <div class='email-files drop' style="margin-top: 20px;">
-                  <p style="font-size: 15px; font-weight: 600;">Drag & Drop your image here</p>
+                  <p style="font-size: 15px; color:black; font-weight: 600;">Drag & Drop your image here</p>
                 </div>
               </div>
             </div>
@@ -1660,7 +1662,7 @@ document.addEventListener('click', function (event) {
         `;
           } else if (field.imageOptions[field.id] === 'option3') {
             imagesInputHTML = `
-        <div class="drag-and-drop-text first" style="text-align: center;"  >
+        <div class="drag-and-drop-text first" style="text-align: center; color:black;"  >
           <div class="form-builder-chaneging-wrap file" 
         style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${
           field.width === '25%' ? '20px' : '20px'
@@ -1695,7 +1697,7 @@ document.addEventListener('click', function (event) {
              : field.width || '60%'
          };">
         
-          <h2 style="text-align: ${field.width === '25%' ? 'left' : 'center'}; 
+          <h2 style="color:black; text-align: ${field.width === '25%' ? 'left' : 'center'}; 
                    font-size: ${field.width === '25%' ? '11px' : '18px'}; 
                    font-weight: ${field.width === '25%' ? '500' : '600'};">
           Drop image Here or <span style="color: #00ac4f;">browse for image.</span>
@@ -1735,7 +1737,7 @@ document.addEventListener('click', function (event) {
           } else if (field.multiimagesOptions[field.id] === 'option2') {
             multiimageInputHTML = `
       
-                <div class="drag-and-drop-text third" style="text-align: center;"  >
+                <div class="drag-and-drop-text third" style="text-align: center; color:black;"  >
              <div class="drag-and-drop-text first multi-imagess" style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${
                field.width === '25%' ? '20px' : '20px'
              };"
@@ -1776,7 +1778,7 @@ document.addEventListener('click', function (event) {
             `;
           } else if (field.multiimagesOptions[field.id] === 'option3') {
             multiimageInputHTML = `
-             <div class="drag-and-drop-text first multi-imagess" style="text-align: center;"  >
+             <div class="drag-and-drop-text first multi-imagess" style="text-align: center; color:black;"  >
                 <div class="form-builder-chaneging-wrap file " style="border-radius:10px; border: 2px dashed #8ee2b4; margin: auto; justify-content: center; background: white; padding: ${
                   field.width === '25%' ? '20px' : '20px'
                 };"
@@ -1795,10 +1797,10 @@ document.addEventListener('click', function (event) {
                    <div class ='email-files drop' style="margin-top: 20px; margin-bottom: ${
                      field.width === '25%' ? '0' : '20px'
                    };">
-                     <h2 style="font-weight: 600; font-size: ${
+                     <h2 style="color:black; font-weight: 600; font-size: ${
                        field.width === '25%' ? '16px' : '18px'
                      };">Drop your images here </h2>
-                       <h2 style="font-weight: 500; font-size: 14px;"><span style="color:#00ac4f;">Browse file </span> from your computer</h2>
+                       <h2 style="font-weight: 500; font-size: 14px;"><span style="color:#00ac4f;">Browse file </span> <span style="color:black;"> from your computer </span></h2>
                      </div>
                   
                   </div>
@@ -1837,7 +1839,7 @@ document.addEventListener('click', function (event) {
         
            case 'button':
           return `
-              <div style= "text-align:${field.buttonaline}">
+              <div style= "text-align:${field.buttonaline || 'left'}">
                 <button
                   type="submit"
                   style="background-color: ${
@@ -1979,6 +1981,10 @@ document.addEventListener('click', function (event) {
         let multiFileNames = [];
 
         let uniqueFileNames = [];
+       
+        if (input.attr('type') === 'checkbox') {
+          fieldValue = input.prop('checked') ? 'checked' : 'unchecked'; 
+        } 
         if (dropdown.length > 0) {
           fieldValue = dropdown.text().trim();
         } else if (input.is(':radio')) {
@@ -1988,7 +1994,10 @@ document.addEventListener('click', function (event) {
               .trim(); 
   
           console.log(`Radio Group: ${fieldName}, Selected Value:`, fieldValue);
-        } else if (input.is(':checkbox')) {
+        } else if (input.attr('type') === 'checkbox' && input.length === 1) {
+          fieldValue = input.prop('checked') ? 'on' : 'off'; 
+          console.log(`Checkbox: ${fieldName}, Value:`, fieldValue);
+        }else if (input.is(':checkbox')) {
           fieldValue = [];
           $(this).find('input[type="checkbox"]:checked').each(function () {
               let checkboxLabel = $(this).siblings('label').text().trim();
@@ -2132,7 +2141,7 @@ document.addEventListener('click', function (event) {
       console.log('Form Data:', JSON.stringify(formData));
 
       $.ajax({
-        url: 'http://localhost:4001/api/forms',
+        url: 'https://apps.syncform.app/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -2165,7 +2174,7 @@ document.addEventListener('click', function (event) {
           console.log('Form ID:', formData.id);
           if (formData.id) {
             $.ajax({
-              url: 'http://localhost:4001/get/data',
+              url: 'https://apps.syncform.app/get/data',
               method: 'GET',
               success: function (data) {
                 console.log('Fetched data:', data);
@@ -2176,7 +2185,7 @@ document.addEventListener('click', function (event) {
                   console.log('Matched form data:', matchingForm);
 
                   $.ajax({
-                    url: 'http://localhost:4001/api/template',
+                    url: 'https://apps.syncform.app/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({

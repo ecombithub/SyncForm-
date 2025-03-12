@@ -16,67 +16,96 @@ import cancleimg from '../images/cancleimg.png';
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-  const { shop, accessToken } = session;
-  const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
+
+  const shop = session?.shop || null;
+  const accessToken = session?.accessToken || null;
+
+  if (!shop || !accessToken) {
+      console.error("Error: Missing shop or access token in session.");
+      return {
+          assets: [],
+          shop: null,
+          apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
+          shopData: null,
+          error: true,
+          accessToken: null,
+          errorMessage: "Missing shop or access token in session.",
+      };
+  }
+
   const response = {
-    assets: [],
-    activeThemeId: null,
-    shop,
-    apiUrl,
-    error: false,
-    accessToken,
-    errorMessage: ''
+      assets: [],
+      shop,
+      apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
+      shopData: null,
+      error: false,
+      accessToken,
+      errorMessage: ''
   };
 
+  console.log("Shop:", shop);
+
   try {
-    const themeResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/themes.json`, {
-      method: 'GET',
-      headers: {
-        'X-Shopify-Access-Token': accessToken,
-        'Content-Type': 'application/json',
-      },
-    });
+  
+      const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+          method: 'GET',
+          headers: {
+              'X-Shopify-Access-Token': accessToken,
+              'Content-Type': 'application/json',
+          },
+      });
 
-    if (!themeResponse.ok) {
-      const errorText = await themeResponse.text();
-      throw new Error(`Failed to fetch themes: ${errorText}`);
-    }
+      if (!assetResponse.ok) {
+          const errorText = await assetResponse.text();
+          throw new Error(`Failed to fetch assets: ${errorText}`);
+      }
 
-    const themeData = await themeResponse.json();
-    const activeTheme = themeData.themes.find(theme => theme.role === 'main');
-    response.activeThemeId = activeTheme ? activeTheme.id : null;
+      const assetData = await assetResponse.json();
+      response.assets = assetData.assets || [];
 
-    if (!response.activeThemeId) {
-      throw new Error("No active theme found.");
-    }
+      const shopQuery = `
+      {
+        shop {
+          name
+          email
+          myshopifyDomain
+          primaryDomain {
+            host
+          }
+        }
+      }`;
 
-    const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json?theme_id=${response.activeThemeId}`, {
-      method: 'GET',
-      headers: {
-        'X-Shopify-Access-Token': accessToken,
-        'Content-Type': 'application/json',
-      },
-    });
+      const shopResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/graphql.json`, {
+          method: 'POST',
+          headers: {
+              'X-Shopify-Access-Token': accessToken,
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: shopQuery }),
+      });
 
-    if (!assetResponse.ok) {
-      const errorText = await assetResponse.text();
-      throw new Error(`Failed to fetch assets: ${errorText}`);
-    }
+      if (!shopResponse.ok) {
+          const errorText = await shopResponse.text();
+          throw new Error(`Failed to fetch shop data: ${errorText}`);
+      }
 
-    const assetData = await assetResponse.json();
-    response.assets = assetData.assets || [];
+      const shopData = await shopResponse.json();
+      response.shopData = shopData.data.shop;
+
+      console.log("Shop Data-all pages:", response.shopData);
 
   } catch (err) {
-    console.error("Error fetching data:", err.message);
-    response.error = true;
-    response.errorMessage = err.message;
+      console.error("Error fetching data:", err.message);
+      response.error = true;
+      response.errorMessage = err.message;
   }
 
   return response;
 };
 
+
 function Index() {
-  const { activeThemeId, shop, apiUrl, accessToken } = useLoaderData() || {};
+  const { activeThemeId, shop, apiUrl, accessToken,shopData } = useLoaderData() || {};
   const [dataSent, setDataSent] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [userPlan, setUserPlan] = useState(null);
@@ -86,6 +115,42 @@ function Index() {
   const navigator = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  const sendShopData = async () => {
+    try {
+    
+      if (!shopData.primaryDomain || !shopData.primaryDomain.host) {
+        return;
+      }
+  
+      const response = await fetch(`${apiUrl}/store-shopData`, {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(shopData), 
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setResponseData(data);
+        // console.log('Successfully added shop data:', data);
+      } else {
+        // console.error('Error adding shop data:', response.statusText);
+        setError(response.statusText);
+      }
+    } catch (error) {
+      // console.error('Error fetching data:', error);
+      setError(error.message);
+    }
+  };
+  
+  useEffect(() => {
+    if (shopData) {
+      // console.log("shopData", shopData); 
+      sendShopData();
+    }
+  }, [shopData]);
 
   useEffect(() => {
     const saveShopDetails = async () => {
@@ -107,11 +172,11 @@ function Index() {
 
           const data = await response.json();
           if (data.success) {
-            console.log("Shop details sent to the server.");
+            // console.log("Shop details sent to the server.");
             setDataSent(true);
           }
         } catch (error) {
-          console.error("Error sending shop details:", error);
+          // console.error("Error sending shop details:", error);
         }
       }
     };
@@ -133,15 +198,15 @@ function Index() {
           };
 
           const response = await axios.post(`${apiUrl}payment/confirm`, paymentData);
-          console.log("Payment data saved response:", response.data);
+          // console.log("Payment data saved response:", response.data);
           setResponseData(response.data);
         } else {
-          console.log("Free plan is not active, skipping the payment confirmation.");
+          // console.log("Free plan is not active, skipping the payment confirmation.");
         }
       } catch (error) {
         if (error.response) {
-          console.error('Error response status:', error.response.status);
-          console.error('Error response data:', error.response.data);
+          // console.error('Error response status:', error.response.status);
+          // console.error('Error response data:', error.response.data);
 
           if (error.response.status === 404 && error.response.data.error === 'Payment plan not found') {
 
@@ -156,7 +221,7 @@ function Index() {
             };
 
             const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
-            console.log("Payment data saved response (new free plan):", response.data);
+            // console.log("Payment data saved response (new free plan):", response.data);
             setResponseData(response.data);
           }
         } else {
@@ -176,16 +241,16 @@ function Index() {
   useEffect(() => {
     const fetchPaymentPlan = async () => {
       try {
-        console.log("Fetching payment plan...");
+        // console.log("Fetching payment plan...");
         const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
-        console.log("Response data:", response.data);
+        // console.log("Response data:", response.data);
         setUserPlan(response.data);
-        console.log("User plan set:", response.data);
+        // console.log("User plan set:", response.data);
         await fetchForms(response.data);
-        console.log("Forms fetched successfully with user plan data.");
+        // console.log("Forms fetched successfully with user plan data.");
       } catch (error) {
-        console.error("Error fetching payment plan:", error);
+        // console.error("Error fetching payment plan:", error);
 
       }
     };
@@ -200,7 +265,7 @@ function Index() {
         const data = await response.json();
         const filteredForms = data.filter((form) => form.shop === shop);
         setCreatedForms(filteredForms);
-        console.log('Filtered Forms:', filteredForms);
+        // console.log('Filtered Forms:', filteredForms);
 
         if (userPlan?.plan === 'free' && userPlan.status === 'active') {
 
@@ -211,7 +276,7 @@ function Index() {
           await Promise.all(
             formsToDisable.map(async (form) => {
               if (form.shop === shop) {
-                console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
+                // console.log(`Deleting form with ID ${form.formId} for shop ${shop}`);
                 try {
                   const deleteResponse = await fetch(`${apiUrl}/delete-form/${form.formId}`, {
                     method: 'DELETE',
@@ -220,7 +285,7 @@ function Index() {
                     throw new Error(`Failed to delete form with ID ${form.formId}`);
                   }
                 } catch (error) {
-                  console.error(`Error deleting form with ID ${form.formId}:`, error);
+                  // console.error(`Error deleting form with ID ${form.formId}:`, error);
                 }
               }
             })
@@ -230,7 +295,7 @@ function Index() {
         }
       } catch (error) {
         setError(error.message);
-        console.error('Error fetching forms:', error);
+        // console.error('Error fetching forms:', error);
       }
     };
 
@@ -238,19 +303,17 @@ function Index() {
   }, [shop]);
 
   const handleCreateForm = () => {
-    console.log("User plan:", userPlan?.activePlan?.plan);
-    console.log("Created forms length:", createdForms.length);
+    // console.log("User plan:", userPlan?.activePlan?.plan);
+    // console.log("Created forms length:", createdForms.length);
 
     if (userPlan?.activePlan?.plan === 'free' && createdForms.length >= 1) {
-      console.log("Conditions met, showing upgrade popup");
+      // console.log("Conditions met, showing upgrade popup");
       setUpgradePopup(true);
       return;
     }
-    console.log("Conditions not met, navigating to create form page");
+    // console.log("Conditions not met, navigating to create form page");
     navigator('/app/forms/new');
   };
-
-
 
   const handleCancle = () => {
     setUpgradePopup(false);
