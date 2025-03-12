@@ -3075,11 +3075,12 @@ button.copy-btn.first {
     justify-content: space-between;
     text-align: center;
     border-top: 1px solid #EEEEEE;
-    align-items: center;
+    /* align-items: center; */
 }
 
 .form_builder_plan_table.heading {
     text-align: left;
+    display: flex;
 }
 
 .form_builder_plan_table {
@@ -4555,11 +4556,11 @@ button.update-image.rmove-img.rm-btn {
 }
 
 span.form-builder-changes-file-button {
-    background: #4fae52;
+    background: #01ac50;
     color: white !important;
     padding: 10px 70px;
     border-radius: 4px;
-    border: 1px solid #209324;
+    border: 1px solid #01ac50;
     font-size: 14px;
 }
 
@@ -7127,6 +7128,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:640px) {
+    span.short-id {
+        display: none;
+    }
+    
     .builderr_field_wrpp {
         padding: 15px 15px;
     }
@@ -8362,4 +8367,8 @@ button.form_email_btn {
 
 .shwo-unlimited-form-data img.show-img {
     width: 21px;
+}
+
+.email-campaing-templates .form-builder-drag-drop {
+    display: flex;
 }

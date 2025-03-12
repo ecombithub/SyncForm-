@@ -455,7 +455,6 @@ const Formdata = () => {
         };
 
         delete copiedForm._id;
-
         try {
 
             setTimeout(async () => {
@@ -494,7 +493,7 @@ const Formdata = () => {
         }
         return uniqueId;
     };
-    
+
 
     return (
         <>
@@ -669,8 +668,8 @@ const Formdata = () => {
                                                                         scope="col"
                                                                     >
                                                                         <div className="form-builder-wrpp-show-Polaris">
-                                                                        <span className="full-id">{form.formId}</span>
-                                                                        <span className="short-id">{form.formId.substring(0, 8)}...</span>
+                                                                            <span className="full-id">{form.formId}</span>
+                                                                            <span className="short-id">{form.formId.substring(0, 8)}...</span>
                                                                             <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
                                                                                 <img src={copy22} alt="" />
                                                                             </div>
@@ -946,6 +945,7 @@ const Formdata = () => {
 
                                                                 ) : null
                                                             )}
+                                                            
                                                             {field.type === 'file' && (
                                                                 field.fileOptions[field.id] === 'option1' ? (
                                                                     <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
@@ -1045,9 +1045,8 @@ const Formdata = () => {
                                                                 </div>
                                                             )}
                                                             {field.type === 'images' && (field.imageOptions[field.id] === 'option1' ? (
-                                                                <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
+                                                            <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
                                                             ) : field.imageOptions[field.id] === 'option2' ? (
-
                                                                 <div className="drag-and-drop-text third" required={field.required} disabled={field.disabled} readOnly={field.readonly} >
                                                                     <div className='form-builder-chaneging-wrap file'>
                                                                         <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
@@ -1092,27 +1091,6 @@ const Formdata = () => {
                                                                 field.multiimagesOptions[field.id] === 'option1' ? (
                                                                     <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
                                                                 ) : field.multiimagesOptions[field.id] === 'option2' ? (
-                                                                    <div className="drag-and-drop-text third  multifile-second multi-image" required={field.required} disabled={field.disabled} readOnly={field.readonly} >
-                                                                        <div className='form-builder-chaneging-wrap file '>
-                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
-                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
-                                                                                <img src={multiimg1} alt="" />
-                                                                                <div className='email-files drop'>
-                                                                                    <h2 style={{
-                                                                                        color: "#404b52",
-                                                                                        fontSize: field.width === '25%' ? '16px' : undefined,
-                                                                                        lineHeight: field.width === '25%' ? '20px' : undefined,
-                                                                                    }}>Drop your images here</h2>
-                                                                                    <span><span style={{
-                                                                                        color: "#9ed29f", fontSize: field.width === '25%' ? '16px' : undefined,
-                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
-                                                                                    }}>Browse file </span>  from your computer </span>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ) : field.multiimagesOptions[field.id] === 'option3' ? (
                                                                     <div className="drag-and-drop-text third multifile-second multi" required={field.required} disabled={field.disabled} readOnly={field.readonly} >
                                                                         <div className='form-builder-chaneging-wrap file'>
                                                                             <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
@@ -1125,6 +1103,28 @@ const Formdata = () => {
 
                                                                                     }} className='form-builder-changes-file-button'>Upload</span>
                                                                                 </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : field.multiimagesOptions[field.id] === 'option3' ? (
+
+                                                                    <div className="drag-and-drop-text third  multifile-second multi-image" required={field.required} disabled={field.disabled} readOnly={field.readonly} >
+                                                                        <div className='form-builder-chaneging-wrap file '>
+                                                                            <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                            <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                <img src={multiimg1} alt="" />
+                                                                                <div className='email-files drop'>
+                                                                                    <h2 style={{
+                                                                                        color: "#404b52",
+                                                                                        fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '20px' : undefined,
+                                                                                    }}>Drop your images here</h2>
+                                                                                    <span><span style={{
+                                                                                        color: "#00ac4f", fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                        lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                    }}>Browse file </span>  from your computer </span>
+                                                                                </div>
+
                                                                             </div>
                                                                         </div>
                                                                     </div>

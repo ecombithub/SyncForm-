@@ -93,7 +93,6 @@ export const loader = async ({ request }) => {
     console.log("Shop:", shop);
 
     try {
-        // Fetch Assets
         const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
             method: 'GET',
             headers: {
@@ -110,7 +109,6 @@ export const loader = async ({ request }) => {
         const assetData = await assetResponse.json();
         response.assets = assetData.assets || [];
 
-        // Fetch Shop Data
         const shopQuery = `
         {
           shop {
@@ -2006,7 +2004,6 @@ const Formgenerated = () => {
         setFields(prevFields => {
             const updatedFields = [...prevFields, copiedField];
 
-            // Count the number of 'file' and 'multi-file' fields in the updated fields
             const fileFieldsCount = updatedFields.filter(field => field.type === 'file').length;
             const multiFileFieldsCount = updatedFields.filter(field => field.type === 'multi-file').length;
 
@@ -2228,7 +2225,7 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button> </div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro','pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro','pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                             </div>
                                         ) : (
                                             <div className='form-scroll-bar'>
@@ -4190,37 +4187,6 @@ const Formgenerated = () => {
                                                                                 onClick={(e) => e.preventDefault()}
                                                                             />
                                                                         ) : multiimagesOptions[field.id] === 'option2' ? (
-                                                                            <div className="drag-and-drop-text third  multifile-second multi-image" onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                                onMouseLeave={() => {
-                                                                                    if (!(selectedField && selectedField.id === field.id)) {
-                                                                                        setHoveredFieldId(null);
-                                                                                    }
-                                                                                }}
-                                                                                onClick={(e) => e.preventDefault()}
-                                                                                style={{
-                                                                                    border: (hoveredFieldId === field.id) ? '1px solid #33cba2' : '1px solid transparent',
-                                                                                    backgroundColor: hoveredFieldId === field.id ? '#e7f9f4' : 'transparent',
-                                                                                }}>
-                                                                                <div className='form-builder-chaneging-wrap file '>
-                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
-                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
-                                                                                        <img src={multiimg1} alt="" />
-                                                                                        <div className='email-files drop'>
-                                                                                            <h2 style={{
-                                                                                                color: "#404b52",
-                                                                                                fontSize: field.width === '25%' ? '16px' : undefined,
-                                                                                                lineHeight: field.width === '25%' ? '20px' : undefined,
-                                                                                            }}>Drop your images here</h2>
-                                                                                            <span><span style={{
-                                                                                                color: "#9ed29f", fontSize: field.width === '25%' ? '16px' : undefined,
-                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
-                                                                                            }}>Browse file </span>  from your computer </span>
-                                                                                        </div>
-
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        ) : multiimagesOptions[field.id] === 'option3' ? (
                                                                             <div className="drag-and-drop-text third multifile-second multi" onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                                 onMouseLeave={() => {
                                                                                     if (!(selectedField && selectedField.id === field.id)) {
@@ -4246,6 +4212,38 @@ const Formgenerated = () => {
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                        ) : multiimagesOptions[field.id] === 'option3' ? (
+                                                                            <div className="drag-and-drop-text third  multifile-second multi-image" onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                                                onMouseLeave={() => {
+                                                                                    if (!(selectedField && selectedField.id === field.id)) {
+                                                                                        setHoveredFieldId(null);
+                                                                                    }
+                                                                                }}
+                                                                                onClick={(e) => e.preventDefault()}
+                                                                                style={{
+                                                                                    border: (hoveredFieldId === field.id) ? '1px solid #33cba2' : '1px solid transparent',
+                                                                                    backgroundColor: hoveredFieldId === field.id ? '#e7f9f4' : 'transparent',
+                                                                                }}>
+                                                                                <div className='form-builder-chaneging-wrap file '>
+                                                                                    <input type="file" accept="image/*" id='file-input-' style={{ display: 'none' }} />
+                                                                                    <div className='form-builder-changes-file-wraped' style={{ padding: field.width === '25%' ? '20px' : undefined, gap: field.width === '25%' ? '10px' : undefined, }}>
+                                                                                        <img src={multiimg1} alt="" />
+                                                                                        <div className='email-files drop'>
+                                                                                            <h2 style={{
+                                                                                                color: "#404b52",
+                                                                                                fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '20px' : undefined,
+                                                                                            }}>Drop your images here</h2>
+                                                                                            <span><span style={{
+                                                                                                color: "#00ac4f", fontSize: field.width === '25%' ? '16px' : undefined,
+                                                                                                lineHeight: field.width === '25%' ? '16px' : undefined,
+                                                                                            }}>Browse file </span>  from your computer </span>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
                                                                         ) : null}
                                                                     </label>
 

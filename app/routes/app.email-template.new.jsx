@@ -2751,7 +2751,7 @@ const handleConfirmUnlink = async () => {
                                                                                 )}
                                                                             </div>
                                                                             {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <div className='form-builder-drag-drop' >
                                                                                     <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}
@@ -2836,7 +2836,7 @@ const handleConfirmUnlink = async () => {
                                                                             })}
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className={`form-builder-drag-drop ${activeFieldId === field.id ? 'active' : ''}`}>
+                                                                            <div className={`form-builder-drag-drop ${activeFieldId === field.id ? 'active' : ''}`}>
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -2868,7 +2868,7 @@ const handleConfirmUnlink = async () => {
                                                                             <div className='spacer-height-show' style={{ height: `${field.spacerHeight}px`, backgroundColor: field.spacerbg }}></div>
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                            <div className='form-builder-drag-drop' >
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -2954,7 +2954,7 @@ const handleConfirmUnlink = async () => {
 
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                            <div className='form-builder-drag-drop' >
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -2991,7 +2991,7 @@ const handleConfirmUnlink = async () => {
                                                                             }} />
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                            <div className='form-builder-drag-drop' >
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -3042,7 +3042,7 @@ const handleConfirmUnlink = async () => {
                                                                                 }}
                                                                                 dangerouslySetInnerHTML={{ __html: editorValueed || field.content || 'Captivate customers with' }} />
                                                                             {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <div className='form-builder-drag-drop' >
                                                                                     <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}
@@ -3091,7 +3091,7 @@ const handleConfirmUnlink = async () => {
                                                                             )}
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                            <div className='form-builder-drag-drop' >
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -3151,7 +3151,7 @@ const handleConfirmUnlink = async () => {
                                                                             </a>
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                            <div className='form-builder-drag-drop' >
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -3196,7 +3196,7 @@ const handleConfirmUnlink = async () => {
                                                                                 {field.costumText}
                                                                             </div>
                                                                             {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <div className='form-builder-drag-drop' >
                                                                                     <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}
@@ -3234,7 +3234,7 @@ const handleConfirmUnlink = async () => {
                                                                                 dangerouslySetInnerHTML={{ __html: field.value || field.htmltext }}
                                                                             />
                                                                             {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <div className='form-builder-drag-drop' >
                                                                                     <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}
@@ -3344,7 +3344,7 @@ const handleConfirmUnlink = async () => {
                                                                             </div>
                                                                         </div>
                                                                         {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                            <div id='form-drag' className='form-builder-drag-drop' >
+                                                                            <div className='form-builder-drag-drop' >
                                                                                 <img src={drop} alt="Drag" />
                                                                             </div>
                                                                         )}
@@ -3409,7 +3409,8 @@ const handleConfirmUnlink = async () => {
 
                                                                                             {field.showPrice && product.price && (
                                                                                                 <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
-                                                                                                    ${product.price}
+                                                                                                 
+                                                                                                    {product.price.length > 10 ? `${product.price.slice(0, 10)}...` : product.price}
                                                                                                 </p>
                                                                                             )}
                                                                                         </div>
@@ -3436,7 +3437,7 @@ const handleConfirmUnlink = async () => {
                                                                                 ))}
                                                                             </div>
                                                                             {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <div className='form-builder-drag-drop' >
                                                                                     <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}
@@ -3495,7 +3496,7 @@ const handleConfirmUnlink = async () => {
                                                                                 </div>
                                                                             </div>
                                                                             {(activeFieldId === field.id || hoveredFieldId === field.id) && (
-                                                                                <div id='form-drag' className='form-builder-drag-drop' >
+                                                                                <div className='form-builder-drag-drop' >
                                                                                     <img src={drop} alt="Drag" />
                                                                                 </div>
                                                                             )}

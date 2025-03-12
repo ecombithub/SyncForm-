@@ -386,19 +386,19 @@ export default function Pricing() {
                                         className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
                                     >
                                        <span>Customer data Export</span>
-                                        <img className="show-img" src={cros1} alt="Unlimited Forms" />
+                                        <img className="show-img" src={cross1} alt="Unlimited Forms" />
                                     </div>
                                     <div
                                         className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
                                     >
                                          <span>Advanced Elements </span>
-                                         <img className="show-img" src={cros1} alt="Unlimited Forms" />
+                                         <img className="show-img" src={cross1} alt="Unlimited Forms" />
                                     </div>
                                     <div
                                         className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
                                     >
                                         <span>   Live Chat </span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
                                     </div>
                                     </div>
                                 </div>

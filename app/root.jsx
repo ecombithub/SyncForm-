@@ -53,7 +53,7 @@ export default function App() {
         <link href="https://fonts.googleapis.com/css2?family=Baskerville&display=swap" rel="stylesheet"/>
 
 
-        {/* <script src="//code.tidio.co/3snvje9fsrr1an4mo8tffkv7r9wwdfal.js" async></script> */}
+        <script src="//code.tidio.co/3snvje9fsrr1an4mo8tffkv7r9wwdfal.js" async></script> 
 
         <Meta />
         <Links />

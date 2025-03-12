@@ -95,21 +95,21 @@ app.post("/api/CostomerRequest", async (req, res) => {
       const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-              user: "sahil@hubsyntax.com",
-              pass: "wqnr gaom dgzq asyu",
+              user: "syncform@hubsyntax.com",
+              pass: "jaaf dnhy rndg rpic",
           },
       });
 
       const mailOptions = {
-          from: "sahil@hubsyntax.com",
-          to: "sahil@hubsyntax.com",
+          from: "syncform@hubsyntax.com",
+          to: "syncform@hubsyntax.com",
           subject: `Shopify Webhook Received: ${topic}`,
           text: `
-          🔔 Webhook Topic: ${topic}
-          🏬 Shop ID: ${shop_id}
-          🌐 Shop Domain: ${shop_domain}
-          📧 Customer Email: ${customer?.email || "N/A"}
-          👤 Customer Name: ${customer?.name || "Unknown"}
+           Webhook Topic: ${topic}
+           Shop ID: ${shop_id}
+          Shop Domain: ${shop_domain}
+           Customer Email: ${customer?.email || "N/A"}
+          Customer Name: ${customer?.name || "Unknown"}
           `,
       };
 
@@ -177,13 +177,13 @@ app.post("/api/store", async (req, res) => {
           let transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-              user: 'sahil@hubsyntax.com',
-              pass: 'wqnr gaom dgzq asyu'  
+              user: 'syncform@hubsyntax.com',
+              pass: 'jaaf dnhy rndg rpic'  
             }
           });
 
           await transporter.sendMail({
-            from: '"Syncform" <sahil@hubsyntax.com>',
+            from: '"Syncform" <syncform@hubsyntax.com>',
             to: req.body.email,
             subject: 'Shopify App Uninstall Notification',
             html: HtmlText
@@ -231,13 +231,13 @@ app.post("/api/store", async (req, res) => {
       let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'sahil@hubsyntax.com',
-          pass: 'wqnr gaom dgzq asyu'  
+          user: 'syncform@hubsyntax.com',
+          pass: 'jaaf dnhy rndg rpic'  
         }
       });
 
       await transporter.sendMail({
-        from: '"Syncform" <sahil@hubsyntax.com>',
+        from: '"Syncform" <syncform@hubsyntax.com>',
         to: req.body.email,
         subject: 'Shopify App Uninstall Notification',
         html: HtmlText
@@ -1097,14 +1097,14 @@ app.get('/font-family', async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'sahil@hubsyntax.com',
-    pass: 'wqnr gaom dgzq asyu',
+    user: 'syncform@hubsyntax.com',
+    pass: 'jaaf dnhy rndg rpic',
   },
 });
 
 const sendEmails = (formData) => {
   const mailOptions = {
-    from: 'sahil@hubsyntax.com',
+    from: 'syncform@hubsyntax.com',
     to: `${formData.email}`,
     subject: `Support Request: ${formData.name}`,
     text: `
@@ -1227,8 +1227,8 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
     const settings = await Settings.findOne({ shop: TemplateAll.shop });
 
-    let emailUser = 'sahil@hubsyntax.com';
-    let emailPass = 'wqnr gaom dgzq asyu';
+    let emailUser = 'syncform@hubsyntax.com';
+    let emailPass = 'jaaf dnhy rndg rpic';
 
     if (settings && settings.email && settings.password) {
       emailUser = settings.email;
@@ -1545,7 +1545,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                           ">
                               ${
                                   child.add === 'image'
-                                      ? `<img src= ${child.value} alt="Uploaded Preview" style="width: 100%; height: auto;" />`
+                                      ? `<img src= "https://onlinepngtools.com/images/png/illustrations/convert-data-uri-to-png.png" alt="Uploaded Preview" style="width: 100%; height: auto;vertical-align: bottom;" />`
                                       : `<div style="width: 100%;">
                                           ${child.value}
                                           ${field.showbtnsplit ? `
@@ -1593,9 +1593,10 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                           border-spacing: 0;
                           color: ${field.splitColor || '#000'};
                       ">
-                          <tr>
-                              ${childrenHtml}
-                          </tr>
+                          <tr ${TemplateAll?.styles?.viewMode === 'mobile' ? 'style="display: grid;"' : ''}>
+                          ${childrenHtml}
+                           </tr>
+
                       </table>
                   </div>
               `;
@@ -1650,12 +1651,12 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
               <div>
                 <p  margin-top: 10px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                  ${product.title}
+                  ${product.title.slice(0, 10)}...
                 </p>
 
                 ${field.showPrice && product.price ? `
                   <p  margin-top:20px; font-weight: ${field.productWeight}; letter-spacing: ${field.productLetterSpacing}px;">
-                    Price: $${product.price}
+                    ${product.price.slice(0, 10)}...
                   </p>
                 ` : ''}
 
@@ -2041,13 +2042,13 @@ app.post('/user-email', async (req, res) => {
         const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
-            user: 'sahil@hubsyntax.com',
-            pass: 'wqnr gaom dgzq asyu',
+            user: 'syncform@hubsyntax.com',
+            pass: 'jaaf dnhy rndg rpic',
           },
         });
 
         const mailOptions = {
-          from: 'sahil@hubsyntax.com',
+          from: 'syncform@hubsyntax.com',
           to: shopData.email,
           subject: `Congrats! Your Form has Reached ${numberValueParsed} Submission`,
           text: `We’re excited to inform you that your form, has successfully reached ${numberValueParsed}  submissions! This milestone indicates growing engagement from your customers.
@@ -3245,7 +3246,7 @@ app.listen(port, () => {
 //     const transporter = nodemailer.createTransport({
 //       service: 'gmail',
 //       auth: {
-//         user: 'sahil@hubsyntax.com',
+//         user: 'syncform@hubsyntax.com',
 //         pass: 'tdry xexo fqgj alzq',
 //       },
 //     });
@@ -3351,14 +3352,14 @@ app.listen(port, () => {
 
 //     const adminMailOptions = {
 //       from: email,
-//       to: 'sahil@hubsyntax.com',
+//       to: 'syncform@hubsyntax.com',
 //       subject: 'New Customer Query builder-form',
 //       html: adminHtmlContent,
 
 //     };
 
 //     const userMailOptions = {
-//       from: '"EcombitHub Support" <sahil@hubsyntax.com>',
+//       from: '"EcombitHub Support" <syncform@hubsyntax.com>',
 //       to: email,
 //       subject: emailSubject || 'Welcome to builder-form',
 //       html: userHtmlContent,
