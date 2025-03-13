@@ -311,13 +311,12 @@ const Formgenerated = () => {
     const [multiIamgePreview, setMultiIamgePreview] = useState('off');
     const [upgradePopup, setUphradePopup] = useState(false);
     const [activeBrand, setActiveBrand] = useState('');
-    const [marginForm, setMarginForm] = useState('10');
+    const [marginForm, setMarginForm] = useState('60');
     const [linkaline, setLinkaline] = useState('');
     const [linkTarget, setLinkTarget] = useState('_self');
     const [passwordpopop, setPasswordpopup] = useState(false);
 
     const shopName = shopData.name;
-    console.log('Shop Name:', shopName);
 
     const handleToggleImagePreview = (fieldId) => {
         setImagePreview((prevState) => ({
@@ -355,9 +354,6 @@ const Formgenerated = () => {
                 [fieldId]: option,
             };
 
-            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
-            console.log('Updated multiimagesOptions:', newState);
-
             return newState;
         });
     };
@@ -368,9 +364,6 @@ const Formgenerated = () => {
                 ...prevState,
                 [fieldId]: option,
             };
-
-            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
-            console.log('Updated fileOptions:', newState);
 
             return newState;
         });
@@ -383,9 +376,6 @@ const Formgenerated = () => {
                 [fieldId]: option,
             };
 
-            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
-            console.log('Updated multiOptions:', newState);
-
             return newState;
         });
     };
@@ -396,9 +386,6 @@ const Formgenerated = () => {
                 ...prevState,
                 [fieldId]: option,
             };
-
-            console.log('Selected file option for fieldId:', fieldId, 'Option:', option);
-            console.log('Updated imageOptions:', newState);
 
             return newState;
         });
@@ -541,7 +528,7 @@ const Formgenerated = () => {
             setBoxShadow(styles.boxShadow || '');
             setFormWidth(styles.width || '1200px');
             setPadding(styles.padding || '20px');
-            setMarginForm(styles.marginForm || '10');
+            setMarginForm(styles.marginForm || '60');
             setBorderRadius(styles.borderRadius || '0');
             setBorder(styles.border || '1px');
             const borderWidthValue = styles.border ? styles.border.split(' ')[0] : '1px';
@@ -565,15 +552,14 @@ const Formgenerated = () => {
                     setLinkTarget(linkField.linkTarget || '_self');
                 }
             }
-            console.log(styles.backgroundImage);
             setImageFile(styles.backgroundImage === "none" ? null : styles.backgroundImage);
             setThankYouTimer(thankYouTimer);
-            console.log('Updated Thank You Timer:', thankYouTimer);
+            
             setIsActive(toggleStatus === "Enabled");
-            console.log('Toggle Status:', toggleStatus);
+         
             setEditorValue(editorValue);
             setSubmissionOption(submissionOption)
-            console.log('Location State:', location.state);
+
             setSubject(styles.subject);
 
             if (fields && fields.length > 0) {
@@ -644,8 +630,6 @@ const Formgenerated = () => {
                     setMultiIamgePreview(previewState);
                 }
             }
-
-
         }
 
     }, [location.state]);
@@ -728,13 +712,13 @@ const Formgenerated = () => {
     const handleToggle = () => {
         setPasswordStatus((prevStatus) => {
             const newStatus = prevStatus === "on" ? "off" : "on";
-            console.log("Updated Password Status:", newStatus);
+            
             return newStatus;
         });
     };
 
     useEffect(() => {
-        console.log("Current Password Status:", passwordStatus);
+   
     }, [passwordStatus]);
 
 
@@ -748,7 +732,6 @@ const Formgenerated = () => {
 
     const addInputField = (type) => {
         let newField = createInputField(type);
-        console.log("New field created:", newField);
 
         if (type === 'radio') {
             newField = {
@@ -861,7 +844,7 @@ const Formgenerated = () => {
             const updatedSelectedField = updatedFields.find((field) => field.id === selectedField.id);
             setSelectedField(updatedSelectedField);
         } else {
-            console.warn('No selectedField found, skipping field update');
+           
         }
     };
 
@@ -895,13 +878,13 @@ const Formgenerated = () => {
 
     const handleAddRadioOptions = () => {
         if (radioOptions.some(option => option.label.trim() === '')) {
-            alert('Option names cannot be empty!');
+          
             return;
         }
 
         const optionNames = radioOptions.map(option => {
             if (!option || !option.label || !option.value) {
-                console.error('Invalid option detected:', option);
+              
                 return null;
             }
             return {
@@ -911,7 +894,7 @@ const Formgenerated = () => {
         }).filter(option => option !== null);
 
         if (optionNames.length === 0) {
-            alert('There are no valid options to add.');
+          
             return;
         }
 
@@ -953,7 +936,7 @@ const Formgenerated = () => {
                 );
             });
         } else {
-            console.warn('No selectedField found, skipping field update');
+          
         }
     };
 
@@ -990,7 +973,7 @@ const Formgenerated = () => {
                 )
             );
         } else {
-            console.warn('No selectedField found, skipping field update');
+         
         }
     };
 
@@ -1002,7 +985,6 @@ const Formgenerated = () => {
 
         setCheckboxOptions((prevOptions) => {
             const updatedOptions = [...prevOptions, newOption];
-            console.log('Updated checkbox options:', updatedOptions);
             return updatedOptions;
         });
 
@@ -1022,7 +1004,7 @@ const Formgenerated = () => {
                 return updatedFields;
             });
         } else {
-            console.warn('No selectedField found, skipping field update');
+            
         }
     };
 
@@ -1104,7 +1086,7 @@ const Formgenerated = () => {
                 )
             );
         } else {
-            console.warn('No selectedField found, skipping field update');
+            
         }
     };
 
@@ -1116,7 +1098,7 @@ const Formgenerated = () => {
 
         setSelectOptions((prevOptions) => {
             const updatedOptions = [...prevOptions, newOption];
-            console.log('Updated select options:', updatedOptions);
+           
             return updatedOptions;
         });
 
@@ -1136,13 +1118,13 @@ const Formgenerated = () => {
                 return updatedFields;
             });
         } else {
-            console.warn('No selectedField found, skipping field update');
+            
         }
     };
 
     const handleAddSelectOptions = () => {
         if (selectOptions.some(option => option.name.trim() === '')) {
-            alert('Option names cannot be empty!');
+        
             return;
         }
 
@@ -1230,7 +1212,7 @@ const Formgenerated = () => {
 
     const handleStatusChange = (status) => {
         if (fields.length === 0) {
-            alert('Please add at least one field before saving the form.');
+           
             setShowConfirmationPopup(false);
             return;
         }
@@ -1252,12 +1234,12 @@ const Formgenerated = () => {
 
 
         if (status !== 'live' && status !== 'draft') {
-            alert('Invalid status. Please choose either "live" or "draft".');
+            
             return;
         }
 
         if (!formTitle.trim()) {
-            alert('Please enter a title for the form.');
+           
             return;
         }
 
@@ -1440,7 +1422,6 @@ const Formgenerated = () => {
             url: url || "",
         };
 
-        console.log('New form object:', JSON.stringify(newForm, null, 2));
 
         const request = isEditing
             ? axios.put(`${apiUrl}/update-form/${editingFormId}`, newForm, {
@@ -1465,7 +1446,7 @@ const Formgenerated = () => {
                 if (error.response && error.response.status === 400) {
                     alert(error.response.data);
                 } else {
-                    console.error('Error saving/updating form data:', error);
+                   
                 }
             });
 
@@ -1569,7 +1550,7 @@ const Formgenerated = () => {
                     prevFields.map(field => field?.id === selectedField.id ? updatedField : field)
                 );
             } else {
-                console.error('Fields is not an array or is undefined', fields);
+              
             }
         }
     }, [headingLevel, headingText, headingFontSize, descriptionText, selectedField]);
@@ -1704,7 +1685,7 @@ const Formgenerated = () => {
     }
 
     const updateMargin = (newMargin) => {
-        const marginValue = Math.min(Math.max(Number(newMargin), 0), 30);
+        const marginValue = Math.min(Math.max(Number(newMargin), 0), 150);
         setMarginForm(marginValue);
 
         const formBuilder = document.getElementById('bg_change');
@@ -2007,9 +1988,6 @@ const Formgenerated = () => {
             const fileFieldsCount = updatedFields.filter(field => field.type === 'file').length;
             const multiFileFieldsCount = updatedFields.filter(field => field.type === 'multi-file').length;
 
-            console.log(`Number of file fields copied: ${fileFieldsCount}`);
-            console.log(`Number of multi-file fields copied: ${multiFileFieldsCount}`);
-
             if (fieldToCopy.type === 'file') {
                 const newFileOption = fileFieldsCount === 1 ? 'option1' : fileOptions[fieldId] || 'option1';
                 setFileOptions(prevOptions => ({
@@ -2043,17 +2021,13 @@ const Formgenerated = () => {
 
     const fetchPaymentPlan = async () => {
         try {
-            console.log("Fetching payment plan...");
+          
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
-            console.log("Response data:", response.data);
             setUserPlan(response.data);
-            console.log("User plan set:", response.data);
-
-            console.log("Forms fetched successfully with user plan data.");
+       
         } catch (error) {
-            console.error("Error fetching payment plan:", error);
-
+          
         }
     };
 
@@ -2074,10 +2048,10 @@ const Formgenerated = () => {
         const fetchStatusBrand = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
-                console.log("Fetched status:", response.data.status);
+               
                 setActiveBrand(response.data.status);
             } catch (error) {
-                console.error("Error fetching brand logo status:", error);
+
             }
         };
 
@@ -2477,7 +2451,7 @@ const Formgenerated = () => {
                                                                     value={marginForm}
                                                                     onChange={(e) => updateMargin(e.target.value)}
                                                                     min={0}
-                                                                    max={30}
+                                                                    max={150}
                                                                 />
                                                             </div>
 
@@ -2707,7 +2681,6 @@ const Formgenerated = () => {
                                     <div id="formBuilder" className="form-builder forms-wrapping" >
                                         {fields.length > 0 ? (fields.map((field, index) => {
                                             if (!field) {
-                                                console.error(`Field at index ${index} is undefined`);
                                                 return null;
                                             }
                                             return (

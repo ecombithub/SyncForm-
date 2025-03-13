@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import '../index.css';
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
@@ -106,17 +106,15 @@ export default function Setting() {
     const [numberPopup, setNumberPopup] = useState(false);
 
     const navigator = useNavigate();
-    console.log(shopData);
-
+    
     useEffect(() => {
         const fetchStatus = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(response.data.status);
                 setNumberValue(response.data.numberValue || 3);
-                console.log(`Fetched Status: ${response.data.status}`);
+                
             } catch (error) {
-                console.error("Error fetching status:", error);
             }
         };
 
@@ -140,16 +138,13 @@ export default function Setting() {
 
     const fetchPaymentPlan = async () => {
         try {
-            console.log("Fetching payment plan...");
+
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
-            console.log("Response data:", response.data);
             setUserPlan(response.data);
-            console.log("User plan set:", response.data);
-            console.log("Forms fetched successfully with user plan data.");
+       
         } catch (error) {
-            console.error("Error fetching payment plan:", error);
-
+        
         }
     };
 
@@ -182,17 +177,15 @@ export default function Setting() {
                 shopData,
             };
 
-            console.log("Sending Data:", postData);
             const response = await axios.post(`${apiUrl}/user-email`, postData);
-            console.log("Response:", response.data);
+        
 
             if (response.data.message === 'Email will be sent when form count matches.') {
                 const statusResponse = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(statusResponse.data.status);
-                console.log(`Updated Status: ${statusResponse.data.status}`);
+             
             }
         } catch (error) {
-            console.error("Error submitting data:", error);
         }
     };
 
@@ -223,34 +216,47 @@ export default function Setting() {
             setMessage(`Error: ${error.message}`);
         }
     };
-
-    const handleBrandLogo = async () => {
+    
+    const handleBrandLogo = () => {
         if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUpgradePopup(true);
             return;
         }
-
+    
         const newStatus = activeBrand === 'active' ? 'disactive' : 'active';
         setActiveBrand(newStatus);
-
-        try {
-            await fetch(`${apiUrl}/api/brandLogo`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus, shop }),
-            });
-        } catch (error) {
-            console.error('Error updating brand logo status:', error);
-        }
     };
-
+    
+    useEffect(() => {
+        let timeoutId;
+    
+        const sendStatusUpdate = async () => {
+            try {
+                await fetch(`${apiUrl}/api/brandLogo`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: activeBrand, shop }),
+                });
+            } catch (error) {
+               
+            }
+        };
+    
+        if (activeBrand) {
+            timeoutId = setTimeout(sendStatusUpdate, 300);
+        }
+    
+        return () => clearTimeout(timeoutId);
+    }, [activeBrand]);
+    
+    
     useEffect(() => {
         const fetchStatusBrand = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
                 setActiveBrand(response.data.status);
             } catch (error) {
-                console.error("Error fetching brand logo status:", error);
+            
             }
         };
 

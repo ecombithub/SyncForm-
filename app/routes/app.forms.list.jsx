@@ -63,7 +63,7 @@ export const loader = async ({ request }) => {
         response.assets = assetData.assets || [];
 
     } catch (err) {
-        console.error("Error fetching data:", err.message);
+      
         response.error = true;
         response.errorMessage = err.message;
     }
@@ -174,7 +174,6 @@ const Formdata = () => {
     const [loading, setLoading] = useState(false);
 
 
-
     const handleShowFormDetails = (formId) => {
         setIsLoading(true);
         setCurrentFormId(formId);
@@ -193,7 +192,7 @@ const Formdata = () => {
         textArea.select();
         try {
             document.execCommand("copy");
-            console.log(`Form ID: ${text} copied to clipboard!`);
+           
             setCopiedFormId(text);
             setTimeout(() => setCopiedFormId(null), 2000);
         } catch (err) {
@@ -206,16 +205,16 @@ const Formdata = () => {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(formId)
                 .then(() => {
-                    alert(`Form ID: ${formId} copied to clipboard!`);
+                   
                     setCopiedFormId(formId);
                     setTimeout(() => setCopiedFormId(null), 2000);
                 })
                 .catch(err => {
-                    console.error('Failed to copy form ID: ', err);
+                   
                     fallbackCopyTextToClipboard(formId);
                 });
         } else {
-            console.error('Clipboard API not supported. Falling back to execCommand.');
+          
             fallbackCopyTextToClipboard(formId);
         }
     };
@@ -295,7 +294,7 @@ const Formdata = () => {
                 closeDeletePopup();
 
             } catch (error) {
-                console.error('Error deleting form:', error);
+               
             } finally {
 
                 setIsLoading(false);
@@ -334,7 +333,7 @@ const Formdata = () => {
                 await fetchForms(response.data);
             } catch (error) {
                 setError('Error fetching payment plan');
-                console.error('Error fetching payment plan:', error);
+              
             }
         };
 
@@ -359,7 +358,7 @@ const Formdata = () => {
                 const tempeltedata = response3.data;
 
                 if (tempeltedata && Array.isArray(tempeltedata.data)) {
-                    console.log("tempeltedata.data is an array");
+                   
                 } else {
                     throw new Error('Template data is not an array or does not have a data property');
                 }
@@ -377,9 +376,9 @@ const Formdata = () => {
                     };
 
                     if (matchingTemplate) {
-                        console.log(`Matching template title for formId ${form1.formId}: ${matchingTemplate.title}`);
+                      
                     } else {
-                        console.log(`No matching template found for formId ${form1.formId}`);
+                     
                     }
 
                     return updatedForm;
@@ -398,7 +397,7 @@ const Formdata = () => {
                 }
             } catch (error) {
                 setError('Error fetching forms');
-                console.error('Error fetching forms:', error);
+             
             } finally {
                 setLoading(false);
             }
@@ -471,15 +470,14 @@ const Formdata = () => {
                 }
 
                 const result = await response.json();
-                console.log('Form copied successfully:', result);
-
+               
                 setCreatedForms((prevForms) => [...prevForms, result]);
 
                 setIsLoading(false);
 
             }, 3000);
         } catch (error) {
-            console.error('Error copying form:', error);
+          
             setIsLoading(false);
         }
     };

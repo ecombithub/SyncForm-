@@ -1053,7 +1053,6 @@ const EmailTemplateCreate = () => {
         fetchConnectedForms();
     }, [formDataAdd]);
 
-
     const handleFormSelect = async (e) => {
     const title = e.target.value.trim();
     const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
@@ -1822,7 +1821,7 @@ const handleConfirmUnlink = async () => {
         });
 
         setTimeout(() => {
-            console.log('After Clearing (with delay): ', selectedProducts);
+          
             setIsPopupOpen(false);
 
             if (lastProductFieldId) {
@@ -1909,12 +1908,11 @@ const handleConfirmUnlink = async () => {
         setPopupFieldTitle(fieldTitle);
 
         const productTitles = products.map(product => product.title);
-        console.log("Product Titles:", productTitles);
-
+       
         setProductTitles(productTitles);
 
         const productImages = products.map(product => product.image);
-        console.log("Product images:", productImages);
+
         setProductImage(productImages);
     };
 
@@ -2140,7 +2138,6 @@ const handleConfirmUnlink = async () => {
                     };
                 } else {
 
-                    alert('You cannot add more than 6 columns');
                     return f;
                 }
             }
@@ -2150,7 +2147,7 @@ const handleConfirmUnlink = async () => {
     };
 
     const removeColumn = (fieldId, index) => {
-        console.log(`Attempting to remove column at index: ${index}`);
+
 
         setFields((prevFields) => {
             return prevFields.reduce((acc, field) => {
@@ -2158,7 +2155,7 @@ const handleConfirmUnlink = async () => {
                     const updatedColumnData = field.columnData.filter((_, i) => i !== index);
 
                     if (updatedColumnData.length === 0) {
-                        console.log(`No columns left, removing entire field: ${fieldId}`);
+                    
                         removeField(fieldId);
                         return acc;
                     }
@@ -2630,7 +2627,6 @@ const handleConfirmUnlink = async () => {
                                                         .map((field) => {
                                                             if (field.type === 'heading') {
                                                                 const HeadingTag = field.headingLevel || 'h1';
-
                                                                 return (
                                                                     <div
                                                                         key={field.id}

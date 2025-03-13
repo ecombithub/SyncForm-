@@ -185,7 +185,7 @@ export default function EmailTemplate() {
                 setMatchedData(null);
             }
         } catch (error) {
-            console.error("Error fetching data:", error.message);
+            
         } finally {
 
             setLoading(false);
@@ -235,6 +235,7 @@ export default function EmailTemplate() {
             setUphradePopup(true);
             return;
         }
+        
         try {
             setLoading(true);
             const response = await axios.get(`${apiUrl}/template/data`);
@@ -252,16 +253,13 @@ export default function EmailTemplate() {
                 };
 
                 const sendResponse = await axios.post(`${apiUrl}/send/api`, payload);
-
-                console.log('Response from send API:', sendResponse.data);
                 fetchForms();
 
             } else {
-                // console.log('No matching data found for templateId:', form.templateId);
+             
             }
         } catch (error) {
-            // console.error('Error sending template data:', error.message);
-            alert('Error sending template');
+         
         } finally {
             setLoading(false);
         }
@@ -281,7 +279,7 @@ export default function EmailTemplate() {
                     prevForms.filter((form) => form.templateId !== formToDelete)
                 );
             } catch (error) {
-                console.error('Error deleting form:', error);
+              
                 setError('Failed to delete form. Please try again later.');
             } finally {
                 closeDeletePopup();
@@ -347,14 +345,14 @@ export default function EmailTemplate() {
                 }
             } else {
                 if (!base64Form) {
-                    console.error('Template ID not found in base64 response.');
+                  
                 }
                 if (!dataForm) {
-                    console.error('Template ID not found in data response.');
+                   
                 }
             }
         } catch (error) {
-            console.error('Error copying template:', error.message);
+           
             setError('Failed to copy template. Please try again later.');
         } finally {
             setLoading(false);
@@ -902,35 +900,35 @@ export default function EmailTemplate() {
     const handleUpgrade = () => {
         navigate('/app/pricing');
     }
-
+   
     const handleCreateTemplate = async () => {
         setIsLoading(true);
         try {
-
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             const userPlan = planResponse.data;
-
+    
             if (userPlan?.plan === "free" && userPlan.status === "active") {
-
                 const templatesResponse = await axios.get(`${apiUrl}/get/base64`);
                 const fetchedData = templatesResponse.data.data || [];
-
-                if (fetchedData.length >= 1) {
+    
+                const shopTemplates = fetchedData.filter(template => template.shop === shop);
+    
+                if (shopTemplates.length >= 1) {
                     setUphradePopup(true);
                     setIsLoading(false);
                     return;
                 }
             }
-
+    
             setTimeout(() => {
                 navigate('/app/email-template/new');
             }, 1000);
-
+    
         } catch (error) {
-            console.error("Error checking plan or templates:", error);
-            // alert("Something went wrong while checking your plan or templates.");
+            
         }
     };
+    
 
     return (
         <>

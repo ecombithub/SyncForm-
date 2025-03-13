@@ -115,13 +115,9 @@ function Index() {
   const navigator = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
   const sendShopData = async () => {
     try {
-    
-      if (!shopData.primaryDomain || !shopData.primaryDomain.host) {
-        return;
-      }
+      
   
       const response = await fetch(`${apiUrl}/store-shopData`, {
         method: 'POST', 
@@ -134,24 +130,22 @@ function Index() {
       if (response.ok) {
         const data = await response.json();
         setResponseData(data);
-        // console.log('Successfully added shop data:', data);
+        console.log("✅ Successfully added shop data:", data);
       } else {
-        // console.error('Error adding shop data:', response.statusText);
-        setError(response.statusText);
+        const errorData = await response.json();
+        console.error("❌ Error adding shop data:", errorData.message);
       }
     } catch (error) {
-      // console.error('Error fetching data:', error);
-      setError(error.message);
+      console.error("❌ Network error while sending shop data:", error.message);
     }
   };
   
   useEffect(() => {
-    if (shopData) {
-      // console.log("shopData", shopData); 
+    if (shopData && shopData.myshopifyDomain) {
       sendShopData();
     }
   }, [shopData]);
-
+  
   useEffect(() => {
     const saveShopDetails = async () => {
       if (shop && accessToken && !dataSent) {
@@ -225,7 +219,7 @@ function Index() {
             setResponseData(response.data);
           }
         } else {
-          console.error('Error:', error.message);
+         
         }
       } finally {
         setIsSubmitting(false);

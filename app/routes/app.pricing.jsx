@@ -11,6 +11,7 @@ import downimg from '../images/downimg.png';
 import cross1 from '../images/cross1.png';
 import cros1 from '../images/cros1.png';
 import cros from '../images/cros.png';
+import cancleimg from '../images/cancleimg.png';
 
 import '../index.css';
 import { authenticate, apiVersion } from "../shopify.server";
@@ -170,6 +171,10 @@ export default function Pricing() {
     const [lastChargeId, setLastChargeId] = useState(null);
     const activePlan = charges.find(charge => charge.status === 'active');
     const [activeSection, setActiveSection] = useState(null);
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [popupPlan, setPopupPlan] = useState(null);
+    const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
+    const [deletePlanData, setDeletePlanData] = useState({ chargeId: null, planName: null });
 
     const toggleViewMore = (section) => {
         setActiveSection((prevSection) => (prevSection === section ? null : section));
@@ -202,12 +207,26 @@ export default function Pricing() {
 
         try {
             const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
-            console.log("Payment data saved response:", response.data);
 
         } catch (error) {
-            console.error('Error saving payment data:', error);
+           
         }
     };
+
+    const [data, setData] = useState(null);
+    useEffect(() => {
+        const fetchActivePlan = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+                setData(response.data);
+              
+            } catch (err) {
+               
+            }
+        };
+        fetchActivePlan();
+    }, []);
+
 
     useEffect(() => {
         if (activePlan && activePlan.id !== lastChargeId) {
@@ -217,7 +236,16 @@ export default function Pricing() {
     }, [activePlan]);
 
     const handleChoosePlan = async (plan) => {
-        console.log("Selected Plan:", plan);
+        if (data?.activePlan?.plan === "pro_plus" && plan === "pro") {
+            setPopupPlan(plan);
+            setIsPopupVisible(true);
+            return;
+        }
+
+        processPlanSelection(plan);
+    };
+
+    const processPlanSelection = async (plan) => {
         if (isSubmitting || (activePlan && activePlan.name.includes(plan))) return;
 
         setIsSubmitting(true);
@@ -228,7 +256,8 @@ export default function Pricing() {
         formData.append('plan', plan);
 
         if (plan === 'free' && hasActiveCharge) {
-            alert('You are already on a Free plan. You cannot switch to Free again.');
+
+            alertPopup("You are already on a Free plan. You cannot switch to Free again.");
             setIsSubmitting(false);
             return;
         }
@@ -240,7 +269,25 @@ export default function Pricing() {
         }
     };
 
-    const handleDelete = async (chargeId) => {
+    const handleConfirmPlanChange = () => {
+        setIsPopupVisible(false);
+        if (popupPlan) {
+            processPlanSelection(popupPlan);
+        }
+    };
+
+    const handleDelete = async (chargeId, planName) => {
+       
+        if (planName === 'Form Builder Pro Plan' || planName === 'Form Builder Pro Plus Plan') {
+            setDeletePlanData({ chargeId, planName }); 
+            setIsDeletePopupVisible(true); 
+            return;
+        }
+
+        await proceedWithDeletion(chargeId);
+    };
+
+    const proceedWithDeletion = async (chargeId) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
 
@@ -248,9 +295,7 @@ export default function Pricing() {
             const formData = new FormData();
             formData.append('charge_id', chargeId);
             await submit(formData, { method: 'delete' });
-            console.log(`Deleted charge ID: ${chargeId}`);
         } catch (error) {
-            console.error('Error during deletion:', error);
         }
 
         const paymentData = {
@@ -265,21 +310,28 @@ export default function Pricing() {
 
         try {
             const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
-            console.log("Payment data saved response:", response.data);
+           
         } catch (error) {
-            if (error.response) {
-                console.error('Error response status:', error.response.status);
-                console.error('Error response data:', error.response.data);
-            } else {
-                console.error('Error:', error.message);
-            }
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleConfirmDelete = () => {
+        setIsDeletePopupVisible(false);
+        if (deletePlanData.chargeId) {
+            proceedWithDeletion(deletePlanData.chargeId);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setIsDeletePopupVisible(false);
+        setDeletePlanData({ chargeId: null, planName: null });
+    };
+
     const hasActiveCharge = charges.some(charge => charge.status === 'active');
 
+    
     return (
         <div className='from_builder_pricing'>
             <div className="container">
@@ -341,7 +393,7 @@ export default function Pricing() {
                                                     <>
                                                         <p>Free</p>
                                                         <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
-                                                        <p className='form_builder_plan_btn' onClick={() => handleDelete(charge.id)}>Choose this plan</p>
+                                                        <p className='form_builder_plan_btn'   onClick={() => handleDelete(charge.id, charge.name)} >Choose this plan</p>
                                                         <div className='monthly-wrap'>
                                                             lifetime
                                                         </div>
@@ -351,7 +403,7 @@ export default function Pricing() {
                                         ))}
                                     </div>
                                     <button className="show-data-icon" onClick={() => toggleViewMore("first")}>
-                                    {activeSection === "first" ? (
+                                        {activeSection === "first" ? (
                                             <img
                                                 className="show-img1"
                                                 src={icondata}
@@ -369,37 +421,37 @@ export default function Pricing() {
                                     </button>
 
                                     <div className='shwo-unlimited-wrapedd'>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
-                                    >
-                                         <span>Number of form(s)</span>
-                                        1
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>  Number of Email template(s)</span>
-                                        1
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "first" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of form(s)</span>
+                                            1
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "first" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>  Number of Email template(s)</span>
+                                            1
+                                        </div>
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>Customer data Export</span>
-                                        <img className="show-img" src={cross1} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
-                                    >
-                                         <span>Advanced Elements </span>
-                                         <img className="show-img" src={cross1} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "first"  ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>   Live Chat </span>
-                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "first" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Customer data Export</span>
+                                            <img className="show-img" src={cross1} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "first" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Advanced Elements </span>
+                                            <img className="show-img" src={cross1} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "first" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>   Live Chat </span>
+                                            <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="form_builder_plan_table activee bg second">
@@ -427,7 +479,7 @@ export default function Pricing() {
                                         Monthly
                                     </div>
                                     <button className="show-data-icon" onClick={() => toggleViewMore("second")}>
-                                    {activeSection === "second" ? (
+                                        {activeSection === "second" ? (
                                             <img
                                                 className="show-img1"
                                                 src={icondata}
@@ -444,39 +496,39 @@ export default function Pricing() {
                                         )}
                                     </button>
                                     <div className='shwo-unlimited-wrapedd'>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "second"  ? 'visible' : 'hidden'}`}
-                                    >
-                                           <span>Number of form(s)</span>
-                                           Unlimited
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "second"  ? 'visible' : 'hidden'}`}
-                                    >
-                                           <span>  Number of Email template(s)</span>
-                                           Unlimited
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "second" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of form(s)</span>
+                                            Unlimited
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "second" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>  Number of Email template(s)</span>
+                                            Unlimited
+                                        </div>
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "second"  ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>Customer data Export</span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "second"  ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>Advanced Elements</span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "second" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Customer data Export</span>
+                                            <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "second" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Advanced Elements</span>
+                                            <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        </div>
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "second"  ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>Live Chat </span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "second" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Live Chat </span>
+                                            <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
 
                                 <div className="form_builder_plan_table activee bg third">
@@ -505,7 +557,7 @@ export default function Pricing() {
                                         Monthly
                                     </div>
                                     <button className="show-data-icon" onClick={() => toggleViewMore("third")}>
-                                    {activeSection === "third" ? (
+                                        {activeSection === "third" ? (
                                             <img
                                                 className="show-img1"
                                                 src={icondata}
@@ -522,41 +574,41 @@ export default function Pricing() {
                                         )}
                                     </button>
                                     <div className='shwo-unlimited-wrapedd'>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>Number of form(s)</span>
-                                        Unlimited
-                                        
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>Number of Email template(s)</span>
-                                        Unlimited
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of form(s)</span>
+                                            Unlimited
 
-                                    </div>
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of Email template(s)</span>
+                                            Unlimited
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
-                                    >
-                                         <span>Customer data Export</span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
-                                    >
-                                     
-                                     <span>Advanced Elements</span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
-                                    >
-                                   
-                                       <span>Live Chat </span>
-                                        <img className="show-img" src={cros} alt="Unlimited Forms" />
-                                    </div>
+                                        </div>
+
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Customer data Export</span>
+                                            <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
+                                        >
+
+                                            <span>Advanced Elements</span>
+                                            <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "third" ? 'visible' : 'hidden'}`}
+                                        >
+
+                                            <span>Live Chat </span>
+                                            <img className="show-img" src={cros} alt="Unlimited Forms" />
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <div className="form_builder_plan_table activee bg four">
@@ -581,13 +633,13 @@ export default function Pricing() {
                                         <span>Number of form(s)</span>
                                     </div>
                                     <div className="form_builder_plan_table">
-                                         1 
+                                        1
                                     </div>
                                     <div className="form_builder_plan_table">
-                                       Unlimited
+                                        Unlimited
                                     </div>
                                     <div className="form_builder_plan_table">
-                                       Unlimited
+                                        Unlimited
                                     </div>
 
                                 </div>
@@ -596,7 +648,7 @@ export default function Pricing() {
                                         Number of Email template(s)
                                     </div>
                                     <div className="form_builder_plan_table">
-                                         1
+                                        1
                                     </div>
                                     <div className="form_builder_plan_table">
                                         Unlimited
@@ -607,45 +659,45 @@ export default function Pricing() {
                                 </div>
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
-                                    Customer data Export
+                                        Customer data Export
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={cross1} alt="" />
+                                        <img src={cross1} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={pricing2} alt="" />
+                                        <img src={pricing2} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={pricing3} alt="" />
+                                        <img src={pricing3} alt="" />
                                     </div>
                                 </div>
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
-                                     Advanced Elements 
+                                        Advanced Elements
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={cross1} alt="" />
+                                        <img src={cross1} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={pricing2} alt="" />
+                                        <img src={pricing2} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={pricing3} alt="" />
+                                        <img src={pricing3} alt="" />
                                     </div>
                                 </div>
 
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
-                                     Live Chat 
+                                        Live Chat
                                     </div>
                                     <div className="form_builder_plan_table">
-                                       <img src={pricing1} alt="" />
+                                        <img src={pricing1} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing2} alt="" />
+                                        <img src={pricing2} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing3} alt="" />
+                                        <img src={pricing3} alt="" />
                                     </div>
                                 </div>
                             </div>
@@ -681,10 +733,10 @@ export default function Pricing() {
                                                 </>
                                             )}
                                         </div>
-                                     ))}
+                                    ))}
 
-                                  <button className="show-data-icon" onClick={() => toggleViewMore("four")}> 
-                                    {activeSection === "four" ? (
+                                    <button className="show-data-icon" onClick={() => toggleViewMore("four")}>
+                                        {activeSection === "four" ? (
                                             <img
                                                 className="show-img1"
                                                 src={icondata}
@@ -701,37 +753,37 @@ export default function Pricing() {
                                         )}
                                     </button>
                                     <div className='shwo-unlimited-wrapedd'>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>Number of form(s)</span>
-                                      1
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>  Number of Email template(s)</span>
-                                       1
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of form(s)</span>
+                                            1
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>  Number of Email template(s)</span>
+                                            1
+                                        </div>
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>   Customer data Export</span>
-                                        <img className="show-img" src={cross1} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span> Advanced Elements </span>
-                                        <img className="show-img" src={cross1} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>   Live Chat </span>
-                                        <img className="show-img" src={pricing1} alt="Unlimited Forms" />
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>   Customer data Export</span>
+                                            <img className="show-img" src={cross1} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span> Advanced Elements </span>
+                                            <img className="show-img" src={cross1} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "four" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>   Live Chat </span>
+                                            <img className="show-img" src={pricing1} alt="Unlimited Forms" />
+                                        </div>
                                     </div>
 
                                 </div>
@@ -761,7 +813,7 @@ export default function Pricing() {
                                         Yearly
                                     </div>
                                     <button className="show-data-icon" onClick={() => toggleViewMore("five")}>
-                                    {activeSection === "five" ? (
+                                        {activeSection === "five" ? (
                                             <img
                                                 className="show-img1"
                                                 src={icondata}
@@ -778,37 +830,37 @@ export default function Pricing() {
                                         )}
                                     </button>
                                     <div className='shwo-unlimited-wrapedd'>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>Number of form(s)</span>
-                                       Unlimited
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span> Number of Email template(s)</span>
-                                       Unlimited
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of form(s)</span>
+                                            Unlimited
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span> Number of Email template(s)</span>
+                                            Unlimited
+                                        </div>
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>  Customer data Export</span>
-                                        <img className="show-img" src={pricing6} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>   Advanced Elements </span>
-                                        <img className="show-img" src={pricing6} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>  Live Chat </span>
-                                        <img className="show-img" src={pricing6} alt="Unlimited Forms" />
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>  Customer data Export</span>
+                                            <img className="show-img" src={pricing6} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>   Advanced Elements </span>
+                                            <img className="show-img" src={pricing6} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "five" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>  Live Chat </span>
+                                            <img className="show-img" src={pricing6} alt="Unlimited Forms" />
+                                        </div>
                                     </div>
 
 
@@ -838,7 +890,7 @@ export default function Pricing() {
                                         Yearly
                                     </div>
                                     <button className="show-data-icon" onClick={() => toggleViewMore("six")}>
-                                    {activeSection === "six" ? (
+                                        {activeSection === "six" ? (
                                             <img
                                                 className="show-img1"
                                                 src={icondata}
@@ -855,38 +907,38 @@ export default function Pricing() {
                                         )}
                                     </button>
                                     <div className='shwo-unlimited-wrapedd'>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span>Number of form(s)</span>
-                                        Unlimited
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
-                                    >
-                                          <span> Number of Email template(s)</span>
-                                        Unlimited
-                                    </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>Number of form(s)</span>
+                                            Unlimited
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span> Number of Email template(s)</span>
+                                            Unlimited
+                                        </div>
 
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span> Customer data Export</span>
-                                        <img className="show-img" src={pricing5} alt="Unlimited Forms" />
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span> Customer data Export</span>
+                                            <img className="show-img" src={pricing5} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span> Advanced Elements </span>
+                                            <img className="show-img" src={pricing5} alt="Unlimited Forms" />
+                                        </div>
+                                        <div
+                                            className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
+                                        >
+                                            <span>  Live Chat </span>
+                                            <img className="show-img" src={pricing5} alt="Unlimited Forms" />
+                                        </div>
                                     </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
-                                    >
-                                        <span> Advanced Elements </span>
-                                        <img className="show-img" src={pricing5} alt="Unlimited Forms" />
-                                    </div>
-                                    <div
-                                        className={`shwo-unlimited-form-data ${activeSection === "six" ? 'visible' : 'hidden'}`}
-                                    >
-                                       <span>  Live Chat </span>
-                                        <img className="show-img" src={pricing5} alt="Unlimited Forms" />
-                                    </div>
-                                     </div>
                                 </div>
                             </div>
                             <div className='form_table_pricing'>
@@ -895,13 +947,13 @@ export default function Pricing() {
                                         <span>Number of form(s)</span>
                                     </div>
                                     <div className="form_builder_plan_table">
-                                         1 
+                                        1
                                     </div>
                                     <div className="form_builder_plan_table">
-                                       Unlimited
+                                        Unlimited
                                     </div>
                                     <div className="form_builder_plan_table">
-                                       Unlimited
+                                        Unlimited
                                     </div>
 
                                 </div>
@@ -910,7 +962,7 @@ export default function Pricing() {
                                         Number of Email template(s)
                                     </div>
                                     <div className="form_builder_plan_table">
-                                         1
+                                        1
                                     </div>
                                     <div className="form_builder_plan_table">
                                         Unlimited
@@ -921,45 +973,45 @@ export default function Pricing() {
                                 </div>
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
-                                    Customer data Export
+                                        Customer data Export
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={cross1} alt="" />
+                                        <img src={cross1} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing6} alt="" />
+                                        <img src={pricing6} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing5} alt="" />
+                                        <img src={pricing5} alt="" />
                                     </div>
                                 </div>
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
-                                     Advanced Elements 
+                                        Advanced Elements
                                     </div>
                                     <div className="form_builder_plan_table">
-                                    <img src={cross1} alt="" />
+                                        <img src={cross1} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing6} alt="" />
+                                        <img src={pricing6} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing5} alt="" />
+                                        <img src={pricing5} alt="" />
                                     </div>
                                 </div>
 
                                 <div className="form_builder_choose_pan">
                                     <div className="form_builder_plan_table heading">
-                                     Live Chat 
+                                        Live Chat
                                     </div>
                                     <div className="form_builder_plan_table">
-                                       <img src={pricing1} alt="" />
+                                        <img src={pricing1} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing6} alt="" />
+                                        <img src={pricing6} alt="" />
                                     </div>
                                     <div className="form_builder_plan_table">
-                                      <img src={pricing5} alt="" />
+                                        <img src={pricing5} alt="" />
                                     </div>
                                 </div>
                             </div>
@@ -967,10 +1019,36 @@ export default function Pricing() {
                     )}
                 </div>
                 <div className="pricing-button-view">
-                <a href="https://syncform.app/pricing.html" target='_blank'><button style={{cursor:"pointer"}}>View All Features</button></a>
+                    <a href="https://syncform.app/pricing.html" target='_blank'><button style={{ cursor: "pointer" }}>View All Features</button></a>
                 </div>
             </div>
             <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
+            {isPopupVisible && (<div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
+                    <p>Are You Sure You Want to Downgrade Your Plan?</p>
+                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
+                    <div className="form-buuilder-pricing-plan-btn">
+                        <button className='pricing-plan-btn-wrapp' onClick={handleConfirmPlanChange}>Yes</button>
+                        <button className='pricing-plan-btn-wrapp no' onClick={() => setIsPopupVisible(false)}>No</button>
+                    </div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={() => setIsPopupVisible(false)}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>)}
+            {isDeletePopupVisible && (<div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
+                    <p>Are You Sure You Want to Downgrade Your Plan?</p>
+                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
+                    <div className="form-buuilder-pricing-plan-btn">
+                        <button className='pricing-plan-btn-wrapp' onClick={handleConfirmDelete}>Yes</button>
+                        <button className='pricing-plan-btn-wrapp no' onClick={handleCancelDelete}>No</button>
+                    </div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancelDelete}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>)}
         </div>
     );
 }

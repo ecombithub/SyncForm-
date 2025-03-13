@@ -81,7 +81,7 @@ export default function Support() {
                 shop,
                 describe
             });
-            console.log('Response status:', response.status);
+           
             if (response.status === 200) {
                 setMessage('Form submitted successfully!');
                 setTimeout(() => {
@@ -97,7 +97,7 @@ export default function Support() {
                 alert('Failed to submit the form. Please try again.');
             }
         } catch (error) {
-            console.error('Error submitting the form:', error);
+          
             alert('An error occurred while submitting the form. Please try again.');
         }
     };
@@ -114,6 +114,7 @@ export default function Support() {
     const handleHide = () => {
         setShowPopup(!showPopup);
     }
+    
     return (
         <div className='form_builder_support'>
             <div className="container">

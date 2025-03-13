@@ -173,7 +173,6 @@ app.post('/store-shopData', async (req, res) => {
       });
     }
 
-    console.error(error);
     res.status(500).json({ message: 'Error adding shop data', error });
   }
 });
@@ -2661,7 +2660,6 @@ app.get('/payment/active-plan', async (req, res) => {
 });
 
 app.post('/payment/confirm', async (req, res) => {
-
   try {
     const { chargeId, shop, name, plan, price, status, billingOn } = req.body;
 
@@ -2672,34 +2670,13 @@ app.post('/payment/confirm', async (req, res) => {
       return res.status(400).json({ error: "All payment details are required" });
     }
 
-    const existingActivePlan = await Payment.findOne({ shop, status: 'active' });
-    if (existingActivePlan) {
-      existingActivePlan.status = 'disactive';
-      await existingActivePlan.save();
-    }
+    await Payment.updateMany({ shop, status: 'active' }, { $set: { status: 'disactive' } });
 
-    let payment = await Payment.findOne({ chargeId, shop });
-    if (payment) {
-
-      payment.name = name;
-      payment.plan = plan;
-      payment.price = price;
-      payment.status = status;
-      payment.billingOn = billingOn;
-      await payment.save();
-    } else {
-
-      payment = new Payment({
-        shop,
-        name,
-        plan,
-        price,
-        status,
-        billingOn,
-        chargeId,
-      });
-      await payment.save();
-    }
+    const payment = await Payment.findOneAndUpdate(
+      { chargeId, shop }, 
+      { name, plan, price, status, billingOn, chargeId, shop }, 
+      { new: true, upsert: true } 
+    );
 
     res.json({ success: true, payment });
   } catch (error) {
