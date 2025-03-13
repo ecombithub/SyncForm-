@@ -67,7 +67,7 @@ export const action = async ({ request }) => {
                                 selectedPlan === "pro_plus_yearly" ? 149.99 : 0,
                     return_url: `https://${shop}/admin/apps/syncform/app/pricing`,
                     trial_days: 7,
-                    test: true,
+                    // test: true,
                     interval: selectedPlan === "pro_yearly" || selectedPlan === "pro_plus_yearly" ? "annual" : "every_30_days"
                 }
             };

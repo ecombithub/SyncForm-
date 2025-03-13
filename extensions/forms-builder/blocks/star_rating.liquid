@@ -886,8 +886,7 @@ document.addEventListener('click', function (event) {
       getBrandLogo(formshop);
       
       if (formData.styles) {
-        console.log('Form styles:', formData.styles);
-
+      
         const backgroundOverlay = $(
           '<div class="background-overlay"><span style="display: none;">background-overlay</span></div>'
         );
@@ -984,6 +983,13 @@ document.addEventListener('click', function (event) {
                           ? `<label style="color: ${labelColor};">${field.label}
                           ${
                             field.required
+                              ? `<img class="form-builder-wred-starr-requid" 
+                          src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/imgpsh_fullsize_anim_28.png?v=1740472426" 
+                           alt="Required Field" />`
+                              : ''
+                          }
+                          ${
+                            field.emailRequid
                               ? `<img class="form-builder-wred-starr-requid" 
                           src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/imgpsh_fullsize_anim_28.png?v=1740472426" 
                            alt="Required Field" />`
@@ -1513,7 +1519,7 @@ document.addEventListener('click', function (event) {
         case 'email':
           return `<input type="email" ${
             field.readonly ? 'readonly' : ''
-          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          } ${field.emailRequid ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'phone':
           const phoneInputHtml = `
           <input type="tel" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${

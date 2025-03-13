@@ -327,6 +327,7 @@ const formCreateSchema = new mongoose.Schema({
     required: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
+    emailRequid: { type: Boolean, default: false },
     onValue: { type: String, default: 'On' },
     offValue: { type: String, default: 'Off' },
     width: { type: String, default: '100%' },

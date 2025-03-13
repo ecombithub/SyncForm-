@@ -705,6 +705,7 @@ const Formgenerated = () => {
             textPadding: type === 'description' ? '10' : undefined,
             dividerAline: type === 'divider' ? 'left' : undefined,
             dividerWidth: type === 'divider' ? '100%' : undefined,
+            emailRequid:type === 'email' ? true : undefined,
         };
 
         return existingField ? { ...baseField, ...existingField, id: generateUniqueId() } : baseField;
@@ -3452,7 +3453,7 @@ const Formgenerated = () => {
                                                         >
                                                             <div>
                                                                 <label style={{ color: labelColor }}>
-                                                                    {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
+                                                                    {field.label}{field.emailRequid && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
                                                                     <input
                                                                         style={{
                                                                             width: '100%',
@@ -3468,7 +3469,7 @@ const Formgenerated = () => {
                                                                         className="name"
                                                                         name={field.name}
                                                                         placeholder={field.placeholder}
-                                                                        required={field.required}
+                                                                        required={field.emailRequid}
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
                                                                         onChange={(e) => updateFieldProperty('email', e.target.value, field.id)}
@@ -5093,7 +5094,7 @@ const Formgenerated = () => {
                                                                                 const numericValue = Number(newValue);
 
                                                                                 if (newValue === "") {
-                                                                                   
+
                                                                                     updateFieldProperty("passwordCharacter", "");
                                                                                 } else if (!isNaN(numericValue)) {
                                                                                     if (numericValue < 6) {
@@ -5131,6 +5132,7 @@ const Formgenerated = () => {
                                                                     </div>
                                                                 </div>
                                                             )}
+
                                                             {selectedField.type === 'file' && (
                                                                 <>
                                                                     <div className="form-builder-chaneging-wrap number">
@@ -5391,17 +5393,32 @@ const Formgenerated = () => {
                                                                             </div>
                                                                         </>
                                                                     )}
-                                                                    <div className="form-builder-chaneging-wrap">
-                                                                        <label>Required</label>
-                                                                        <label className="toggle-switch">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                checked={selectedField?.required || false}
-                                                                                onChange={(e) => updateFieldProperty('required', e.target.checked)}
-                                                                            />
-                                                                            <span className="slider"></span>
-                                                                        </label>
-                                                                    </div>
+                                                                    {selectedField.type !== 'email' && (
+                                                                        <div className="form-builder-chaneging-wrap">
+                                                                            <label>Required</label>
+                                                                            <label className="toggle-switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={selectedField?.required || false}
+                                                                                    onChange={(e) => updateFieldProperty('required', e.target.checked)}
+                                                                                />
+                                                                                <span className="slider"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    )}
+                                                                    {selectedField.type === 'email' && (
+                                                                        <div className="form-builder-chaneging-wrap">
+                                                                            <label>Required</label>
+                                                                            <label className="toggle-switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={selectedField?.emailRequid || false}
+                                                                                    onChange={(e) => updateFieldProperty('emailRequid', e.target.checked)}
+                                                                                />
+                                                                                <span className="slider"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    )}
                                                                     <div className="form-builder-chaneging-wrap">
                                                                         <label>Disabled</label>
                                                                         <label className="toggle-switch">
