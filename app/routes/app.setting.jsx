@@ -96,7 +96,7 @@ export const loader = async ({ request }) => {
 export default function Setting() {
     const { shop, apiUrl, shopData } = useLoaderData() || {};
     const [status, setStatus] = useState('disactive');
-    const [numberValue, setNumberValue] = useState(3);
+    const [numberValue, setNumberValue] = useState(50);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -112,7 +112,7 @@ export default function Setting() {
             try {
                 const response = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(response.data.status);
-                setNumberValue(response.data.numberValue || 3);
+                setNumberValue(response.data.numberValue || 50);
                 
             } catch (error) {
             }
@@ -122,14 +122,14 @@ export default function Setting() {
     }, [shop, apiUrl]);
 
     useEffect(() => {
-        if (status === 'active' && numberValue >= 3) {
+        if (status === 'active' && numberValue >= 50) {
             sendData();
         }
     }, [status, numberValue]);
 
     const handleNumberChange = (e) => {
         const value = Number(e.target.value);
-        if (value >= 3) {
+        if (value >= 50) {
             setNumberValue(value);
         } else {
             setNumberPopup(true);
@@ -275,7 +275,7 @@ export default function Setting() {
         <>
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>
-                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                    <p>You need to upgrade your plan to unlock this feature</p>
                     <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
                     <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
                         <img src={cancleimg} alt="" />
@@ -339,7 +339,7 @@ export default function Setting() {
                                         value={numberValue}
                                         onChange={handleNumberChange}
                                     />
-                                    <label>Enter at least 10 records</label>
+                                    <label>Enter at least 50 records</label>
                                 </div>
                             </div>
                             <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 50 submissions, but you can adjust it to a higher number based on your needs.</span>

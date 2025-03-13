@@ -475,7 +475,7 @@ function Customer() {
 
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>
-                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                    <p>You need to upgrade your plan to unlock this feature</p>
                     <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
                     <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
                         <img src={cancleimg} alt="" />
@@ -538,7 +538,7 @@ function Customer() {
                                 <div className="form-tota-customer-image">
                                     <img src={customer2} alt="" />
                                 </div>
-                                <div className="form-tota-customer-element">
+                                <div className="form-tota-customer-element second-forms">
                                     <p>Total forms</p>
                                     <h3>{createdForms.length}</h3>
                                 </div>

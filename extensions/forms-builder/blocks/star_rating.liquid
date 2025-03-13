@@ -936,7 +936,8 @@ document.addEventListener('click', function (event) {
               field.type === 'slider' ||
               field.type === 'number' ||
               field.type === 'file' ||
-              field.type === 'phone ' ||
+              field.type === 'phone' ||
+              field.type === 'tel' ||
               field.type === 'datetime' ||
               field.type === 'location' ||
               field.type === 'multi-file' ||
@@ -1180,61 +1181,67 @@ document.addEventListener('click', function (event) {
               </div>
             `;
           
-        case 'checkbox':
-          return `
-                <div class = "checkbox-button" style="width:100%;padding: ${
-                  field.inputPadding
-                };border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
-                  ${field.options
-                    .map(
-                      (option) => `
-                   <div class="form_checkbox_flex" style="display: flex; gap: 10px; align-items: center; padding: 10px;">
-                      <input type="checkbox" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${
-                        field.disabled ? 'disabled' : ''
-                      }  id="${option.id}" name="${field.name}" value="${option.value}" ${
-                        field.required ? 'required' : ''
-                      } ${field.readonly ? 'readonly' : ''}/>
-                      <label for="${option.id}">${option.label}</label>
-                    </div>
-                  `
-                    )
-                    .join('')}
-                </div>
-                 <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
-              `;
-        case 'radio':
-          return `
-                  <div class = "radio-button" style="width:100%;padding: ${
-                    field.inputPadding
-                  };border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} ">
-                  ${field.options
-                    .map(
-                      (option) => `
-                    <div class="form_radio_flex" style="display: flex; gap: 10px; align-items: center; padding: 10px;">
-                      <input type="radio" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${
-                        field.disabled ? 'disabled' : ''
-                      }  id="${option.id}" name="${field.name}" value="${option.value}" ${
-                        option.checked ? 'checked' : ''
-                      } aria-label="${field.label || 'Radio Input'}"/>
-                      <label for="${option.id}">${option.label}</label>
-                    </div>
-                  `
-                    )
-                    .join('')}
-                </div>
-                  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
-              `;
-              case 'select':
-              const options = `
-                <div class="custom-select-option" data-value="" style="font-weight: bold; color: #888;">
-                    Select an option
-                </div>
+            case 'checkbox':
+            return `
+              <div class="checkbox-button" style="width:100%;padding:${field.inputPadding};
+                border-radius:${inputRadius}px; border-color:${inputBorderColor}; 
+                background-color:${inputBgColor}; border-width:${inputWidth}px; 
+                border-style:${inputStyle}">
                 ${field.options
                   .map(
-                    (option) => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
+                    (option, index) => `
+                      <div class="form_checkbox_flex" 
+                        style="display: flex; gap: 10px; align-items: center; padding: 10px;">
+                        <input type="checkbox" 
+                          ${field.readonly ? 'readonly' : ''}  
+                          ${field.disabled ? 'disabled' : ''}  
+                          id="${field.name}-${index}-${uniqueId}" 
+                          name="${field.name}[]" 
+                          value="${option.value}" 
+                          ${option.checked ? 'checked' : ''} />
+                        <label for="${field.name}-${index}-${uniqueId}">${option.label}</label>
+                      </div>
+                    `
                   )
                   .join('')}
+              </div>
+              <div class="description" 
+                style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+                ${field.description}
+              </div>
+            `;
+          
+              case 'radio':
+              return `
+                <div class="radio-button" style="width:100%;padding:${field.inputPadding};
+                  border-radius:${inputRadius}px; border-color:${inputBorderColor}; 
+                  background-color:${inputBgColor}; border-width:${inputWidth}px; 
+                  border-style:${inputStyle}">
+                  ${field.options
+                    .map(
+                      (option, index) => `
+                        <div class="form_radio_flex" 
+                          style="display: flex; gap: 10px; align-items: center; padding: 10px;">
+                          <input type="radio" ${field.readonly ? 'readonly' : ''} 
+                            ${field.required ? 'required' : ''} 
+                            ${field.disabled ? 'disabled' : ''}  
+                            id="${field.name}-${index}-${uniqueId}" 
+                            name="${field.name}-${uniqueId}" 
+                            value="${option.value}" 
+                            ${option.checked ? 'checked' : ''} 
+                            aria-label="${field.label || 'Radio Input'}"/>
+                          <label for="${field.name}-${index}-${uniqueId}">${option.label}</label>
+                        </div>
+                      `
+                    )
+                    .join('')}
+                </div>
+                <div class="description" 
+                  style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+                  ${field.description}
+                </div>
               `;
+            
             
               return `
                 <div class="custom-select-container" style="position: relative;">
@@ -1532,6 +1539,7 @@ document.addEventListener('click', function (event) {
                    background-color: ${inputBgColor || '#fff'}; 
                    border-width: ${inputWidth || '1'}px; 
                    padding-left:50px;
+                   height:52px;
                   border-style: ${inputStyle || 'solid'};"
       inputmode="tel" pattern="[0-9]*" />
           <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${

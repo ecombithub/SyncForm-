@@ -728,7 +728,7 @@ p.form-builder-email-btn.no {
 
 .form-builder-email-templete-popup {
     text-align: center;
-    max-width: 65%;
+    max-width: 85%;
     margin: auto;
 }
 
@@ -1258,10 +1258,12 @@ input:checked+.slider:before {
     background: #fff;
     padding: 40px;
     border-radius: 8px;
-    box-shadow: 0px 10px 60px 0px #A5A5A580;
+    background-image: url(./images/emaildissconnect.png);
     width: 440px;
     max-width: 90%;
     box-sizing: border-box;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 
@@ -3429,7 +3431,7 @@ p.form_build_h2_four {
 }
 
 .form_builder_support .form_builder_convert .form_builder_blogs img {
-      width: 100%;
+    width: 100%;
     border-radius: 15px;
     display: flex;
 }
@@ -3931,15 +3933,16 @@ button.plus_option {
 
 .form_builder_plan_upgrade_popup_wrapp {
     background: white;
-    font-size: 22px;
+    font-size: 26px;
     color: #180000;
     width: 100%;
-    max-width: 23%;
-    padding: 40px 30px;
-    border-radius: 10px;
+    max-width: 30%;
+    padding: 40px 60px;
+    border-radius: 20px;
     position: relative;
-    background-image: url(../app/images/popupbg.png);
+    background-image: url(../app/images/unlock.png);
     background-size: contain;
+    background-position: center;
 }
 
 .form_builder_plan_upgrade_popup_wrapp p {
@@ -3947,7 +3950,7 @@ button.plus_option {
     line-height: 30px;
     margin: auto;
     text-align: center;
-    line-height: 30px;
+    line-height: 40px;
 }
 
 .form_builder_plan_upgrade_popup {
@@ -3965,9 +3968,9 @@ button.plus_option {
 
 .form_builder_upgrade_popup_cancle {
     position: absolute;
-    right: -1%;
-    width: 30px;
-    top: -15px;
+    right: -4%;
+    width: 42px;
+    top: -22px;
     cursor: pointer;
 }
 
@@ -3982,9 +3985,13 @@ button.plus_option {
     background: #FF9C06;
     border-radius: 4px;
     width: 100%;
-    max-width: 40%;
+    max-width: 37%;
     margin-top: 20px;
     cursor: pointer;
+    height: 35px;
+    width: 130px;
+    border: 1px solid #D78100;
+    line-height: 33px;
 }
 
 .edit_setting_bg_cls {
@@ -4016,7 +4023,7 @@ button.plus_option {
 .form-builder-wrap-popup-inputs.requid-fields .popup-content {
     padding: 100px 0 !important;
     max-width: 30% !important;
-    background-image: url(./images/BG.png);
+    background-image: url(./images/fill1.png);
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -4074,9 +4081,9 @@ button.plus_option {
 .it-service-icon {
     cursor: pointer;
     position: absolute;
-    top: 0;
-    right: 0;
-    width:30px;
+    top: -22px;
+    right: -19px;
+    width: 40px;
 }
 
 .it-service-icon img {
@@ -4151,41 +4158,52 @@ button.btn-templates {
 
 .form-builder-delete-popup .form-builder-create-wrped.popup .form-builder-delete-popup-pop {
     background: white;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 100%;
     max-width: 50%;
+    background-image: url(/app/images/iconrm.png);
+    background-repeat: no-repeat;
+    background-size: cover;
     position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 215px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .form_builder_delete_icon {
     position: absolute;
-    right: -8px;
-    top: -12px;
+    right: -19px;
+    top: -21px;
 }
-
 .form_builder_delete_icon img {
     width: 100%;
 }
 
 .form_builder_delete_icon {
-    width: 30px;
+    width: 40px;
 }
 
 .form-builder-delete-popup .form-builder-create-wrped.popup .form-builder-delete-popup-pop .form_builder_delete_text_flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #B5B7C0;
-    padding: 20px;
+   
 }
 
 .form_builder_delete_text p {
-    font-size: 16px;
+    font-size: 26px;
     font-weight: 600;
+    line-height: 37px;
+    max-width: 70%;
+    margin: auto;
+    margin-bottom: 20px;
 }
 
 .form-builder-delete-popup .form_delete_btn {
-    padding: 20px;
+
     display: flex;
     justify-content: center;
     display: flex;
@@ -4201,15 +4219,20 @@ button.btn-templates {
 }
 
 .form-builder-delete-popup .form_delete_btn .form_delete {
-    border: 1px solid #B5B7C0;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
+    width: 60px;
+    height: 35px;
+    color: white;
+    background: #ff0000;
+    border: 1px solid #ff0000;
+    text-align: center;
 }
 
 .form-builder-delete-popup .form_delete_btn .form_delete.first {
-    color: white;
-    background: #ff0000;
+    border: 1px solid #2D90E0;
+    background: #45A7F6;
 }
 
 
@@ -4378,7 +4401,7 @@ button.btn-templates {
 }
 
 .form_builder_plan_upgrade_popup_wrapp.password-popup {
-    background-image: url(/app/images/passwordpopup.png);
+    background-image: url(/app/images/unlock.png);
     height: 220px;
     max-width: 27%;
     display: flex;
@@ -5855,7 +5878,7 @@ button.rm-btn.showfirst img {
 .form_builder_plan_upgrade_popup_wrapp.records-number {
     padding: 75px;
     font-size: 30px;
-    background-image: url(./images/number001.png);
+    background-image: url(./images/leasr.png);
     background-size: cover;
 
 }
@@ -6158,6 +6181,7 @@ button.form_email_btn {
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         max-width: 45% !important;
     }
+
     span.full-id {
         display: none;
     }
@@ -6225,6 +6249,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1024px) {
+    .form-tota-customer-element.second-forms {
+        padding-bottom: 23px;
+    }
+
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         max-width: 70% !important;
     }
@@ -6825,6 +6853,7 @@ button.form_email_btn {
         max-width: 65% !important;
         font-size: 30px;
     }
+
     .form_build_app_bottm.second.know {
         padding-top: 20px;
     }
@@ -6998,10 +7027,12 @@ button.form_email_btn {
         max-width: 85% !important;
         font-size: 30px;
     }
+
     .form_build_cancle_option {
         right: -3%;
         top: 0;
     }
+
     .form_builder_plan_upgrade_popup_wrapp.password-popup {
         max-width: 90%;
     }
@@ -7162,7 +7193,7 @@ button.form_email_btn {
     span.short-id {
         display: none;
     }
-    
+
     .builderr_field_wrpp {
         padding: 15px 15px;
     }
@@ -7240,6 +7271,11 @@ button.form_email_btn {
 
 
 @media screen and (max-width:540px) {
+
+    .form_builder_plan_upgrade_popup_wrapp {
+        padding: 40px 25px;
+
+    }
 
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         padding: 40px !important;
@@ -7407,11 +7443,24 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .form-tota-customer-element.second-forms {
+        padding-bottom: 20px;
+    }
+
+    .form_builder_upgrade_popup_cancle {
+        position: absolute;
+        right: -4%;
+        width: 32px;
+        top: -12px;
+        cursor: pointer;
+    }
+
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         padding: 50px !important;
         max-width: 30%;
         font-size: 27px !important;
     }
+
     .form_builder_plan_upgrade_popup_wrapp.password-popup p {
         max-width: 90%;
     }
@@ -7729,15 +7778,24 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .form_builder_plan_upgrade_popup_wrapp {
+        max-width: 90%;
+        font-size: 22px;
+    }
+    .form_builder_plan_upgrade_popup_wrapp p {
+        line-height: 34px;
+    }
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         padding: 41px !important;
         max-width: 30%;
         font-size: 24px !important;
     }
+
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         max-width: 94% !important;
         padding: 30px !important;
     }
+
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan p {
         font-size: 25px !important;
         line-height: 32px !important;
@@ -8006,6 +8064,7 @@ button.form_email_btn {
         max-width: 30%;
         font-size: 22px !important;
     }
+
     .form_builder_plan_upgrade_popup_wrapp.password-popup p {
         max-width: 100%;
         font-size: 19px;
@@ -8293,7 +8352,7 @@ button.form_email_btn {
 }
 
 .input-field.phone-edit .flag-dropdown {
-    height: 48px;
+    height: 51px;
     top: 1px !important;
     width: 44px;
     border-radius: 0 !important;
@@ -8309,13 +8368,13 @@ button.form_email_btn {
 }
 
 .form_builder_plan_upgrade_popup_wrapp.pricing-plan p {
-    font-size: 28px;
+    font-size: 26px;
     line-height: 36px;
 }
 
 .form_builder_plan_upgrade_popup_wrapp.pricing-plan span p {
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 19px;
     margin: 18px 0;
     font-weight: 300;
 }
@@ -8335,26 +8394,28 @@ button.form_email_btn {
     color: white;
     cursor: pointer;
 }
+
 .form_builder_plan_upgrade_popup_wrapp.pricing-plan button.pricing-plan-btn-wrapp.no {
     background: #DF0404;
     border: 1px solid #DF0404;
 }
 
 .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
-    max-width: 34%;
-    padding: 65px;
-    background-image: url(./images/pricingplan.png);
+    max-width: 31%;
+    padding: 40px;
+    background-image: url(./images/prplan.png);
 }
 
-.react-tel-input .flag-dropdown.open .selected-flag{
+.react-tel-input .flag-dropdown.open .selected-flag {
     background: none !important;
 }
 
-.react-tel-input .flag-dropdown.open .selected-flag :hover{
+.react-tel-input .flag-dropdown.open .selected-flag :hover {
     background: none !important;
 }
 
-.react-tel-input .selected-flag:hover, .react-tel-input .selected-flag:focus{
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus {
     background: none !important;
 }
 
@@ -8363,7 +8424,7 @@ button.form_email_btn {
 }
 
 .phone-edit .flag-dropdown {
-    height: 48px;
+    height: 51px;
     top: 1px !important;
     width: 44px;
     border-radius: 0 !important;
@@ -8427,8 +8488,8 @@ button.form_email_btn {
 }
 
 
-.form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp{
-    background-image: url(./images/bgpopup.png);
+.form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+    background-image: url(./images/select1.png);
 }
 
 .form-builder-chaneging-wrap.number.password-creater input[type="number"] {

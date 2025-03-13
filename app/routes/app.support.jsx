@@ -66,12 +66,24 @@ export default function Support() {
     const { apiUrl } = useLoaderData() || {};
     const [popup, setPopup] = useState(false);
     const [message, setMessage] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [error, setError] = useState("");
 
     const handleSubmit = async () => {
         if (!shop || !name || !email || !category || !theme || !describe) {
             setPopup(true);
             return;
         }
+        if (!email) {
+            setError("Email is required");
+            return;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setError("Please enter a valid email address");
+            return;
+        } else {
+            setError("");
+        }
+
         try {
             const response = await axios.post(`${apiUrl}/email-submit`, {
                 name,
@@ -93,6 +105,7 @@ export default function Support() {
                 setTheme('');
                 setShop('');
                 setDescribe('');
+                setError("");
             } else {
                 alert('Failed to submit the form. Please try again.');
             }
@@ -114,6 +127,7 @@ export default function Support() {
     const handleHide = () => {
         setShowPopup(!showPopup);
     }
+
 
     return (
         <div className='form_builder_support'>
@@ -200,9 +214,9 @@ export default function Support() {
                     </div>
 
                     <div className="form_builder_blogs">
-                        <a href="https://syncform.app/blogs/track-and-analyze-form-submission.html" target='_blank'>
+                        <a href="https://syncform.app/blogs/generate-app-password.html" target='_blank'>
                             <img src={track} alt="" />
-                            <h3>How to Track and Analyze Form Submissions in Shopify?</h3>
+                            <h3>How to Generate App Passwords?</h3>
                             <div className='form_build_blog_btn'>
                                 <div className="form_blog_data oct">
                                     October 05, 2024
@@ -225,11 +239,20 @@ export default function Support() {
                                 <div className="service-form-input">
                                     <div className="servies-input">
                                         <label htmlFor="name">Name<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /> </label>
-                                        <input type="name" value={name} onChange={(e) => setName(e.target.value)} />
+                                        <input type="name" value={name} onChange={(e) => {
+                                            const newValue = e.target.value.replace(/[0-9]/g, "");
+                                            setName(newValue);
+                                        }} />
+                                        {/\d/.test(name) && <p className="error-message">Numbers are not allowed</p>}
                                     </div>
                                     <div className="servies-input">
                                         <label htmlFor="email">E-mail<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
-                                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                        <input type="email" value={email} onChange={(e) => {
+                                            setEmail(e.target.value);
+                                            validateEmail(e.target.value);
+                                        }}
+                                        />
+                                        {error && <p style={{ color: "red" }} className="error-message">{error}</p>}
                                     </div>
                                     <div className="servies-input">
                                         <label htmlFor="Department">Category<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
@@ -245,7 +268,12 @@ export default function Support() {
                                     </div>
                                     <div className="servies-input textarea">
                                         <label htmlFor="Describe the Problem">Describe the Problem<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
-                                        <textarea id="w3review" name="w3review" style={{ resize: 'vertical' }} rows="4" cols="50" value={describe} onChange={(e) => setDescribe(e.target.value)}></textarea>
+                                        <textarea id="w3review" name="w3review" style={{ resize: 'vertical' }} rows="4" cols="50" value={describe}
+                                            onChange={(e) => {
+                                                const newValue = e.target.value.replace(/[0-9]/g, "");
+                                                setDescribe(newValue);
+                                            }}
+                                        ></textarea>
                                     </div>
                                 </div>
                                 <div className="it-service-icon" onClick={handleHide}>

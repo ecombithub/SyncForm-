@@ -795,6 +795,7 @@ const Formdata = () => {
                                 <div className="form-builder-create section-wrp">
                                     <div className="form-builder-create-wrped popup">
                                         <div className="form-builder-delete-popup-pop">
+                                            <div className='form_builder_delete_text-wraped'>
                                             <div className="form_builder_delete_text_flex">
                                                 <div className="form_builder_delete_text">
                                                     <p>Are you sure you want to delete?</p>
@@ -805,11 +806,12 @@ const Formdata = () => {
                                             </div>
                                             <div className="form_delete_btn">
                                                 <div className="form_delete first" onClick={handleDeleteForm}>
-                                                    Delete
+                                                    Yes
                                                 </div>
                                                 <div className="form_delete second" onClick={closeDeletePopup}>
-                                                    Cancel
+                                                    No
                                                 </div>
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1011,7 +1013,7 @@ const Formdata = () => {
                                                                             borderColor: form.styles.inputborderColor,
                                                                             backgroundColor: form.styles.inputBgColor,
                                                                             width: '100%',
-                                                                            height: '50px'
+                                                                            height: '52px',
                                                                         }}
                                                                         buttonStyle={{
                                                                             borderRadius: `${form.styles.inputRadious}px`,

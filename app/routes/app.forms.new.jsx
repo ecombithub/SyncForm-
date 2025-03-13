@@ -2076,7 +2076,7 @@ const Formgenerated = () => {
 
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>
-                    <p>Need to Upgrade Your Plan To Create More Form</p>
+                    <p>You need to upgrade your plan to unlock this feature</p>
                     <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade}><p>Choose plans</p></div>
                     <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle}>
                         <img src={cancleimg} alt="" />
@@ -4642,7 +4642,7 @@ const Formgenerated = () => {
                                                                                     value={selectedField.buttonaline}
                                                                                     onChange={(e) => updateFieldProperty('buttonaline', e.target.value, selectedField.id)}
                                                                                 >
-                                                                                    <option value="">Select text align</option>
+                                                                                    <option value="">Select Button alignment</option>
                                                                                     <option value="left">Left</option>
                                                                                     <option value="center">Center</option>
                                                                                     <option value="right">Right</option>

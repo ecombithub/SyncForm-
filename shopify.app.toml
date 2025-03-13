@@ -22,8 +22,6 @@ api_version = "2024-07"
   compliance_topics = [ "customers/redact", "customers/data_request", "shop/redact" ]
   uri = "https://apps.syncform.app/compliance"
 
-
-
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "read_customers,read_orders,read_products,read_themes,write_customers,write_orders,write_products,write_themes"

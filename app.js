@@ -1149,7 +1149,7 @@ app.get('/font-family', async (req, res) => {
   }
 });
 
-const transporter = nodemailer.createTransport({
+const transportered = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'syncform@hubsyntax.com',
@@ -1157,23 +1157,46 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmails = (formData) => {
-  const mailOptions = {
-    from: 'syncform@hubsyntax.com',
-    to: `${formData.email}`,
-    subject: `Support Request: ${formData.name}`,
-    text: `
+const sendEmails = async (formData) => {
+  try {
+
+    const adminMailOptions = {
+      from: 'syncform@hubsyntax.com',
+      to: ['syncform@hubsyntax.com', 'info@hubsyntax.com'],
+      subject: `Support Request: ${formData.name}`,
+      text: `Support Request Details:
+
       Name: ${formData.name}
       Email: ${formData.email}
       Category: ${formData.category}
       Theme: ${formData.theme}
       Shop: ${formData.shop}
       Description: ${formData.describe}
-    `,
-  };
+      `,
+    };
 
-  return transporter.sendMail(mailOptions);
+    const userMailOptions = {
+      from: 'syncform@hubsyntax.com',
+      to: formData.email,
+      subject: 'Support Request Received',
+      text: `Hello ${formData.name},
+      Thank you for reaching out to us! Your query has been successfully received, and our team is reviewing your inquiry. We will get back to you within a business day.
+      If you have any other query, feel free to reply to this email.
+
+      Best Regards, 
+      SyncForm Support Team
+      `,
+    };
+
+    await transportered.sendMail(adminMailOptions);
+    await transportered.sendMail(userMailOptions);
+    
+    console.log('Emails sent successfully.');
+  } catch (error) {
+    console.error('Error sending emails:', error);
+  }
 };
+
 
 app.post('/email-submit', async (req, res) => {
   const { name, email, category, theme, shop, describe } = req.body;
@@ -1600,7 +1623,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                           ">
                               ${
                                   child.add === 'image'
-                                      ? `<img src= "https://onlinepngtools.com/images/png/illustrations/convert-data-uri-to-png.png" alt="Uploaded Preview" style="width: 100%; height: auto;vertical-align: bottom;" />`
+                                      ? `<img src= ${child.value} style="width: 100%; height: auto;vertical-align: bottom;" />`
                                       : `<div style="width: 100%;">
                                           ${child.value}
                                           ${field.showbtnsplit ? `

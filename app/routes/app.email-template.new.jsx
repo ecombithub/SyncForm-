@@ -2792,7 +2792,7 @@ const handleConfirmUnlink = async () => {
                                                                                                                 <button style={{
                                                                                                                     fontFamily: field.splitbtnfamily ||  '"Poppins", sans-serif',
                                                                                                                     marginTop: "20px",
-                                                                                                                    backgroundColor: field.splitbtnbg,
+                                                                                                                    backgroundColor: field.splitbtnbg || '#FFFFFF',
                                                                                                                     fontSize: `${child.splitbtnfont}px`,
                                                                                                                     color: field.splitbtncolor,
                                                                                                                     height: `${child.splitbtnheight}px`,
@@ -8223,7 +8223,7 @@ const handleConfirmUnlink = async () => {
                                                                                             );
                                                                                         }}
                                                                                     >
-                                                                                        <option value="">Select text align</option>
+                                                                                        <option value="">Select Button alignment</option>
                                                                                         <option value="left">Left</option>
                                                                                         <option value="center">Center</option>
                                                                                         <option value="right">Right</option>
