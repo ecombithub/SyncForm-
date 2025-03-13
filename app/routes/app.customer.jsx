@@ -80,6 +80,7 @@ function Customer() {
     const [upgradePopup, setUphradePopup] = useState(false);
     const [userPlan, setUserPlan] = useState(null);
     const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [dataExport, setDataExport] = useState(false);
 
 
     useEffect(() => {
@@ -269,15 +270,15 @@ function Customer() {
             return item.title === selectedFormName;
         }
         if (!searchTerm.trim()) return true;
-    
+
         const firstName = item.submission.fields.find(f => f.name === 'First name')?.value || '';
         const lastName = item.submission.fields.find(f => f.name === 'Last name')?.value || '';
         const fullName = item.submission.fields.find(f => f.name === 'Full name')?.value || `${firstName} ${lastName}`.trim();
         const email = item.submission.fields.find(f => f.name === 'Email')?.value || '';
-    
+
         return fullName.toLowerCase().includes(searchTerm.toLowerCase()) || email.toLowerCase().includes(searchTerm.toLowerCase());
     });
-    
+
     const totalPages = Math.ceil(filteredForms.length / formsPerPage);
     const currentForms = filteredForms.slice((currentPage - 1) * formsPerPage, currentPage * formsPerPage);
 
@@ -326,7 +327,8 @@ function Customer() {
         csvRows.push(headers.join(','));
 
         if (selectedForms.size === 0) {
-            alert('Please select at least one form to download.');
+           setDataExport(true);
+
             return;
         }
         const selectedFormsArray = Array.from(selectedForms);
@@ -422,7 +424,7 @@ function Customer() {
 
     const fetchPaymentPlan = async () => {
         try {
-           
+
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
             // console.log("Response data:", response.data);
@@ -458,8 +460,18 @@ function Customer() {
         setShowpop(!showpop);
     };
 
+
     return (
         <>
+
+            {dataExport && (<div className='form_builder_plan_upgrade_popup costomer-data'>
+                <div className='form_builder_plan_upgrade_popup_wrapp'>
+                    <p>Please select at least one form to download</p>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={()=>setDataExport(false)}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>)}
 
             {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>

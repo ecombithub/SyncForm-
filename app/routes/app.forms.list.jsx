@@ -13,7 +13,7 @@ import cancle1 from '../images/disconnect.png'
 import multifile12 from '../images/11.png';
 import multifile1 from '../images/multifile1.png';
 import multiimg from '../images/multiimg.png';
-import multiimg1 from '../images/multiimg1.png';
+import multiimg1 from '../images/mulitimages.png';
 import singleimage0 from '../images/singleimage0.png';
 import singleimage1 from '../images/singleimage1.png';
 import copy12 from '../images/copy12.png'
@@ -63,14 +63,13 @@ export const loader = async ({ request }) => {
         response.assets = assetData.assets || [];
 
     } catch (err) {
-      
+
         response.error = true;
         response.errorMessage = err.message;
     }
 
     return response;
 };
-
 
 
 const Formdata = () => {
@@ -172,7 +171,7 @@ const Formdata = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [copiedFormId, setCopiedFormId] = React.useState(null);
     const [loading, setLoading] = useState(false);
-
+    const [sliderValue, setSliderValue] = useState(1);
 
     const handleShowFormDetails = (formId) => {
         setIsLoading(true);
@@ -184,7 +183,6 @@ const Formdata = () => {
         }, 2000);
     };
 
-
     const fallbackCopyTextToClipboard = (text) => {
         const textArea = document.createElement("textarea");
         textArea.value = text;
@@ -192,7 +190,7 @@ const Formdata = () => {
         textArea.select();
         try {
             document.execCommand("copy");
-           
+
             setCopiedFormId(text);
             setTimeout(() => setCopiedFormId(null), 2000);
         } catch (err) {
@@ -205,16 +203,16 @@ const Formdata = () => {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(formId)
                 .then(() => {
-                   
+
                     setCopiedFormId(formId);
                     setTimeout(() => setCopiedFormId(null), 2000);
                 })
                 .catch(err => {
-                   
+
                     fallbackCopyTextToClipboard(formId);
                 });
         } else {
-          
+
             fallbackCopyTextToClipboard(formId);
         }
     };
@@ -294,7 +292,7 @@ const Formdata = () => {
                 closeDeletePopup();
 
             } catch (error) {
-               
+
             } finally {
 
                 setIsLoading(false);
@@ -329,11 +327,10 @@ const Formdata = () => {
                 setLoading(true);
                 const response = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
                 setUserPlan(response.data);
-
                 await fetchForms(response.data);
             } catch (error) {
                 setError('Error fetching payment plan');
-              
+
             }
         };
 
@@ -349,8 +346,6 @@ const Formdata = () => {
                 const filteredForms = formsData.filter((form) => form.shop === shop);
 
                 setCreatedForms(filteredForms);
-                console.log(filteredForms);
-
                 const response2 = await axios.get(`${apiUrl}/api/forms`);
                 const apiFormsData = response2.data;
 
@@ -358,7 +353,7 @@ const Formdata = () => {
                 const tempeltedata = response3.data;
 
                 if (tempeltedata && Array.isArray(tempeltedata.data)) {
-                   
+
                 } else {
                     throw new Error('Template data is not an array or does not have a data property');
                 }
@@ -376,9 +371,9 @@ const Formdata = () => {
                     };
 
                     if (matchingTemplate) {
-                      
+
                     } else {
-                     
+
                     }
 
                     return updatedForm;
@@ -397,7 +392,7 @@ const Formdata = () => {
                 }
             } catch (error) {
                 setError('Error fetching forms');
-             
+
             } finally {
                 setLoading(false);
             }
@@ -435,7 +430,7 @@ const Formdata = () => {
         const formToCopy = createdForms.find((form) => form.formId === formId);
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
         if (!formToCopy) {
-            console.error("Form not found!");
+           
             return;
         }
 
@@ -448,7 +443,6 @@ const Formdata = () => {
             createdAt: timestamp,
             fields: formToCopy.fields.map((field) => ({
                 ...field,
-                id: generateUniqueId(),
             })),
             status: 'live',
         };
@@ -470,14 +464,14 @@ const Formdata = () => {
                 }
 
                 const result = await response.json();
-               
+
                 setCreatedForms((prevForms) => [...prevForms, result]);
 
                 setIsLoading(false);
 
             }, 3000);
         } catch (error) {
-          
+
             setIsLoading(false);
         }
     };
@@ -491,7 +485,6 @@ const Formdata = () => {
         }
         return uniqueId;
     };
-
 
     return (
         <>
@@ -590,7 +583,7 @@ const Formdata = () => {
                                             <img src={vecter1} alt="" />
                                         </div>
                                         <div className="builder-block-test">
-                                            <p>No draft forms created!</p>
+                                            <p>No Draft Forms Created!</p>
                                         </div>
                                     </div>
                                 </div>
@@ -615,7 +608,7 @@ const Formdata = () => {
                                             <img src={vecter1} alt="" />
                                         </div>
                                         <div className="builder-block-test">
-                                            <p>No forms created!</p>
+                                            <p>No Forms Created!</p>
                                         </div>
                                     </div>
                                 </div>
@@ -943,7 +936,7 @@ const Formdata = () => {
 
                                                                 ) : null
                                                             )}
-                                                            
+
                                                             {field.type === 'file' && (
                                                                 field.fileOptions[field.id] === 'option1' ? (
                                                                     <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
@@ -1043,7 +1036,7 @@ const Formdata = () => {
                                                                 </div>
                                                             )}
                                                             {field.type === 'images' && (field.imageOptions[field.id] === 'option1' ? (
-                                                            <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
+                                                                <input type="file" required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />
                                                             ) : field.imageOptions[field.id] === 'option2' ? (
                                                                 <div className="drag-and-drop-text third" required={field.required} disabled={field.disabled} readOnly={field.readonly} >
                                                                     <div className='form-builder-chaneging-wrap file'>
@@ -1129,22 +1122,29 @@ const Formdata = () => {
                                                                 ) : null
                                                             )}
                                                             {field.type === 'slider' && (
-                                                                <input
-                                                                    type="range"
-                                                                    placeholder={field.placeholder}
-                                                                    min={field.min}
-                                                                    max={field.max}
-                                                                    step={field.step}
-                                                                    required={field.required} disabled={field.disabled} readOnly={field.readonly}
-                                                                    style={{
-                                                                        padding: field.inputPadding,
-                                                                        borderRadius: `${form.styles.inputRadious}px`,
-                                                                        borderWidth: `${form.styles.inputwidth}px`,
-                                                                        borderStyle: `${form.styles.inputstyle}`,
-                                                                        borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`,
-                                                                    }}
-                                                                />
+                                                                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding:"0 0 25px", }}>
+                                                                
+                                                                    <input
+                                                                        type="range"
+                                                                        placeholder={field.placeholder}
+                                                                        min={field.min}
+                                                                        max={field.max}
+                                                                        step={field.step}
+                                                                        required={field.required}
+                                                                        disabled={field.disabled}
+                                                                        readOnly={field.readonly}
+                                                                        value={sliderValue} 
+                                                                        onChange={(e) => setSliderValue(e.target.value)}
+                                                                        style={{ 
+                                                                            position: 'relative',
+                                                                            width: '100%',
+                                                                      
+                                                                        }}
+                                                                    />
+                                                                    <span className="slider-value">{sliderValue}</span>
+                                                                </div>
                                                             )}
+
                                                             {field.type === 'button' && <div style={{ textAlign: field.buttonaline }}><button style={{
                                                                 backgroundColor: field.backgroundColor || '#45a7f6',
                                                                 fontSize: `${field.buttontext || '16'}px`,
@@ -1233,3 +1233,4 @@ const Formdata = () => {
 };
 
 export default Formdata;
+ 

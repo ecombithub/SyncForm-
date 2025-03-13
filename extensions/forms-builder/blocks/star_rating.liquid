@@ -7,7 +7,7 @@
     id="formData-{{ block.id }}"
     style="background-size: cover;"
     onsubmit="
-      submitFormData(event, '{{ block.id }}', 'formID',
+       submitFormData(event, '{{ block.id }}', 'formID',
       'formTitleValue', 'formshopValue', 'shopNameHeading',
       'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', this)
     "
@@ -15,6 +15,19 @@
   <div id="nofieldValue" style="display: none; color: red; font-size: 14px;"></div>
 </div>
 <style>
+
+  .slider-value {
+    position: absolute;
+    bottom: 4px;
+    left: 15px;
+    transform: translateX(-50%);
+    background-color: #23c66d;
+    color: white;
+    padding: 0px 5px;
+    border-radius: 1px;
+    font-size: 11px;
+    font-weight: bold;
+}
 
   .custom-select-container .custom-select-option {
     color: gray;
@@ -203,7 +216,6 @@ document.addEventListener('click', function (event) {
     const arrowSpan = selectBox.nextElementSibling;
     arrowSpan.textContent = '▼';
 
-    console.log('Selected Value:', selectedValue);
   }
 });
 
@@ -219,7 +231,7 @@ document.addEventListener('click', function (event) {
 
   function handleSingleInputChange(event, fieldId, fieldLabel, fieldImagePreview, fieldsignlePreview) {
     const files = event.target.files;
-    console.log('Files from file input:', files);
+
     const maxSize = 50 * 1024 * 1024;
     const warningElement = document.getElementById(`max-file-size-${fieldId}`);
   
@@ -245,28 +257,28 @@ document.addEventListener('click', function (event) {
     }
   } 
   
-
   function handleDropimages(event, fieldId, fieldLabel, fieldImagePreview, fieldsignlePreview) {
     event.preventDefault();
     event.stopPropagation();
 
-    console.log('Field ID:', fieldId);
-
     const fileInput = document.getElementById(`file-input-${fieldId}`);
-    console.log('File input element:', fileInput);
-
-    if (!fileInput) {
-      console.error('File input not found for fieldId:', fieldId);
-      return;
-    }
 
     const files = event.dataTransfer.files;
     const maxSize = 50 * 1024 * 1024;
-
+    const warningElement = document.getElementById(`max-file-size-${fieldId}`);
+  
     const validFiles = Array.from(files).filter((file) => {
       if (file.size > maxSize) {
         console.error(`File "${file.name}" exceeds the 50MB limit.`);
-        alert(`File "${file.name}" is too large. Maximum allowed size is 50MB.`);
+
+        if (warningElement) {
+          warningElement.style.display = "block";
+  
+          setTimeout(() => {
+            warningElement.style.display = "none";
+          }, 5000);
+        }
+  
         return false;
       }
       return true;
@@ -283,7 +295,6 @@ document.addEventListener('click', function (event) {
     let fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
   
     if (!fileNamesList) {
-      console.log(`Element with id "file-names-list-${fieldId}" not found. Creating it.`);
       const formBuilderContainer = document
         .querySelector(`#file-input-${fieldId}`)
         .closest('.form-builder-chaneging-wrap');
@@ -362,11 +373,8 @@ document.addEventListener('click', function (event) {
       };
   
       reader.readAsDataURL(file);
-  
-      console.log(`Field Label: ${fieldLabel} - Added file: ${file.name}`);
     });
-  
-    console.log('Final Uploaded Files:', uploadeImages);
+
 }
 
   function handleClickmulti(fileInputId) {
@@ -417,36 +425,30 @@ document.addEventListener('click', function (event) {
     }); 
 
     if (validFiles.length > 0) {
-      console.log('Valid files:', validFiles);
+
       displayFileNames(validFiles, fieldId, fieldLabel, fieldmultifilePreview);
     }
   }
 
-   function handleDropfile(event, fieldId, fieldLabel, fieldmultifilePreview) {
+  function handleDropfile(event, fieldId, fieldLabel, fieldmultifilePreview) {
     event.preventDefault();
     event.stopPropagation();
 
-    console.log('Field ID:', fieldId);
-
     const fileInput = document.getElementById(`file-input-${fieldId}`);
-    console.log('File input element:', fileInput);
+    if (!fileInput) return;
 
-    if (!fileInput) {
-      console.error('File input not found for fieldId:', fieldId);
-      return;
-    }
+    if (!event.dataTransfer || !event.dataTransfer.files) return;
 
     const files = event.dataTransfer.files;
     const maxFiles = 10;
-    const maxSize = 25 * 1024 * 1024;
+    const maxSize = 25 * 1024 * 1024; 
 
-     const warningElement = document.getElementById(`max-file-size-${fieldId}`);
+    const warningElement = document.getElementById(`max-file-size-${fieldId}`);
     const maxFileAddElement = document.getElementById(`max-file-add-${fieldId}`);
-    
+
     if (files.length > maxFiles) {
         if (maxFileAddElement) {
             maxFileAddElement.style.display = "block";
-
             setTimeout(() => {
                 maxFileAddElement.style.display = "none";
             }, 5000);
@@ -455,28 +457,23 @@ document.addEventListener('click', function (event) {
     }
 
     const validFiles = Array.from(files).filter((file) => {
-      if (file.size > maxSize) {
-        console.error(`File "${file.name}" exceeds the 50MB limit.`);
-
-        if (warningElement) {
-          warningElement.style.display = "block";
-  
-          setTimeout(() => {
-            warningElement.style.display = "none";
-          }, 5000);
+        if (file.size > maxSize) {
+            if (warningElement) {
+                warningElement.style.display = "block";
+                setTimeout(() => {
+                    warningElement.style.display = "none";
+                }, 5000);
+            }
+            return false;
         }
-  
-        return false;
-      }
-      return true;
-    }); 
-
+        return true;
+    });
 
     if (validFiles.length > 0) {
-      console.log('Valid files:', validFiles);
-      displayFileNames(validFiles, fieldId, fieldLabel, fieldmultifilePreview);
+        displayFileNames(validFiles, fieldId, fieldLabel, fieldmultifilePreview);
     }
-  }
+}
+
 
   var uploadedmulti = {};
 
@@ -484,7 +481,7 @@ document.addEventListener('click', function (event) {
     const fileNamesList = document.getElementById(`file-names-list-${fieldId}`);
 
     if (!fileNamesList) {
-      console.log(`Element with id "file-names-list-${fieldId}" not found. Creating it.`);
+     
       const formBuilderContainer = document
         .querySelector(`#file-input-${fieldId}`)
         .closest('.form-builder-chaneging-wrap');
@@ -497,14 +494,12 @@ document.addEventListener('click', function (event) {
     }
 
     fileNamesList.innerHTML = '';
-    console.log('File list cleared. Creating new file list.');
+   
 
     if (!uploadedmulti[fieldId]) {
       uploadedmulti[fieldId] = [];
-      console.log(`No files for fieldId: ${fieldId}, initializing empty array.`);
+    
     }
-
-    console.log('Files received:', files);
 
     Array.from(files).forEach((file) => {
       const li = document.createElement('li');
@@ -536,8 +531,7 @@ document.addEventListener('click', function (event) {
 
       const reader = new FileReader();
       reader.onload = function (e) {
-        console.log('Image preview loaded:', e.target.result);
-
+ 
         const imagePreview = document.createElement('img');
         imagePreview.style.maxWidth = '40px';
         imagePreview.style.maxHeight = '40px';
@@ -549,10 +543,9 @@ document.addEventListener('click', function (event) {
           Label: fieldLabel,
         });
 
-        console.log('Added file to uploadedmulti:', uploadedmulti);
 
         removeButton.onclick = () => {
-          console.log('Removing file:', file.name);
+     
           removeFil1e(file.name, fieldId, fileNamesList, li);
         };
 
@@ -568,25 +561,18 @@ document.addEventListener('click', function (event) {
       reader.readAsDataURL(file);
     });
 
-    console.log('Final Uploaded Files:', uploadedmulti);
   }
 
   function removeFil1e(fileName, fieldId, fileNamesList, li) {
-    console.log(`Attempting to remove file: ${fileName} from fieldId: ${fieldId}`);
-
+   
     if (!uploadedmulti[fieldId]) {
       console.log(`No files found for fieldId: ${fieldId}`);
       return;
     }
 
-    console.log('Uploadedmulti before removal:', uploadedmulti);
-
     uploadedmulti[fieldId] = uploadedmulti[fieldId].filter((file) => file.name !== fileName);
 
-    console.log('Uploadedmulti after removal:', uploadedmulti);
-
     fileNamesList.removeChild(li);
-    console.log('File list updated, item removed from DOM.');
   }
 
   function handleDragOver(event) {
@@ -632,7 +618,7 @@ document.addEventListener('click', function (event) {
     });
 
     if (validFiles.length > 0) {
-      console.log('Valid files:', validFiles);
+  
       displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
   }
   }
@@ -640,14 +626,11 @@ document.addEventListener('click', function (event) {
   function handleDrop(event, fieldId, fieldLabel, fieldmultiIamgePreview) {
     event.preventDefault();
     event.stopPropagation();
-    console.log('Field Label:', fieldLabel);
-    console.log('Field ID:', fieldId);
 
     const fileInput = document.getElementById(`file-input-${fieldId}`);
-    console.log('File input element:', fileInput);
 
     if (!fileInput) {
-      console.error('File input not found for fieldId:', fieldId);
+     
       return;
     }
 
@@ -687,7 +670,7 @@ document.addEventListener('click', function (event) {
     });
 
     if (validFiles.length > 0) {
-        console.log('Valid files:', validFiles);
+      
         displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
     }
   }
@@ -695,23 +678,51 @@ document.addEventListener('click', function (event) {
   function handleDrop(event, fieldId, fieldLabel, fieldmultiIamgePreview) {
     event.preventDefault();
     event.stopPropagation();
-    console.log('Field Label:', fieldLabel);
-    console.log('Field ID:', fieldId);
 
     const fileInput = document.getElementById(`file-input-${fieldId}`);
-    console.log('File input element:', fileInput);
-
+ 
     if (!fileInput) {
       console.error('File input not found for fieldId:', fieldId);
       return;
     }
 
     const files = event.dataTransfer.files;
-    if (files.length > 10) {
-      alert('You can only drop a maximum of 10 files at a time.');
-      return;
+    const maxFiles = 10;
+    const maxSize = 25 * 1024 * 1024;
+    const warningElement = document.getElementById(`max-file-size-${fieldId}`);
+    const maxFileAddElement = document.getElementById(`max-file-add-${fieldId}`);
+
+    if (files.length > maxFiles) {
+        if (maxFileAddElement) {
+            maxFileAddElement.style.display = "block";
+
+            setTimeout(() => {
+                maxFileAddElement.style.display = "none";
+            }, 5000);
+        }
+        return;
     }
-    displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
+
+    const validFiles = Array.from(files).filter((file) => {
+        if (file.size > maxSize) {
+            console.error(`File "${file.name}" exceeds the 50MB limit.`);
+
+            if (warningElement) {
+                warningElement.style.display = "block";
+
+                setTimeout(() => {
+                    warningElement.style.display = "none";
+                }, 5000);
+            }
+
+            return false;
+        }
+        return true;
+    });
+
+    if (validFiles.length > 0) { 
+        displayImage(files, fieldId, fieldLabel, fieldmultiIamgePreview);
+    }
   }
 
   var uploadedFiles = {};
@@ -720,93 +731,93 @@ document.addEventListener('click', function (event) {
     const fileNamesList = document.getElementById(`image-names-list-${fieldId}`);
 
     if (!fileNamesList) {
-      console.error(`Element with ID image-names-list-${fieldId} not found.`);
-      return;
+        return;
     }
 
     fileNamesList.innerHTML = '';
 
     if (!uploadedFiles[fieldId]) {
-      uploadedFiles[fieldId] = [];
+        uploadedFiles[fieldId] = [];
     }
 
-    console.log('Files received:', files);
-
     Array.from(files).forEach((file) => {
-      const li = document.createElement('li');
-      li.style.border = '1px solid #ddd';
-      li.style.padding = '8px';
-      li.style.marginBottom = '5px';
-      li.style.display = 'flex';
-      li.style.justifyContent = 'space-between';
-      li.style.alignItems = 'center';
-      li.style.gap = '20px'; 
+        const li = document.createElement('li');
+        li.style.border = '1px solid #ddd';
+        li.style.padding = '8px';
+        li.style.marginBottom = '5px';
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.style.alignItems = 'center';
+        li.style.gap = '20px';
 
-      const fileName = document.createElement('span');
-      fileName.textContent = file.name;
-      fileName.style.flex = '1';
+        const fileName = document.createElement('span');
+        fileName.textContent = file.name;
+        fileName.style.flex = '1';
 
-      const removeButton = document.createElement('button');
-      removeButton.style.padding = '0';
-      removeButton.style.border = 'none';
-      removeButton.style.background = 'none';
+        const actionContainer = document.createElement('div');
+        actionContainer.style.display = 'flex';
+        actionContainer.style.alignItems = 'center';
+        actionContainer.style.gap = '10px';
 
-      const removeImage = document.createElement('img');
-      removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
-      removeImage.alt = 'Remove';
-      removeImage.style.width = '20px';
-      removeImage.style.height = '20px';
-      removeImage.style.cursor = 'pointer';
+        const removeButton = document.createElement('button');
+        removeButton.style.padding = '0';
+        removeButton.style.border = 'none';
+        removeButton.style.background = 'none';
 
-      removeButton.appendChild(removeImage);
+        const removeImage = document.createElement('img');
+        removeImage.src = 'https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508';
+        removeImage.alt = 'Remove';
+        removeImage.style.width = '20px';
+        removeImage.style.height = '20px';
+        removeImage.style.cursor = 'pointer';
 
-      const reader = new FileReader();
+        removeButton.appendChild(removeImage);
 
-      reader.onload = function (e) {
-        console.log('Image preview loaded:', e.target.result);
+        const reader = new FileReader();
 
-        if (fieldmultiIamgePreview === 'on') {
-          const imagePreview = document.createElement('img');
-          imagePreview.style.width = '40px';
-          imagePreview.style.height = '40px';
-          imagePreview.src = e.target.result;
-          li.appendChild(imagePreview);
-        }
+        reader.onload = function (e) {
+          
+            uploadedFiles[fieldId].push({
+                name: file.name,
+                base64: e.target.result,
+                Label: fieldLabel,
+            });
 
-        uploadedFiles[fieldId].push({
-          name: file.name,
-          base64: e.target.result,
-          Label: fieldLabel,
-        });
+            removeButton.onclick = () => removeFile(file.name, fieldId, fileNamesList, li);
 
-        removeButton.onclick = () => removeFile(file.name, fieldId, fileNamesList, li);
+            if (fieldmultiIamgePreview === 'on') {
+                const imagePreview = document.createElement('img');
+                imagePreview.style.width = '40px';
+                imagePreview.style.height = '40px';
+                imagePreview.src = e.target.result;
 
-        li.appendChild(fileName);
-        li.appendChild(removeButton);
-        fileNamesList.appendChild(li);
-      };
+                actionContainer.appendChild(imagePreview);
+            }
 
-      reader.onerror = function (error) {
-        console.error('Error loading image preview:', error);
-      };
+            actionContainer.appendChild(removeButton);
+            li.appendChild(fileName);
+            li.appendChild(actionContainer);
+            fileNamesList.appendChild(li);
+        };
 
-      reader.readAsDataURL(file);
+        reader.onerror = function (error) {
+            
+        };
+
+        reader.readAsDataURL(file);
     });
-
-    console.log('Uploaded Files:', uploadedFiles);
-  }
+}
 
   function removeFile(fileName, fieldId, fileNamesList, li) {
     if (!uploadedFiles[fieldId]) return;
     uploadedFiles[fieldId] = uploadedFiles[fieldId].filter((file) => file.name !== fileName);
     fileNamesList.removeChild(li);
-    console.log('Updated Uploaded Files:', uploadedFiles);
+    
   }
 
   $(document).ready(function () {
     const formId = '{{ block.settings.formId }}';
-    console.log('Form ID:', formId);
-
+   
     if (formId && formId !== 'default-id') {
       fetchFormData(formId);
     }
@@ -818,8 +829,7 @@ document.addEventListener('click', function (event) {
         url: `https://apps.syncform.app/get-form/${id}`,
         method: 'GET',
         success: function (data) {
-          console.log('Fetched form data:', data);
-
+         
           if (data.status === 'draft') {
             $('#formData-{{ block.id }}').append('');
             return;
@@ -828,7 +838,7 @@ document.addEventListener('click', function (event) {
           displayFormData(data);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-          console.error('Error: ' + errorThrown);
+
           $('#formData-{{ block.id }}').append('<p></p>');
         },
       });
@@ -848,7 +858,6 @@ document.addEventListener('click', function (event) {
       const emailsubject = formData.styles.subject;
     
 
-      console.log('Formshop:', formshop);
       container.empty();
            $('#formData-{{ block.id }}').attr('onsubmit', 
         `submitFormData(event, '{{ block.id }}', '${formID}',
@@ -1107,8 +1116,7 @@ document.addEventListener('click', function (event) {
                   this.nextElementSibling.style.backgroundColor = this.checked ? '#45A7F6' : '#cccccc'; 
                   this.nextElementSibling.nextElementSibling.style.transform = this.checked ? 'translateX(26px)' : 'translateX(0)';
                   togglevalue = this.checked ? '${field.onValue}' : '${field.offValue}';
-                  console.log('Toggle Label:', this.getAttribute('aria-label'));
-                  console.log('Toggle Value:', togglevalue || 'none');
+          
                 "
               />
               <span style="
@@ -1793,7 +1801,7 @@ document.addEventListener('click', function (event) {
               field.label
             }','${field.multiIamgePreview}')" />
                   <div class="form-builder-changes-file-wraped">
-                    <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/multiimg1.png?v=1739355803" alt="" style="display: inline;" />
+                    <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/dddddddddddddddddd.png?v=1741854389" alt="" style="display: inline; width:65px;" />
                    <div class ='email-files drop' style="margin-top: 20px; margin-bottom: ${
                      field.width === '25%' ? '0' : '20px'
                    };">
@@ -1821,22 +1829,28 @@ document.addEventListener('click', function (event) {
             </div>
           `;
           case 'slider':
-          return `<input 
-                    type="range" 
-                    id="${field.name || 'slider-field'}"
-                    name="${field.name || 'slider-field'}"
-                    ${field.required ? 'required' : ''} 
-                    ${field.disabled ? 'disabled' : ''} 
-                    min="${field.min || 0}" 
-                    max="${field.max || 100}" 
-                    step="${field.step || 1}" 
-                    value="${field.value || field.min || 0}" 
-                    style="width: 100%;" 
+          return `
+              <div style="position: relative; display: flex; flex-direction: column; align-items: center;padding:0 0 25px;">
+                  
+                  <input 
+                      type="range" 
+                      id="${field.name || 'slider-field'}"
+                      name="${field.name || 'slider-field'}"
+                      ${field.required ? 'required' : ''} 
+                      ${field.disabled ? 'disabled' : ''} 
+                      min="${field.min || 0}" 
+                      max="${field.max || 100}" 
+                      step="${field.step || 1}" 
+                      value="${field.value || field.min || 0}" 
+                      style="width: 100%;" 
+                      oninput="document.getElementById('${field.name || 'slider-field'}-value').innerText = this.value"
                   />
+                    <span class="slider-value" id="${field.name || 'slider-field'}-value">${field.value || field.min || 0}</span>
                   <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
-                    ${field.description || ''}
-                  </div>`;
-        
+                      ${field.description || ''}
+                  </div>
+              </div>`;
+      
            case 'button':
           return `
               <div style= "text-align:${field.buttonaline || 'left'}">
@@ -1887,18 +1901,7 @@ document.addEventListener('click', function (event) {
       button
     ) {
       event.preventDefault();
-      console.log('formID:', formID);
-      console.log('submitFormData triggered');
-      console.log('formTitle:', formTitle); 
-      console.log('formshop:', formshop);
-      console.log('shopNameHeading:', shopNameHeading);
-      console.log('toggleStatus:', toggleStatus);
-      console.log('Editor Value:', editorValue);
-      console.log('submissionOption:', submissionOption);
-      console.log('thankYouTimer:', thankYouTimer);
-      console.log('formUrl:', formUrl);
-      console.log('emailsubject:', emailsubject);
-      
+
       const container = $('#formData-' + blockId);
       const formData = {
         id: formID,
@@ -1912,10 +1915,8 @@ document.addEventListener('click', function (event) {
       };
 
       if (toggleStatus === 'Enabled') {
-        console.log('Window URL:', window.location.href);
         formData.currentUrl = window.location.href;
       } else if (toggleStatus === 'Disabled') {
-        console.log('Form submission is disabled');
       }
 
       const emailField = $('#formData-' + blockId + ' input[type="email"]');
@@ -1948,15 +1949,12 @@ document.addEventListener('click', function (event) {
               return true; 
           }
           const minLength = input[0].dataset.passwordStatus;
-          console.log('minLength from dataset:', minLength);
-      
+         
           let parsedMinLength = parseInt(minLength, 10);
           if (isNaN(parsedMinLength)) {
               parsedMinLength = parseInt(input.attr('data-password-status'), 10) || 6; 
-              console.log('Using fallback parsedMinLength:', parsedMinLength);
+             
           }
-      
-          console.log('Parsed minLength:', parsedMinLength);
       
           const isPasswordValid = validatePassword(input[0], parsedMinLength);
       
@@ -1993,10 +1991,8 @@ document.addEventListener('click', function (event) {
               .text()
               .trim(); 
   
-          console.log(`Radio Group: ${fieldName}, Selected Value:`, fieldValue);
         } else if (input.attr('type') === 'checkbox' && input.length === 1) {
           fieldValue = input.prop('checked') ? 'on' : 'off'; 
-          console.log(`Checkbox: ${fieldName}, Value:`, fieldValue);
         }else if (input.is(':checkbox')) {
           fieldValue = [];
           $(this).find('input[type="checkbox"]:checked').each(function () {
@@ -2004,7 +2000,7 @@ document.addEventListener('click', function (event) {
               fieldValue.push(checkboxLabel); 
           });
   
-          console.log(`Checkbox Group: ${fieldName}, Selected Values:`, fieldValue);
+         
           fieldValue = fieldValue.join(', '); 
         } else if (input.attr('type') === 'file') {
           fieldValue = [];
@@ -2121,8 +2117,7 @@ document.addEventListener('click', function (event) {
       });
 
       if (!isValid) return;
-      console.log('Final Fields Collected:', formData.fields);
-    
+  
     
       if (formData.fields.length === 0) {
         const noFieldElement = document.getElementById('nofieldValue');
@@ -2134,26 +2129,23 @@ document.addEventListener('click', function (event) {
                 noFieldElement.style.display = 'none';
             }, 3000);
         }
-        console.log('Submission blocked: No fields provided.');
+    
         return false;
     }
     
-      console.log('Form Data:', JSON.stringify(formData));
-
+    
       $.ajax({
         url: 'https://apps.syncform.app/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
-          console.log('Form submitted successfully:', response);
-          {% comment %} alert('Form submitted successfully:', response); {% endcomment %}
-         
+        
           if (formUrl && formUrl.trim() !== '' && formUrl !== 'undefined') {
-            console.log('Opening form URL:', formUrl); 
+          
             window.open(formUrl, '_blank'); 
          } else {
-            console.log('No valid form URL provided.');
+  
           }
     
           $(this).find('ul').empty();
@@ -2169,9 +2161,6 @@ document.addEventListener('click', function (event) {
 
           $('#formData-' + blockId + ' .custom-select-box span:first-child').text('Select an option');
 
-          console.log('Form ID:', formData.id);
-
-          console.log('Form ID:', formData.id);
           if (formData.id) {
             $.ajax({
               url: 'https://apps.syncform.app/get/data',
@@ -2199,14 +2188,14 @@ document.addEventListener('click', function (event) {
                       createdAt: currentTimestamp,
                     }),
                     success: function (templateResponse) {
-                      console.log('Template data sent successfully:', templateResponse);
+                      
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                      console.error('Error sending template data:', errorThrown);
+                 
                     },
                   });
                 } else {
-                  console.log('No matching form found for Form ID:', formData.id);
+
                 }
               },
               error: function (jqXHR, textStatus, errorThrown) {
@@ -2218,7 +2207,7 @@ document.addEventListener('click', function (event) {
               },
             });
           } else {
-            console.log('Form ID is not available');
+            
           }
           
           const successMessage = '<p id="success-message">Form submitted successfully!</p>';

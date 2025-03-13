@@ -3130,11 +3130,11 @@ div#bg_change {
 }
 
 p.form_build_h2_four {
-    padding-bottom: 30px;
+    padding-bottom: 10px;
 }
 
 .form_builder_plan_table.activee.bg.first h2 {
-    padding-bottom: 80px;
+    padding-bottom: 40px;
 }
 
 .form_builder_plan_table.bg p.form_builder_plan_btn {
@@ -3429,8 +3429,9 @@ p.form_build_h2_four {
 }
 
 .form_builder_support .form_builder_convert .form_builder_blogs img {
-    width: 100%;
-    border-radius: 10px;
+      width: 100%;
+    border-radius: 15px;
+    display: flex;
 }
 
 .form_builder_support .form_builder_convert .form_builder_blogs h3 {
@@ -4075,6 +4076,7 @@ button.plus_option {
     position: absolute;
     top: 0;
     right: 0;
+    width:30px;
 }
 
 .it-service-icon img {
@@ -5952,6 +5954,10 @@ button.form_email_btn {
         padding: 0 20px;
     }
 
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        max-width: 40%;
+    }
+
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         max-width: 50% !important;
     }
@@ -6149,6 +6155,9 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 1280px) {
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        max-width: 45% !important;
+    }
     span.full-id {
         display: none;
     }
@@ -6811,6 +6820,11 @@ button.form_email_btn {
 
 
 @media screen and (max-width:991px) {
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        padding: 70px;
+        max-width: 65% !important;
+        font-size: 30px;
+    }
     .form_build_app_bottm.second.know {
         padding-top: 20px;
     }
@@ -6979,6 +6993,11 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 768px) {
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        padding: 70px;
+        max-width: 85% !important;
+        font-size: 30px;
+    }
     .form_build_cancle_option {
         right: -3%;
         top: 0;
@@ -7388,6 +7407,11 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        padding: 50px !important;
+        max-width: 30%;
+        font-size: 27px !important;
+    }
     .form_builder_plan_upgrade_popup_wrapp.password-popup p {
         max-width: 90%;
     }
@@ -7705,6 +7729,11 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        padding: 41px !important;
+        max-width: 30%;
+        font-size: 24px !important;
+    }
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         max-width: 94% !important;
         padding: 30px !important;
@@ -7972,6 +8001,11 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:390px) {
+    .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+        padding: 41px !important;
+        max-width: 30%;
+        font-size: 22px !important;
+    }
     .form_builder_plan_upgrade_popup_wrapp.password-popup p {
         max-width: 100%;
         font-size: 19px;
@@ -8382,9 +8416,28 @@ button.form_email_btn {
     padding-top: 15px;
 }
 
-.form-builder-chaneging-wrap.number.password-creater input[type="text"] {
+.form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
+    padding: 70px;
+    max-width: 30%;
+    font-size: 30px;
+}
+
+.form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp p {
+    line-height: 33px;
+}
+
+
+.form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp{
+    background-image: url(./images/bgpopup.png);
+}
+
+.form-builder-chaneging-wrap.number.password-creater input[type="number"] {
     width: 54px;
     text-align: center;
+}
+
+.form_builder_reasons-lk a {
+    text-decoration: none;
 }
 
 .form-builder-chaneging-wrap-lable-passwoerd {
@@ -8461,4 +8514,17 @@ button.form_email_btn {
 
 .email-campaing-templates .form-builder-drag-drop {
     display: flex;
+}
+
+.slider-value {
+    position: absolute;
+    bottom: 4px;
+    left: 15px;
+    transform: translateX(-50%);
+    background-color: #23c66d;
+    color: white;
+    padding: 0px 5px;
+    border-radius: 1px;
+    font-size: 11px;
+    font-weight: bold;
 }

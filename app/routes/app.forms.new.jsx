@@ -48,7 +48,7 @@ import singlefile from '../images/singlefile.png';
 import singleimage0 from '../images/singleimage0.png';
 import singleimage1 from '../images/singleimage1.png';
 import multiimg from '../images/multiimg.png';
-import multiimg1 from '../images/multiimg1.png';
+import multiimg1 from '../images/mulitimages.png';
 import star from '../images/star1.png';
 import edit from '../images/edit.png';
 import brandlogos from '../images/brandlogos.png';
@@ -297,7 +297,7 @@ const Formgenerated = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [selectedimage, setSelectedimage] = useState([]);
     const [userPlan, setUserPlan] = useState(null);
-    const [sliderValue, setSliderValue] = useState(0);
+    const [sliderValue, setSliderValue] = useState(1);
     const [subject, setSubject] = useState('');
     const [passwordStatus, setPasswordStatus] = useState("off");
     const [fileOptions, setFileOptions] = useState({});
@@ -554,9 +554,9 @@ const Formgenerated = () => {
             }
             setImageFile(styles.backgroundImage === "none" ? null : styles.backgroundImage);
             setThankYouTimer(thankYouTimer);
-            
+
             setIsActive(toggleStatus === "Enabled");
-         
+
             setEditorValue(editorValue);
             setSubmissionOption(submissionOption)
 
@@ -712,13 +712,13 @@ const Formgenerated = () => {
     const handleToggle = () => {
         setPasswordStatus((prevStatus) => {
             const newStatus = prevStatus === "on" ? "off" : "on";
-            
+
             return newStatus;
         });
     };
 
     useEffect(() => {
-   
+
     }, [passwordStatus]);
 
 
@@ -844,7 +844,7 @@ const Formgenerated = () => {
             const updatedSelectedField = updatedFields.find((field) => field.id === selectedField.id);
             setSelectedField(updatedSelectedField);
         } else {
-           
+
         }
     };
 
@@ -878,13 +878,13 @@ const Formgenerated = () => {
 
     const handleAddRadioOptions = () => {
         if (radioOptions.some(option => option.label.trim() === '')) {
-          
+
             return;
         }
 
         const optionNames = radioOptions.map(option => {
             if (!option || !option.label || !option.value) {
-              
+
                 return null;
             }
             return {
@@ -894,7 +894,7 @@ const Formgenerated = () => {
         }).filter(option => option !== null);
 
         if (optionNames.length === 0) {
-          
+
             return;
         }
 
@@ -936,7 +936,7 @@ const Formgenerated = () => {
                 );
             });
         } else {
-          
+
         }
     };
 
@@ -973,7 +973,7 @@ const Formgenerated = () => {
                 )
             );
         } else {
-         
+
         }
     };
 
@@ -1004,7 +1004,7 @@ const Formgenerated = () => {
                 return updatedFields;
             });
         } else {
-            
+
         }
     };
 
@@ -1086,7 +1086,7 @@ const Formgenerated = () => {
                 )
             );
         } else {
-            
+
         }
     };
 
@@ -1098,7 +1098,7 @@ const Formgenerated = () => {
 
         setSelectOptions((prevOptions) => {
             const updatedOptions = [...prevOptions, newOption];
-           
+
             return updatedOptions;
         });
 
@@ -1118,13 +1118,13 @@ const Formgenerated = () => {
                 return updatedFields;
             });
         } else {
-            
+
         }
     };
 
     const handleAddSelectOptions = () => {
         if (selectOptions.some(option => option.name.trim() === '')) {
-        
+
             return;
         }
 
@@ -1212,7 +1212,7 @@ const Formgenerated = () => {
 
     const handleStatusChange = (status) => {
         if (fields.length === 0) {
-           
+
             setShowConfirmationPopup(false);
             return;
         }
@@ -1234,12 +1234,12 @@ const Formgenerated = () => {
 
 
         if (status !== 'live' && status !== 'draft') {
-            
+
             return;
         }
 
         if (!formTitle.trim()) {
-           
+
             return;
         }
 
@@ -1446,7 +1446,7 @@ const Formgenerated = () => {
                 if (error.response && error.response.status === 400) {
                     alert(error.response.data);
                 } else {
-                   
+
                 }
             });
 
@@ -1550,7 +1550,7 @@ const Formgenerated = () => {
                     prevFields.map(field => field?.id === selectedField.id ? updatedField : field)
                 );
             } else {
-              
+
             }
         }
     }, [headingLevel, headingText, headingFontSize, descriptionText, selectedField]);
@@ -2021,13 +2021,13 @@ const Formgenerated = () => {
 
     const fetchPaymentPlan = async () => {
         try {
-          
+
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
 
             setUserPlan(response.data);
-       
+
         } catch (error) {
-          
+
         }
     };
 
@@ -2048,7 +2048,7 @@ const Formgenerated = () => {
         const fetchStatusBrand = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
-               
+
                 setActiveBrand(response.data.status);
             } catch (error) {
 
@@ -2199,7 +2199,7 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button> </div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro </span>)}</div>
                                             </div>
                                         ) : (
                                             <div className='form-scroll-bar'>
@@ -3957,26 +3957,40 @@ const Formgenerated = () => {
 
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'slider' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{
-                                                                width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                    ? '1px solid #33cba2'
-                                                                    : '1px solid transparent',
-                                                                backgroundColor: selectedField && selectedField.id === field.id
-                                                                    ? '#e7f9f4'
-                                                                    : hoveredFieldId === field.id
+                                                            <div
+                                                                className={`input-field ${field.customClass}`}
+                                                                style={{
+                                                                    width: "100%",
+                                                                    border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
                                                                         ? '#e7f9f4'
-                                                                        : 'transparent',
-                                                            }}>
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                    position: 'relative',
+                                                                    padding: "0px 0px 15px",
+                                                                }}
+                                                            >
                                                                 <div>
                                                                     <label style={{ color: labelColor }}>
-                                                                        {field.label}{field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
-                                                                        <div style={{
-                                                                            width: '100%', opacity: field.opacity || 1, borderRadius: `${inputRadious}px`, borderWidth: `${inputwidth}px`,
+                                                                        {field.label}
+                                                                        {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}
 
-                                                                        }}
+                                                                        <div
+                                                                            style={{
+                                                                                width: '100%',
+                                                                                opacity: field.opacity || 1,
+                                                                                borderRadius: `${inputRadious}px`,
+                                                                                borderWidth: `${inputwidth}px`,
+                                                                                position: 'relative'
+                                                                            }}
                                                                             onMouseEnter={() => setHoveredFieldId(field.id)}
                                                                             onMouseLeave={() => setHoveredFieldId(null)}
                                                                         >
+
+
                                                                             <input
                                                                                 type="range"
                                                                                 className="name"
@@ -3990,20 +4004,23 @@ const Formgenerated = () => {
                                                                                 disabled={field.disabled}
                                                                                 readOnly={field.readonly}
                                                                                 onChange={handleSliderChange}
+                                                                                aria-label={field.label || "Slider"}
                                                                             />
                                                                         </div>
                                                                     </label>
-
+                                                                    <span className="slider-value">{sliderValue}</span>
                                                                     <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
                                                                         {field.description}
                                                                     </div>
-                                                                    <div
-                                                                        id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+
+                                                                    <div id="form-drag" className="form-builder-drag-drop">
+                                                                        <img src={drop} alt="Drag" />
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         )}
                                                     </div>
+
                                                     <div className='form-build-checkbox-wrp-options'>
                                                         {field.type === 'images' && (
                                                             <div className={`input-field ${field.customClass}`} style={{
@@ -5069,22 +5086,29 @@ const Formgenerated = () => {
                                                                             <p>Enter at least 6 characters</p>
                                                                         </div>
                                                                         <input
-                                                                            type="text"
-                                                                            value={selectedField.passwordCharacter}
+                                                                            type="number"
+                                                                            value={selectedField.passwordCharacter || ""}
                                                                             onChange={(e) => {
                                                                                 const newValue = e.target.value;
                                                                                 const numericValue = Number(newValue);
 
-                                                                                if (!isNaN(numericValue) && numericValue < 6) {
-                                                                                    setPasswordpopup(true);
-                                                                                    updateFieldProperty('passwordCharacter', 6);
+                                                                                if (newValue === "") {
+                                                                                   
+                                                                                    updateFieldProperty("passwordCharacter", "");
                                                                                 } else if (!isNaN(numericValue)) {
-                                                                                    updateFieldProperty('passwordCharacter', numericValue);
+                                                                                    if (numericValue < 6) {
+                                                                                        setPasswordpopup(true);
+                                                                                        updateFieldProperty("passwordCharacter", 6);
+                                                                                    } else if (numericValue > 100) {
+                                                                                        updateFieldProperty("passwordCharacter", 100);
+                                                                                    } else {
+                                                                                        updateFieldProperty("passwordCharacter", numericValue);
+                                                                                    }
                                                                                 }
                                                                             }}
+                                                                            min="6"
+                                                                            max="100"
                                                                         />
-
-
                                                                     </div>
 
                                                                     <div className="form-builder-chaneging-wrap number password-creater">

@@ -1,6 +1,6 @@
 import React from 'react'
 import blog1 from '../images/blog1.png';
-import cancle1 from '../images/cancle1.png'
+import cancle1 from '../images/cancleimg.png'
 import { useState } from 'react';
 import axios from 'axios';
 import '../index.css';
@@ -65,7 +65,7 @@ export default function Support() {
     const [describe, setDescribe] = useState('');
     const { apiUrl } = useLoaderData() || {};
     const [popup, setPopup] = useState(false);
-    const [message, setMessage]= useState(false);
+    const [message, setMessage] = useState(false);
 
     const handleSubmit = async () => {
         if (!shop || !name || !email || !category || !theme || !describe) {
@@ -81,11 +81,11 @@ export default function Support() {
                 shop,
                 describe
             });
-           
+
             if (response.status === 200) {
                 setMessage('Form submitted successfully!');
                 setTimeout(() => {
-                    setMessage(''); 
+                    setMessage('');
                 }, 3000);
                 setName('');
                 setEmail('');
@@ -97,7 +97,7 @@ export default function Support() {
                 alert('Failed to submit the form. Please try again.');
             }
         } catch (error) {
-          
+
             alert('An error occurred while submitting the form. Please try again.');
         }
     };
@@ -114,7 +114,7 @@ export default function Support() {
     const handleHide = () => {
         setShowPopup(!showPopup);
     }
-    
+
     return (
         <div className='form_builder_support'>
             <div className="container">
@@ -161,52 +161,56 @@ export default function Support() {
                         </div>
                     </div>
                 </div>
-                <div className="form_builder_reasons">
-                    <h2>5 Reasons Why You Need a Form Builder for Your Business</h2>
-                    <p>October 20, 2024</p>
+                <div className='form_builder_reasons-lk'>
+                    <a href="https://syncform.app/blogs/reason-to-use-form-builder.html" target='_blank'>
+                        <div className="form_builder_reasons">
+                            <h2>5 Reasons Why You Need a Form Builder for Your Business</h2>
+                            <p>October 20, 2024</p>
+                        </div>
+                    </a>
                 </div>
                 <div className="form_builder_convert">
                     <div className="form_builder_blogs">
-                    <a href="https://syncform.app/blogs/add-form-builder-app.html" target='_blank'>
-                        <img src={add} alt="" />
-                        <h3>How to Add SyncForm on Shopify Store?</h3>
-                        <div className='form_build_blog_btn'>
-                            <div className="form_blog_data oct">
-                                October 05, 2024
+                        <a href="https://syncform.app/blogs/create-form.html" target='_blank'>
+                            <img src={create} alt="" />
+                            <h3>How to Create Form in Form Builder</h3>
+                            <div className='form_build_blog_btn'>
+                                <div className="form_blog_data oct">
+                                    December 15, 2024
+                                </div>
+                                <div className="form_blog_data">
+                                    Read more
+                                </div>
                             </div>
-                            <div className="form_blog_data">
-                                Read more
-                            </div>
-                        </div>
-                        </a>
-                    </div>
-                    
-                    <div className="form_builder_blogs">
-                    <a href="https://syncform.app/blogs/create-form.html" target='_blank'>
-                        <img src={create} alt="" />
-                        <h3>How to Create Form in Form Builder</h3>
-                        <div className='form_build_blog_btn'>
-                            <div className="form_blog_data oct">
-                                October 05, 2024
-                            </div>
-                            <div className="form_blog_data">
-                                Read more
-                            </div>
-                        </div>
                         </a>
                     </div>
                     <div className="form_builder_blogs">
-                    <a href="https://syncform.app/blogs/track-and-analyze-form-submission.html" target='_blank'>
-                        <img src={track} alt="" />
-                        <h3>How to Track and Analyze Form Submissions in Shopity</h3>
-                        <div className='form_build_blog_btn'>
-                            <div className="form_blog_data oct">
-                                October 05, 2024
+                        <a href="https://syncform.app/blogs/add-form-builder-app.html" target='_blank'>
+                            <img src={add} alt="" />
+                            <h3>How to Add Form Builder app on Shopify Store?</h3>
+                            <div className='form_build_blog_btn'>
+                                <div className="form_blog_data oct">
+                                    November 08, 2024
+                                </div>
+                                <div className="form_blog_data">
+                                    Read more
+                                </div>
                             </div>
-                            <div className="form_blog_data">
-                                Read more
+                        </a>
+                    </div>
+
+                    <div className="form_builder_blogs">
+                        <a href="https://syncform.app/blogs/track-and-analyze-form-submission.html" target='_blank'>
+                            <img src={track} alt="" />
+                            <h3>How to Track and Analyze Form Submissions in Shopify?</h3>
+                            <div className='form_build_blog_btn'>
+                                <div className="form_blog_data oct">
+                                    October 05, 2024
+                                </div>
+                                <div className="form_blog_data">
+                                    Read more
+                                </div>
                             </div>
-                        </div>
                         </a>
                     </div>
                 </div>
@@ -247,7 +251,7 @@ export default function Support() {
                                 <div className="it-service-icon" onClick={handleHide}>
                                     <img src={cancle1} alt="" />
                                 </div>
-                                {message && <p style={{color:'red'}}>{message}</p>}
+                                {message && <p style={{ color: 'red' }}>{message}</p>}
                                 <button className='btn' onClick={handleSubmit}>Submit</button>
                             </div>
                         </div>
@@ -256,17 +260,17 @@ export default function Support() {
             </div>
             <div className='form-builder-wrap-popup-inputs requid-fields'>
                 {popup && (
-                <div className="popup">
-                    <div className="popup-content ">
-                        <div className="form_builder_input-fields-requid">
-                            <p>Kindly fill in all the
-                                Required Fields</p>
+                    <div className="popup">
+                        <div className="popup-content ">
+                            <div className="form_builder_input-fields-requid">
+                                <p>Kindly fill in all the
+                                    Required Fields</p>
+                            </div>
+                            <div className="it-service-icon" onClick={() => setPopup(false)}>
+                                <img src={cancle1} alt="" />
+                            </div>
                         </div>
-                        <div className="it-service-icon" onClick={()=>setPopup(false)}>
-                          <img src={cancle1} alt="" />
-                                </div>
                     </div>
-                </div>
                 )}
             </div>
             <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>

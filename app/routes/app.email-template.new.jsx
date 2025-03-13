@@ -592,7 +592,7 @@ const EmailTemplateCreate = () => {
             newField = createInputField('images');
             setFields((prevFields) => [...prevFields, newField]);
             setSelectedFieldId(newField.id);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsimagesTextAdded(true);
                 setTimeout(() => {
                     setIsimagesTextAdded(false);
@@ -606,7 +606,7 @@ const EmailTemplateCreate = () => {
             setEditorValue('');
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsHeadingAdded(true);
                 setTimeout(() => {
                     setIsHeadingAdded(false);
@@ -620,7 +620,7 @@ const EmailTemplateCreate = () => {
             toggleColorPicker();
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsdividerTextAdded(true);
                 setTimeout(() => {
                     setIsdividerTextAdded(false);
@@ -629,7 +629,7 @@ const EmailTemplateCreate = () => {
         } else if (type === 'button') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsbuttonTextAdded(true);
                 setTimeout(() => {
                     setIsbuttonTextAdded(false);
@@ -648,7 +648,7 @@ const EmailTemplateCreate = () => {
 
                 return updatedFields;
             });
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIssocialTextAdded(true);
                 setTimeout(() => {
                     setIssocialTextAdded(false);
@@ -657,7 +657,7 @@ const EmailTemplateCreate = () => {
         } else if (type === 'html convert') {
             newField = createInputField(type, type === 'html convert' ? '<h1>Your HTML Here</h1>' : '');
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIshtmlTextAdded(true);
                 setTimeout(() => {
                     setIshtmlTextAdded(false);
@@ -683,7 +683,7 @@ const EmailTemplateCreate = () => {
             if (splitFields.length > 0 && window.innerWidth > 1400) {
                 handleFieldClick(splitFields[0].id);
             }
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIssplitTextAdded(true);
                 setTimeout(() => {
                     setIssplitTextAdded(false);
@@ -693,7 +693,7 @@ const EmailTemplateCreate = () => {
         else if (type === 'spacer') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsspacerTextAdded(true);
                 setTimeout(() => {
                     setIsspacerTextAdded(false);
@@ -710,7 +710,7 @@ const EmailTemplateCreate = () => {
             setIsPopupOpen(true);
             setSelectedProducts([])
             setSearchTerm('');
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsproductTextAdded(true);
                 setTimeout(() => {
                     setIsproductTextAdded(false);
@@ -731,7 +731,7 @@ const EmailTemplateCreate = () => {
                 }
                 return updatedFields;
             });
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsmultiTextAdded(true);
                 setTimeout(() => {
                     setIsmultiTextAdded(false);
@@ -742,7 +742,7 @@ const EmailTemplateCreate = () => {
             setFields((prevFields) => [...prevFields, newField]);
             setCurrentFieldId(newField.id);
             setEditorValueed('');
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIsRichTextAdded(true);
                 setTimeout(() => {
                     setIsRichTextAdded(false);
@@ -751,7 +751,7 @@ const EmailTemplateCreate = () => {
         } else if (type === 'costum') {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
-            if (window.innerWidth < 540) {
+            if (window.innerWidth < 768) {
                 setIscostomTextAdded(true);
                 setTimeout(() => {
                     setIscostomTextAdded(false);
@@ -2508,7 +2508,7 @@ const handleConfirmUnlink = async () => {
                                                                         {!backgroundImage && (
                                                                             <div
                                                                                 className="upload-area"
-                                                                                onClick={() => document.getElementById('fileInput').click()}
+                                                                                onClick={() => document.getElementById('fileInput-bg').click()}
                                                                                 onDragOver={(e) => {
                                                                                     e.preventDefault();
                                                                                     e.stopPropagation();
@@ -2529,7 +2529,7 @@ const handleConfirmUnlink = async () => {
                                                                                     accept="image/*"
                                                                                     onChange={handleBackgroundImageUpload}
                                                                                     style={{ display: 'none' }}
-                                                                                    id="fileInput"
+                                                                                    id="fileInput-bg"
                                                                                 />
                                                                             </div>
 
@@ -5248,7 +5248,7 @@ const handleConfirmUnlink = async () => {
                                                                                     {!field.headingbgImage && (
                                                                                         <div
                                                                                             className="upload-area"
-                                                                                            onClick={() => document.getElementById('fileInput').click()}
+                                                                                            onClick={() => document.getElementById('fileInput-heading').click()}
                                                                                             onDragOver={(e) => e.preventDefault()}
                                                                                             onDrop={(e) => {
                                                                                                 e.preventDefault();
@@ -5267,7 +5267,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 accept="image/*"
                                                                                                 onChange={(e) => handleFileChange(e, field.id)}
                                                                                                 style={{ display: 'none' }}
-                                                                                                id="fileInput"
+                                                                                                id="fileInput-heading"
                                                                                             />
                                                                                         </div>
                                                                                     )}
@@ -8708,7 +8708,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 <label>Uplaod Image</label>
                                                                                                 <div
                                                                                                     className="upload-area"
-                                                                                                    onClick={() => document.getElementById('fileInput').click()}
+                                                                                                    onClick={() => document.getElementById('fileInput-icon').click()}
                                                                                                     onDragOver={(e) => e.preventDefault()}
                                                                                                     onDrop={(e) => {
                                                                                                         e.preventDefault();
@@ -8728,7 +8728,7 @@ const handleConfirmUnlink = async () => {
                                                                                                         onChange={handleCustomIconUpload}
                                                                                                         multiple
                                                                                                         style={{ display: 'none' }}
-                                                                                                        id="fileInput"
+                                                                                                        id="fileInput-icon"
                                                                                                     />
                                                                                                 </div>
 

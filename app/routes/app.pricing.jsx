@@ -206,7 +206,7 @@ export default function Pricing() {
         };
 
         try {
-            const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
+            await axios.post(`${apiUrl}/payment/confirm`, paymentData);
 
         } catch (error) {
            
@@ -290,32 +290,30 @@ export default function Pricing() {
     const proceedWithDeletion = async (chargeId) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
-
+    
         try {
             const formData = new FormData();
-            formData.append('charge_id', chargeId);
-            await submit(formData, { method: 'delete' });
+            formData.append("charge_id", chargeId);
+            await submit(formData, { method: "delete" });
+    
+            const paymentData = {
+                chargeId: `free-plan-${shop}`,
+                shop,
+                name: "lifeTime",
+                plan: "free",
+                price: 0,
+                status: "active",
+                billingOn: new Date().toISOString(),
+            };
+    
+            await axios.post(`${apiUrl}/payment/confirm`, paymentData);
         } catch (error) {
-        }
 
-        const paymentData = {
-            chargeId: `free-plan-${shop}`,
-            shop: shop,
-            name: "lifeTime",
-            plan: "free",
-            price: 0,
-            status: "active",
-            billingOn: new Date().toISOString(),
-        };
-
-        try {
-            const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData);
-           
-        } catch (error) {
         } finally {
             setIsSubmitting(false);
         }
     };
+    
 
     const handleConfirmDelete = () => {
         setIsDeletePopupVisible(false);
@@ -380,7 +378,7 @@ export default function Pricing() {
                                             <>
                                                 <img src={freeplan} />
                                                 <p>Free</p>
-                                                <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
+                                                <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
                                                 <p className='form_builder_plan_btn'>Current Plan</p>
                                                 <div className='monthly-wrap'>
                                                     lifetime
@@ -392,7 +390,8 @@ export default function Pricing() {
                                                 {charge.status === 'active' && (
                                                     <>
                                                         <p>Free</p>
-                                                        <h2>$0.00<span className='monthly-number'> lifetime</span></h2>
+                                                        <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
+                                                       
                                                         <p className='form_builder_plan_btn'   onClick={() => handleDelete(charge.id, charge.name)} >Choose this plan</p>
                                                         <div className='monthly-wrap'>
                                                             lifetime
@@ -460,8 +459,7 @@ export default function Pricing() {
                                     <div className='before-adding'>
                                         <h2>$4.99<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>14.99</span><span className='monthly-number'>/mo</span>
-
+                                            {/* <span className='strikethrough'>14.99</span><span className='monthly-number'>/mo</span> */}
                                         </p>
                                     </div>
 
@@ -537,7 +535,7 @@ export default function Pricing() {
                                     <div className='before-adding'>
                                         <h2>14.99<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
-                                            <span className='strikethrough'>$49.99</span><span className='monthly-number'>/mo</span>
+                                            {/* <span className='strikethrough'>$49.99</span><span className='monthly-number'>/mo</span> */}
                                         </p>
                                     </div>
 

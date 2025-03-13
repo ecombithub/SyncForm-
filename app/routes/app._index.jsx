@@ -21,88 +21,110 @@ export const loader = async ({ request }) => {
   const accessToken = session?.accessToken || null;
 
   if (!shop || !accessToken) {
-      console.error("Error: Missing shop or access token in session.");
-      return {
-          assets: [],
-          shop: null,
-          apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
-          shopData: null,
-          error: true,
-          accessToken: null,
-          errorMessage: "Missing shop or access token in session.",
-      };
+    console.error("Error: Missing shop or access token in session.");
+    return {
+      assets: [],
+      shop: null,
+      apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
+      shopData: null,
+      error: true,
+      accessToken: null,
+      errorMessage: "Missing shop or access token in session.",
+      activeThemeId: null,
+    };
   }
 
   const response = {
-      assets: [],
-      shop,
-      apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
-      shopData: null,
-      error: false,
-      accessToken,
-      errorMessage: ''
+    assets: [],
+    shop,
+    apiUrl: process.env.PUBLIC_REACT_APP_API_URL,
+    shopData: null,
+    error: false,
+    accessToken,
+    errorMessage: "",
+    activeThemeId: null,
   };
 
   console.log("Shop:", shop);
 
   try {
-  
-      const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
-          method: 'GET',
-          headers: {
-              'X-Shopify-Access-Token': accessToken,
-              'Content-Type': 'application/json',
-          },
-      });
+    const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
+      method: "GET",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
+      },
+    });
 
-      if (!assetResponse.ok) {
-          const errorText = await assetResponse.text();
-          throw new Error(`Failed to fetch assets: ${errorText}`);
-      }
+    if (!assetResponse.ok) {
+      const errorText = await assetResponse.text();
+      throw new Error(`Failed to fetch assets: ${errorText}`);
+    }
 
-      const assetData = await assetResponse.json();
-      response.assets = assetData.assets || [];
+    const assetData = await assetResponse.json();
+    response.assets = assetData.assets || [];
 
-      const shopQuery = `
-      {
-        shop {
-          name
-          email
-          myshopifyDomain
-          primaryDomain {
-            host
-          }
+    const shopQuery = `
+    {
+      shop {
+        name
+        email
+        myshopifyDomain
+        primaryDomain {
+          host
         }
-      }`;
-
-      const shopResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/graphql.json`, {
-          method: 'POST',
-          headers: {
-              'X-Shopify-Access-Token': accessToken,
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: shopQuery }),
-      });
-
-      if (!shopResponse.ok) {
-          const errorText = await shopResponse.text();
-          throw new Error(`Failed to fetch shop data: ${errorText}`);
       }
+    }`;
 
-      const shopData = await shopResponse.json();
-      response.shopData = shopData.data.shop;
+    const shopResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/graphql.json`, {
+      method: "POST",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: shopQuery }),
+    });
 
-      console.log("Shop Data-all pages:", response.shopData);
+    if (!shopResponse.ok) {
+      const errorText = await shopResponse.text();
+      throw new Error(`Failed to fetch shop data: ${errorText}`);
+    }
+
+    const shopData = await shopResponse.json();
+    response.shopData = shopData.data.shop;
+
+    console.log("Shop Data-all pages:", response.shopData);
+
+    const themeResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/themes.json`, {
+      method: "GET",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!themeResponse.ok) {
+      const errorText = await themeResponse.text();
+      throw new Error(`Failed to fetch themes: ${errorText}`);
+    }
+
+    const themeData = await themeResponse.json();
+    const activeTheme = themeData.themes.find((theme) => theme.role === "main");
+
+    if (activeTheme) {
+      response.activeThemeId = activeTheme.id; 
+    }
+
+    console.log("Active Theme ID:", response.activeThemeId);
 
   } catch (err) {
-      console.error("Error fetching data:", err.message);
-      response.error = true;
-      response.errorMessage = err.message;
+    console.error("Error fetching data:", err.message);
+    response.error = true;
+    response.errorMessage = err.message;
   }
 
   return response;
 };
-
 
 function Index() {
   const { activeThemeId, shop, apiUrl, accessToken,shopData } = useLoaderData() || {};
@@ -117,9 +139,7 @@ function Index() {
 
   const sendShopData = async () => {
     try {
-      
-  
-      const response = await fetch(`${apiUrl}/store-shopData`, {
+    const response = await fetch(`${apiUrl}/store-shopData`, {
         method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
@@ -130,13 +150,13 @@ function Index() {
       if (response.ok) {
         const data = await response.json();
         setResponseData(data);
-        console.log("✅ Successfully added shop data:", data);
+       
       } else {
         const errorData = await response.json();
-        console.error("❌ Error adding shop data:", errorData.message);
+    
       }
     } catch (error) {
-      console.error("❌ Network error while sending shop data:", error.message);
+      
     }
   };
   

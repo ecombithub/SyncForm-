@@ -147,33 +147,35 @@ app.post("/api/CostomerRequest", async (req, res) => {
 });
 
 app.post('/store-shopData', async (req, res) => {
-  try {
-    const { myshopifyDomain,email, name, primaryDomain } = req.body;
-    if (!primaryDomain || !primaryDomain.host) {
-      return res.status(400).json({ message: 'Host is required in primaryDomain' });
-    }
+  if (!req.body || !req.body.myshopifyDomain || !req.body.email || !req.body.name || !req.body.primaryDomain?.host) {
+    return res.status(400).json({ success: false, message: "Invalid request body: Missing required fields" });
+  }
 
-    const newShop = new StoreShopData({
-      myshopifyDomain,
-      email,
-      name,
-      primaryDomain: { host: primaryDomain.host }
-    });
-   
-    await newShop.save();
-    
-    res.status(201).json({ message: 'Shop data added successfully', shop: newShop });
-    
+  try {
+    const store = await StoreShopData.findOneAndUpdate(
+      { myshopifyDomain: req.body.myshopifyDomain },
+      {
+        $set: {
+          email: req.body.email,
+          name: req.body.name,
+          primaryDomain: {
+            host: req.body.primaryDomain.host
+          }
+        }
+      },
+      { new: true, upsert: true } 
+    );
+
+    return res.json({ success: true, message: store ? "Store updated successfully" : "Store created successfully", store });
+
   } catch (error) {
+    console.error("Error processing request:", error);
 
     if (error.code === 11000) {
-      return res.status(400).json({
-        message: 'Shop with this myshopifyDomain already exists',
-        error: error.message
-      });
+      return res.status(400).json({ success: false, message: "Store already exists" });
     }
 
-    res.status(500).json({ message: 'Error adding shop data', error });
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
 
