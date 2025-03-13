@@ -952,62 +952,62 @@ export default function EmailTemplate() {
     return (
         <>
             {isLoading && (
-                <div className="skeleton-wrapper forms create fade-in">
-                    <div className="container skeleton-wred">
-                        <div className="skeleton-wrp">
-                            <div className="skeleton-wrp-left">
-                                <div className="skeleton skeleton-header"></div>
-                                <div className="skeleton-wrp-left-para">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                </div>
-                                <div className="skeleton-wrp-left-para">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph "></div>
-                                </div>
-                            </div>
-                            <div className="skeleton-wrp-right">
-                                <div className="skeleton-wrp-left-para right">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph two"></div>
-                                </div>
-                                <div className="skeleton-wrp-left-para right">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph two"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                 <div className="skeleton-wrapper fade-in">
+                 <div className="container skeleton-wred">
+                   <div className="skeleton-wrp">
+                     <div className="skeleton-wrp-left">
+                       <div className="skeleton skeleton-header"></div>
+                       <div className="skeleton-wrp-left-para">
+                         <div className="skeleton skeleton-paragraph"></div>
+                         <div className="skeleton skeleton-paragraph"></div>
+                       </div>
+                       <div className="skeleton-wrp-left-para">
+                         <div className="skeleton skeleton-paragraph"></div>
+                         <div className="skeleton skeleton-paragraph"></div>
+                       </div>
+                     </div>
+                     <div className="skeleton-wrp-right">
+                       <div className="skeleton-wrp-left-para right">
+                         <div className="skeleton skeleton-paragraph"></div>
+                         <div className="skeleton skeleton-paragraph two"></div>
+                       </div>
+                       <div className="skeleton-wrp-left-para right">
+                         <div className="skeleton skeleton-paragraph"></div>
+                         <div className="skeleton skeleton-paragraph two"></div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
             )}
             {loading ? (
                 <div className="skeleton-wrapper fade-in">
-                    <div className="container skeleton-wred">
-                        <div className="skeleton-wrp">
-                            <div className="skeleton-wrp-left">
-                                <div className="skeleton skeleton-header"></div>
-                                <div className="skeleton-wrp-left-para">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                </div>
-                                <div className="skeleton-wrp-left-para">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph "></div>
-                                </div>
-                            </div>
-                            <div className="skeleton-wrp-right">
-                                <div className="skeleton-wrp-left-para right">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph two"></div>
-                                </div>
-                                <div className="skeleton-wrp-left-para right">
-                                    <div className="skeleton skeleton-paragraph"></div>
-                                    <div className="skeleton skeleton-paragraph two"></div>
-                                </div>
-                            </div>
-                        </div>
+                <div className="container skeleton-wred">
+                  <div className="skeleton-wrp">
+                    <div className="skeleton-wrp-left">
+                      <div className="skeleton skeleton-header"></div>
+                      <div className="skeleton-wrp-left-para">
+                        <div className="skeleton skeleton-paragraph"></div>
+                        <div className="skeleton skeleton-paragraph"></div>
+                      </div>
+                      <div className="skeleton-wrp-left-para">
+                        <div className="skeleton skeleton-paragraph"></div>
+                        <div className="skeleton skeleton-paragraph"></div>
+                      </div>
                     </div>
+                    <div className="skeleton-wrp-right">
+                      <div className="skeleton-wrp-left-para right">
+                        <div className="skeleton skeleton-paragraph"></div>
+                        <div className="skeleton skeleton-paragraph two"></div>
+                      </div>
+                      <div className="skeleton-wrp-left-para right">
+                        <div className="skeleton skeleton-paragraph"></div>
+                        <div className="skeleton skeleton-paragraph two"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
             ) : (
                 <div className="email-template-section">
 
@@ -1301,33 +1301,33 @@ export default function EmailTemplate() {
                         <div className='email-template-reviw-popup emial-wrap'>
 
                             {loading ? (
-                                <div className="skeleton-wrapper forms fade-in">
-                                    <div className="container skeleton-wred">
-                                        <div className="skeleton-wrp">
-                                            <div className="skeleton-wrp-left">
-                                                <div className="skeleton skeleton-header"></div>
-                                                <div className="skeleton-wrp-left-para">
-                                                    <div className="skeleton skeleton-paragraph"></div>
-                                                    <div className="skeleton skeleton-paragraph"></div>
-                                                </div>
-                                                <div className="skeleton-wrp-left-para">
-                                                    <div className="skeleton skeleton-paragraph"></div>
-                                                    <div className="skeleton skeleton-paragraph "></div>
-                                                </div>
-                                            </div>
-                                            <div className="skeleton-wrp-right">
-                                                <div className="skeleton-wrp-left-para right">
-                                                    <div className="skeleton skeleton-paragraph"></div>
-                                                    <div className="skeleton skeleton-paragraph two"></div>
-                                                </div>
-                                                <div className="skeleton-wrp-left-para right">
-                                                    <div className="skeleton skeleton-paragraph"></div>
-                                                    <div className="skeleton skeleton-paragraph two"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                 <div className="skeleton-wrapper fade-in">
+                                 <div className="container skeleton-wred">
+                                   <div className="skeleton-wrp">
+                                     <div className="skeleton-wrp-left">
+                                       <div className="skeleton skeleton-header"></div>
+                                       <div className="skeleton-wrp-left-para">
+                                         <div className="skeleton skeleton-paragraph"></div>
+                                         <div className="skeleton skeleton-paragraph"></div>
+                                       </div>
+                                       <div className="skeleton-wrp-left-para">
+                                         <div className="skeleton skeleton-paragraph"></div>
+                                         <div className="skeleton skeleton-paragraph"></div>
+                                       </div>
+                                     </div>
+                                     <div className="skeleton-wrp-right">
+                                       <div className="skeleton-wrp-left-para right">
+                                         <div className="skeleton skeleton-paragraph"></div>
+                                         <div className="skeleton skeleton-paragraph two"></div>
+                                       </div>
+                                       <div className="skeleton-wrp-left-para right">
+                                         <div className="skeleton skeleton-paragraph"></div>
+                                         <div className="skeleton skeleton-paragraph two"></div>
+                                       </div>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div>
                             ) : (
                                 <div className='email-tempalte-textt text-wraped email-templates-wredd'
                                     style={{

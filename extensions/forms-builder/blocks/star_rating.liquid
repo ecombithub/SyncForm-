@@ -1529,22 +1529,28 @@ document.addEventListener('click', function (event) {
           } ${field.emailRequid ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" style="width: 100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " />  <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'phone':
           const phoneInputHtml = `
-          <input type="tel" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${
-            field.disabled ? 'disabled' : ''
-          }  id="phone-${uniqueId}" placeholder="${field.placeholder || ''}" 
-            style="width:100%; 
-                   padding: ${field.inputPadding || '10px'}; 
-                   border-radius: ${inputRadius || '4px'}px; 
-                   border-color: ${inputBorderColor || '#ccc'}; 
-                   background-color: ${inputBgColor || '#fff'}; 
-                   border-width: ${inputWidth || '1'}px; 
-                   padding-left:50px;
-                   height:52px;
-                  border-style: ${inputStyle || 'solid'};"
-      inputmode="tel" pattern="[0-9]*" />
-          <div class="description" style=" word-break: break-word; min-height: ${maxDescriptionHeight}px;">${
-            field.description
-          }</div>
+          <input type="tel" id="phone-${uniqueId}"
+       placeholder="${field.placeholder || ''}" 
+       ${field.readonly ? 'readonly' : ''} 
+       ${field.required ? 'required' : ''} 
+      ${field.disabled ? 'disabled' : ''}  
+       inputmode="tel" pattern="^\d{10,15}$"
+         style="
+        width: 100%; 
+        padding: ${field.inputPadding || '10px'}; 
+        border-radius: ${inputRadius || '4px'}px; 
+        border-color: ${inputBorderColor || '#ccc'}; 
+        background-color: ${inputBgColor || '#fff'}; 
+        border-width: ${inputWidth || '1'}px; 
+        padding-left: 50px;
+        height: 52px;
+        border-style: ${inputStyle || 'solid'};
+        "
+               />
+           <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">
+    ${field.description}
+             </div>
+
         `;
           setTimeout(() => {
             const phoneInput = document.querySelector(`#phone-${uniqueId}`);
@@ -2146,8 +2152,7 @@ document.addEventListener('click', function (event) {
     
         return false;
     }
-    
-    
+  
       $.ajax({
         url: 'https://apps.syncform.app/api/forms',
         method: 'POST',

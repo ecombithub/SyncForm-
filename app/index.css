@@ -7190,6 +7190,26 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:640px) {
+    .form_builder_download {
+        display: none;
+    }
+    
+    .form_builder_download.icon img {
+        width: 100%;
+    }
+
+    .form_builder_download.icon {
+        display: block;
+        width: 37px;
+        padding: 5px 10px;
+        display: flex;
+    }
+
+    .form_build_cancle_option {
+        right: -5%;
+        top: 0;
+        z-index: 999999;
+    }
     span.short-id {
         display: none;
     }
@@ -7241,7 +7261,7 @@ button.form_email_btn {
     }
 
     .form-build-customer-search {
-        justify-content: space-between !important;
+        justify-content: left !important;
         width: 100%;
     }
 
@@ -7271,6 +7291,11 @@ button.form_email_btn {
 
 
 @media screen and (max-width:540px) {
+
+    .form_builder_popup_forms .form_builder_select_optoion .form_select_check input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+    }
 
     .form_builder_plan_upgrade_popup_wrapp {
         padding: 40px 25px;
@@ -7341,7 +7366,7 @@ button.form_email_btn {
     }
 
     .form-build-customer-search .form-builder-search-bar {
-        max-width: 30%;
+        max-width: 40%;
     }
 
     .form_builder_action_number {
@@ -7667,20 +7692,8 @@ button.form_email_btn {
         bottom: -31%;
     }
 
-    .form_builder_download.icon {
-        display: block;
-        width: 37px;
-        padding: 5px 10px;
-        display: flex;
-    }
-
-    .form_builder_download.icon img {
-        width: 100%;
-    }
-
-    .form_builder_download {
-        display: none;
-    }
+    
+   
 
     .form_builder_dashboard {
         margin-top: 20px;

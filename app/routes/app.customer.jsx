@@ -579,7 +579,7 @@ function Customer() {
                                     <div className="form_builder_download" onClick={handleshowPopup}>
                                         <p>Download all CSV</p>
                                     </div>
-                                    <div className="form_builder_download icon" onClick={handleShowPop}>
+                                    <div className="form_builder_download icon" onClick={handleshowPopup}>
                                         <img src={dropicon} alt="" />
                                     </div>
                                     <div className='show_forms_all'>
@@ -624,7 +624,7 @@ function Customer() {
                                                 <div className="form_builder_download" onClick={downloadAllCSV}>
                                                     <p>Download all CSV</p>
                                                 </div>
-                                                <div className="form_builder_download icon" onClick={handleShowPop}>
+                                                <div className="form_builder_download icon" onClick={downloadAllCSV}>
                                                     <img src={dropicon} alt="" />
                                                 </div>
                                                 <div className='show_forms_all'>
