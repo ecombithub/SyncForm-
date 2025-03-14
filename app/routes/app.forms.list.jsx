@@ -639,7 +639,7 @@ const Formdata = () => {
                                                                 <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">
                                                                     Form ID
                                                                 </th>
-                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header ">Template name</th>
+                                                                <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header templete-hide ">Template name</th>
                                                                 <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" style={{ textAlign: "center" }}>Responses</th>
                                                                 <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide">Date and time</th>
                                                                 <th className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" style={{ textAlign: "center" }}>Actions</th>
@@ -672,7 +672,7 @@ const Formdata = () => {
                                                                             )}
                                                                         </div>
                                                                     </th>
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header " scope="col">
+                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header templete-hide " scope="col">
                                                                         {form.templateTitle}
                                                                     </th>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>

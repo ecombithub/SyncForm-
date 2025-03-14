@@ -98,6 +98,7 @@ export default function Setting() {
     const [status, setStatus] = useState('disactive');
     const [numberValue, setNumberValue] = useState(50);
     const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [userPlan, setUserPlan] = useState(null);
@@ -106,6 +107,25 @@ export default function Setting() {
     const [numberPopup, setNumberPopup] = useState(false);
 
     const navigator = useNavigate();
+
+    const validateEmail = (e) => {
+        const value = e.target.value;
+        setEmail(value);
+    
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+        if (!value) {
+            setEmailError("Email is required");
+        } else if (!emailPattern.test(value)) {
+            setEmailError("Please enter a valid email address");
+        } else {
+            setEmailError("");
+        }
+    
+        setTimeout(() => {
+            setEmailError("");
+        }, 3000);
+    };
     
     useEffect(() => {
         const fetchStatus = async () => {
@@ -357,10 +377,11 @@ export default function Setting() {
                                     <input
                                         type="email"
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={validateEmail}
                                         placeholder='Your email'
                                         required
                                     />
+                                    {emailError && <p style={{color:"red", fontSize:"14px"}} className="error-message">{emailError}</p>}
                                 </div>
                                 <div className='form_build_inputs'>
                                     <label>Password:</label>
@@ -379,7 +400,6 @@ export default function Setting() {
                                             </a>.
                                         </p>
                                     </span>
-
                                 </div>
                             </div>
                             <button className='form_email_btn' type="submit">Submit</button>

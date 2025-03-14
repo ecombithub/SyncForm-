@@ -74,15 +74,18 @@ export default function Support() {
             setPopup(true);
             return;
         }
+        
         if (!email) {
             setError("Email is required");
+            setTimeout(() => setError(""), 3000);
             return;
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             setError("Please enter a valid email address");
+            setTimeout(() => setError(""), 3000);
             return;
         } else {
             setError("");
-        }
+        }        
 
         try {
             const response = await axios.post(`${apiUrl}/email-submit`, {
@@ -168,7 +171,7 @@ export default function Support() {
                         <h4>Rate Our App</h4>
                         <p>Provide feedback on your experience with the app.Your suggestions and ratings help us identify areas for improvement and ensure we continue to offer excellent service.</p>
                         <div className="form_builder_support_btn">
-                            <div className="form_builder_support_btn_first">
+                            <div className="form_builder_support_btn_first" style={{display:'none'}}>
                                 <p>Leave review</p>
                             </div>
 

@@ -416,6 +416,8 @@ const formCreateSchema = new mongoose.Schema({
     subject: { type: String, default: '' },
     maxDescriptionHeight: { type: Number, default: 0 },
     shopName: { type: String, default: '' },
+    shopEmail: { type: String, default: '' },
+    onwerShop: { type: String, default: '' },
   },
   submissionOption: { type: String, required: true },
   thankYouTimer: { type: Number },
@@ -435,6 +437,9 @@ const formSchema = new mongoose.Schema({
   id: { type: String, required: true },
   shop: { type: String, required: false, },
   currentUrl: { type: String, required: false, },
+  shopowner: { type: String, required: false, },
+  shopEmail: { type: String, required: false, },
+  onwerShop: { type: String, required: false, },
   fields: [
     {
       id: { type: String, required: true },
@@ -444,6 +449,7 @@ const formSchema = new mongoose.Schema({
   ],
   templateId: { type: String, required: false },
   timestamp: { type: Date, default: Date.now },
+
   submissions: [{
     fields: Array,
     timestamp: { type: String, default: Date.now }
@@ -1229,6 +1235,7 @@ app.post('/api/template', async (req, res) => {
     const newTemplate = new Template({ TemplateAll, email,subject,formFields,title,shop,shopowner,createdAt });
     await newTemplate.save();
     await sendEmail(email, TemplateAll, subject,formFields,title,shop,shopowner,createdAt);
+
     res.status(200).json({ message: 'Template data received and stored successfully!' });
   } catch (error) {
     console.error('Error receiving template data:', error);
@@ -1982,36 +1989,36 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     </html>
   `;
 
-  const formattedDate = createdAt 
-  ? new Date(createdAt).toLocaleString() 
-  : "N/A";
+  // const formattedDate = createdAt 
+  // ? new Date(createdAt).toLocaleString() 
+  // : "N/A";
 
-  const formFieldsHtml = formFields
-  .map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`)
-  .join('');
-    const adminHtmlContent = `
-      <html>
-     <body>
-    <div style="font-family: 'Poppins', sans-serif;width: 100%; max-width: 60%; margin: auto; border: 1px solid grey;border-radius:4px; background-color: white; padding: 20px; color: black;">
-      <div>Hi <strong>${shopowner}</strong>,</div>
-      <div>Your form "<strong>${title}</strong>" has been successfully submitted. Now, you can start collecting responses.</div>
-      <div>
-        <p><strong>Form Details:</strong></p>
-        <p>Form Name: <strong>${title}</strong></p>
-        <p>Created: ${formattedDate}</p>
-        ${formFieldsHtml}
-        <p>Embed the form in your store.</p>
-        <p>Track responses in the app dashboard.</p>
+  // const formFieldsHtml = formFields
+  // .map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`)
+  // .join('');
+  //   const adminHtmlContent = `
+  //     <html>
+  //    <body>
+  //   <div style="font-family: 'Poppins', sans-serif;width: 100%; max-width: 60%; margin: auto; border: 1px solid grey;border-radius:4px; background-color: white; padding: 20px; color: black;">
+  //     <div>Hi <strong>${shopowner}</strong>,</div>
+  //     <div>Your form "<strong>${title}</strong>" has been successfully submitted. Now, you can start collecting responses.</div>
+  //     <div>
+  //       <p><strong>Form Details:</strong></p>
+  //       <p>Form Name: <strong>${title}</strong></p>
+  //       <p>Created: ${formattedDate}</p>
+  //       ${formFieldsHtml}
+  //       <p>Embed the form in your store.</p>
+  //       <p>Track responses in the app dashboard.</p>
 
-        <p>Let us know if you need any assistance.</p>
-        <p>Best Regards,</p>
-        <p><strong>Sync Form Builder</strong></p>
-      </div>
-    </div>
-   </body>
-   </html>
+  //       <p>Let us know if you need any assistance.</p>
+  //       <p>Best Regards,</p>
+  //       <p><strong>Sync Form Builder</strong></p>
+  //     </div>
+  //   </div>
+  //  </body>
+  //  </html>
 
-    `;
+  //   `;
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -2020,12 +2027,12 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
       },
     });
 
-    const adminMailOptions = {
-      from: emailUser,
-      to: emailUser,
-      subject: subject || 'New Form Submission! SyncForm',
-      html: adminHtmlContent,
-    };
+    // const adminMailOptions = {
+    //   from: emailUser,
+    //   to: emailUser,
+    //   subject: subject || 'New Form Submission! SyncForm',
+    //   html: adminHtmlContent,
+    // };
 
     const userMailOptions = {
       from: emailUser,
@@ -2036,7 +2043,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     };
 
     console.log(`Sending admin email to ${emailUser}`);
-    await transporter.sendMail(adminMailOptions);
+    // await transporter.sendMail(adminMailOptions);
 
     console.log('Sending user email to:', email);
     await transporter.sendMail(userMailOptions);
@@ -2759,14 +2766,15 @@ app.get('/api/forms', async (req, res) => {
 });
 
 app.post('/api/forms', async (req, res) => {
+  console.log("Received Request Data:", req.body);
   try {
     const formsData = req.body;
-    const { title, id, fields, timestamp, currentUrl, shop } = formsData;
-    console.log("data", req.body);
+    const { title, id, fields, timestamp, currentUrl, shopowner, shopEmail, onwerShop, shop } = formsData;
+
     if (!shop) {
       return res.status(400).send({ error: 'Shop field is missing from the form submission.' });
     }
-   
+
     for (const field of fields) {
       if (!field.id || !field.value) {
         return res.status(400).send({ error: 'Each field must have an id and a value.' });
@@ -2781,6 +2789,9 @@ app.post('/api/forms', async (req, res) => {
         id,
         shop,
         currentUrl,
+        shopowner,
+        shopEmail,
+        onwerShop,
         fields,
         timestamp: timestamp || new Date().toISOString(),
         submissionCount: 0,
@@ -2796,6 +2807,59 @@ app.post('/api/forms', async (req, res) => {
     });
 
     await form.save();
+
+    if (onwerShop === shop) {
+      console.log('✅ onwerShop matches shop. Preparing to send email.');
+
+      const fieldValues = fields.map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`).join('');
+
+
+      const adminHtmlContent = `
+        <html>
+        <body>
+          <div style="font-family: 'Poppins', sans-serif;width: 100%; max-width: 60%; margin: auto; border: 1px solid grey;border-radius:4px; background-color: white; padding: 20px; color: black;">
+            <div>Hi <strong>${shopowner}</strong>,</div>
+            <div>Your form "<strong>${title}</strong>" has been successfully submitted. Now, you can start collecting responses.</div>
+            <div>
+              <p><strong>Form Details:</strong></p>
+              <p>Form Name: <strong>${title}</strong></p>
+              ${fieldValues}
+              <p>Embed the form in your store.</p>
+              <p>Track responses in the app dashboard.</p>
+              <p>Let us know if you need any assistance.</p>
+              <p>Best Regards,</p>
+              <p><strong>Sync Form Builder</strong></p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'syncform@hubsyntax.com',
+          pass: 'jaaf dnhy rndg rpic'
+        }
+      });
+
+      let mailOptions = {
+        from: 'syncform@hubsyntax.com',
+        to: shopEmail,
+        subject: `New Form Submission - ${title}`,
+        html: adminHtmlContent 
+      };
+
+      console.log('📧 Sending email with the following details:', mailOptions);
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('❌ Error sending email:', error);
+        } else {
+          console.log('✅ Email sent successfully:', info.response);
+        }
+      });
+    }
 
     const emailField = fields.find(field => field.name === 'Email');
     const email = emailField ? emailField.value : "";
@@ -2814,6 +2878,7 @@ app.post('/api/forms', async (req, res) => {
     res.status(500).send({ error: 'Failed to save form submission' });
   }
 });
+
 
 app.get('/get-forms', async (req, res) => {
   try {

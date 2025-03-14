@@ -317,6 +317,8 @@ const Formgenerated = () => {
     const [passwordpopop, setPasswordpopup] = useState(false);
 
     const shopName = shopData.name;
+    const shopEmail = shopData.email;
+    const onwerShop = shopData.myshopifyDomain;
 
     const handleToggleImagePreview = (fieldId) => {
         setImagePreview((prevState) => ({
@@ -1415,7 +1417,9 @@ const Formgenerated = () => {
                 borderStyle: borderStyle,
                 subject,
                 maxDescriptionHeight,
-                shopName
+                shopName,
+                shopEmail,
+                onwerShop
             },
             submissionOption: submissionOption || "defaultOption",
             thankYouTimer: thankYouTimer || 0,

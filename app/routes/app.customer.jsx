@@ -461,6 +461,8 @@ function Customer() {
     };
 
 
+ 
+
     return (
         <>
 
@@ -684,7 +686,8 @@ function Customer() {
                                                                         <label htmlFor={`checkbox-${form.id}`}></label>
                                                                     </div>
                                                                     <div className="data_forms">{form.title}</div>
-                                                                    <div className="data_forms">{form.id}</div>
+                                                                    <div className="data_forms"> {isSmallScreen ? `${form.id.substring(0, 10)}...` : form.id}</div>
+                                                                   
                                                                     <div className="data_forms phone-forms">
                                                                         {form.submissionCount || form.submissions.length || 0}
                                                                     </div>
@@ -713,7 +716,7 @@ function Customer() {
                                         <div>Form Name</div>
                                         <div>Customer Email</div>
                                         <div className='phone-forms'>Phone</div>
-                                        <div>Name</div>
+                                        <div className='costomer-name-wrap'>Name</div>
                                         <div className='phone-forms'>Country</div>
                                         <div className='phone-forms'>Status</div>
                                     </div>
@@ -739,7 +742,7 @@ function Customer() {
                                                             {isSmallScreen ? `${email.substring(0, 10)}...` : email}
                                                         </div>
                                                         <div className="data_forms phone-forms">{phone}</div>
-                                                        <div className="data_forms">{fullName}</div>
+                                                        <div className="data_forms costomer-name-wrap">{fullName}</div>
                                                         <div className="data_forms phone-forms">{country}</div>
                                                         <div className="data_forms phone-forms">
                                                             <div className="form-detail-status">
