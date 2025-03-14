@@ -479,7 +479,7 @@ const EmailTemplateCreate = () => {
             splitbtnurl: type === 'split' ? '' : undefined,
             splitbtnfamily: type === 'split' ? '"Poppins", sans-serif' : undefined,
             splitbtnheight: type === 'split' ? '35' : undefined,
-            splitbtnWeight: type === 'split' ? '100' : undefined,
+            splitbtnWeight: type === 'split' ? '500' : undefined,
             splitbtnwidth: type === 'split' ? '80' : undefined,
             splitletter: type === 'split' ? '0' : undefined,
             splitlineheight: type === 'split' ? '20' : undefined,
@@ -564,10 +564,10 @@ const EmailTemplateCreate = () => {
             Multibtnheight: type === 'Multicolumn' ? '40' : undefined,
             Multibtnradious: type === 'Multicolumn' ? '2' : undefined,
             Multibtnweight: type === 'Multicolumn' ? '100' : undefined,
-            MultiWeight: type === 'Multicolumn' ? '100' : undefined,
+            MultiWeight: type === 'Multicolumn' ? '500' : undefined,
             Multibtnbg: type === 'Multicolumn' ? '#FFFFFF' : 'undefined',
             Multibtnlable: type === 'Multicolumn' ? 'Click' : 'undefined',
-            Multibtncolor: type === 'Multicolumn' ? '#000000' : undefined,
+            Multibtncolor: type === 'Multicolumn' ? '#000' : undefined,
             Multibtnfont: type === 'Multicolumn' ? '14' : undefined,
             Multibtnurl: type === 'Multicolumn' ? '' : undefined,
             Multiborderradious: type === 'Multicolumn' ? '2' : undefined,
@@ -1404,7 +1404,7 @@ const handleConfirmUnlink = async () => {
                 splitbtnurl: field.splitbtnurl || '',
                 splitbtnfamily: field.splitbtnfamily ||  '"Poppins", sans-serif',
                 splitbtnheight: field.splitbtnheight || '35',
-                splitbtnWeight: field.splitbtnWeight || 100,
+                splitbtnWeight: field.splitbtnWeight || 500,
                 splitbtnwidth: field.splitbtnwidth || '80',
                 splitletter: field.splitletter || '',
                 splitlineheight: field.splitlineheight || '',
@@ -1463,10 +1463,10 @@ const handleConfirmUnlink = async () => {
                 Multigap: field.Multigap || '',
                 Multibtnfamily: field.Multibtnfamily || '"Poppins", sans-serif',
                 Multibtnlable: field.Multibtnlable || '',
-                Multibtncolor: field.Multibtncolor || '#0000',
+                Multibtncolor: field.Multibtncolor || '#000',
                 Multibtnbg: field.Multibtnbg || '',
                 Multibtnweight: field.Multibtnweight || '100',
-                MultiWeight: field.MultiWeight|| 100,
+                MultiWeight: field.MultiWeight|| 500,
                 Multibtnheight: field.Multibtnheight || '40',
                 Multibtnradious: field.Multibtnradious || '2',
                 Multibtnfont: field.Multibtnfont || '14',
@@ -2801,7 +2801,7 @@ const handleConfirmUnlink = async () => {
                                                                                                                     borderWidth: `${child.splitBorderWidth}px`,
                                                                                                                     borderStyle: field.splitBorderStyle,
                                                                                                                     borderColor: field.splitBorderColor,
-                                                                                                                    fontWeight: field.splitbtnWeight || 100,
+                                                                                                                    fontWeight: field.splitbtnWeight || 500,
 
                                                                                                                 }}>
                                                                                                                     {child.splitbtn}</button>
@@ -3295,13 +3295,13 @@ const handleConfirmUnlink = async () => {
                                                                                                         backgroundColor: field.Multibtnbg || '#FFFFFF',
                                                                                                         borderWidth: `${field.MultibtnBorderWidth || 1}px`,
                                                                                                         borderStyle: field.MultibtnBorderStyle || 'solid',
-                                                                                                        borderColor: field.MultibtnBorderColor || '#000',
+                                                                                                        borderColor: field.MultibtnBorderColor || '#0000',
                                                                                                         minWidth: `${field.Multibtnweight || '100'}px`,
                                                                                                         height: `${field.Multibtnheight || '40'}px`,
                                                                                                         color: field.Multibtncolor,
                                                                                                         borderRadius: `${field.Multibtnradious || 2}px`,
                                                                                                         fontSize: `${field.Multibtnfont || '14'}px`,
-                                                                                                        fontWeight: field.MultiWeight|| 100
+                                                                                                        fontWeight: field.MultiWeight|| 500
                                                                                                     }}
                                                                                                 >
                                                                                                     {field.columnData[index].Multibtnlable}
@@ -4086,7 +4086,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 <input
                                                                                                     type="text"
                                                                                                     className="color-code"
-                                                                                                    value={field.Multibtncolor || '#0000'}
+                                                                                                    value={field.Multibtncolor || '#000'}
                                                                                                     readOnly
                                                                                                     onClick={(e) => {
                                                                                                         navigator.clipboard.writeText(e.target.value);
@@ -4105,7 +4105,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 />
                                                                                                 <input
                                                                                                     type="color"
-                                                                                                    value={field.Multibtncolor || '#000000'}
+                                                                                                    value={field.Multibtncolor || '#000'}
                                                                                                     onChange={(e) => {
                                                                                                         setFields(prevFields =>
                                                                                                             prevFields.map(f =>
@@ -4152,7 +4152,7 @@ const handleConfirmUnlink = async () => {
                                                                                     <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Font-Weight</label>
                                                                                         <select
-                                                                                            value={field.MultiWeight || 100}
+                                                                                            value={field.MultiWeight || 500}
                                                                                             onChange={(e) => {
                                                                                                 setFields(prevFields =>
                                                                                                     prevFields.map(f =>

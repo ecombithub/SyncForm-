@@ -1937,25 +1937,25 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
      
        }
       h3{
-         font-size: 26px;
+         font-size: 34px;
            line-height: 30px;
       }
          
        h4{
        font-size: 22px;
-      line-height: 25px;
+      line-height: 30px;
        font-weight:500;
        }
 
        h5{
        font-size: 20px;
-         line-height: 20px;
+         line-height: 26px;
          font-weight:500;
        }
 
         h6{
        font-size: 18px;
-         line-height: 18px;
+         line-height: 23px;
        font-weight:500;
        }
 

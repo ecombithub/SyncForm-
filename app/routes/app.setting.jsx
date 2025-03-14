@@ -158,9 +158,7 @@ export default function Setting() {
 
     const fetchPaymentPlan = async () => {
         try {
-
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
-
             setUserPlan(response.data);
        
         } catch (error) {
@@ -196,7 +194,6 @@ export default function Setting() {
                 shop,
                 shopData,
             };
-
             const response = await axios.post(`${apiUrl}/user-email`, postData);
         
 
