@@ -1247,7 +1247,7 @@ document.addEventListener('click', function (event) {
                 </div>
               `;
               case 'select':
-          const options = `
+               const options = `
                   <div class="custom-select-option" data-value="" style="font-weight: bold; color: #888;">
                       Select an option
                   </div>
@@ -1256,8 +1256,8 @@ document.addEventListener('click', function (event) {
                       (option) => `<div class="custom-select-option" data-value="${option.value}">${option.label}</div>`
                     )
                     .join('')}
-              `;
-              return `
+              `;  
+               return `
                 <div class="custom-select-container" style="position: relative;">
                   <div class="custom-select-box" ${field.readonly ? 'readonly' : ''} ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  style="width: 100%; padding: ${field.inputPadding}; border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color :${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle}; cursor: pointer;" onclick="toggleDropdown(event, '${field.id}')">
                     <span>${field.label || 'Select Input'}</span><span style="float: right"><img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373"style = "width:15px;"></span>
