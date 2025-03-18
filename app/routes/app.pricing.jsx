@@ -219,9 +219,9 @@ export default function Pricing() {
                 const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
                 setData(response.data);
                 console.log(response.data)
-              
+
             } catch (err) {
-               
+
             }
         };
         fetchActivePlan();
@@ -385,7 +385,7 @@ export default function Pricing() {
                                                 </div>
                                             </>
                                         )}
-                                        {activePlan && charges.map(charge => (
+                                        {!activePlan && charges.map(charge => (
                                             <div key={charge.id} className="charge-item">
                                                 {charge.status === 'active' && (
                                                     <>
