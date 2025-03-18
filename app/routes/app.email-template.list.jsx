@@ -687,18 +687,18 @@ export default function EmailTemplate() {
                 const columnsPerRow = field.columnsPerRow || 1;
                 return (
                     <div style={{ display: 'flow-root', width: '100%' }}>
-                        <div style={{
+                        <div className='email-templete-mulit-coloums-wraped' style={{
                             display: 'flex',
                             flexWrap: 'wrap',
                             gap: `${field.Multigap || 10}px`,
                             padding: `${field.MultiPadding}px`,
-                            textAlign: 'center',
+                            textAlign: field.Multitext,
                             backgroundColor: field.Multibgcolor,
                             color: field.MultiColor,
                             justifyContent: 'space-between'
                         }}>
                             {field.columnData.map((column, index) => (
-                                <div
+                                <div className='email-templete-mulit-coloums-ml'
                                     key={column._id}
                                     style={{
                                         flex: `1 1 calc(100% / ${columnsPerRow} - ${field.Multigap || 10}px)`,
@@ -768,7 +768,7 @@ export default function EmailTemplate() {
                 );
             case 'split-group':
                 return (
-                    <div
+                    <div className='email-templete-split-group-wraped'
                         style={{
                             backgroundColor: field.splitbg,
                             display: matchedData?.styles?.viewMode === "mobile" ? "block" : "flex",
@@ -781,7 +781,7 @@ export default function EmailTemplate() {
                         }}
                     >
                         {field.children.map((child) => (
-                            <div key={child.id} style={{ textAlign: child.splitTextAlin, padding: `${child.splitPadding}px`, width: matchedData?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%', display: "flex", letterSpacing: `${child.splitletter}px`, }}>
+                            <div className='email-templete-split-group-lg' key={child.id} style={{ textAlign: child.splitTextAlin, padding: `${child.splitPadding}px`, width: matchedData?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%', display: "flex", letterSpacing: `${child.splitletter}px`, }}>
                                 {child.add === 'image' ? (
                                     <img
                                         src={child.value}
@@ -1015,7 +1015,7 @@ export default function EmailTemplate() {
                         <div className="email-tempalte-your">
                             <div className="email-tempalte-wrap">
                                 <div className="email-template-h2">
-                                    <h2>Your Email template</h2>
+                                    <h2>Saved Email Template</h2>
                                 </div>
                                 <div className="email-templete-search-bar">
                                     <div className='create-email-templates' onClick={handleCreateTemplate}>
@@ -1148,7 +1148,7 @@ export default function EmailTemplate() {
                             <div className="email-tempalte-your">
                                 <div className="email-tempalte-wrap">
                                     <div className="email-template-h2">
-                                        <h2>Saved templates</h2>
+                                        <h2>Prebuilt Template</h2>
                                     </div>
                                     <div className="email-templete-search-bar">
 

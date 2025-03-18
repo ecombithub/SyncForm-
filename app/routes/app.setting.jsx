@@ -344,7 +344,7 @@ export default function Setting() {
                                     />
                                 </div>
                             </div>
-                            <span>This option toggles the app logo display in your form. When enabled, the logo does not appear on the form, providing a cleaner look.</span>
+                            <span>This option toggles the app logo display in your form. When enabled, the logo does not appear on the form.</span>
                         </div>
 
                         <div className='form_builder_complte_toggle_wraped'>

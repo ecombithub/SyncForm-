@@ -107,7 +107,7 @@
       img.brand-logos {
         position: absolute;
         right: 10px;
-        bottom: 10px;
+        bottom: 10px; 
       }
 
       @media screen and (max-width: 640px) {
@@ -162,36 +162,32 @@
 });
 
 function toggleDropdown(event, fieldId) {
-  event.preventDefault();
+  event.stopPropagation();
   const dropdown = document.getElementById(`dropdown-${fieldId}`);
   const selectBox = dropdown.previousElementSibling;
   const arrowSpan = selectBox.querySelector('span:last-child');
 
   const isVisible = dropdown.style.display === 'block';
+  document.querySelectorAll('.custom-select-dropdown').forEach((d) => (d.style.display = 'none'));
   dropdown.style.display = isVisible ? 'none' : 'block';
 
   arrowSpan.innerHTML = isVisible
-    ? '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373"style = "width:15px;">'
-    : '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/5yhh.png?v=1741756624" style = "width:15px;">';
+    ? '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373" style="width:15px;">'
+    : '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/5yhh.png?v=1741756624" style="width:15px;">';
 }
 
 document.addEventListener('click', function (event) {
-  const selectContainers = document.querySelectorAll('.custom-select-container');
-
-  selectContainers.forEach((container) => {
+  document.querySelectorAll('.custom-select-container').forEach((container) => {
     if (!container.contains(event.target)) {
       const dropdown = container.querySelector('.custom-select-dropdown');
       if (dropdown) {
         dropdown.style.display = 'none';
-
-        const selectBox = container.querySelector('.custom-select-box');
-        const arrowSpan = selectBox.querySelector('span:last-child');
-        arrowSpan.innerHTML = '▼';
+        const selectBox = container.querySelector('.custom-select-box span:last-child');
+        selectBox.innerHTML = '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373" style="width:15px;">';
       }
     }
   });
 });
-
 
 function filterOptions(event, fieldId) {
   const searchInput = event.target.value.toLowerCase();
@@ -209,17 +205,14 @@ document.addEventListener('click', function (event) {
     const selectedValue = event.target.getAttribute('data-value');
     const selectedLabel = event.target.textContent;
 
-    const selectBox = event.target
-      .closest('.custom-select-container')
-      .querySelector('.custom-select-box span:first-child');
+    const selectBox = event.target.closest('.custom-select-container').querySelector('.custom-select-box span:first-child');
     selectBox.textContent = selectedLabel;
 
     const dropdown = event.target.closest('.custom-select-dropdown');
     dropdown.style.display = 'none';
 
     const arrowSpan = selectBox.nextElementSibling;
-    arrowSpan.textContent = '▼';
-
+    arrowSpan.innerHTML = '<img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/imgpsh_fullsize_anim_52.png?v=1741756373" style="width:15px;">';
   }
 });
 
@@ -1549,7 +1542,7 @@ document.addEventListener('click', function (event) {
        ${field.readonly ? 'readonly' : ''} 
        ${field.required ? 'required' : ''} 
       ${field.disabled ? 'disabled' : ''}  
-       inputmode="tel" pattern="^\d{10,15}$"
+       inputmode="tel"   pattern="^\\+?[0-9\\s\\-()]{10,17}$"
          style="
         width: 100%; 
         padding: ${field.inputPadding || '10px'}; 

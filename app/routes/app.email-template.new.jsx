@@ -280,14 +280,14 @@ const EmailTemplateCreate = () => {
 
     useEffect(() => {
         if (formData) {
-           
+
             if (formData.fields && formData.fields.length > 0) {
                 const field = formData.fields[0];
 
                 if (field.columnData) {
-                   
+
                 } else {
-                    
+
                 }
             } else {
                 console.log('No fields found in formData');
@@ -296,7 +296,7 @@ const EmailTemplateCreate = () => {
             if (Array.isArray(formData.fields)) {
                 const validFields = formData.fields.map(field => {
                     if (!field.id) {
-                       
+
                     }
 
                     if (field.type === 'product') {
@@ -354,7 +354,7 @@ const EmailTemplateCreate = () => {
             setColumnCount(columnCount);
             setSelectedIcons(prevIcons => {
                 // console.log("Updating selectedIcons to:", prevIcons);
-                return prevIcons; 
+                return prevIcons;
             });
         }
     }, [formData]);
@@ -558,8 +558,8 @@ const EmailTemplateCreate = () => {
             Multigap: type === 'Multicolumn' ? '10' : '',
             Multibtnfamily: type === 'Multicolumn' ? '"Poppins", sans-serif' : '',
             MultiColor: type === 'Multicolumn' ? '#000000' : undefined,
-            MultibtnBorderColor: type === 'Multicolumn' ? '#000000' : undefined,
-            MultibtnBorderWidth: type === 'Multicolumn' ? '1' : undefined,
+            MultibtnBorderColor: type === 'Multicolumn' ? '#000' : undefined,
+            MultibtnBorderWidth: type === 'Multicolumn' ? 1 : undefined,
             MultibtnBorderStyle: type === 'Multicolumn' ? 'solid' : undefined,
             Multibtnheight: type === 'Multicolumn' ? '40' : undefined,
             Multibtnradious: type === 'Multicolumn' ? '2' : undefined,
@@ -850,38 +850,38 @@ const EmailTemplateCreate = () => {
                     isHidden: !prevIcons[icon]?.isHidden,
                 },
             };
-    
+
             checkAndRemoveSocialIconFields(updatedIcons, customIcons);
             return updatedIcons;
         });
     };
-    
+
     const toggleCustomIconVisibility = (index) => {
         setCustomIcons((prevIcons) => {
             const updatedIcons = prevIcons.map((icon, i) =>
                 i === index ? { ...icon, isHidden: !icon.isHidden } : icon
             );
-    
+
             checkAndRemoveSocialIconFields(selectedIcons, updatedIcons);
             return updatedIcons;
         });
     };
-    
+
     const checkAndRemoveSocialIconFields = (updatedSelectedIcons, updatedCustomIcons) => {
         const visibleSelectedIcons = Object.values(updatedSelectedIcons).some(icon => !icon.isHidden);
         const visibleCustomIcons = updatedCustomIcons.some(icon => !icon.isHidden);
-    
+
         if (!visibleSelectedIcons && !visibleCustomIcons) {
-           
-    
+
+
             setFields((prevFields) => {
-                const newFields = prevFields.filter(field => field.type !== "socalicon"); 
-             
+                const newFields = prevFields.filter(field => field.type !== "socalicon");
+
                 return newFields;
             });
         }
     };
-    
+
     const handleImageUpload = (e, fieldId) => {
         const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
         if (file) {
@@ -941,7 +941,7 @@ const EmailTemplateCreate = () => {
     };
 
     const handleEditorChange = (value, fieldId) => {
-     
+
         setFields((prevFields) => {
             const updatedFields = prevFields.map((field) =>
                 field.id === fieldId
@@ -1054,83 +1054,83 @@ const EmailTemplateCreate = () => {
     }, [formDataAdd]);
 
     const handleFormSelect = async (e) => {
-    const title = e.target.value.trim();
-    const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
+        const title = e.target.value.trim();
+        const selectedForm = formDataAdd.find((form) => form.title.trim() === title);
 
-    if (selectedForm) {
-        try {
-            const isFormIdMatched = formData?.form_ids?.includes(selectedForm.formId);
+        if (selectedForm) {
+            try {
+                const isFormIdMatched = formData?.form_ids?.includes(selectedForm.formId);
 
-            if (isFormIdMatched) {
-                
-                const checkResponse = await fetch(`${apiUrl}/check-form-connected/${selectedForm.formId}`);
-                const checkData = await checkResponse.json();
+                if (isFormIdMatched) {
 
-                if (checkData.isConnected) {
-                    setDisconnectForm(true);
-                    setDisconnectFormId(selectedForm.formId);
-                    return; 
+                    const checkResponse = await fetch(`${apiUrl}/check-form-connected/${selectedForm.formId}`);
+                    const checkData = await checkResponse.json();
+
+                    if (checkData.isConnected) {
+                        setDisconnectForm(true);
+                        setDisconnectFormId(selectedForm.formId);
+                        return;
+                    }
+                } else {
+                    console.log(`Form ID ${selectedForm.formId} is NOT found in formData.form_ids`);
                 }
-            } else {
-                console.log(`Form ID ${selectedForm.formId} is NOT found in formData.form_ids`);
-            }
 
-            const response = await fetch(`${apiUrl}/get/data`);
-            const tempeltedata = await response.json();
-            const tempeltedataArray = tempeltedata?.data;
+                const response = await fetch(`${apiUrl}/get/data`);
+                const tempeltedata = await response.json();
+                const tempeltedataArray = tempeltedata?.data;
 
-            if (tempeltedataArray && Array.isArray(tempeltedataArray)) {
-                const isFormConnected = tempeltedataArray.some((template) =>
-                    template.form_ids.includes(selectedForm.formId)
+                if (tempeltedataArray && Array.isArray(tempeltedataArray)) {
+                    const isFormConnected = tempeltedataArray.some((template) =>
+                        template.form_ids.includes(selectedForm.formId)
+                    );
+
+                    if (isFormConnected) {
+                        alert(`The form "${selectedForm.title}" is already connected to another template and cannot be connected to a different one.`);
+                        return;
+                    }
+                } else {
+                    throw new Error('Invalid data received from /get/data.');
+                }
+
+                setSelectedFormIds((prevFormIds) =>
+                    prevFormIds.includes(selectedForm.formId)
+                        ? prevFormIds.filter((id) => id !== selectedForm.formId)
+                        : [...prevFormIds, selectedForm.formId]
                 );
 
-                if (isFormConnected) {
-                    alert(`The form "${selectedForm.title}" is already connected to another template and cannot be connected to a different one.`);
-                    return;
-                }
-            } else {
-                throw new Error('Invalid data received from /get/data.');
+                setSelectedTitles((prevSelectedTitles) =>
+                    prevSelectedTitles.includes(title)
+                        ? prevSelectedTitles.filter((t) => t !== title)
+                        : [...prevSelectedTitles, title]
+                );
+            } catch (error) {
+                console.error('Error checking or unlinking form connection:', error);
+                alert('An error occurred while processing the form connection.');
             }
+        }
+    };
 
-            setSelectedFormIds((prevFormIds) =>
-                prevFormIds.includes(selectedForm.formId)
-                    ? prevFormIds.filter((id) => id !== selectedForm.formId)
-                    : [...prevFormIds, selectedForm.formId]
-            );
+    const handleConfirmUnlink = async () => {
+        if (!disconnectFormId) return;
 
-            setSelectedTitles((prevSelectedTitles) =>
-                prevSelectedTitles.includes(title)
-                    ? prevSelectedTitles.filter((t) => t !== title)
-                    : [...prevSelectedTitles, title]
-            );
+        try {
+            const unlinkResponse = await fetch(`${apiUrl}/unlink-template/${disconnectFormId}`, { method: 'PUT' });
+
+            if (unlinkResponse.ok) {
+
+                setConnectedForms((prevForms) => prevForms.filter((id) => id !== disconnectFormId));
+            } else {
+                alert('Failed to unlink template.');
+            }
         } catch (error) {
-            console.error('Error checking or unlinking form connection:', error);
-            alert('An error occurred while processing the form connection.');
+            console.error('Error unlinking form:', error);
+            alert('An error occurred while unlinking the form.');
         }
-    }
-};
 
-const handleConfirmUnlink = async () => {
-    if (!disconnectFormId) return;
 
-    try {
-        const unlinkResponse = await fetch(`${apiUrl}/unlink-template/${disconnectFormId}`, { method: 'PUT' });
-
-        if (unlinkResponse.ok) {
-         
-            setConnectedForms((prevForms) => prevForms.filter((id) => id !== disconnectFormId));
-        } else {
-            alert('Failed to unlink template.');
-        }
-    } catch (error) {
-        console.error('Error unlinking form:', error);
-        alert('An error occurred while unlinking the form.');
-    }
-
- 
-    setDisconnectForm(false);
-    setDisconnectFormId(null);
-};
+        setDisconnectForm(false);
+        setDisconnectFormId(null);
+    };
 
 
     useEffect(() => {
@@ -1311,7 +1311,7 @@ const handleConfirmUnlink = async () => {
                 headeropacity: field.headeropacity || '',
                 headerbtncolor: field.headerbtncolor || null,
                 headerbtn: field.headerbtn || null,
-                headingbtnfamily: field.headingbtnfamily  || '"Poppins", sans-serif',
+                headingbtnfamily: field.headingbtnfamily || '"Poppins", sans-serif',
                 headingLevel: field.headingLevel || null,
                 headingbtnPadding: field.headingbtnPadding || 10,
                 headingbtntopPadding: field.headingbtntopPadding || 10,
@@ -1402,7 +1402,7 @@ const handleConfirmUnlink = async () => {
                 splitbtnfont: field.splitbtnfont || '14',
                 splitbtncolor: field.splitbtncolor || '#000',
                 splitbtnurl: field.splitbtnurl || '',
-                splitbtnfamily: field.splitbtnfamily ||  '"Poppins", sans-serif',
+                splitbtnfamily: field.splitbtnfamily || '"Poppins", sans-serif',
                 splitbtnheight: field.splitbtnheight || '35',
                 splitbtnWeight: field.splitbtnWeight || 500,
                 splitbtnwidth: field.splitbtnwidth || '80',
@@ -1430,7 +1430,7 @@ const handleConfirmUnlink = async () => {
                 imgBorderStyle: field.imgBorderStyle || 'solid',
                 imgBorderColor: field.imgBorderColor || '#000',
                 productPadding: field.productPadding || 10,
-                productfamily: field.productfamily  || '"Poppins", sans-serif',
+                productfamily: field.productfamily || '"Poppins", sans-serif',
                 productline: field.productline,
                 productbg: field.productbg || '#ffff',
                 productBorderWidth: field.productBorderWidth || 0,
@@ -1466,7 +1466,7 @@ const handleConfirmUnlink = async () => {
                 Multibtncolor: field.Multibtncolor || '#000',
                 Multibtnbg: field.Multibtnbg || '',
                 Multibtnweight: field.Multibtnweight || '100',
-                MultiWeight: field.MultiWeight|| 500,
+                MultiWeight: field.MultiWeight || 500,
                 Multibtnheight: field.Multibtnheight || '40',
                 Multibtnradious: field.Multibtnradious || '2',
                 Multibtnfont: field.Multibtnfont || '14',
@@ -1494,7 +1494,7 @@ const handleConfirmUnlink = async () => {
                 costumAline: field.costumAline || 'left',
                 costumline: field.costumline || 25,
                 costumPadding: field.costumPadding || 0,
-                costomfamily : field.costomfamily  || '"Poppins", sans-serif',
+                costomfamily: field.costomfamily || '"Poppins", sans-serif',
                 costumfontweight: field.costumfontweight,
                 costumLetter: field.costumLetter,
 
@@ -1551,9 +1551,9 @@ const handleConfirmUnlink = async () => {
                         ? await axios.put(`${apiUrl}/update/${id}`, formData)
                         : await axios.post(`${apiUrl}/send/api`, formData);
 
-                   
+
                     const successMessage = id ? 'Form updated successfully' : 'Form created successfully';
-                    
+
                     if (!id) {
                         resetFormState();
                     }
@@ -1799,12 +1799,12 @@ const handleConfirmUnlink = async () => {
     };
 
     const handleSaveClick = () => {
-        
+
         setIsPopupOpen(false);
     };
 
     const handleClosePopup = () => {
-       
+
         setLastProductFieldId('');
         setEmailFieldPopup(false);
 
@@ -1821,7 +1821,7 @@ const handleConfirmUnlink = async () => {
         });
 
         setTimeout(() => {
-          
+
             setIsPopupOpen(false);
 
             if (lastProductFieldId) {
@@ -1898,17 +1898,17 @@ const handleConfirmUnlink = async () => {
     }
 
     useEffect(() => {
-       
+
     }, [isPopupOpen, selectedProduct]);
 
 
     const handleAddProductToSelected = (fieldId, fieldTitle, fieldImage, products) => {
-       
+
         setLastProductFieldId(fieldId);
         setPopupFieldTitle(fieldTitle);
 
         const productTitles = products.map(product => product.title);
-       
+
         setProductTitles(productTitles);
 
         const productImages = products.map(product => product.image);
@@ -2155,7 +2155,7 @@ const handleConfirmUnlink = async () => {
                     const updatedColumnData = field.columnData.filter((_, i) => i !== index);
 
                     if (updatedColumnData.length === 0) {
-                    
+
                         removeField(fieldId);
                         return acc;
                     }
@@ -2709,7 +2709,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 console.log("Button clicked, but no navigation.");
                                                                                             }}
                                                                                             style={{
-                                                                                                fontFamily: field.headingbtnfamily ||'"Poppins", sans-serif' ,
+                                                                                                fontFamily: field.headingbtnfamily || '"Poppins", sans-serif',
                                                                                                 background: field.headerbtnbg,
                                                                                                 color: field.headerbtncolor,
                                                                                                 height: `${field.headingbtnheight}px`,
@@ -2790,7 +2790,7 @@ const handleConfirmUnlink = async () => {
                                                                                                         {field.showbtnsplit && (
                                                                                                             <a href={field.splitbtnurl} target='_blank' onClick={(e) => e.preventDefault()}>
                                                                                                                 <button style={{
-                                                                                                                    fontFamily: field.splitbtnfamily ||  '"Poppins", sans-serif',
+                                                                                                                    fontFamily: field.splitbtnfamily || '"Poppins", sans-serif',
                                                                                                                     marginTop: "20px",
                                                                                                                     backgroundColor: field.splitbtnbg || '#FFFFFF',
                                                                                                                     fontSize: `${child.splitbtnfont}px`,
@@ -2799,7 +2799,7 @@ const handleConfirmUnlink = async () => {
                                                                                                                     minWidth: `${child.splitbtnwidth}px`,
                                                                                                                     borderRadius: `${child.splitbtnradious}px`,
                                                                                                                     borderWidth: `${child.splitBorderWidth}px`,
-                                                                                                                    borderStyle: field.splitBorderStyle,
+                                                                                                                    borderStyle: field.splitBorderStyle || 'solid',
                                                                                                                     borderColor: field.splitBorderColor,
                                                                                                                     fontWeight: field.splitbtnWeight || 500,
 
@@ -3171,7 +3171,7 @@ const handleConfirmUnlink = async () => {
                                                                                 textAlign: field.costumAline,
                                                                                 lineHeight: `${field.costumline}px`,
                                                                                 padding: `${field.costumPadding}px`,
-                                                                                fontFamily: field.costomfamily || '"Poppins", sans-serif' ,
+                                                                                fontFamily: field.costomfamily || '"Poppins", sans-serif',
                                                                                 fontWeight: field.costumfontweight,
                                                                                 letterSpacing: `${field.costumLetter}px`
                                                                             }}>
@@ -3290,18 +3290,19 @@ const handleConfirmUnlink = async () => {
                                                                                             <a href={field.columnData[index].Multibtnurl} target="_blank" onClick={(e) => e.preventDefault()}>
                                                                                                 <button
                                                                                                     style={{
+                                                                                                        display:'block',
                                                                                                         fontFamily: field.Multibtnfamily || '"Poppins", sans-serif' || '"Poppins", sans-serif',
                                                                                                         marginTop: '20px',
                                                                                                         backgroundColor: field.Multibtnbg || '#FFFFFF',
                                                                                                         borderWidth: `${field.MultibtnBorderWidth || 1}px`,
                                                                                                         borderStyle: field.MultibtnBorderStyle || 'solid',
-                                                                                                        borderColor: field.MultibtnBorderColor || '#0000',
+                                                                                                        borderColor: field.MultibtnBorderColor || '#000',
                                                                                                         minWidth: `${field.Multibtnweight || '100'}px`,
                                                                                                         height: `${field.Multibtnheight || '40'}px`,
                                                                                                         color: field.Multibtncolor,
                                                                                                         borderRadius: `${field.Multibtnradious || 2}px`,
                                                                                                         fontSize: `${field.Multibtnfont || '14'}px`,
-                                                                                                        fontWeight: field.MultiWeight|| 500
+                                                                                                        fontWeight: field.MultiWeight || 500
                                                                                                     }}
                                                                                                 >
                                                                                                     {field.columnData[index].Multibtnlable}
@@ -3391,7 +3392,7 @@ const handleConfirmUnlink = async () => {
 
                                                                                             {field.showPrice && product.price && (
                                                                                                 <p style={{ marginTop: '10px', fontWeight: field.productWeight, letterSpacing: `${field.productLetterSpacing}px` }}>
-                                                                                                 
+
                                                                                                     {product.price.length > 10 ? `${product.price.slice(0, 10)}...` : product.price}
                                                                                                 </p>
                                                                                             )}
@@ -3455,17 +3456,17 @@ const handleConfirmUnlink = async () => {
                                                                                 <div className="social-icons" style={{ gap: `${field.socalIcongap}px` }}>
                                                                                     {field.icons.facebook && field.icons.facebook.url && !field.icons.facebook.isHidden && (
                                                                                         <a href={field.icons.facebook.url} onClick={(e) => e.preventDefault()}>
-                                                                                            <img src={facebook} alt="" style={{ width: `${socalIconWidth}px`, height: `${socalIconHeight}px` }} />
+                                                                                            <img src={facebook} alt="" style={{ width: `${field.socalIconWidth}px`, height: `${field.socalIconHeight}px` }} />
                                                                                         </a>
                                                                                     )}
                                                                                     {field.icons.twitter && field.icons.twitter.url && !field.icons.twitter.isHidden && (
                                                                                         <a href={field.icons.twitter.url} onClick={(e) => e.preventDefault()}>
-                                                                                            <img src={twitter} alt="" style={{ width: `${socalIconWidth}px`, height: `${socalIconHeight}px` }} />
+                                                                                            <img src={twitter} alt="" style={{ width: `${field.socalIconWidth}px`, height: `${field.socalIconHeight}px` }} />
                                                                                         </a>
                                                                                     )}
                                                                                     {field.icons.instagram && field.icons.instagram.url && !field.icons.instagram.isHidden && (
                                                                                         <a href={field.icons.instagram.url} onClick={(e) => e.preventDefault()}>
-                                                                                            <img src={instagram} alt="" style={{ width: `${socalIconWidth}px`, height: `${socalIconHeight}px` }} />
+                                                                                            <img src={instagram} alt="" style={{ width: `${field.socalIconWidth}px`, height: `${field.socalIconHeight}px` }} />
                                                                                         </a>
                                                                                     )}
                                                                                     {field.customIcons.map((icon, index) =>
@@ -3651,8 +3652,12 @@ const handleConfirmUnlink = async () => {
                                                                                     ))}
 
 
-                                                                                    <button className='add-forms icons' onClick={() => addColumn(field.id)}
-                                                                                    >Add Column</button>
+                                                                                    {field.columnCount < 6 && (
+                                                                                        <button className='add-forms icons' onClick={() => addColumn(field.id)}>
+                                                                                            Add Column
+                                                                                        </button>
+                                                                                    )}
+
                                                                                 </div>
                                                                             </div>
                                                                             <div className='setting_bg_email_templetes_white'>
@@ -4282,7 +4287,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 <input
                                                                                                     type="text"
                                                                                                     className="color-code"
-                                                                                                    value={field.MultibtnBorderColor || '#0000'}
+                                                                                                    value={field.MultibtnBorderColor || '#000'}
                                                                                                     readOnly
                                                                                                     onClick={(e) => {
                                                                                                         navigator.clipboard.writeText(e.target.value);
@@ -4301,7 +4306,7 @@ const handleConfirmUnlink = async () => {
                                                                                                 />
                                                                                                 <input
                                                                                                     type="color"
-                                                                                                    value={field.MultibtnBorderColor || '#0000'}
+                                                                                                    value={field.MultibtnBorderColor || '#000'}
                                                                                                     onChange={(e) => {
                                                                                                         setFields(prevFields =>
                                                                                                             prevFields.map(f =>
@@ -4318,7 +4323,7 @@ const handleConfirmUnlink = async () => {
                                                                                         <label>Border Width (px)</label>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={field.MultibtnBorderWidth || '1'}
+                                                                                            value={field.MultibtnBorderWidth || 1}
                                                                                             onChange={(e) => {
                                                                                                 setFields(prevFields =>
                                                                                                     prevFields.map(f =>
@@ -4671,7 +4676,7 @@ const handleConfirmUnlink = async () => {
                                                                                             onChange={(e) => handleProductsPerRowChange(e, field.id)}
                                                                                             value={field.productsPerRow || (viewMode === 'mobile' ? 1 : 3)}
                                                                                         >
-                                                                                            {[...Array(4).keys()].map(i => (
+                                                                                            {[...Array(3).keys()].map(i => (
                                                                                                 <option key={i + 1} value={i + 1}>
                                                                                                     {i + 1} per row
                                                                                                 </option>
@@ -4859,7 +4864,7 @@ const handleConfirmUnlink = async () => {
                                                                                         <option value="double">double</option>
                                                                                     </select>
                                                                                 </div>
-                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                {/* <div className='form-builder-chaneging-wrap number'>
                                                                                     <label>Font Size (px)</label>
                                                                                     <input
                                                                                         type="number"
@@ -4873,7 +4878,7 @@ const handleConfirmUnlink = async () => {
                                                                                         }}
                                                                                         min='0'
                                                                                     />
-                                                                                </div>
+                                                                                </div> */}
 
                                                                                 <div className='form-builder-chaneging-wrap color'>
                                                                                     <div className='checkbox-option bg-colors'>
@@ -5346,7 +5351,7 @@ const handleConfirmUnlink = async () => {
                                                                                     </select>
                                                                                 </div>
 
-                                                                                <div className='form-builder-chaneging-wrap number'>
+                                                                                {/* <div className='form-builder-chaneging-wrap number'>
                                                                                     <label> Opacity </label>
                                                                                     <input
                                                                                         type="number"
@@ -5360,7 +5365,7 @@ const handleConfirmUnlink = async () => {
                                                                                         }}
                                                                                         placeholder="Opacity"
                                                                                     />
-                                                                                </div>
+                                                                                </div> */}
                                                                             </div>
                                                                             <div className='setting_bg_email_templetes_white '>
                                                                                 <div className='form-builder-chaneging-wrap'>
@@ -6123,7 +6128,7 @@ const handleConfirmUnlink = async () => {
                                                                                                     );
                                                                                                 }}
                                                                                             >
-                                                                                              
+
                                                                                                 <option value="500">Medium</option>
                                                                                                 <option value="600">Semi Bold</option>
                                                                                                 <option value="700">Bold</option>
@@ -8178,7 +8183,7 @@ const handleConfirmUnlink = async () => {
                                                                 if (field.id === selectedFieldId && field.type === 'button') {
                                                                     return (
                                                                         <div key={field.id}>
-                                                                            <div className='setting_bg_email_templetes'>
+                                                                            <div className='setting_bg_email_templetes btn'>
                                                                                 <div className='form-builder-chaneging-wrap'>
                                                                                     <label>Button Label</label>
                                                                                     <input
@@ -8210,7 +8215,7 @@ const handleConfirmUnlink = async () => {
                                                                                     </label>
                                                                                 </div>
                                                                             </div>
-                                                                            <div className='setting_bg_email_templetes_white'>
+                                                                            <div className='setting_bg_email_templetes_white '>
                                                                                 <div className='form-builder-chaneging-wrap'>
                                                                                     <label>Button Position </label>
                                                                                     <select
@@ -8309,7 +8314,7 @@ const handleConfirmUnlink = async () => {
                                                                                 <div className="form-builder-chaneging-wrap number">
                                                                                     <label>  Font-Family</label>
                                                                                     <select
-                                                                                        value={field.buttonfamily || '"Poppins", sans-serif' }
+                                                                                        value={field.buttonfamily || '"Poppins", sans-serif'}
                                                                                         onChange={(e) => {
                                                                                             setFields((prevFields) =>
                                                                                                 prevFields.map((f) =>
@@ -8344,7 +8349,7 @@ const handleConfirmUnlink = async () => {
 
                                                                             </div>
 
-                                                                            <div className='setting_bg_email_templetes'>
+                                                                            <div className='setting_bg_email_templetes postion-btn'>
 
                                                                                 <div className='form-builder-chaneging-wrap number'>
                                                                                     <label>Font-Weight</label>
@@ -8610,7 +8615,7 @@ const handleConfirmUnlink = async () => {
                                                                                             <div className='custom-checkbox socalicons'>
                                                                                                 <input
                                                                                                     type="checkbox"
-                                                                                                    checked={!selectedIcons.facebook.isHidden }
+                                                                                                    checked={!selectedIcons.facebook.isHidden}
                                                                                                     onChange={() => handleToggleIcon('facebook')}
                                                                                                 />
                                                                                                 <i class="fa fa-facebook-square" aria-hidden="true"></i>
@@ -9029,12 +9034,12 @@ const handleConfirmUnlink = async () => {
                     <div className="popup">
                         <div className="popup-content templete-popup-disconnect">
                             <div className='form-builder-email-templete-popup'>
-                                <div className='form-builder-email-email-cancle-btn' onClick={()=>setDisconnectForm(false)}><img src={cancle1} alt="" /></div>
+                                <div className='form-builder-email-email-cancle-btn' onClick={() => setDisconnectForm(false)}><img src={cancle1} alt="" /></div>
                                 <p>Disconnect Email Template?</p>
                                 <span>Are you sure you want to remove this email template from the form?</span>
                                 <div className='form-builder-email-templete-popup-buttons'>
                                     <p className='form-builder-email-btn' onClick={handleConfirmUnlink}>Yes</p>
-                                    <p className='form-builder-email-btn no' onClick={()=>setDisconnectForm(false)}>No</p>
+                                    <p className='form-builder-email-btn no' onClick={() => setDisconnectForm(false)}>No</p>
                                 </div>
                             </div>
                         </div>

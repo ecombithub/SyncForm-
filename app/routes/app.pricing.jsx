@@ -219,6 +219,7 @@ export default function Pricing() {
             try {
                 const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
                 setData(response.data);
+                console.log(response.data)
               
             } catch (err) {
                
@@ -334,7 +335,7 @@ export default function Pricing() {
         <div className='from_builder_pricing'>
             <div className="container">
                 <div className="from_builder_plan_title">
-                    <h2>Plan Pricing</h2>
+                    <h2>Pricing</h2>
                 </div>
                 <div className="form_builder_plan_add">
                     <div className="form_builders_plan">
@@ -347,7 +348,7 @@ export default function Pricing() {
                                 className={`form_builders_plan_monthly ${selectedPlanadd === 'monthly' ? 'active' : ''}`}
                                 onClick={() => handleTogglePlans('monthly')}
                             >
-                                <p>Monthly 1 App</p>
+                                <p>Monthly Subscription</p>
                             </div>
                             {/* <div
                                 className={`form_builders_plan_annually ${selectedPlanadd === 'annually' ? 'active' : ''}`}

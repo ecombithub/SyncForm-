@@ -172,6 +172,17 @@ const Formdata = () => {
     const [copiedFormId, setCopiedFormId] = React.useState(null);
     const [loading, setLoading] = useState(false);
     const [sliderValue, setSliderValue] = useState(1);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1280);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth <= 1280);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
 
     const handleShowFormDetails = (formId) => {
         setIsLoading(true);
@@ -430,7 +441,7 @@ const Formdata = () => {
         const formToCopy = createdForms.find((form) => form.formId === formId);
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
         if (!formToCopy) {
-           
+
             return;
         }
 
@@ -673,12 +684,18 @@ const Formdata = () => {
                                                                         </div>
                                                                     </th>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header templete-hide " scope="col">
-                                                                        {form.templateTitle}
+                                                                        {isSmallScreen ? `${form.templateTitle.substring(0, 12)}...` : form.templateTitle}
                                                                     </th>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
                                                                         {form.totalSubmissions || 0}
                                                                     </th>
-                                                                    <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col">{form.createdAt}</th>
+                                                                    <th
+                                                                        data-polaris-header-cell="true"
+                                                                        className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide"
+                                                                        scope="col"
+                                                                    >
+                                                                        {isSmallScreen ? `${form.createdAt.substring(0, 15)}...` : form.createdAt}
+                                                                    </th>
                                                                     <td style={{ textAlign: "center" }}>
                                                                         <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
                                                                             <div className='form-builder-table-flex-btn'>
@@ -796,22 +813,22 @@ const Formdata = () => {
                                     <div className="form-builder-create-wrped popup">
                                         <div className="form-builder-delete-popup-pop">
                                             <div className='form_builder_delete_text-wraped'>
-                                            <div className="form_builder_delete_text_flex">
-                                                <div className="form_builder_delete_text">
-                                                    <p>Are you sure you want to delete?</p>
+                                                <div className="form_builder_delete_text_flex">
+                                                    <div className="form_builder_delete_text">
+                                                        <p>Are you sure you want to delete?</p>
+                                                    </div>
+                                                    <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
+                                                        <img src={cancle1} alt="Cancel" />
+                                                    </div>
                                                 </div>
-                                                <div className="form_builder_delete_icon" style={{ cursor: "pointer" }} onClick={closeDeletePopup}>
-                                                    <img src={cancle1} alt="Cancel" />
+                                                <div className="form_delete_btn">
+                                                    <div className="form_delete first" onClick={handleDeleteForm}>
+                                                        Yes
+                                                    </div>
+                                                    <div className="form_delete second" onClick={closeDeletePopup}>
+                                                        No
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="form_delete_btn">
-                                                <div className="form_delete first" onClick={handleDeleteForm}>
-                                                    Yes
-                                                </div>
-                                                <div className="form_delete second" onClick={closeDeletePopup}>
-                                                    No
-                                                </div>
-                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1124,8 +1141,8 @@ const Formdata = () => {
                                                                 ) : null
                                                             )}
                                                             {field.type === 'slider' && (
-                                                                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding:"0 0 25px", }}>
-                                                                
+                                                                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: "0 0 25px", }}>
+
                                                                     <input
                                                                         type="range"
                                                                         placeholder={field.placeholder}
@@ -1135,12 +1152,12 @@ const Formdata = () => {
                                                                         required={field.required}
                                                                         disabled={field.disabled}
                                                                         readOnly={field.readonly}
-                                                                        value={sliderValue} 
+                                                                        value={sliderValue}
                                                                         onChange={(e) => setSliderValue(e.target.value)}
-                                                                        style={{ 
+                                                                        style={{
                                                                             position: 'relative',
                                                                             width: '100%',
-                                                                      
+
                                                                         }}
                                                                     />
                                                                     <span className="slider-value">{sliderValue}</span>
@@ -1215,10 +1232,11 @@ const Formdata = () => {
 
                                                         </div>
                                                     ))}
+                                                    <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
+                                                        <img src={cancle1} alt="" />
+                                                    </div>
                                                 </div>
-                                                <div className='form-builder-icon-delete' onClick={() => setIsPopupVisible(false)}>
-                                                    <img src={cancle1} alt="" />
-                                                </div>
+
                                             </div>
 
                                         )
@@ -1235,4 +1253,3 @@ const Formdata = () => {
 };
 
 export default Formdata;
- 

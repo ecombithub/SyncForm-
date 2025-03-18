@@ -302,6 +302,9 @@ p.spacer-height-text {
     /* margin-bottom: 5px; */
 }
 
+.color-picker-container.divider input[type="color"] {
+    width: 40px;
+}
 
 .form_builder_option_select h3 {
     margin-bottom: 20px;
@@ -805,7 +808,7 @@ thead.custom-thead tr th.Polaris-DataTable__Cell.Polaris-DataTable__Cell--vertic
 }
 
 .pagination button img {
-    width: 8px;
+    width: 6px;
 }
 
 .pagination button {
@@ -1000,6 +1003,7 @@ button.procduct-canclebtn img {
     scrollbar-width: thin;
     scrollbar-color: #ccc transparent;
 }
+
 
 .form-builder-edit svg.import-export-icon {
     width: 21px;
@@ -1740,7 +1744,7 @@ button.cancel {
 }
 
 .form-scroll-bar {
-    height: 102.5vh;
+    height: 108vh;
     position: sticky;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1863,7 +1867,7 @@ button.cancel {
 .form-builder-change-propertites {
     color: white;
     border-radius: 0px 20px 0px 0px;
-    height: 118.9vh;
+    height: 125vh;
     overflow: hidden;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -2391,8 +2395,9 @@ button.cancle-form-btn {
 
 .pagination button {
     padding: 8px 14px;
-    border-radius: 4px;
-    border: 1px solid transparent;
+    border-radius: 5px;
+    border: 1px solid #d0d2d7;
+    color: #180000;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -3419,7 +3424,6 @@ p.form_build_h2_four {
 .form_builder_support .form_builder_convert {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     gap: 20px;
 }
 
@@ -3628,6 +3632,7 @@ button.plus_option {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 999;
 }
 
 .form_building_popupshow {
@@ -3970,7 +3975,7 @@ button.plus_option {
 
 .form_builder_upgrade_popup_cancle {
     position: absolute;
-    right: -4%;
+    right: -21px;
     width: 42px;
     top: -22px;
     cursor: pointer;
@@ -4180,6 +4185,7 @@ button.btn-templates {
     right: -19px;
     top: -21px;
 }
+
 .form_builder_delete_icon img {
     width: 100%;
 }
@@ -4192,7 +4198,7 @@ button.btn-templates {
     display: flex;
     justify-content: space-between;
     align-items: center;
-   
+
 }
 
 .form_builder_delete_text p {
@@ -4546,7 +4552,7 @@ button.update-image.rmove-img.rm-btn {
 }
 
 .email-template-input-setting .form-builder-change-propertites {
-    height: 119.6vh;
+    height: 125vh;
     overflow-x: hidden;
     overflow-y: auto;
     background: white;
@@ -4913,6 +4919,7 @@ button.rm-btn-remove-icon {
     width: 40px;
     border: none;
     background-color: transparent;
+    cursor: pointer;
 }
 
 
@@ -5831,6 +5838,8 @@ button.rm-btn.showfirst img {
     font-size: 12px;
     margin-top: 30px;
     text-align: center;
+    width: 154px;
+    height: 36px;
 }
 
 .pricing-button-view {
@@ -5956,7 +5965,7 @@ button.form_email_btn {
     }
 
     .controls-main-wrp .controls-wrp {
-        height: 117.5vh;
+        height: 125vh;
         background-color: white;
     }
 
@@ -5978,6 +5987,8 @@ button.form_email_btn {
         margin: 0 auto;
         padding: 0 20px;
     }
+
+   
 
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         max-width: 40%;
@@ -6175,11 +6186,37 @@ button.form_email_btn {
     .form_builder_plan_table.activee img {
         position: absolute;
         top: 16px;
-        left: 21%;
+        left: 83px;
     }
 }
 
 @media screen and (max-width: 1280px) {
+    .form_builder_plan_table.activee img {
+        position: absolute;
+        top: 16px;
+        left: 60px;
+    }
+
+    .email-template-section .email-templete-search-bar {
+        width: 66%;
+    }
+    .form-builder-search-bar {
+        width: 22%;
+        position: relative;
+    }
+    span.payment-plan {
+        font-size: 9px;
+    }
+
+    .form-scroll-bar {
+        height: 109vh;
+
+    }
+
+    .form_builder_plan_upgrade_popup_wrapp {
+        max-width: 44%;
+    }
+
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         max-width: 45% !important;
     }
@@ -6248,9 +6285,29 @@ button.form_email_btn {
         max-width: 70%;
     }
 
+    .form_build_help_show.know p {
+        padding-bottom: 56px;
+    }
+
 }
 
 @media screen and (max-width: 1024px) {
+    .form_build_help_show.know p {
+        padding-bottom: 25px;
+    }
+
+    .email-template-section .email-templete-search-bar {
+        width: 100%;
+        justify-content: left;
+    }
+
+    .form-builder-chaneging-file-options {
+        justify-content: left;
+    }
+    span.payment-plan {
+        font-size: 9px;
+    }
+
     .form-tota-customer-element.second-forms {
         padding-bottom: 23px;
     }
@@ -6438,7 +6495,7 @@ button.form_email_btn {
 
     .form_builder_plan_table.activee img {
 
-        left: 3%;
+        left:20px;
     }
 
     .form_builder_plan_table.activee.bg.first h2 {
@@ -6895,6 +6952,9 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 840px) {
+    .email-template-section .email-templete-search-bar {
+        gap: 15px !important;
+    }
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         max-width: 90% !important;
     }
@@ -6938,7 +6998,6 @@ button.form_email_btn {
 
     .create-email-templates {
         gap: 3px;
-        padding: 5px 5px;
         color: white;
         font-size: 12px;
     }
@@ -7024,6 +7083,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 768px) {
+    .email-template-reviw-popup .form-builder-icon-deleted {
+        right: 21px;
+    }
+
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         padding: 70px;
         max-width: 85% !important;
@@ -7051,7 +7114,7 @@ button.form_email_btn {
     }
 
     .builder-forms .builder-sections-forms {
-        width: 52% !important;
+        width: 58% !important;
     }
 
     .form_builder_support .form_builder_convert {
@@ -7195,10 +7258,40 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:640px) {
+    .it-services {
+        height: 60vh;
+        overflow: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+    }
+    
+    .email-templete-mulit-coloums-ml {
+        max-width: 100% !important;
+        padding: 10px !important;
+    }
+    .email-templete-split-group-lg {
+        width: 100% !important;
+        padding: 10px !important;
+    }
+
+    .email-templete-mulit-coloums-wraped {
+        display: block !important;
+    }
+
+    .email-templete-split-group-wraped {
+        display: block !important;
+    }
+
+
+    .input-field.input-gap.small-width {
+        width: 100% !important;
+    }
+
     .form_builder_download {
         display: none;
     }
-    
+
     .form_builder_download.icon img {
         width: 100%;
     }
@@ -7214,7 +7307,7 @@ button.form_email_btn {
         grid-template-columns: 20px repeat(2, 1fr);
     }
 
-    
+
     span.short-id {
         display: none;
     }
@@ -7406,15 +7499,6 @@ button.form_email_btn {
         width: 100%;
     }
 
-
-    .from_builder_pricing .form_builder_plan_add .form_builders_plan_btn {
-        width: 100%;
-    }
-
-    .from_builder_pricing .form_builder_plan_add .form_builders_plan_p p {
-        display: none !important;
-    }
-
     /* 
     .email-template-section .email-templete-search-bar {
         flex-wrap: wrap;
@@ -7473,11 +7557,19 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .controls-main-wrp.email-tempalte .email_field.columns-container .columns-wrapper {
+        display: block !important;
+    }
+    
+    .setting_bg_email_templetes.postion-btn {
+        margin-top: 0;
+    }
     .form_build_cancle_option {
         right: -14px;
         width: 30px;
         top: -16px;
     }
+
     .costomer-name-wrap {
         display: none;
     }
@@ -7497,7 +7589,7 @@ button.form_email_btn {
     .form_builder_customer .form_builder_show_all_forms .table-row-data {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .form_build_cancle_option img {
         width: 30px;
         position: fixed;
@@ -7510,6 +7602,7 @@ button.form_email_btn {
     .templete-hide {
         display: none;
     }
+
     .form-tota-customer-element.second-forms {
         padding-bottom: 20px;
     }
@@ -7734,8 +7827,8 @@ button.form_email_btn {
         bottom: -31%;
     }
 
-    
-   
+
+
 
     .form_builder_dashboard {
         margin-top: 20px;
@@ -7833,13 +7926,26 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .form_builders_plan_p {
+        display: none;
+    }
+    .builderr_field_wrpp {
+        width: 100%;
+    }
+
+    .controls-main-wrp .controls-wrp button h4 {
+        font-size: 14px;
+    }
+
     .form_builder_plan_upgrade_popup_wrapp {
         max-width: 90%;
         font-size: 22px;
     }
+
     .form_builder_plan_upgrade_popup_wrapp p {
         line-height: 34px;
     }
+
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         padding: 41px !important;
         max-width: 30%;
@@ -7901,8 +8007,12 @@ button.form_email_btn {
         font-size: 15px;
     }
 
-    .controls-main-wrp .controls-wrp button h4 {
-        font-size: 11px;
+    .builderr_field_wrpp {
+        padding: 15px 15px;
+    }
+
+    span.payment-plan {
+        width: 20%;
     }
 
     button.action_btn {
@@ -8097,7 +8207,7 @@ button.form_email_btn {
     }
 
     .form_builders_plan_monthly {
-        font-size: 11px !important;
+        font-size: 13px !important;
     }
 
     .form_annualy_plans {
@@ -8136,7 +8246,7 @@ button.form_email_btn {
     .form-main-wrp table tr {
         grid-template-columns: 37% 26% 34% !important;
     }
-    
+
     .form_builder_plan_upgrade_popup_wrapp.pricing-plan {
         padding: 18px !important;
     }
@@ -8166,8 +8276,8 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 24px;
-        line-height: 27px;
+        font-size: 25px;
+        line-height: 31px;
     }
 
     .builder-sections-draftform {
@@ -8205,7 +8315,7 @@ button.form_email_btn {
     .from_builder_pricing .form_builder_plan_add .form_builders_plan_btn {
         gap: 12px;
         display: grid;
-        justify-content: center;
+        justify-content: left;
     }
 
     .form_builders_plan_btn .form_builders_plan_monthly {
@@ -8226,6 +8336,44 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:320px) {
+    .form_build_contact .contact_img {
+        width: 90%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+    }
+    .show_forms_all {
+        text-align: center;
+        font-size: 13px;
+        width: 100%;
+        padding: 8px;
+    }
+    .create-email-templates {
+        padding: 8px 10px;
+        font-size: 13px;
+        width: 100%;
+    }
+
+    .setting_bg_email_templetes {
+        margin-top: 40px;
+    }
+
+    .form-builder-propertites-save-topions {
+        width: 48px;
+        line-height: 14px;
+        top: 23px;
+    }
+
+    .form-builder-change-propertites .form_qucik p {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    span.payment-plan {
+        width: 43%;
+    }
+
     .builder-sections-liveform {
         padding: 6px 5px;
     }
@@ -8543,6 +8691,10 @@ button.form_email_btn {
     padding-top: 15px;
 }
 
+.color-picker-container.divider input[type="color"] {
+    width: 40px !important;
+} 
+
 .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
     padding: 70px;
     max-width: 30%;
@@ -8550,7 +8702,7 @@ button.form_email_btn {
 }
 
 .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp p {
-    line-height: 33px;
+    line-height: 40px;
 }
 
 

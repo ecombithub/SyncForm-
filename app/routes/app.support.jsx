@@ -74,7 +74,7 @@ export default function Support() {
             setPopup(true);
             return;
         }
-        
+
         if (!email) {
             setError("Email is required");
             setTimeout(() => setError(""), 3000);
@@ -85,7 +85,8 @@ export default function Support() {
             return;
         } else {
             setError("");
-        }        
+        }
+
 
         try {
             const response = await axios.post(`${apiUrl}/email-submit`, {
@@ -98,7 +99,7 @@ export default function Support() {
             });
 
             if (response.status === 200) {
-                setMessage('Form submitted successfully!');
+                setMessage('Your support ticket has been successfully created. Our team will get back to you soon!');
                 setTimeout(() => {
                     setMessage('');
                 }, 3000);
@@ -136,7 +137,7 @@ export default function Support() {
         <div className='form_builder_support'>
             <div className="container">
                 <div className="form_builder_support_title">
-                    <h2>Help and support</h2>
+                    <h2>Help Center</h2>
                 </div>
                 <div className='form_builder_help_support'>
                     <div className="form_build_help_show">
@@ -171,7 +172,7 @@ export default function Support() {
                         <h4>Rate Our App</h4>
                         <p>Provide feedback on your experience with the app.Your suggestions and ratings help us identify areas for improvement and ensure we continue to offer excellent service.</p>
                         <div className="form_builder_support_btn">
-                            <div className="form_builder_support_btn_first" style={{display:'none'}}>
+                            <div className="form_builder_support_btn_first" style={{ display: 'none' }}>
                                 <p>Leave review</p>
                             </div>
 
@@ -182,18 +183,18 @@ export default function Support() {
                     <a href="https://syncform.app/blogs/reason-to-use-form-builder.html" target='_blank'>
                         <div className="form_builder_reasons">
                             <h2>5 Reasons Why You Need a Form Builder for Your Business</h2>
-                            <p>October 20, 2024</p>
+                            <p>January 9, 2025</p>
                         </div>
                     </a>
                 </div>
                 <div className="form_builder_convert">
                     <div className="form_builder_blogs">
-                        <a href="https://syncform.app/blogs/create-form.html" target='_blank'>
-                            <img src={create} alt="" />
-                            <h3>How to Create Form in Form Builder</h3>
+                        <a href="https://syncform.app/blogs/add-form-builder-app.html" target='_blank'>
+                            <img src={add} alt="" />
+                            <h3>How to Add Form Builder app on Shopify Store?</h3>
                             <div className='form_build_blog_btn'>
                                 <div className="form_blog_data oct">
-                                    December 15, 2024
+                                    March 01, 2025
                                 </div>
                                 <div className="form_blog_data">
                                     Read more
@@ -202,12 +203,26 @@ export default function Support() {
                         </a>
                     </div>
                     <div className="form_builder_blogs">
-                        <a href="https://syncform.app/blogs/add-form-builder-app.html" target='_blank'>
-                            <img src={add} alt="" />
-                            <h3>How to Add Form Builder app on Shopify Store?</h3>
+                        <a href="https://syncform.app/blogs/create-form.html" target='_blank'>
+                            <img src={create} alt="" />
+                            <h3>How to Create Form in Form Builder</h3>
                             <div className='form_build_blog_btn'>
                                 <div className="form_blog_data oct">
-                                    November 08, 2024
+                                    Feburary 24, 2025
+                                </div>
+                                <div className="form_blog_data">
+                                    Read more
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div className="form_builder_blogs">
+                        <a href="https://syncform.app/blogs/generate-app-password.html" target='_blank'>
+                            <img src={track} alt="" />
+                            <h3>How to Generate App Passwords?</h3>
+                            <div className='form_build_blog_btn'>
+                                <div className="form_blog_data oct">
+                                    Feburary 17, 2025
                                 </div>
                                 <div className="form_blog_data">
                                     Read more
@@ -216,20 +231,6 @@ export default function Support() {
                         </a>
                     </div>
 
-                    <div className="form_builder_blogs">
-                        <a href="https://syncform.app/blogs/generate-app-password.html" target='_blank'>
-                            <img src={track} alt="" />
-                            <h3>How to Generate App Passwords?</h3>
-                            <div className='form_build_blog_btn'>
-                                <div className="form_blog_data oct">
-                                    October 05, 2024
-                                </div>
-                                <div className="form_blog_data">
-                                    Read more
-                                </div>
-                            </div>
-                        </a>
-                    </div>
                 </div>
             </div>
             <div className='form-builder-wrap-popup-inputs'>

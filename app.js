@@ -1338,7 +1338,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
             case 'heading':
               const editorContent = field.editorContent || '';
               const updatedEditorContent = editorContent
-                .replace(/<p><br><\/p>/g, '')
                 .replace(/data:image\/[a-zA-Z]*;base64,[^"]*/g, (match) => {
                   if (match.startsWith('data:image/png;base64,')) {
                     const uniqueId = `image-${Date.now()}`;
@@ -1505,9 +1504,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                 }
 
                 let processedContent = column.content.replace(
-                  /<p><br><\/p>/g,
-                  ''
-                ).replace(
                   /<img src="data:image\/[a-zA-Z]*;base64,[^"]*"/g,
                   (match) => {
                     const uniqueId = `content-image-${Date.now()}-${index}`;
@@ -1693,7 +1689,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
               <div>
                 ${field.products && field.products.length > 0 ? `
                   <table role="presentation" cellspacing="0" cellpadding="0" 
-    style="
+        style="
         border-spacing: 10px;
         width: 100%; 
         border-width: ${field.productBorderWidth}px;
@@ -1702,7 +1698,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
         padding: ${field.productPadding}px;
         text-align: center;
         background-color: ${field.productbg};
-        font-size: ${field.productFontSize}px;
         color: ${field.productTextColor};
         line-height: ${field.productline}px;
         font-family: ${field.productfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
@@ -1808,7 +1803,8 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
                 if (field.value.facebook && !field.value.facebook.isHidden && field.value.facebook.url) {
                   icons.push(`
-                    <a href="${field.value.facebook.url}" target="_blank" rel="noopener noreferrer">
+                    <a href="${field.value.facebook.url}" target="_blank" rel="noopener noreferrer"
+                     style="padding-right: ${field.socalIcongap || 0}px;">
                       <img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/facebook.png?v=1732510414" 
                            alt="Facebook" 
                            style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
@@ -1818,7 +1814,8 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
                 if (field.value.twitter && !field.value.twitter.isHidden && field.value.twitter.url) {
                   icons.push(`
-                    <a href="${field.value.twitter.url}" target="_blank" rel="noopener noreferrer">
+                    <a href="${field.value.twitter.url}" target="_blank" rel="noopener noreferrer"
+                    style="padding-right: ${field.socalIcongap || 0}px;">
                       <img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/twitter.png?v=1732510414" 
                            alt="Twitter" 
                            style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
@@ -1828,7 +1825,8 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
                 if (field.value.instagram && !field.value.instagram.isHidden && field.value.instagram.url) {
                   icons.push(`
-                    <a href="${field.value.instagram.url}" target="_blank" rel="noopener noreferrer">
+                    <a href="${field.value.instagram.url}" target="_blank" rel="noopener noreferrer"
+                    style="padding-right: ${field.socalIcongap || 0}px;">
                       <img src="https://cdn.shopify.com/s/files/1/0875/3679/5938/files/instagram.png?v=1732510414" 
                            alt="Instagram" 
                            style="height: ${field.socalIconHeight || 24}px; width: ${field.socalIconWidth || 24}px;" />
@@ -1974,13 +1972,14 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
       <body style="background-color: ${TemplateAll.styles.backgroundColor || 'white'};
        width: ${TemplateAll.styles.width || '100%'}; 
        border-radius: ${TemplateAll.styles.borderRadious || '0'}px;
-         text-align: ${TemplateAll.styles.textAlign || 'center'};
+        text-align: ${TemplateAll.styles.textAlign || 'center'};
         padding: ${TemplateAll.styles.templatePadding || '0'}px;
         font-family: ${TemplateAll.styles.fontFamily || '"Poppins", sans-serif'};
         margin:auto;
         background-image: url('${TemplateAll.styles.backgroundImage}');
         background-repeat: no-repeat;
         background-size: cover;
+        background-position:center;
          ">
         <div>
           ${fieldsHTML}
@@ -2081,14 +2080,12 @@ app.post('/user-email', async (req, res) => {
     const existingShop = await CostomerAll.findOne({ shop });
 
     if (existingShop) {
-
       await CostomerAll.updateOne(
         { shop },
         { $set: { status, numberValue: numberValueParsed } }
       );
       console.log(`Shop data updated for ${shop}`);
     } else {
-
       const newSetting = new CostomerAll({
         status,
         numberValue: numberValueParsed,
@@ -2101,67 +2098,73 @@ app.post('/user-email', async (req, res) => {
 
     async function checkAndSendEmail() {
       const forms = await Form.find({ shop: shop });
-      console.log(`Checking forms for ${shop}. Current count: ${forms.length}, Required: ${numberValueParsed}`);
 
-      if (forms.length >= numberValueParsed && status === "active") {
-        console.log(`Form count matches or exceeds numberValue. Sending ${numberValueParsed} forms...`);
+      for (const form of forms) {
+        const submissionCount = form.submissions.length;
+        console.log(`Checking form: ${form.title} (ID: ${form._id}), Submissions: ${submissionCount}, Required: ${numberValueParsed}`);
 
-        const selectedForms = forms.slice(0, numberValueParsed).map(form => ({
-          _id: form._id,
-          title: form.title,
-          id: form.id,
-          shop: form.shop,
-          currentUrl: form.currentUrl,
-          fields: JSON.stringify(form.fields),
-          timestamp: form.timestamp,
-          submissions: form.submissions.map(submission => ({
-          submissionId: submission._id,
-          submissionFields: JSON.stringify(submission.fields),
-          submissionTimestamp: submission.timestamp,
-      })),
-        }));
+        if (submissionCount >= numberValueParsed && status === "active") {
+          console.log(`Form ${form.title} has reached ${numberValueParsed} submissions. Sending email...`);
 
-        const csvParser = new Parser();
-        const csvData = csvParser.parse(selectedForms);
+          const selectedForm = {
+            _id: form._id,
+            title: form.title,
+            id: form.id,
+            shop: form.shop,
+            currentUrl: form.currentUrl,
+            fields: JSON.stringify(form.fields),
+            timestamp: form.timestamp,
+            submissions: form.submissions.map(submission => ({
+              submissionId: submission._id,
+              submissionFields: JSON.stringify(submission.fields),
+              submissionTimestamp: submission.timestamp,
+            })),
+          };
 
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: 'syncform@hubsyntax.com',
-            pass: 'jaaf dnhy rndg rpic',
-          },
-        });
+          const csvParser = new Parser();
+          const csvData = csvParser.parse([selectedForm]);
 
-        const mailOptions = {
-          from: 'syncform@hubsyntax.com',
-          to: shopData.email,
-          subject: `Congrats! Your Form has Reached ${numberValueParsed} Submission`,
-          text: `We’re excited to inform you that your form, has successfully reached ${numberValueParsed}  submissions! This milestone indicates growing engagement from your customers.
-Thank you for using our SyncForm app to connect with your customer. If you have any questions or need further assistance, please feel free to reach out.`,
-          attachments: [
-            {
-              filename: 'formData.csv',
-              content: csvData,
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'syncform@hubsyntax.com',
+              pass: 'jaaf dnhy rndg rpic',
             },
-          ],
-        };
+          });
 
-        transporter.sendMail(mailOptions, async (error, info) => {
-          if (error) {
-            console.error('Error sending email:', error);
-          } else {
-            console.log('Email sent successfully:', info);
-            try {
-              await CostomerAll.updateOne({ shop: shop }, { status: 'disactive' });
-              console.log('Status updated to disactive for shop:', shop);
+          const mailOptions = {
+            from: 'syncform@hubsyntax.com',
+            to: shopData.email,
+            subject: `Congrats! Your Form "${form.title}" has Reached ${numberValueParsed} Submissions`,
+            text: `We’re excited to inform you that your form "${form.title}" has successfully reached ${numberValueParsed} submissions! 
+Thank you for using our SyncForm app to connect with your customers. If you have any questions or need further assistance, please feel free to reach out.`,
+            attachments: [
+              {
+                filename: 'formData.csv',
+                content: csvData,
+              },
+            ],
+          };
 
-              clearInterval(emailCheckIntervals[shop]);
-              delete emailCheckIntervals[shop];
-            } catch (updateError) {
-              console.error('Error updating status to disactive:', updateError);
+          transporter.sendMail(mailOptions, async (error, info) => {
+            if (error) {
+              console.error('Error sending email:', error);
+            } else {
+              console.log(`Email sent successfully for form "${form.title}":`, info);
+              try {
+                await CostomerAll.updateOne({ shop: shop }, { status: 'disactive' });
+                console.log('Status updated to disactive for shop:', shop);
+
+                clearInterval(emailCheckIntervals[shop]);
+                delete emailCheckIntervals[shop];
+              } catch (updateError) {
+                console.error('Error updating status to disactive:', updateError);
+              }
             }
-          }
-        });
+          });
+
+          break;
+        }
       }
     }
 
@@ -2170,13 +2173,14 @@ Thank you for using our SyncForm app to connect with your customer. If you have 
       console.log(`Started checking for shop: ${shop}`);
     }
 
-    res.status(201).json({ message: 'Data processed successfully. Email will be sent when form count matches.', data: { shop, status, numberValue: numberValueParsed } });
+    res.status(201).json({ message: 'Data processed successfully. Email will be sent when submission count matches.', data: { shop, status, numberValue: numberValueParsed } });
 
   } catch (error) {
     console.error('Error saving data or sending email:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 app.get('/get-status/:shop', async (req, res) => {
   try {
@@ -2766,7 +2770,7 @@ app.get('/api/forms', async (req, res) => {
 });
 
 app.post('/api/forms', async (req, res) => {
-  console.log("Received Request Data:", req.body);
+
   try {
     const formsData = req.body;
     const { title, id, fields, timestamp, currentUrl, shopowner, shopEmail, onwerShop, shop } = formsData;
@@ -2809,8 +2813,7 @@ app.post('/api/forms', async (req, res) => {
     await form.save();
 
     if (onwerShop === shop) {
-      console.log('✅ onwerShop matches shop. Preparing to send email.');
-
+ 
       const fieldValues = fields.map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`).join('');
 
 
@@ -2849,8 +2852,6 @@ app.post('/api/forms', async (req, res) => {
         subject: `New Form Submission - ${title}`,
         html: adminHtmlContent 
       };
-
-      console.log('📧 Sending email with the following details:', mailOptions);
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

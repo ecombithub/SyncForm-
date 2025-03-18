@@ -81,7 +81,7 @@ function Customer() {
     const [userPlan, setUserPlan] = useState(null);
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [dataExport, setDataExport] = useState(false);
-
+    const [searchTerm1, setSearchTerm1] = useState('');
 
     useEffect(() => {
         const handleResize = () => {
@@ -167,33 +167,41 @@ function Customer() {
                 const filteredForms = response.data.filter(form => form.shop === shop);
 
                 if (filteredForms.length > 0) {
-                    const formsWithUniqueEmails = filteredForms.map(form => {
+                    const formsWithProcessedSubmissions = filteredForms.map(form => {
                         const seenEmails = new Set();
                         const uniqueSubmissions = form.submissions.filter(submission => {
+                            let hasEmail = false;
                             let isUniqueEmail = false;
+
                             submission.fields.forEach(field => {
-                                if (field.name === "Email" && !seenEmails.has(field.value)) {
-                                    seenEmails.add(field.value);
-                                    isUniqueEmail = true;
+                                if (field.name === "Email") {
+                                    hasEmail = true;
+                                    if (!seenEmails.has(field.value)) {
+                                        seenEmails.add(field.value);
+                                        isUniqueEmail = true;
+                                    }
                                 }
                             });
-                            return isUniqueEmail;
+
+                            return hasEmail ? isUniqueEmail : true;
                         });
 
                         return { ...form, uniqueSubmissions };
                     });
 
-                    setCreatedForms(formsWithUniqueEmails);
+                    setCreatedForms(formsWithProcessedSubmissions);
 
-                    formsWithUniqueEmails.forEach(form => {
-                        // console.log(`Form Title: ${form.title}, Form ID: ${form.id}`);
+                    formsWithProcessedSubmissions.forEach(form => {
+
                         form.uniqueSubmissions.forEach(submission => {
                             const emailField = submission.fields.find(field => field.name === "Email");
                             const timestamp = new Date(submission.timestamp);
                             const formattedDate = format(timestamp, 'yyyy-MM-dd hh:mm:ss a');
 
                             if (emailField) {
-                                // console.log(`  Unique Email: ${emailField.value}, Date and Time: ${formattedDate}`);
+                                console.log(`  Unique Email: ${emailField.value}, Date and Time: ${formattedDate}`);
+                            } else {
+                                console.log(`  No Email Provided, Showing Title: ${form.title}, Date and Time: ${formattedDate}`);
                             }
                         });
                     });
@@ -210,6 +218,7 @@ function Customer() {
 
         fetchForms();
     }, [shop, apiUrl]);
+
 
     useEffect(() => {
         const animatedValue = { value: 0 };
@@ -298,7 +307,6 @@ function Customer() {
         });
     };
 
-
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             filteredForms.forEach(form => setSelectedForms(prev => new Set(prev).add(form.id)));
@@ -308,8 +316,6 @@ function Customer() {
 
         }
     };
-
-
 
     const handleSelectAllForms = () => {
         setSelectedFormName(null);
@@ -322,12 +328,13 @@ function Customer() {
     };
 
     const downloadSelectedCSV = () => {
+
         const csvRows = [];
         const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
         csvRows.push(headers.join(','));
 
         if (selectedForms.size === 0) {
-           setDataExport(true);
+            setDataExport(true);
 
             return;
         }
@@ -378,37 +385,44 @@ function Customer() {
     };
 
     const downloadAllCSV = () => {
+        if (!selectedForms.size) {
+            setDataExport(true);
+            return;
+        }
+
         const csvRows = [];
         const headers = ['Title', 'Form ID', 'Submission ID', 'Name', 'Email', 'Phone', 'Field Details', 'Shop', 'Current URL', 'Timestamp'];
         csvRows.push(headers.join(','));
 
         currentFormsed.forEach(form => {
-            form.submissions.forEach((submission, index) => {
-                const nameField = submission.fields.find(field => field.name === 'First name' || field.name === 'Full name') || { value: 'N/A' };
-                const emailField = submission.fields.find(field => field.name === 'Email') || { value: 'N/A' };
-                const phoneField = submission.fields.find(field => field.name === 'Phone' || field.name === 'Number') || { value: 'N/A' };
+            if (selectedForms.has(form.id)) {
+                form.submissions.forEach((submission, index) => {
+                    const nameField = submission.fields.find(field => field.name === 'First name' || field.name === 'Full name') || { value: 'N/A' };
+                    const emailField = submission.fields.find(field => field.name === 'Email') || { value: 'N/A' };
+                    const phoneField = submission.fields.find(field => field.name === 'Phone' || field.name === 'Number') || { value: 'N/A' };
 
-                const fieldDetails = Array.isArray(submission.fields)
-                    ? submission.fields.map(field => `${field.name}: ${field.value || 'N/A'}`).join('; ')
-                    : '';
-                const shop = form.shop || 'N/A';
-                const currentUrl = form.currentUrl || 'N/A';
-                const timestamp = submission.timestamp || 'N/A';
+                    const fieldDetails = Array.isArray(submission.fields)
+                        ? submission.fields.map(field => `${field.name}: ${field.value || 'N/A'}`).join('; ')
+                        : '';
+                    const shop = form.shop || 'N/A';
+                    const currentUrl = form.currentUrl || 'N/A';
+                    const timestamp = submission.timestamp || 'N/A';
 
-                const values = [
-                    form.title || '',
-                    form.id || '',
-                    index + 1,
-                    nameField.value,
-                    emailField.value,
-                    phoneField.value,
-                    fieldDetails,
-                    shop,
-                    currentUrl,
-                    timestamp
-                ];
-                csvRows.push(values.join(','));
-            });
+                    const values = [
+                        form.title || '',
+                        form.id || '',
+                        index + 1,
+                        nameField.value,
+                        emailField.value,
+                        phoneField.value,
+                        fieldDetails,
+                        shop,
+                        currentUrl,
+                        timestamp
+                    ];
+                    csvRows.push(values.join(','));
+                });
+            }
         });
 
         const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
@@ -421,6 +435,7 @@ function Customer() {
         a.click();
         document.body.removeChild(a);
     };
+
 
     const fetchPaymentPlan = async () => {
         try {
@@ -460,16 +475,13 @@ function Customer() {
         setShowpop(!showpop);
     };
 
-
- 
-
     return (
         <>
 
             {dataExport && (<div className='form_builder_plan_upgrade_popup costomer-data'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>
                     <p>Please select at least one form to download</p>
-                    <div className="form_builder_upgrade_popup_cancle" onClick={()=>setDataExport(false)}>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={() => setDataExport(false)}>
                         <img src={cancleimg} alt="" />
                     </div>
                 </div>
@@ -516,7 +528,7 @@ function Customer() {
                 <div className='form_builder_customer'>
                     <div className='container'>
                         <div className="form-builder-customer_title">
-                            <h2>Forms Builder HUB</h2>
+                            <h2>Form Submission Analytics </h2>
                         </div>
                         <div className="form-builder-customer-total">
                             <div className="form-tota-customer">
@@ -563,7 +575,7 @@ function Customer() {
                         <div className="form_builder_show_all_forms">
                             <div className="form_build_heading">
                                 <div className="form_build_title">
-                                    <h2>All Customers</h2>
+                                    <h2> Customers Data</h2>
                                 </div>
                                 <div className='form-build-customer-search'>
                                     <div className='form-builder-search-bar'>
@@ -616,8 +628,8 @@ function Customer() {
                                                         id="search"
                                                         type="search"
                                                         placeholder='Search'
-                                                        value={searchTerm}
-                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                        value={searchTerm1}
+                                                        onChange={(e) => setSearchTerm1(e.target.value)}
                                                     />
                                                     <div className='form_build_icon_search'>
                                                         <img src={search12} alt="" />
@@ -673,7 +685,9 @@ function Customer() {
                                                 <div className="table-row-popup">
                                                     {currentFormsed.length > 0 ? (
                                                         currentFormsed
-                                                            .filter(form => selectedForm ? form.title === selectedForm : true)
+                                                            .filter(form =>
+                                                                form.title.toLowerCase().includes(searchTerm1.toLowerCase()) 
+                                                            )
                                                             .map(form => (
                                                                 <div key={form.id} className="table-row-data">
                                                                     <div className="data_forms">
@@ -687,7 +701,7 @@ function Customer() {
                                                                     </div>
                                                                     <div className="data_forms">{form.title}</div>
                                                                     <div className="data_forms"> {isSmallScreen ? `${form.id.substring(0, 10)}...` : form.id}</div>
-                                                                   
+
                                                                     <div className="data_forms phone-forms">
                                                                         {form.submissionCount || form.submissions.length || 0}
                                                                     </div>
