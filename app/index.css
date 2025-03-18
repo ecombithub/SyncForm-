@@ -7269,6 +7269,7 @@ button.form_email_btn {
     .email-templete-mulit-coloums-ml {
         max-width: 100% !important;
         padding: 10px !important;
+        margin-bottom: 10px !important;
     }
     .email-templete-split-group-lg {
         width: 100% !important;

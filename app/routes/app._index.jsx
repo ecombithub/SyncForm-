@@ -137,6 +137,7 @@ function Index() {
   const navigator = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  
   const sendShopData = async () => {
     try {
     const response = await fetch(`${apiUrl}/store-shopData`, {

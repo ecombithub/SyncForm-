@@ -169,7 +169,6 @@ export default function Pricing() {
     const { charges, error, shop, apiUrl } = useLoaderData();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [lastChargeId, setLastChargeId] = useState(null);
-    const activePlan = charges.find(charge => charge.status === 'active');
     const [activeSection, setActiveSection] = useState(null);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [popupPlan, setPopupPlan] = useState(null);
@@ -228,6 +227,7 @@ export default function Pricing() {
         fetchActivePlan();
     }, []);
 
+    const activePlan = data?.activePlan || charges.find(charge => charge.status === 'active');
 
     useEffect(() => {
         if (activePlan && activePlan.id !== lastChargeId) {
@@ -328,8 +328,7 @@ export default function Pricing() {
         setDeletePlanData({ chargeId: null, planName: null });
     };
 
-    const hasActiveCharge = charges.some(charge => charge.status === 'active');
-
+    const hasActiveCharge = activePlan ? true : charges.some(charge => charge.status === 'active');
     
     return (
         <div className='from_builder_pricing'>

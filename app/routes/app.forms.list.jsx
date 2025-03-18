@@ -546,7 +546,7 @@ const Formdata = () => {
                                         onClick={() => setView('draft')}
                                         style={{ backgroundColor: view === 'draft' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'draft' ? 'white' : '', border: view === 'draft' ? '1px solid #45A7F6' : '' }}
                                     >
-                                        <p>Draft Forms</p>
+                                        <p>Form list</p>
                                     </div>
                                 </div>
                                 <div className='builder-sections-new-list'>
@@ -627,7 +627,7 @@ const Formdata = () => {
                                 <div className="form-builder-show">
                                     <div className="form-builder-wrrp">
                                         <div className='form-builder-search'>
-                                            <div className='form_build_list'><h2>Forms list</h2> </div>
+                                            <div className='form_build_list'><h2>Form list</h2> </div>
                                             <div className='form-builder-search-bar'>
                                                 <input
                                                     type="search"

@@ -1580,7 +1580,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   border-style: ${field.imgBorderStyle || 'solid'};
                   border-color: ${field.imgBorderColor || '#000'};
                   padding: ${field.imgPadding || 0}px;
-                  
+                  display: inline-block;
                 ">
                   <img 
                     src="${field.value}" 
