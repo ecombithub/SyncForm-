@@ -216,9 +216,9 @@ export default function Pricing() {
     useEffect(() => {
         const fetchActivePlan = async () => {
             try {
-                const response = await axios.get(`http://localhost:5001/payment/active-plan?shop=${shopName}`);
+                const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
                 setData(response.data);
-                console.log("data",response.data);
+                console.log(response.data)
               
             } catch (err) {
                
