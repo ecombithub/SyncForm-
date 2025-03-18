@@ -208,20 +208,21 @@ export default function Pricing() {
             await axios.post(`${apiUrl}/payment/confirm`, paymentData);
 
         } catch (error) {
-           
+
         }
     };
 
+    const shopName = 'mohit-developer.myshopify.com';
     const [data, setData] = useState(null);
     useEffect(() => {
         const fetchActivePlan = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+                const response = await axios.get(`http://localhost:4001/payment/active-plan?shop=${shopName}`);
                 setData(response.data);
-                console.log(response.data)
-              
+                console.log("data", response.data);
+
             } catch (err) {
-               
+
             }
         };
         fetchActivePlan();
@@ -278,10 +279,10 @@ export default function Pricing() {
     };
 
     const handleDelete = async (chargeId, planName) => {
-       
+
         if (planName === 'Form Builder Pro Plan' || planName === 'Form Builder Pro Plus Plan') {
-            setDeletePlanData({ chargeId, planName }); 
-            setIsDeletePopupVisible(true); 
+            setDeletePlanData({ chargeId, planName });
+            setIsDeletePopupVisible(true);
             return;
         }
 
@@ -291,12 +292,12 @@ export default function Pricing() {
     const proceedWithDeletion = async (chargeId) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
-    
+
         try {
             const formData = new FormData();
             formData.append("charge_id", chargeId);
             await submit(formData, { method: "delete" });
-    
+
             const paymentData = {
                 chargeId: `free-plan-${shop}`,
                 shop,
@@ -306,7 +307,7 @@ export default function Pricing() {
                 status: "active",
                 billingOn: new Date().toISOString(),
             };
-    
+
             await axios.post(`${apiUrl}/payment/confirm`, paymentData);
         } catch (error) {
 
@@ -314,7 +315,7 @@ export default function Pricing() {
             setIsSubmitting(false);
         }
     };
-    
+
 
     const handleConfirmDelete = () => {
         setIsDeletePopupVisible(false);
@@ -328,8 +329,8 @@ export default function Pricing() {
         setDeletePlanData({ chargeId: null, planName: null });
     };
 
-    const hasActiveCharge = activePlan ? true : charges.some(charge => charge.status === 'active');
-    
+    const hasActiveCharge = activePlan || charges.some(charge => charge.status === 'active');
+
     return (
         <div className='from_builder_pricing'>
             <div className="container">
@@ -385,17 +386,14 @@ export default function Pricing() {
                                                 </div>
                                             </>
                                         )}
-                                        {charges.map(charge => (
+                                        {activePlan && charges.map(charge => (
                                             <div key={charge.id} className="charge-item">
                                                 {charge.status === 'active' && (
                                                     <>
                                                         <p>Free</p>
                                                         <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
-                                                       
-                                                        <p className='form_builder_plan_btn'   onClick={() => handleDelete(charge.id, charge.name)} >Choose this plan</p>
-                                                        <div className='monthly-wrap'>
-                                                            lifetime
-                                                        </div>
+                                                        <p className='form_builder_plan_btn' onClick={() => handleDelete(charge.id, charge.name)}>Choose this plan</p>
+                                                        <div className='monthly-wrap'>lifetime</div>
                                                     </>
                                                 )}
                                             </div>
