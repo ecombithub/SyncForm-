@@ -15,7 +15,9 @@ import axios from 'axios';
 import cancleimg from '../images/cancleimg.png';
 
 export const loader = async ({ request }) => {
+ 
   const { session } = await authenticate.admin(request);
+  console.log("Session Data:", session);
 
   const shop = session?.shop || null;
   const accessToken = session?.accessToken || null;
@@ -46,15 +48,21 @@ export const loader = async ({ request }) => {
   };
 
   console.log("Shop:", shop);
+  console.log("Access Token:", accessToken ? "Exists" : "Missing", accessToken);
+  console.log("API Key:", process.env.SHOPIFY_API_KEY || "Not Found");
+  console.log("API Secret:", process.env.SHOPIFY_API_SECRET_KEY || "Not Found");
 
   try {
-    const assetResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/assets.json`, {
-      method: "GET",
-      headers: {
-        "X-Shopify-Access-Token": accessToken,
-        "Content-Type": "application/json",
-      },
-    });
+    const assetResponse = await fetch(
+      `https://${shop}/admin/api/${apiVersion}/assets.json`,
+      {
+        method: "GET",
+        headers: {
+          "X-Shopify-Access-Token": accessToken,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!assetResponse.ok) {
       const errorText = await assetResponse.text();
@@ -76,14 +84,17 @@ export const loader = async ({ request }) => {
       }
     }`;
 
-    const shopResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/graphql.json`, {
-      method: "POST",
-      headers: {
-        "X-Shopify-Access-Token": accessToken,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query: shopQuery }),
-    });
+    const shopResponse = await fetch(
+      `https://${shop}/admin/api/${apiVersion}/graphql.json`,
+      {
+        method: "POST",
+        headers: {
+          "X-Shopify-Access-Token": accessToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: shopQuery }),
+      }
+    );
 
     if (!shopResponse.ok) {
       const errorText = await shopResponse.text();
@@ -95,13 +106,16 @@ export const loader = async ({ request }) => {
 
     console.log("Shop Data-all pages:", response.shopData);
 
-    const themeResponse = await fetch(`https://${shop}/admin/api/${apiVersion}/themes.json`, {
-      method: "GET",
-      headers: {
-        "X-Shopify-Access-Token": accessToken,
-        "Content-Type": "application/json",
-      },
-    });
+    const themeResponse = await fetch(
+      `https://${shop}/admin/api/${apiVersion}/themes.json`,
+      {
+        method: "GET",
+        headers: {
+          "X-Shopify-Access-Token": accessToken,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!themeResponse.ok) {
       const errorText = await themeResponse.text();
@@ -116,7 +130,6 @@ export const loader = async ({ request }) => {
     }
 
     console.log("Active Theme ID:", response.activeThemeId);
-
   } catch (err) {
     console.error("Error fetching data:", err.message);
     response.error = true;
@@ -125,6 +138,7 @@ export const loader = async ({ request }) => {
 
   return response;
 };
+;
 
 function Index() {
   const { activeThemeId, shop, apiUrl, accessToken, shopData } = useLoaderData() || {};

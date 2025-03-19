@@ -1,4 +1,5 @@
 import { json } from "@remix-run/node";
+import shopify from "../shopify.server";
 
 export const action = async ({ request }) => {
     if (request.method !== "POST") {
@@ -9,7 +10,12 @@ export const action = async ({ request }) => {
 
     try {
         const payload = await request.json();
-        console.log("Received Shopify App Uninstalled Webhook:", payload);
+        const shop = payload.myshopify_domain;
+        console.log("Received Shopify App Uninstalled Webhook for shop:", shop);
+
+        const sessionIds = [`offline_${shop}`, shop];
+        await shopify.sessionStorage.deleteSessions(sessionIds);
+        console.log(`🗑️ Deleted all sessions for ${shop}`);
 
         const response = await fetch("https://apps.syncform.app/api/store", {
             method: "POST",
@@ -31,4 +37,3 @@ export const action = async ({ request }) => {
 export const loader = async () => {
     return json({ error: "GET requests are not allowed" }, { status: 405 });
 };
- 
