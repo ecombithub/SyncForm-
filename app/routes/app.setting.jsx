@@ -96,7 +96,7 @@ export const loader = async ({ request }) => {
 export default function Setting() {
     const { shop, apiUrl, shopData } = useLoaderData() || {};
     const [status, setStatus] = useState('disactive');
-    const [numberValue, setNumberValue] = useState(50);
+    const [numberValue, setNumberValue] = useState(5);
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState('');
@@ -132,7 +132,7 @@ export default function Setting() {
             try {
                 const response = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(response.data.status);
-                setNumberValue(response.data.numberValue || 50);
+                setNumberValue(response.data.numberValue || 5);
                 
             } catch (error) {
             }
@@ -142,14 +142,14 @@ export default function Setting() {
     }, [shop, apiUrl]);
 
     useEffect(() => {
-        if (status === 'active' && numberValue >= 50) {
+        if (status === 'active' && numberValue >= 5) {
             sendData();
         }
     }, [status, numberValue]);
 
     const handleNumberChange = (e) => {
         const value = Number(e.target.value);
-        if (value >= 50) {
+        if (value >= 5) {
             setNumberValue(value);
         } else {
             setNumberPopup(true);
@@ -302,7 +302,7 @@ export default function Setting() {
 
             {numberPopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp records-number '>
-                    <p>Enter At Least 50 Records</p>
+                    <p>Enter At Least 5 Records</p>
 
                     <div className="form_builder_upgrade_popup_cancle" onClick={handleNumbercancle}>
                         <img src={cancleimg} alt="" />
@@ -356,10 +356,10 @@ export default function Setting() {
                                         value={numberValue}
                                         onChange={handleNumberChange}
                                     />
-                                    <label>Enter at least 50 records</label>
+                                    <label>Enter at least 5 records</label>
                                 </div>
                             </div>
-                            <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 50 submissions, but you can adjust it to a higher number based on your needs.</span>
+                            <span>Choose how  many form responses are collected before triggering an email within a CSV file. By default, this is set to 5 submissions, but you can adjust it to a higher number based on your needs.</span>
                         </div>
                     </div>
                     <div className='form_builder_complte_actions'>

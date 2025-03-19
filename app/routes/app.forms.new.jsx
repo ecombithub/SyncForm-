@@ -5076,9 +5076,15 @@ const Formgenerated = () => {
                                                                 <input
                                                                     type="text"
                                                                     value={selectedField?.customClass || ''}
+                                                                    onClick={() => {
+                                                                        if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                            setUphradePopup(true);
+                                                                        }
+                                                                    }}
                                                                     onChange={(e) => updateFieldProperty('customClass', e.target.value)}
                                                                 />
                                                             </div>
+
                                                             {selectedField.type === 'toggle' && (
                                                                 <div className="form-builder-chaneging-wrap">
                                                                     <label>Values</label>

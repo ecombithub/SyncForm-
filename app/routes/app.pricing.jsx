@@ -168,12 +168,12 @@ export default function Pricing() {
     const { charges, error, shop, apiUrl } = useLoaderData();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [lastChargeId, setLastChargeId] = useState(null);
-    const activePlan = charges.find(charge => charge.status === 'active');
     const [activeSection, setActiveSection] = useState(null);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [popupPlan, setPopupPlan] = useState(null);
     const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
     const [deletePlanData, setDeletePlanData] = useState({ chargeId: null, planName: null });
+    const [isLoading, setIsLoading] = useState(false);
 
     const toggleViewMore = (section) => {
         setActiveSection((prevSection) => (prevSection === section ? null : section));
@@ -208,24 +208,25 @@ export default function Pricing() {
             await axios.post(`${apiUrl}/payment/confirm`, paymentData);
 
         } catch (error) {
-           
+
         }
     };
 
     const [data, setData] = useState(null);
-    useEffect(() => {
-        const fetchActivePlan = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
-                setData(response.data);
-                console.log(response.data)
-              
-            } catch (err) {
-               
-            }
-        };
-        fetchActivePlan();
-    }, []);
+    const fetchActivePlan = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+            setData(response.data);
+            console.log(response.data)
+        } catch (error) {
+            console.error("Error fetching active plan:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const activePlan = data?.activePlan || charges.find(charge => charge.status === 'active');
 
     useEffect(() => {
         if (activePlan && activePlan.id !== lastChargeId) {
@@ -276,25 +277,25 @@ export default function Pricing() {
     };
 
     const handleDelete = async (chargeId, planName) => {
-       
+        console.log("handleDelete called with chargeId:", chargeId, "and planName:", planName);
         if (planName === 'Form Builder Pro Plan' || planName === 'Form Builder Pro Plus Plan') {
-            setDeletePlanData({ chargeId, planName }); 
-            setIsDeletePopupVisible(true); 
-            return;
+            setDeletePlanData({ chargeId, planName });
+            setIsDeletePopupVisible(true);
         }
-
         await proceedWithDeletion(chargeId);
     };
 
     const proceedWithDeletion = async (chargeId) => {
+        console.log("proceedWithDeletion called with chargeId:", chargeId);
         if (isSubmitting) return;
         setIsSubmitting(true);
-    
+
         try {
             const formData = new FormData();
             formData.append("charge_id", chargeId);
+            console.log("Sending deletion request with formData:", formData);
             await submit(formData, { method: "delete" });
-    
+
             const paymentData = {
                 chargeId: `free-plan-${shop}`,
                 shop,
@@ -304,33 +305,85 @@ export default function Pricing() {
                 status: "active",
                 billingOn: new Date().toISOString(),
             };
-    
-            await axios.post(`${apiUrl}/payment/confirm`, paymentData);
-        } catch (error) {
 
+            console.log("Sending payment confirmation with data:", paymentData);
+            const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log("Payment confirmation response:", response);
+        } catch (error) {
+            console.error("Error during deletion:", error.response ? error.response.data : error.message);
         } finally {
             setIsSubmitting(false);
         }
     };
-    
 
-    const handleConfirmDelete = () => {
+
+
+    const handleConfirmDelete = async () => {
+        setIsLoading(true);
         setIsDeletePopupVisible(false);
-        if (deletePlanData.chargeId) {
-            proceedWithDeletion(deletePlanData.chargeId);
+
+        try {
+            if (deletePlanData.chargeId) {
+
+                await proceedWithDeletion(deletePlanData.chargeId);
+            }
+
+            await fetchActivePlan();
+
+        } catch (error) {
+            console.error("Error during deletion:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchActivePlan();
+    }, [shop]);
+
 
     const handleCancelDelete = () => {
         setIsDeletePopupVisible(false);
         setDeletePlanData({ chargeId: null, planName: null });
     };
 
-    const hasActiveCharge = charges.some(charge => charge.status === 'active');
 
-    
     return (
         <div className='from_builder_pricing'>
+            {isLoading && (
+                <div className="skeleton-wrapper fade-in">
+                    <div className="container skeleton-wred">
+                        <div className="skeleton-wrp">
+                            <div className="skeleton-wrp-left">
+                                <div className="skeleton skeleton-header"></div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                </div>
+                            </div>
+                            <div className="skeleton-wrp-right">
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                                <div className="skeleton-wrp-left-para right">
+                                    <div className="skeleton skeleton-paragraph"></div>
+                                    <div className="skeleton skeleton-paragraph two"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="container">
                 <div className="from_builder_plan_title">
                     <h2>Pricing</h2>
@@ -348,20 +401,7 @@ export default function Pricing() {
                             >
                                 <p>Monthly Subscription</p>
                             </div>
-                            {/* <div
-                                className={`form_builders_plan_annually ${selectedPlanadd === 'annually' ? 'active' : ''}`}
-                                onClick={() => handleTogglePlans('annually')}
-                            >
-                                <div className={`form_annualy_plans ${selectedPlanadd === 'annually' ? '_plans' : ''}`}>
-                                    <p>Annually</p>
-                                </div>
 
-                                <div className='enjoy_paln'>
-                                    <span style={{ background: "#45A7F6", color: "white" }}>
-                                        Enjoy <span>up to 17% off</span>
-                                    </span>
-                                </div>
-                            </div> */}
                         </div>
                     </div>
 
@@ -372,34 +412,55 @@ export default function Pricing() {
                                     <h2>Choose your plan</h2>
                                 </div>
                                 <div className="form_builder_plan_table activee bg first">
-                                    <div>
-                                        {!hasActiveCharge && (
-                                            <>
-                                                <img src={freeplan} />
-                                                <p>Free</p>
-                                                <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
-                                                <p className='form_builder_plan_btn'>Current Plan</p>
-                                                <div className='monthly-wrap'>
-                                                    lifetime
-                                                </div>
-                                            </>
-                                        )}
-                                        {charges.map(charge => (
-                                            <div key={charge.id} className="charge-item">
-                                                {charge.status === 'active' && (
-                                                    <>
-                                                        <p>Free</p>
-                                                        <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
-                                                       
-                                                        <p className='form_builder_plan_btn'   onClick={() => handleDelete(charge.id, charge.name)} >Choose this plan</p>
-                                                        <div className='monthly-wrap'>
-                                                            lifetime
+                                    {!isDeletePopupVisible ? (
+                                        <>
+                                            {activePlan?.plan === 'free' ? (
+                                                <>
+                                                    <img src={freeplan} alt="Free Plan" />
+                                                    <p>Free</p>
+                                                    <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
+                                                    <p className='form_builder_plan_btn' style={{ backgroundColor: '#c1c1c1', color: 'white', border: '1px solid white' }}>
+                                                        Current Plan
+                                                    </p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {activePlan && activePlan.status === 'active' ? (
+                                                        <div className="charge-item">
+                                                             <p>Free</p>
+                                                            <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
+                                                            <p className='form_builder_plan_btn' onClick={() => handleDelete(activePlan.chargeId, activePlan.name)}>
+                                                                Choose this plan
+                                                            </p>
                                                         </div>
-                                                    </>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
+                                                    ) : (
+
+                                                        charges.length > 0 && charges.map(charge => {
+                                                            if (charge.status === 'active') {
+                                                                console.log('Rendering Choose this plan button for charge:', charge);
+                                                                return (
+                                                                    <div key={charge.id} className="charge-item">
+                                                                        <p>{charge.name}</p>
+                                                                        <h2>${charge.price}<span className='monthly-number'>/lifetime</span></h2>
+                                                                        <p className='form_builder_plan_btn' onClick={() => handleDelete(charge.id, charge.name)}>
+                                                                            Choose this plan
+                                                                        </p>
+                                                                    </div>
+                                                                );
+                                                            } else {
+                                                                console.log('Charge is not active');
+                                                                return null;
+                                                            }
+                                                        })
+                                                    )}
+                                                </>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
+
+
                                     <button className="show-data-icon" onClick={() => toggleViewMore("first")}>
                                         {activeSection === "first" ? (
                                             <img
