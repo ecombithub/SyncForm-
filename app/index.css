@@ -7284,9 +7284,26 @@ button.form_email_btn {
         display: block !important;
     }
 
-
+/* 
     .input-field.input-gap.small-width {
         width: 100% !important;
+    } */
+
+    .email-files.drop {
+        display: none;
+    }
+
+    .form-builder-chaneging-wrap.file.multifile1 img {
+        width: 60px !important;
+    }
+
+    span.form-builder-changes-file-button {
+        display: none;
+    }
+
+    .drag-and-drop-text.third .email-files.drop {
+        margin-top: 10px;
+        display: none;
     }
 
     .form_builder_download {
@@ -8076,8 +8093,8 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 26px;
-        line-height: 32px;
+        font-size: 40px;
+        line-height: 42px;
     }
 
     .email-title-t {
@@ -8225,6 +8242,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:390px) {
+    .form_build_contact .form_build_count p {
+        font-size: 34px;
+        line-height: 40px;
+    }
     .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
         padding: 41px !important;
         max-width: 30%;
@@ -8277,8 +8298,8 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 25px;
-        line-height: 31px;
+        font-size: 33px;
+        line-height: 36px;
     }
 
     .builder-sections-draftform {
@@ -8337,6 +8358,10 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:320px) {
+    .form_build_contact .form_build_count p {
+        font-size: 25px;
+        line-height: 32px;
+    }
     .form_build_contact .contact_img {
         width: 90%;
         display: flex;

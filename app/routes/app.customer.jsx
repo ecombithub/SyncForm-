@@ -537,7 +537,7 @@ function Customer() {
                                 </div>
                                 <div className="form-tota-customer-element">
                                     <p>Total customers</p>
-                                    <h3>{uniqueEmailCount}</h3>
+                                    <h3>{totalSubmissionCount}</h3>
 
                                     <span>
                                         <span style={{ color: "#00AC4F" }}> {percentage}%
@@ -778,7 +778,7 @@ function Customer() {
                         </div>
                         <div className='form_build_last_pages'>
                             <div className='form-builder-show-totle-form'>
-                                Showing  {uniqueEmailCount} customer
+                                Showing  {totalSubmissionCount} customer
                             </div>
                             <div className="pagination">
                                 <nav>

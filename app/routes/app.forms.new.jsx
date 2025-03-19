@@ -5431,19 +5431,6 @@ const Formgenerated = () => {
                                                                             </div>
                                                                         </>
                                                                     )}
-                                                                    {selectedField.type !== 'email' && (
-                                                                        <div className="form-builder-chaneging-wrap">
-                                                                            <label>Required</label>
-                                                                            <label className="toggle-switch">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    checked={selectedField?.required || false}
-                                                                                    onChange={(e) => updateFieldProperty('required', e.target.checked)}
-                                                                                />
-                                                                                <span className="slider"></span>
-                                                                            </label>
-                                                                        </div>
-                                                                    )}
                                                                     {selectedField.type === 'email' && (
                                                                         <div className="form-builder-chaneging-wrap">
                                                                             <label>Required</label>
@@ -5451,19 +5438,52 @@ const Formgenerated = () => {
                                                                                 <input
                                                                                     type="checkbox"
                                                                                     checked={selectedField?.emailRequid || false}
-                                                                                    onChange={(e) => updateFieldProperty('emailRequid', e.target.checked)}
+                                                                                    onChange={(e) => {
+                                                                                        updateFieldProperty('emailRequid', e.target.checked);
+                                                                                        if (e.target.checked) {
+                                                                                            updateFieldProperty('disabled', false);
+                                                                                            updateFieldProperty('readonly', false);
+                                                                                        }
+                                                                                    }}
                                                                                 />
                                                                                 <span className="slider"></span>
                                                                             </label>
                                                                         </div>
                                                                     )}
+                                                                    {selectedField.type !== 'email' && (
+                                                                        <div className="form-builder-chaneging-wrap">
+                                                                            <label>Required</label>
+                                                                            <label className="toggle-switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={selectedField?.required || false}
+                                                                                    onChange={(e) => {
+                                                                                        updateFieldProperty('required', e.target.checked);
+                                                                                        if (e.target.checked) {
+                                                                                            updateFieldProperty('disabled', false);
+                                                                                            updateFieldProperty('readonly', false);
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                                <span className="slider"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    )}
+
                                                                     <div className="form-builder-chaneging-wrap">
                                                                         <label>Disabled</label>
                                                                         <label className="toggle-switch">
                                                                             <input
                                                                                 type="checkbox"
                                                                                 checked={selectedField?.disabled || false}
-                                                                                onChange={(e) => updateFieldProperty('disabled', e.target.checked)}
+                                                                                onChange={(e) => {
+                                                                                    updateFieldProperty('disabled', e.target.checked);
+                                                                                    if (e.target.checked) {
+                                                                                        updateFieldProperty('required', false);
+                                                                                        updateFieldProperty('readonly', false);
+                                                                                        updateFieldProperty('emailRequid', false);
+                                                                                    }
+                                                                                }}
                                                                             />
                                                                             <span className="slider"></span>
                                                                         </label>
@@ -5474,7 +5494,14 @@ const Formgenerated = () => {
                                                                             <input
                                                                                 type="checkbox"
                                                                                 checked={selectedField?.readonly || false}
-                                                                                onChange={(e) => updateFieldProperty('readonly', e.target.checked)}
+                                                                                onChange={(e) => {
+                                                                                    updateFieldProperty('readonly', e.target.checked);
+                                                                                    if (e.target.checked) {
+                                                                                        updateFieldProperty('required', false);
+                                                                                        updateFieldProperty('disabled', false);
+                                                                                        updateFieldProperty('emailRequid', false);
+                                                                                    }
+                                                                                }}
                                                                             />
                                                                             <span className="slider"></span>
                                                                         </label>

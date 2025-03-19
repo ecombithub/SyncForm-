@@ -41,7 +41,6 @@ export const loader = async ({ request }) => {
     }
 };
 
-
 export const action = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const { shop, accessToken } = session;

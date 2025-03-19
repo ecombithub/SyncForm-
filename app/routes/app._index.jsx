@@ -112,7 +112,7 @@ export const loader = async ({ request }) => {
     const activeTheme = themeData.themes.find((theme) => theme.role === "main");
 
     if (activeTheme) {
-      response.activeThemeId = activeTheme.id; 
+      response.activeThemeId = activeTheme.id;
     }
 
     console.log("Active Theme ID:", response.activeThemeId);
@@ -127,7 +127,7 @@ export const loader = async ({ request }) => {
 };
 
 function Index() {
-  const { activeThemeId, shop, apiUrl, accessToken,shopData } = useLoaderData() || {};
+  const { activeThemeId, shop, apiUrl, accessToken, shopData } = useLoaderData() || {};
   const [dataSent, setDataSent] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [userPlan, setUserPlan] = useState(null);
@@ -137,36 +137,59 @@ function Index() {
   const navigator = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
+
+
+  useEffect(() => {
+    let timeoutId;
+
+    const sendStatusUpdate = async () => {
+      try {
+        await fetch(`${apiUrl}/api/brandLogo`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: "active", shop }),
+        });
+      } catch (error) {
+
+      }
+    };
+
+    if ("active") {
+      timeoutId = setTimeout(sendStatusUpdate, 300);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, ["active"]);
+
   const sendShopData = async () => {
     try {
-    const response = await fetch(`${apiUrl}/store-shopData`, {
-        method: 'POST', 
+      const response = await fetch(`${apiUrl}/store-shopData`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(shopData), 
+        body: JSON.stringify(shopData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setResponseData(data);
-       
+
       } else {
         const errorData = await response.json();
-  
+
       }
     } catch (error) {
-      
+
     }
   };
-  
+
   useEffect(() => {
     if (shopData && shopData.myshopifyDomain) {
       sendShopData();
     }
   }, [shopData]);
-  
+
   useEffect(() => {
     const saveShopDetails = async () => {
       if (shop && accessToken && !dataSent) {
@@ -240,7 +263,7 @@ function Index() {
             setResponseData(response.data);
           }
         } else {
-         
+
         }
       } finally {
         setIsSubmitting(false);
@@ -435,9 +458,9 @@ function Index() {
               <p>A resource hub provides detailed guides, troubleshooting steps and support to help users for form creation and integration.</p>
               <div className="form_build_app_bottm second know ">
                 <a href="https://syncform.app/index.html" target='_blank'>
-                <div className="form_build_app_btn btn-three">
-                  <p>Knowledge base</p>
-                </div>
+                  <div className="form_build_app_btn btn-three">
+                    <p>Knowledge base</p>
+                  </div>
                 </a>
                 <div className="form_build_app_img">
                   <img src={Vector3} alt="" />
