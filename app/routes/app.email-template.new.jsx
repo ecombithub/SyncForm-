@@ -2297,7 +2297,7 @@ const EmailTemplateCreate = () => {
             <div className='email-campaing-templates'>
                 <div className="builder-container text">
                     <div className='builder-contain-h3'>
-                        <h3>Email campaign</h3>
+                        <h1>Email campaign</h1>
                     </div>
                     <div className='builder_form_name'>
                         <div className='forms_build_flex-wraped'>

@@ -137,7 +137,7 @@ export default function Support() {
         <div className='form_builder_support'>
             <div className="container">
                 <div className="form_builder_support_title">
-                    <h2>Help Center</h2>
+                    <h1>Help Center</h1>
                 </div>
                 <div className='form_builder_help_support'>
                     <div className="form_build_help_show">

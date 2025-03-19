@@ -386,7 +386,7 @@ export default function Pricing() {
             )}
             <div className="container">
                 <div className="from_builder_plan_title">
-                    <h2>Pricing</h2>
+                    <h1>Pricing</h1>
                 </div>
                 <div className="form_builder_plan_add">
                     <div className="form_builders_plan">

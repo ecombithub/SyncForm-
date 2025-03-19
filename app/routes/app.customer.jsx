@@ -528,7 +528,7 @@ function Customer() {
                 <div className='form_builder_customer'>
                     <div className='container'>
                         <div className="form-builder-customer_title">
-                            <h2>Form Submission Analytics </h2>
+                            <h1>Form Submission Analytics </h1>
                         </div>
                         <div className="form-builder-customer-total">
                             <div className="form-tota-customer">
@@ -540,8 +540,8 @@ function Customer() {
                                     <h3>{totalSubmissionCount}</h3>
 
                                     <span>
-                                        <span style={{ color: "#00AC4F" }}> {percentage}%
-                                            <img src={arrow} alt="" /> <span className="text-content">this month</span>
+                                        <span style={{ color: "#00AC4F" }}>   <img src={arrow} alt="" /> {percentage}%
+                                          <span className="text-content">this month</span>
                                         </span>
                                     </span>
 
@@ -575,7 +575,7 @@ function Customer() {
                         <div className="form_builder_show_all_forms">
                             <div className="form_build_heading">
                                 <div className="form_build_title">
-                                    <h2> Customers Data</h2>
+                                    <h2> Customer Data</h2>
                                 </div>
                                 <div className='form-build-customer-search'>
                                     <div className='form-builder-search-bar'>
@@ -816,7 +816,7 @@ function Customer() {
                                 </nav>
                             </div>
                         </div>
-                        <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
+                        <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
                     </div>
                 </div>
             )}

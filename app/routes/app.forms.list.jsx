@@ -378,7 +378,7 @@ const Formdata = () => {
                         totalSubmissions: matchingForm
                             ? matchingForm.submissionCount || matchingForm.submissions?.length || 0
                             : 0,
-                        templateTitle: matchingTemplate ? matchingTemplate.title : 'NA',
+                        templateTitle: matchingTemplate ? matchingTemplate.title : 'N/A',
                     };
 
                     if (matchingTemplate) {
@@ -531,7 +531,7 @@ const Formdata = () => {
                 <div>
                     <div className='builder-forms content-wrapper'>
                         <div className='container'>
-                            <h3>Forms</h3>
+                            <h1>Forms</h1>
                             <div className="builder-sections">
                                 <div className="builder-sections-forms">
                                     <div
@@ -546,7 +546,7 @@ const Formdata = () => {
                                         onClick={() => setView('draft')}
                                         style={{ backgroundColor: view === 'draft' ? '#45A7F6' : '', cursor: 'pointer', color: view === 'draft' ? 'white' : '', border: view === 'draft' ? '1px solid #45A7F6' : '' }}
                                     >
-                                        <p>Form list</p>
+                                        <p>Draft Forms</p>
                                     </div>
                                 </div>
                                 <div className='builder-sections-new-list'>
@@ -577,7 +577,7 @@ const Formdata = () => {
                                 <div className='form-builder-live-wrap'>
                                     <div className='builder-live-form'>
                                         <div className='builder-live-p'>
-                                            <h2>Draft Forms</h2>
+                                            <h2>Form List</h2>
                                         </div>
                                         <div className='form-builder-search-bar'>
                                             <input
@@ -602,7 +602,7 @@ const Formdata = () => {
                                 <div className='form-builder-live-wrap'>
                                     <div className='builder-live-form'>
                                         <div className='builder-live-p'>
-                                            <h2>Live Forms</h2>
+                                            <h2>Form List</h2>
                                         </div>
                                         <div className='form-builder-search-bar'>
                                             <input
@@ -1247,7 +1247,7 @@ const Formdata = () => {
                     </div>
                 </div >
             )}
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
         </>
     );
 };

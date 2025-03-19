@@ -380,7 +380,7 @@ function Index() {
       <div className="form_builder_dashboard">
         <div className="container">
           <div className="form-builder-customer_title">
-            <h2>Dashboard</h2>
+            <h1>Dashboard</h1>
           </div>
           <div className="form_build_contact">
             <div className="form_build_count">
@@ -483,7 +483,7 @@ function Index() {
             </div>
 
           </div>
-          <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
+          <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
         </div>
 
       </div>
