@@ -11,7 +11,7 @@ export const action = async ({ request }) => {
         const payload = await request.json();
         console.log("Received Shopify App Uninstalled Webhook:", payload);
 
-        const response = await fetch("http://localhost:4001/api/store", {
+        const response = await fetch("https://apps.syncform.app/api/store", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

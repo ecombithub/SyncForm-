@@ -20,7 +20,7 @@ export const action = async ({ request }) => {
         if (!allowedTopics.includes(topic)) {
             return json({ error: "Unrecognized topic" }, { status: 400 });
         }
-        const response = await fetch("http://localhost:4001/api/CostomerRequest", {
+        const response = await fetch("https://apps.syncform.app/api/CostomerRequest", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
