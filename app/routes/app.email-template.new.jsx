@@ -1517,8 +1517,6 @@ const EmailTemplateCreate = () => {
             };
         });
 
-        console.log('Updated fields:', updatedFields);
-
         try {
             setSaveEmail(!saveEmail);
 
@@ -8929,8 +8927,7 @@ const EmailTemplateCreate = () => {
                                     <img src={cancleimg} alt="" />
                                 </div>
                                 <img src={savemail} alt="" />
-                                <h2>Success</h2>
-                                <p>Your Email has been save successfully!</p>
+                                <p>Your email template has been successfully saved.</p>
                                 <p className="save-btn" onClick={handleContinue}>Continue</p>
                             </div>
                         </div>
@@ -8945,8 +8942,7 @@ const EmailTemplateCreate = () => {
                                     <img src={cancleimg} alt="" />
                                 </div>
                                 <img src={canclemail} alt="" />
-                                <h2>Warning</h2>
-                                <p>Are you sure you want to cancel this email?</p>
+                                <p>Cancelling will delete all your changes</p>
                                 <p className="save-btn cancel" onClick={handleContinue}>Cancel</p>
                             </div>
                         </div>
@@ -9231,7 +9227,7 @@ const EmailTemplateCreate = () => {
                     </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
         </div >
     );
 };

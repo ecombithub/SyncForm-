@@ -1572,23 +1572,25 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
             case 'images': {
               return `
-                <div style="
-                  text-align: ${field.imgTextAlign || TemplateAll.styles.textAlign};
-                  background-color: ${field.imgbg || 'transparent'};
-                  border-width: ${field.imgBorderWidth || 1}px;
-                  border-style: ${field.imgBorderStyle || 'solid'};
-                  border-color: ${field.imgBorderColor || '#000'};
-                  padding: ${field.imgPadding || 0}px;
-                  display: inline-block;
-                ">
-                  <img 
-                    src="${field.value}" 
-                    alt="${field.label || 'Image'}" 
-                    style="width: ${field.imgWidth || 100}%; vertical-align: bottom;"
-                  />
-                </div>`;
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td align="${field.imgTextAlign || 'center'}" style="
+                      background-color: ${field.imgbg || 'transparent'};
+                      border-width: ${field.imgBorderWidth || 1}px;
+                      border-style: ${field.imgBorderStyle || 'solid'};
+                      border-color: ${field.imgBorderColor || '#000'};
+                      padding: ${field.imgPadding || 0}px;
+                    ">
+                      <img 
+                        src="${field.value}" 
+                        alt="${field.label || 'Image'}" 
+                        style="width: ${field.imgWidth || 100}%; vertical-align: bottom;"
+                      />
+                    </td>
+                  </tr>
+                </table>`;
             }
-
+          
             case 'costum': {
               return `
                 <div style="

@@ -595,7 +595,7 @@ const Formdata = () => {
                                 <div className='form-builder-live-wrap'>
                                     <div className='builder-live-form'>
                                         <div className='builder-live-p'>
-                                            <h2>Form List</h2>
+                                            <h2>Form list</h2>
                                         </div>
                                         <div className='form-builder-search-bar'>
                                             <input
@@ -620,7 +620,7 @@ const Formdata = () => {
                                 <div className='form-builder-live-wrap'>
                                     <div className='builder-live-form'>
                                         <div className='builder-live-p'>
-                                            <h2>Form List</h2>
+                                            <h2>Form list</h2>
                                         </div>
                                         <div className='form-builder-search-bar'>
                                             <input
