@@ -255,6 +255,22 @@ const EmailTemplateCreate = () => {
     const [iscostomTextAdded, setIscostomTextAdded] = useState(false);
     const [disconnectForm, setDisconnectForm] = useState(false);
     const [disconnectFormId, setDisconnectFormId] = useState(null);
+    const [upgradePopup, setUphradePopup] = useState(false);
+    const [userPlan, setUserPlan] = useState(null);
+
+       const fetchPaymentPlan = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+                setUserPlan(response.data);
+    
+            } catch (error) {
+    
+            }
+        };
+
+        useEffect(() => {
+            fetchPaymentPlan();
+        }, []);
 
     useEffect(() => {
         const fetchFonts = async () => {
@@ -1573,7 +1589,6 @@ const EmailTemplateCreate = () => {
 
     };
 
-
     const resetFormState = () => {
         setFields([]);
         setEmailTemplateId(null);
@@ -1596,9 +1611,21 @@ const EmailTemplateCreate = () => {
         }, 3000);
     };
 
-    const handleBackgroundImageUpload = (e) => {
-        let file;
+    const handleUpgrade1 = () => {
+        navigate('/app/pricing');
+    }
 
+    const handleCancle1 = () => {
+        setUphradePopup(false);
+    }
+
+    const handleBackgroundImageUpload = (e) => {
+        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUphradePopup(true);
+            return;
+        }
+
+        let file;
         if (e.type === "drop") {
             file = e.dataTransfer.files[0];
         } else {
@@ -1613,6 +1640,7 @@ const EmailTemplateCreate = () => {
             reader.readAsDataURL(file);
         }
     };
+
 
     useEffect(() => {
         const formBuilder = formBuilderRef.current;
@@ -2294,6 +2322,15 @@ const EmailTemplateCreate = () => {
                     </div>
                 </div>
             )}
+            {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
+                <div className='form_builder_plan_upgrade_popup_wrapp'>
+                    <p>You need to upgrade your plan to unlock this feature</p>
+                    <div className='form_builder_upgrade_choose_plan' onClick={handleUpgrade1}><p>Choose plans</p></div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleCancle1}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>}
             <div className='email-campaing-templates'>
                 <div className="builder-container text">
                     <div className='builder-contain-h3'>
@@ -3290,7 +3327,7 @@ const EmailTemplateCreate = () => {
                                                                                             <a href={field.columnData[index].Multibtnurl} target="_blank" onClick={(e) => e.preventDefault()}>
                                                                                                 <button
                                                                                                     style={{
-                                                                                                        display:'block',
+                                                                                                        display: 'block',
                                                                                                         fontFamily: field.Multibtnfamily || '"Poppins", sans-serif' || '"Poppins", sans-serif',
                                                                                                         marginTop: '20px',
                                                                                                         backgroundColor: field.Multibtnbg || '#FFFFFF',

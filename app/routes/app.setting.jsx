@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../index.css';
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
@@ -105,35 +105,17 @@ export default function Setting() {
     const [upgradePopup, setUpgradePopup] = useState(false);
     const [activeBrand, setActiveBrand] = useState('active');
     const [numberPopup, setNumberPopup] = useState(false);
+    const [emailPopup, setEmailPopup] = useState(false);
 
     const navigator = useNavigate();
 
-    const validateEmail = (e) => {
-        const value = e.target.value;
-        setEmail(value);
-    
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    
-        if (!value) {
-            setEmailError("Email is required");
-        } else if (!emailPattern.test(value)) {
-            setEmailError("Please enter a valid email address");
-        } else {
-            setEmailError("");
-        }
-    
-        setTimeout(() => {
-            setEmailError("");
-        }, 3000);
-    };
-    
     useEffect(() => {
         const fetchStatus = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(response.data.status);
                 setNumberValue(response.data.numberValue || 50);
-                
+
             } catch (error) {
             }
         };
@@ -160,9 +142,9 @@ export default function Setting() {
         try {
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
             setUserPlan(response.data);
-       
+
         } catch (error) {
-        
+
         }
     };
 
@@ -195,12 +177,12 @@ export default function Setting() {
                 shopData,
             };
             const response = await axios.post(`${apiUrl}/user-email`, postData);
-        
+
 
             if (response.data.message === 'Email will be sent when form count matches.') {
                 const statusResponse = await axios.get(`${apiUrl}/get-status/${shop}`);
                 setStatus(statusResponse.data.status);
-             
+
             }
         } catch (error) {
         }
@@ -219,13 +201,10 @@ export default function Setting() {
 
             const result = await response.json();
             if (response.ok) {
-                setMessage('Settings saved successfully!');
+                setEmailPopup(true);
                 setEmail('');
                 setPassword('');
 
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000);
             } else {
                 setMessage(`Error: ${result.message}`);
             }
@@ -233,20 +212,20 @@ export default function Setting() {
             setMessage(`Error: ${error.message}`);
         }
     };
-    
+
     const handleBrandLogo = () => {
         if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUpgradePopup(true);
             return;
         }
-    
+
         const newStatus = activeBrand === 'active' ? 'disactive' : 'active';
         setActiveBrand(newStatus);
     };
-    
+
     useEffect(() => {
         let timeoutId;
-    
+
         const sendStatusUpdate = async () => {
             try {
                 await fetch(`${apiUrl}/api/brandLogo`, {
@@ -255,25 +234,25 @@ export default function Setting() {
                     body: JSON.stringify({ status: activeBrand, shop }),
                 });
             } catch (error) {
-               
+
             }
         };
-    
+
         if (activeBrand) {
             timeoutId = setTimeout(sendStatusUpdate, 300);
         }
-    
+
         return () => clearTimeout(timeoutId);
     }, [activeBrand]);
-    
-    
+
+
     useEffect(() => {
         const fetchStatusBrand = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
                 setActiveBrand(response.data.status);
             } catch (error) {
-            
+
             }
         };
 
@@ -299,6 +278,18 @@ export default function Setting() {
                     </div>
                 </div>
             </div>}
+
+            {emailPopup && <div className='form_builder_plan_upgrade_popup connect '>
+                <div className='form_builder_plan_upgrade_popup_wrapp connect-email'>
+                    <p>Congratulations</p>
+                    <div className="form_builder_connect_wraped">
+                        <p>Your email has been successfully connect with the SyncForm.</p>
+                    </div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={() => setEmailPopup(false)}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div >}
 
             {numberPopup && <div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp records-number '>
@@ -374,11 +365,11 @@ export default function Setting() {
                                     <input
                                         type="email"
                                         value={email}
-                                        onChange={validateEmail}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         placeholder='Your email'
                                         required
                                     />
-                                    {emailError && <p style={{color:"red", fontSize:"14px"}} className="error-message">{emailError}</p>}
+
                                 </div>
                                 <div className='form_build_inputs'>
                                     <label>Password:</label>
@@ -393,14 +384,14 @@ export default function Setting() {
                                         <p>
                                             Note: An app password is a security code that allows authorized apps access to your email and is different from your email password. To generate an App Password,
                                             <a target='_blank' href="https://syncform.app/blogs/generate-app-password.html">
-                                                <span style={{ fontFamily: "italic",fontWeight:"bold" }}> Click here</span>
+                                                <span style={{ fontFamily: "italic", fontWeight: "bold" }}> Click here</span>
                                             </a>.
                                         </p>
                                     </span>
                                 </div>
                             </div>
-                            <button className='form_email_btn' type="submit">Submit</button>
-                            {message && <p style={{ color: "red" }}>{message}</p>}
+                            <button className='form_email_btn' type="submit" style={{ cursor: "pointer" }}>Submit</button>
+
                         </form>
 
                     </div>

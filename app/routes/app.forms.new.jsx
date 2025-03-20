@@ -560,7 +560,12 @@ const Formgenerated = () => {
             setIsActive(toggleStatus === "Enabled");
 
             setEditorValue(editorValue);
-            setSubmissionOption(submissionOption)
+            setSubmissionOption(prev => {
+                console.log("Previous submissionOption:", prev);
+                return location.state.submissionOption || '';
+            });
+
+            console.log("After setting state, submissionOption:", submissionOption);
 
             setSubject(styles.subject);
 
@@ -633,7 +638,7 @@ const Formgenerated = () => {
                 }
             }
         }
-
+        console.log(location.state)
     }, [location.state]);
 
     // const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
@@ -2444,7 +2449,7 @@ const Formgenerated = () => {
                                                                     <option value="rgba(0, 0, 0, 0.35) 0px 5px 15px">Subtle Shadow</option>
                                                                     <option value="rgba(0, 0, 0, 0.5) 0px 10px 20px">Medium Shadow</option>
                                                                     <option value=" rgba(0, 0, 0, 0.56) 0px 22px 70px 4px">Dark Shadow</option>
-                                                                    <option value="none">No Shadow</option>
+
                                                                 </select>
                                                             </div>
                                                             <div className="edit_setting_bg form">
@@ -2709,7 +2714,6 @@ const Formgenerated = () => {
                             <div className='form_builder_build some'>
                                 <div id='bg_change' className="form-builder-wrp" style={{ position: 'relative' }}>
                                     <div id="bg_change_background" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}></div>
-                                    {activeBrand === 'active' && <div className='form_builder-brand-logos'><img src={brandlogos} alt="" /></div>}
                                     <div id="formBuilder" className="form-builder forms-wrapping" >
                                         {fields.length > 0 ? (fields.map((field, index) => {
                                             if (!field) {
@@ -4354,27 +4358,34 @@ const Formgenerated = () => {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className='form-build-checkbox-wrp-options'>
+                                                    <div
+                                                        className="form-build-checkbox-wrp-options"
+                                                        onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                        onMouseLeave={() => {
+                                                            if (!(selectedField && selectedField.id === field.id)) {
+                                                                setHoveredFieldId(null);
+                                                            }
+                                                        }}
+                                                    >
                                                         {field.type === 'divider' && (
-                                                            <div className={`input-field ${field.customClass}`} style={{
-                                                                width: '100%', opacity: field.opacity || 1, border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                    ? '1px solid #33cba2'
-                                                                    : '1px solid transparent',
-                                                                backgroundColor: selectedField && selectedField.id === field.id
-                                                                    ? '#e7f9f4'
-                                                                    : hoveredFieldId === field.id
+                                                            <div
+                                                                className={`input-field ${field.customClass}`}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    opacity: field.opacity || 1,
+                                                                    border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
                                                                         ? '#e7f9f4'
-                                                                        : 'transparent',
-                                                            }}
-                                                                onMouseEnter={() => setHoveredFieldId(field.id)}
-                                                                onMouseLeave={() => {
-                                                                    if (!(selectedField && selectedField.id === field.id)) {
-                                                                        setHoveredFieldId(null);
-                                                                    }
-                                                                }}>
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                    transition: "background-color 0.2s ease-in-out, border 0.2s ease-in-out",
+                                                                    position: "relative",
+                                                                }}
+                                                            >
                                                                 <label style={{ color: labelColor }}>
-
-                                                                    {/* {field.label || "divider"} */}
                                                                     <div style={{ justifyContent: field.dividerAline, display: "flex" }}>
                                                                         <hr style={{ margin: '20px 0', border: `1px solid ${field.dividerColor}`, width: field.dividerWidth }} />
                                                                         <div className='description' style={{ minHeight: `${maxDescriptionHeight}px` }}>
@@ -4382,49 +4393,16 @@ const Formgenerated = () => {
                                                                         </div>
                                                                     </div>
                                                                 </label>
-                                                                <div
-                                                                    id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
+                                                                <div id="form-drag" className="form-builder-drag-drop">
+                                                                    <img src={drop} alt="Drag" />
                                                                 </div>
                                                             </div>
-
                                                         )}
-                                                    </div>
 
-                                                    {field.type === 'link' && (
-                                                        <div className={`input-field ${field.customClass}`} style={{
-                                                            minHeight: `${field.linkfontsize * 1.8 || 24}px`,
-                                                            padding: "5px",
-                                                            display: "flex",
-                                                            width: "100%", border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
-                                                                ? '1px solid #33cba2'
-                                                                : '1px solid transparent',
-                                                            backgroundColor: selectedField && selectedField.id === field.id
-                                                                ? '#e7f9f4'
-                                                                : hoveredFieldId === field.id
-                                                                    ? '#e7f9f4'
-                                                                    : 'transparent',
-                                                        }}>
-                                                            <div style={{ display: 'block', width: '100%' }}>
-                                                                <div style={{ width: "100%", textAlign: field.linkaline, fontSize: `${field.linkfontsize}px` }}>
-                                                                    <a href={field.linkUrl} target={field.linkTarget} rel="noopener noreferrer">
-                                                                        <div onClick={(e) => e.preventDefault()} dangerouslySetInnerHTML={{ __html: field.linktext }} />
-                                                                    </a>
-                                                                </div>
-                                                                <div className='description' style={{ minHeight: `${maxDescriptionHeight}px`, marginTop: `${field.linkfontsize * 0.5 || 0.5}px`, }}>
-                                                                    {field.description}
-                                                                </div>
-                                                            </div>
-                                                            <div
-                                                                id="form-drag" className={`form-builder-drag-drop`} > <img src={drop} alt="Drag" />
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {(hoveredFieldId === field.id || (selectedField && selectedField.id === field.id)) && (
-                                                        <div>
-                                                            <div className='form-builder-radio-btn'>
+                                                        {(hoveredFieldId === field.id || (selectedField && selectedField.id === field.id)) && (
+                                                            <div className="form-builder-radio-btn">
                                                                 <button className="copy-btn edit" onClick={() => handleFieldClick(field, index)}>
-                                                                    <img src={edit} alt="copy" />
+                                                                    <img src={edit} alt="Edit" />
                                                                 </button>
                                                                 <button
                                                                     className="remove-btn"
@@ -4432,14 +4410,81 @@ const Formgenerated = () => {
                                                                         e.stopPropagation();
                                                                         removeField(field.id);
                                                                     }}>
-                                                                    <img src={delete1} alt="delete" />
+                                                                    <img src={delete1} alt="Delete" />
                                                                 </button>
-                                                                <button className="copy-btn " onClick={() => handleCopyField(field.id)}>
-                                                                    <img src={maximizesize} alt="copy" />
+                                                                <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
+                                                                    <img src={maximizesize} alt="Copy" />
                                                                 </button>
                                                             </div>
+                                                        )}
+                                                    </div>
+
+                                                    {field.type === 'link' && (
+                                                        <div
+                                                            className="field-wrapper"
+                                                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                                                            onMouseLeave={() => setHoveredFieldId(null)}
+                                                            style={{ width: "100%" }}
+                                                        >
+                                                            <div
+                                                                className={`input-field ${field.customClass}`}
+                                                                style={{
+                                                                    minHeight: `${field.linkfontsize * 1.8 || 24}px`,
+                                                                    padding: "5px",
+                                                                    display: "flex",
+                                                                    width: "100%",
+                                                                    border: (selectedField && selectedField.id === field.id) || (hoveredFieldId === field.id)
+                                                                        ? '1px solid #33cba2'
+                                                                        : '1px solid transparent',
+                                                                    backgroundColor: selectedField && selectedField.id === field.id
+                                                                        ? '#e7f9f4'
+                                                                        : hoveredFieldId === field.id
+                                                                            ? '#e7f9f4'
+                                                                            : 'transparent',
+                                                                    transition: "background-color 0.2s ease-in-out, border 0.2s ease-in-out",
+                                                                }}
+                                                            >
+                                                                <div style={{ display: 'block', width: '100%' }}>
+                                                                    <div style={{ width: "100%", textAlign: field.linkaline, fontSize: `${field.linkfontsize}px` }}>
+                                                                        <a href={field.linkUrl} target={field.linkTarget} rel="noopener noreferrer">
+                                                                            <div onClick={(e) => e.preventDefault()} dangerouslySetInnerHTML={{ __html: field.linktext }} />
+                                                                        </a>
+                                                                    </div>
+                                                                    <div
+                                                                        className='description'
+                                                                        style={{
+                                                                            minHeight: `${maxDescriptionHeight}px`,
+                                                                            marginTop: `${field.linkfontsize * 0.5 || 0.5}px`,
+                                                                        }}
+                                                                    >
+                                                                        {field.description}
+                                                                    </div>
+                                                                </div>
+                                                                <div id="form-drag" className="form-builder-drag-drop">
+                                                                    <img src={drop} alt="Drag" />
+                                                                </div>
+                                                            </div>
+                                                            {(hoveredFieldId === field.id || (selectedField && selectedField.id === field.id)) && (
+                                                                <div className="form-builder-radio-btn">
+                                                                    <button className="copy-btn edit" onClick={() => handleFieldClick(field, index)}>
+                                                                        <img src={edit} alt="Edit" />
+                                                                    </button>
+                                                                    <button
+                                                                        className="remove-btn"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            removeField(field.id);
+                                                                        }}>
+                                                                        <img src={delete1} alt="Delete" />
+                                                                    </button>
+                                                                    <button className="copy-btn" onClick={() => handleCopyField(field.id)}>
+                                                                        <img src={maximizesize} alt="Copy" />
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
+
                                                 </div>
                                             );
                                         })) : (
@@ -4453,6 +4498,7 @@ const Formgenerated = () => {
                                             </div>
                                         )}
                                     </div>
+                                    {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>}
                                 </div>
                             </div>
                             {showFieldPro && (
@@ -5494,25 +5540,26 @@ const Formgenerated = () => {
                                                                             <span className="slider"></span>
                                                                         </label>
                                                                     </div>
-                                                                    <div className="form-builder-chaneging-wrap">
-                                                                        <label>Readonly</label>
-                                                                        <label className="toggle-switch">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                checked={selectedField?.readonly || false}
-                                                                                onChange={(e) => {
-                                                                                    updateFieldProperty('readonly', e.target.checked);
-                                                                                    if (e.target.checked) {
-                                                                                        updateFieldProperty('required', false);
-                                                                                        updateFieldProperty('disabled', false);
-                                                                                        updateFieldProperty('emailRequid', false);
-                                                                                    }
-                                                                                }}
-                                                                            />
-                                                                            <span className="slider"></span>
-                                                                        </label>
-                                                                    </div>
-
+                                                                    {!['radio', 'checkbox', 'select'].includes(selectedField.type) && (
+                                                                        <div className="form-builder-chaneging-wrap">
+                                                                            <label>Readonly</label>
+                                                                            <label className="toggle-switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={selectedField?.readonly || false}
+                                                                                    onChange={(e) => {
+                                                                                        updateFieldProperty('readonly', e.target.checked);
+                                                                                        if (e.target.checked) {
+                                                                                            updateFieldProperty('required', false);
+                                                                                            updateFieldProperty('disabled', false);
+                                                                                            updateFieldProperty('emailRequid', false);
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                                <span className="slider"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    )}
 
                                                                 </div>
                                                             </div>

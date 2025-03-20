@@ -28,6 +28,7 @@ import { useLoaderData } from "@remix-run/react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import star from '../images/star1.png';
+import brandlogos from '../images/brandlogos.png';
 
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
@@ -89,7 +90,7 @@ const Formdata = () => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     style={{
                         border: `1px solid ${formStyles.inputborderColor || '#ccc'}`,
-                        padding: '8px',
+                        padding: '15px 10px',
                         borderRadius: `${formStyles.inputRadious || '4px'}px`,
                         cursor: 'pointer',
                         display: 'flex',
@@ -173,6 +174,22 @@ const Formdata = () => {
     const [loading, setLoading] = useState(false);
     const [sliderValue, setSliderValue] = useState(1);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1280);
+    const [activeBrand, setActiveBrand] = useState('');
+
+    useEffect(() => {
+        const fetchStatusBrand = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
+                setActiveBrand(response.data.status);
+            } catch (error) {
+
+            }
+        };
+
+        if (shop) {
+            fetchStatusBrand();
+        }
+    }, [shop, apiUrl]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -357,6 +374,7 @@ const Formdata = () => {
                 const filteredForms = formsData.filter((form) => form.shop === shop);
 
                 setCreatedForms(filteredForms);
+                console.log(filteredForms)
                 const response2 = await axios.get(`${apiUrl}/api/forms`);
                 const apiFormsData = response2.data;
 
@@ -848,7 +866,7 @@ const Formdata = () => {
                                                     position: 'relative',
                                                     padding: `${form.styles.padding}px`,
                                                     margin: `${form.styles.marginForm}px 0`,
-                                                    backgroundColor: 'transparent',
+                                                    backgroundColor: 'white',
                                                     border: 0,
                                                     boxShadow: 0
                                                 }}
@@ -875,13 +893,14 @@ const Formdata = () => {
 
                                                     }}
                                                 ></div>
+
                                                 <div className='form-builder-create-wrapping-forms '>
                                                     {form.fields.map(field => (
                                                         <div key={field.id} style={{ width: field.width, marginBottom: `${form.styles.inputGap}px` }} className={`input-field  ${field.customClass} input-gap ${parseFloat(field.width) <= 50 ? 'small-width' : ''}`} >
                                                             {field.type !== 'link' && field.type !== 'button' && field.type !== 'divider' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label} {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />} {field.emailRequid && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}</label>}
                                                             {field.type === 'name' && <input type="name" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'text' && <input type="text" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                            {field.type === 'textarea' && <textarea placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
+                                                            {field.type === 'textarea' && <textarea placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly}  style={{ borderRadius: `${form.styles.inputRadious}px`,resize: 'vertical', borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
                                                             {field.type === 'description' && <p style={{ paddingLeft: `${field.textPadding}px`, paddingRight: `${field.textPadding}px`, fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
                                                             {field.type === 'toggle' && (
                                                                 <div className='form-build-toggle'>
@@ -1236,6 +1255,7 @@ const Formdata = () => {
                                                         <img src={cancle1} alt="" />
                                                     </div>
                                                 </div>
+                                                {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>}
 
                                             </div>
 

@@ -8,11 +8,10 @@
     style="background-size: cover;"
     onsubmit="
        submitFormData(event, '{{ block.id }}', 'formID',
-      'formTitleValue', 'formshopValue', 'shopNameHeading',
-      'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail','onwerShopData', this)
+      'formTitle', 'formshop', 'shopNameHeading',
+      'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail','onwerShopData','nofieldValue', this)
     "
   ></form>
-  <div id="nofieldValue" style="display: none; color: red; font-size: 14px;"></div>
 </div>
 <style>
   .input-field.input-gap {
@@ -106,12 +105,12 @@
       .form_builder_app ul {
         padding: 0;
       }
-
-      img.brand-logos {
-        position: absolute;
-        right: 10px;
-        bottom: 10px; 
-      }
+      .brand-logos {
+        display: flex;
+        width: 100%;
+        justify-content: right;
+        padding-top: 20px;
+    }
 
       @media screen and (max-width: 640px) {
         .small-width {
@@ -859,12 +858,13 @@ document.addEventListener('click', function (event) {
       const emailsubject = formData.styles.subject;
       const shopNameEmail = formData.styles.shopEmail || '';
       const onwerShopData = formData.styles.onwerShop || '';
+      const nofieldValue ='Please fill in at least one field before submitting.';
 
       container.empty();
            $('#formData-{{ block.id }}').attr('onsubmit', 
         `submitFormData(event, '{{ block.id }}', '${formID}',
          '${formTitle}', '${formshop}', '${shopNameHeading}', '${toggleStatus}', '${editorValue}', 
-         '${submissionOption}', '${thankYouTimer}','${formUrl}','${emailsubject}','${shopNameEmail}','${onwerShopData}',this)`);
+         '${submissionOption}', '${thankYouTimer}','${formUrl}','${emailsubject}','${shopNameEmail}','${onwerShopData}', '${nofieldValue}',this)`);
 
       async function getBrandLogo(formshop) {
         try {
@@ -876,7 +876,9 @@ document.addEventListener('click', function (event) {
           const BrandLogo = await response.json();
           if (BrandLogo.status === "active") {
             container.append(`
-              <img class="brand-logos" src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/brandlogos.png?v=1741174088">
+              <div class="brand-logos">
+              <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/brandlogos.png?v=1741174088">
+              </div>
             `);
           }
       
@@ -899,6 +901,7 @@ document.addEventListener('click', function (event) {
           right: 0,
           bottom: 0,
           backgroundSize: 'cover',
+          backgroundPosition:'center',
           backgroundColor: formData.styles.backgroundColor || '',
           backgroundImage: formData.styles.backgroundImage ? `url(${formData.styles.backgroundImage})` : 'none',
           backgroundRepeat: formData.styles.backgroundRepeat || 'no-repeat',
@@ -1175,6 +1178,7 @@ document.addEventListener('click', function (event) {
                   border-width: ${inputWidth}px;
                   border-style: ${inputStyle};
                   font-family: inherit;
+                  resize: vertical; 
                 "
                 aria-label="${field.label || 'Textarea'}"
               ></textarea> 
@@ -1195,6 +1199,7 @@ document.addEventListener('click', function (event) {
                       <div class="form_checkbox_flex" 
                         style="display: flex; gap: 10px; align-items: center; padding: 10px;">
                         <input type="checkbox" 
+                          ${field.required ? 'required' : ''} 
                           ${field.readonly ? 'readonly' : ''}  
                           ${field.disabled ? 'disabled' : ''}  
                           id="${field.name}-${index}-${uniqueId}" 
@@ -1272,6 +1277,7 @@ document.addEventListener('click', function (event) {
                     </div>
                   </div>
                 </div>
+              
                 <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>
               `;
               case 'divider':
@@ -1883,7 +1889,7 @@ document.addEventListener('click', function (event) {
       
            case 'button':
           return `
-              <div style= "text-align:${field.buttonaline || 'left'}">
+              <div style= "text-align:${field.buttonaline || 'left'}; width:100%;">
                 <button
                   type="submit"
                   style="background-color: ${
@@ -1975,8 +1981,34 @@ document.addEventListener('click', function (event) {
         const fieldName = $(this).children('label').first().text().trim();
         const input = $(this).find('input, select, textarea');
         const dropdown = $(this).find('.custom-select-box span:first-child');
-        const fieldId = input.attr('id') || generateUniqueId();
 
+      $('#formData-' + blockId + ' .input-field').each(function () {
+        const dropdown = $(this).find('.custom-select-box');
+        let errorMessage = $(this).find('.select-error-message');
+    
+        if (dropdown.length > 0 && dropdown.attr('required') !== undefined) {
+            const selectedValue = dropdown.find('span:first-child').text().trim();
+    
+            if (selectedValue === 'Select an option' || selectedValue === 'Select' || selectedValue === '') {
+                isValid = false;
+    
+                if (errorMessage.length === 0) {
+                    dropdown.after('<div class="select-error-message" style="color: red; margin-top: 5px; font-size: 10px;">Required: Please select an option</div>');
+                }
+            } else {
+                isValid = true;
+                $(this).find('.select-error-message').remove();
+            }
+        }
+    });
+    
+    $('.custom-select-option').on('click', function () {
+        const dropdown = $(this).closest('.custom-select-container').find('.custom-select-box');
+        $(this).closest('.custom-select-container').find('.select-error-message').remove(); 
+    });
+    
+        const fieldId = input.attr('id') || generateUniqueId();
+        
         if (input.length > 0 && input.attr('type') === 'password') {
           const passwordValue = input.val().trim();
       
@@ -2152,20 +2184,26 @@ document.addEventListener('click', function (event) {
       });
 
       if (!isValid) return;
-  
     
       if (formData.fields.length === 0) {
-        const noFieldElement = document.getElementById('nofieldValue');
-        if (noFieldElement) {
-            noFieldElement.textContent = 'Please fill in at least one field before submitting.';
-            noFieldElement.style.display = 'block';
+        console.log("Value of noFieldValue:", nofieldValue);
+
+        $("#formData-" + blockId).find(".no-field-message").remove();
     
-            setTimeout(() => {
-                noFieldElement.style.display = 'none';
-            }, 3000);
-        }
+        const messageElement = $(
+            `<p class="no-field-message" style="color: red; font-size: 16px; position: absolute; margin: 0; bottom: 20px; 
+             ">${nofieldValue || "Please fill in at least one field before submitting."}</p>`
+        );
     
-        return false;
+        $("#formData-" + blockId).append(messageElement);
+  
+        setTimeout(() => {
+            messageElement.fadeOut(300, function () {
+                $(this).remove(); 
+            });
+        }, 3000);
+    
+        return false; 
     }
   
       $.ajax({
@@ -2252,7 +2290,11 @@ document.addEventListener('click', function (event) {
           }, 2000);
 
           if (editorValue) {
-            const editorValueDisplay = `<div style="color: green; font-size: 14px;">${editorValue}</div>`;
+            const editorValueDisplay = `
+            <div style="color: green; font-size: 16px; display: flex; justify-content: center; align-items: center; text-align: center; position: absolute; left: 50%; transform: translate(-50%, -50%);">
+            ${editorValue}
+            </div>
+            `;
             const messageElement = $(editorValueDisplay);
             $('#formData-' + blockId).append(messageElement);
 
@@ -2274,7 +2316,11 @@ document.addEventListener('click', function (event) {
           if (submissionOption === 'Hide form and show thank you message') {
             $('#formData-' + blockId).empty();
             if (editorValue) {
-              const editorValueDisplay = `<div style="font-size: 14px; color: green;">${editorValue}</div>`;
+              const editorValueDisplay = `
+              <div style="color: green; font-size: 16px; display: flex; justify-content: center; align-items: center; text-align: center; position: absolute; left: 50%; transform: translate(-50%, -50%);">
+              ${editorValue}
+              </div>
+              `;
 
               $('#formData-' + blockId).append(editorValueDisplay);
             }
@@ -2301,7 +2347,6 @@ document.addEventListener('click', function (event) {
             }, timerDuration);
           }
 
-          
           $(
             '#formData-' + blockId + ' input, #formData-' + blockId + ' textarea, #formData-' + blockId + ' select'
           ).val('');

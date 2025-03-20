@@ -1,6 +1,6 @@
  * {
      font-family: Poppins;
-     
+
  }
 
 
@@ -250,11 +250,34 @@
      display: block;
  }
 
- .form_builder-brand-logos {
-     position: absolute;
-     z-index: 99;
-     bottom: 5px;
-     right: 10px;
+
+ .form_builder_plan_upgrade_popup.connect .form_builder_connect_wraped {
+     font-size: 12px;
+     font-weight: 500;
+     max-width: 70%;
+     margin: auto;
+ }
+
+ .form_builder_plan_upgrade_popup_wrapp.connect-email {
+     background-image: url(./images/Congratulations.png);
+     padding: 80px;
+ }
+
+ .form_builder_plan_upgrade_popup.connect .form_builder_connect_wraped p {
+     font-weight: 400;
+     line-height: 20px;
+     color: #707679;
+     margin-top: 10px;
+ }
+
+ .form-builder-create-wrapping-forms input {
+     pointer-events: none;
+     cursor: not-allowed;
+ }
+
+ .form-builder-create-wrapping-forms textarea {
+     pointer-events: none;
+     cursor: not-allowed;
  }
 
  .modal-costomer .loaddr {
@@ -1624,6 +1647,16 @@
  .form_builder_icon img {
      width: 100%;
  }
+
+ .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
+     max-width: 32%;
+     background-image: url(./images/create0.png);
+
+ }
+
+ .form_builder_plan_upgrade_popup.connect.support {
+    z-index: 9999999;
+}
 
 
  .form_builder_icon svg.Polaris-Icon__Svg {
@@ -5499,6 +5532,14 @@
      right: 0;
  }
 
+
+ .form_builder-brand-logos-form-list {
+     display: flex;
+     justify-content: right;
+     position: relative;
+     padding-top: 20px;
+ }
+
  .custom-range-slider {
      position: relative;
      width: 100%;
@@ -5991,7 +6032,9 @@
          padding: 0 20px;
      }
 
-
+     .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
+         max-width: 45%;
+     }
 
      .form_builder_plan_upgrade_popup.costomer-data .form_builder_plan_upgrade_popup_wrapp {
          max-width: 40%;
@@ -6297,6 +6340,9 @@
  }
 
  @media screen and (max-width: 1024px) {
+    .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
+        max-width: 59%;
+    }
      .form_build_help_show.know p {
          padding-bottom: 25px;
      }
@@ -7090,6 +7136,9 @@
  }
 
  @media screen and (max-width: 768px) {
+    .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
+        max-width: 74%;
+    }
      .email-template-reviw-popup .form-builder-icon-deleted {
          right: 21px;
      }
@@ -7265,6 +7314,10 @@
  }
 
  @media screen and (max-width:640px) {
+    .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
+        max-width: 76%;
+        padding: 50px;
+    }
      .it-services {
          height: 60vh;
          overflow: hidden;
@@ -7415,15 +7468,23 @@
 
 
  @media screen and (max-width:540px) {
+     .form_builder_plan_upgrade_popup_wrapp.connect-email {
+         padding: 50px;
+     }
 
-    .drag-and-drop-text.third.multifile-second .form-builder-changes-file-wraped img {
-        width: 48px;
-    }
+     .form_builder_plan_upgrade_popup.connect .form_builder_connect_wraped {
+         max-width: 100%;
+         margin: auto;
+     }
 
-    .drag-and-drop-text .form-builder-changes-file-wraped {
-    
-        padding: 20px;
-    }
+     .drag-and-drop-text.third.multifile-second .form-builder-changes-file-wraped img {
+         width: 48px;
+     }
+
+     .drag-and-drop-text .form-builder-changes-file-wraped {
+
+         padding: 20px;
+     }
 
      .form_builder_popup_forms .form_builder_select_optoion .form_select_check input[type="checkbox"] {
          width: 22px;
@@ -7592,10 +7653,15 @@
  }
 
  @media screen and (max-width: 480px) {
-
-    .form-Elements-btn{
-        padding: 7px;
+    .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
+        max-width: 90%;
+        padding: 34px;
     }
+
+     .form-Elements-btn {
+         padding: 7px;
+     }
+
      .controls-main-wrp.email-tempalte .email_field.columns-container .columns-wrapper {
          display: block !important;
      }
@@ -7966,9 +8032,10 @@
  }
 
  @media screen and (max-width:430px) {
-    .input-field.input-gap.small-width {
-        width: 100% !important;
-    }
+     .input-field.input-gap.small-width {
+         width: 100% !important;
+     }
+
      .form_builders_plan_p {
          display: none;
      }
@@ -8301,7 +8368,7 @@
      }
 
      .email-template-section .email-tempalte-your .form-builder-search-bar {
-         width:39% !important;
+         width: 39% !important;
      }
 
      .from_builder_pricing .form_builder_plan_add .form_builders_plan_btn.active {
@@ -8385,9 +8452,10 @@
  }
 
  @media screen and (max-width:320px) {
-    .builder-forms .builder-sections .builder-sections-new-list {
-        max-width: 37%;
-    }
+     .builder-forms .builder-sections .builder-sections-new-list {
+         max-width: 37%;
+     }
+
      .form_build_contact .form_build_count p {
          font-size: 25px;
          line-height: 32px;

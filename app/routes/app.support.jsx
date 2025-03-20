@@ -8,6 +8,7 @@ import star from '../images/star1.png';
 import add from '../images/blog13.jpg';
 import create from '../images/blog12.jpg';
 import track from '../images/blog14.jpeg';
+import cancleimg from '../images/cancleimg.png';
 
 import { authenticate, apiVersion } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
@@ -68,6 +69,8 @@ export default function Support() {
     const [message, setMessage] = useState(false);
     const [errors, setErrors] = useState({});
     const [error, setError] = useState("");
+    const [supportPopup, setSupportPopup] = useState(false);
+
 
     const handleSubmit = async () => {
         if (!shop || !name || !email || !category || !theme || !describe) {
@@ -99,10 +102,7 @@ export default function Support() {
             });
 
             if (response.status === 200) {
-                setMessage('Your support ticket has been successfully created. Our team will get back to you soon!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000);
+               setSupportPopup(true);
                 setName('');
                 setEmail('');
                 setCategory('');
@@ -112,6 +112,7 @@ export default function Support() {
                 setError("");
             } else {
                 alert('Failed to submit the form. Please try again.');
+                setSupportPopup(false);
             }
         } catch (error) {
 
@@ -135,6 +136,17 @@ export default function Support() {
 
     return (
         <div className='form_builder_support'>
+            {supportPopup && <div className='form_builder_plan_upgrade_popup connect support '>
+                <div className='form_builder_plan_upgrade_popup_wrapp connect-email suporrt-wraped'>
+                    <p>Your support ticket has been successfully created.</p>
+                    <div className="form_builder_connect_wraped">
+                        <p>Our team will get back to you soon!</p>
+                    </div>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={() => setSupportPopup(false)}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div >}
             <div className="container">
                 <div className="form_builder_support_title">
                     <h1>Help Center</h1>
