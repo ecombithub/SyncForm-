@@ -870,7 +870,8 @@
       const emailsubject = formData.styles.subject;
       const shopNameEmail = formData.styles.shopEmail || '';
       const onwerShopData = formData.styles.onwerShop || '';
-      const nofieldValue = 'Please fill the form before submitting.';
+      const nofieldValue = 'Your form is empty. Please fill in the details before submitting.';
+
 
       container.empty();
       $('#formData-{{ block.id }}').attr(
@@ -2246,7 +2247,7 @@
 
         const messageElement = $(
           `<p class="no-field-message" style="color: red; font-size: 16px; margin: 0; 
-             ">${nofieldValue || 'Please fill the form before submitting.'}</p>`
+             ">${nofieldValue || 'Your form is empty. Please fill in the details before submitting.'}</p>`
         );
 
         $('#formData-' + blockId).append(messageElement);
