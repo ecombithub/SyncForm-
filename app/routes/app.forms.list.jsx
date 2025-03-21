@@ -455,16 +455,16 @@ const Formdata = () => {
             setUphradePopup(true);
             return;
         }
-
+    
         const formToCopy = createdForms.find((form) => form.formId === formId);
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
+    
         if (!formToCopy) {
-
             return;
         }
-
+    
         setIsLoading(true);
-
+    
         const copiedForm = {
             ...formToCopy,
             formId: generateUniqueId(),
@@ -472,13 +472,14 @@ const Formdata = () => {
             createdAt: timestamp,
             fields: formToCopy.fields.map((field) => ({
                 ...field,
+                id: ['file', 'images', 'multi-image','multi-file'].includes(field.type) ? field.id : generateUniqueId(),
             })),
             status: 'live',
         };
-
+    
         delete copiedForm._id;
+    
         try {
-
             setTimeout(async () => {
                 const response = await fetch(`${apiUrl}/copy-form`, {
                     method: 'POST',
@@ -487,23 +488,20 @@ const Formdata = () => {
                     },
                     body: JSON.stringify(copiedForm),
                 });
-
+    
                 if (!response.ok) {
                     throw new Error('Failed to copy form');
                 }
-
+    
                 const result = await response.json();
-
                 setCreatedForms((prevForms) => [...prevForms, result]);
-
                 setIsLoading(false);
-
             }, 3000);
         } catch (error) {
-
             setIsLoading(false);
         }
     };
+    
 
     const generateUniqueId = (length = 21) => {
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

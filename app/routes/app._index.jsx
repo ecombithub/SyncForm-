@@ -138,7 +138,7 @@ export const loader = async ({ request }) => {
 
   return response;
 };
-;
+
 
 function Index() {
   const { activeThemeId, shop, apiUrl, accessToken, shopData } = useLoaderData() || {};
@@ -150,8 +150,6 @@ function Index() {
   const [upgradePopup, setUpgradePopup] = useState(false);
   const navigator = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-
 
   useEffect(() => {
     let timeoutId;

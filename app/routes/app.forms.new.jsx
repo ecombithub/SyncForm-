@@ -5399,7 +5399,7 @@ const Formgenerated = () => {
                                                             <div className='form_builder_option_select'>
                                                                 <h3>Options</h3>
                                                                 <div className='form-builder-options-container'>
-                                                                    {selectedField.type === 'file' && (
+                                                                    {selectedField.type === 'file' && fileOptions[selectedField.id] !== 'option1' && (
                                                                         <>
                                                                             <div className="form-builder-chaneging-wrap">
                                                                                 <label>File Preview</label>
@@ -5419,7 +5419,7 @@ const Formgenerated = () => {
                                                                         </>
                                                                     )}
 
-                                                                    {selectedField.type === 'multi-file' && (
+                                                                    {selectedField.type === 'multi-file' && multiOptions[selectedField.id] !== 'option1' && (
                                                                         <>
                                                                             <div className="form-builder-chaneging-wrap">
                                                                                 <label>File Preview</label>
@@ -5440,7 +5440,7 @@ const Formgenerated = () => {
                                                                             </div>
                                                                         </>
                                                                     )}
-                                                                    {selectedField.type === 'images' && (
+                                                                    {selectedField.type === 'images' && imageOptions[selectedField.id] !== 'option1' && (
                                                                         <>
                                                                             <div className="form-builder-chaneging-wrap">
                                                                                 <label>Image Preview</label>
@@ -5462,7 +5462,7 @@ const Formgenerated = () => {
                                                                         </>
                                                                     )}
 
-                                                                    {selectedField.type === 'multi-image' && (
+                                                                    {selectedField.type === 'multi-image' && multiimagesOptions[selectedField.id] !== 'option1' && (
                                                                         <>
                                                                             <div className="form-builder-chaneging-wrap">
                                                                                 <label>Image Preview</label>

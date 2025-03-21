@@ -165,14 +165,14 @@ function Customer() {
                 await new Promise((resolve) => setTimeout(resolve, 3000));
                 const response = await axios.get(`${apiUrl}/api/forms`);
                 const filteredForms = response.data.filter(form => form.shop === shop);
-
+    
                 if (filteredForms.length > 0) {
                     const formsWithProcessedSubmissions = filteredForms.map(form => {
                         const seenEmails = new Set();
                         const uniqueSubmissions = form.submissions.filter(submission => {
                             let hasEmail = false;
                             let isUniqueEmail = false;
-
+    
                             submission.fields.forEach(field => {
                                 if (field.name === "Email") {
                                     hasEmail = true;
@@ -182,32 +182,16 @@ function Customer() {
                                     }
                                 }
                             });
-
+    
                             return hasEmail ? isUniqueEmail : true;
                         });
-
+    
                         return { ...form, uniqueSubmissions };
                     });
-
+    
                     setCreatedForms(formsWithProcessedSubmissions);
-
-                    formsWithProcessedSubmissions.forEach(form => {
-
-                        form.uniqueSubmissions.forEach(submission => {
-                            const emailField = submission.fields.find(field => field.name === "Email");
-                            const timestamp = new Date(submission.timestamp);
-                            const formattedDate = format(timestamp, 'yyyy-MM-dd hh:mm:ss a');
-
-                            if (emailField) {
-                                console.log(`  Unique Email: ${emailField.value}, Date and Time: ${formattedDate}`);
-                            } else {
-                                console.log(`  No Email Provided, Showing Title: ${form.title}, Date and Time: ${formattedDate}`);
-                            }
-                        });
-                    });
                 } else {
                     setCreatedForms([]);
-                    console.log("No forms found for this shop");
                 }
             } catch (error) {
                 console.error('Error fetching forms:', error);
@@ -215,9 +199,10 @@ function Customer() {
                 setLoading(false);
             }
         };
-
+    
         fetchForms();
     }, [shop, apiUrl]);
+    
 
 
     useEffect(() => {
@@ -599,7 +584,7 @@ function Customer() {
                                     <div className='show_forms_all'>
                                         <span className='name_build'>
                                             Sort by  :
-                                            <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggleFormNames}>
+                                            <span style={{ fontWeight: 600, cursor: "pointer" }} onClick={handleToggleFormNames}>
                                                 Forms name <span className='form-short'><img src={down} alt="" /></span>
                                             </span>
                                         </span>
@@ -644,7 +629,7 @@ function Customer() {
                                                 <div className='show_forms_all'>
                                                     <span className='name_build'>
                                                         Sort by :
-                                                        <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={handleToggle}>
+                                                        <span style={{ fontWeight:600, cursor: "pointer" }} onClick={handleToggle}>
                                                             Forms name <span className='form-short'><img src={down} alt="" /></span>
                                                         </span>
                                                     </span>

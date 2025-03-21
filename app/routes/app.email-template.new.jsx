@@ -258,19 +258,19 @@ const EmailTemplateCreate = () => {
     const [upgradePopup, setUphradePopup] = useState(false);
     const [userPlan, setUserPlan] = useState(null);
 
-       const fetchPaymentPlan = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
-                setUserPlan(response.data);
-    
-            } catch (error) {
-    
-            }
-        };
+    const fetchPaymentPlan = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
+            setUserPlan(response.data);
 
-        useEffect(() => {
-            fetchPaymentPlan();
-        }, []);
+        } catch (error) {
+
+        }
+    };
+
+    useEffect(() => {
+        fetchPaymentPlan();
+    }, []);
 
     useEffect(() => {
         const fetchFonts = async () => {
@@ -452,7 +452,7 @@ const EmailTemplateCreate = () => {
             dividerheight: type === 'divider' ? '1' : undefined,
             buttonColor: type === 'button' ? '#45a7f6' : undefined,
             buttonfamily: type === 'button' ? '"Poppins", sans-serif' : undefined,
-            buttonweight: type === 'button' ? '300' : undefined,
+            buttonweight: type === 'button' ? '500' : undefined,
             buttonbgColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonTextColor: type === 'button' ? '#FFFFFF' : undefined,
             buttonFontSize: type === 'button' ? 16 : undefined,
@@ -472,7 +472,7 @@ const EmailTemplateCreate = () => {
             socalIconPadding: type === 'socalicon' ? 10 : undefined,
             socalIcongap: type === 'socalicon' ? 5 : undefined,
             socalIconbg: type === 'socalicon' ? '#FFFFFF' : undefined,
-            socaliconTextAlign: type === 'socalicon' ? "left" : undefined,
+            socaliconTextAlign: type === 'socalicon' ? "" : undefined,
             htmlColor: type === 'html convert' ? '#000' : undefined,
             htmllineheight: type === 'html convert' ? '25' : undefined,
             htmlaline: type === 'html convert' ? '' : undefined,
@@ -602,6 +602,7 @@ const EmailTemplateCreate = () => {
     };
 
     const addInputField = (type) => {
+
         let newField;
         if (type === 'images') {
             setImageFieldId(null);
@@ -1143,7 +1144,6 @@ const EmailTemplateCreate = () => {
             alert('An error occurred while unlinking the form.');
         }
 
-
         setDisconnectForm(false);
         setDisconnectFormId(null);
     };
@@ -1388,7 +1388,7 @@ const EmailTemplateCreate = () => {
                 dividerheight: field.dividerheight || '1',
                 buttonbgColor: field.buttonbgColor || '',
                 buttonColor: field.buttonColor || '#45a7f6',
-                buttonweight: field.buttonweight || 300,
+                buttonweight: field.buttonweight || 500,
                 buttonfamily: field.buttonfamily || '"Poppins", sans-serif',
                 buttonFontSize: field.buttonFontSize || 16,
                 buttonTextColor: field.buttonTextColor || '#fff',
@@ -2233,9 +2233,15 @@ const EmailTemplateCreate = () => {
             reader.readAsDataURL(file);
         }
     };
+
     const handleCancle = () => {
+        if (fields.length === 0) {
+            return;
+        }
+
         setCancelEmail(true);
-    }
+    };
+
 
     const removeImage = (fieldId, index) => {
         const updatedFields = fields.map(f =>
@@ -2500,11 +2506,14 @@ const EmailTemplateCreate = () => {
                                                                             type="number"
                                                                             id="Border-radious"
                                                                             value={borderRadious}
-                                                                            onChange={(e) => setBorderRadious(e.target.value)}
+                                                                            onChange={(e) => {
+                                                                                const value = Math.min(30, Math.max(0, Number(e.target.value))); 
+                                                                                setBorderRadious(value);
+                                                                            }}
                                                                             min="0"
+                                                                            max="30"
                                                                         />
                                                                     </div>
-
 
                                                                     <div className='edit_setting_bg'>
                                                                         <label>Padding:</label>
@@ -3159,7 +3168,7 @@ const EmailTemplateCreate = () => {
                                                                                         borderColor: field.buttonBorderColor,
                                                                                         letterSpacing: `${field.buttonLetterSpacing}px`,
                                                                                         borderRadius: `${field.buttonradious}px`,
-                                                                                        fontWeight: field.buttonweight || 300,
+                                                                                        fontWeight: field.buttonweight || 500,
                                                                                         fontFamily: field.buttonfamily || '"Poppins", sans-serif'
                                                                                     }}
                                                                                 >
@@ -6807,6 +6816,24 @@ const EmailTemplateCreate = () => {
                                                                                         min='0'
                                                                                     />
                                                                                 </div>
+                                                                                <div className='form-builder-chaneging-wrap'>
+                                                                                    <label>Text Align </label>
+                                                                                    <select
+                                                                                        value={field.costumAline}
+                                                                                        onChange={(e) => {
+                                                                                            setFields(prevFields =>
+                                                                                                prevFields.map(f =>
+                                                                                                    f.id === field.id ? { ...f, costumAline: e.target.value } : f
+                                                                                                )
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        <option value="">Select text align</option>
+                                                                                        <option value="left">Left</option>
+                                                                                        <option value="center">Center</option>
+                                                                                        <option value="right">Right</option>
+                                                                                    </select>
+                                                                                </div>
                                                                                 <div className='form-builder-chaneging-wrap number'>
                                                                                     <label>Line-Height (px)</label>
                                                                                     <input
@@ -6986,24 +7013,7 @@ const EmailTemplateCreate = () => {
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div className='form-builder-chaneging-wrap'>
-                                                                                    <label>Text Align </label>
-                                                                                    <select
-                                                                                        value={field.costumAline}
-                                                                                        onChange={(e) => {
-                                                                                            setFields(prevFields =>
-                                                                                                prevFields.map(f =>
-                                                                                                    f.id === field.id ? { ...f, costumAline: e.target.value } : f
-                                                                                                )
-                                                                                            );
-                                                                                        }}
-                                                                                    >
-                                                                                        <option value="">Select text align</option>
-                                                                                        <option value="left">Left</option>
-                                                                                        <option value="center">Center</option>
-                                                                                        <option value="right">Right</option>
-                                                                                    </select>
-                                                                                </div>
+
                                                                             </div>
                                                                         </div>
                                                                     );
@@ -7849,7 +7859,7 @@ const EmailTemplateCreate = () => {
                                                                                     <div className='form-builder-chaneging-wrap number'>
                                                                                         <label>Font-Weight</label>
                                                                                         <select
-                                                                                            value={field.splitbtnWeight}
+                                                                                            value={field.splitbtnWeight || "500"}
                                                                                             onChange={(e) => {
                                                                                                 setFields(prevFields =>
                                                                                                     prevFields.map(f =>
@@ -8921,7 +8931,7 @@ const EmailTemplateCreate = () => {
             <div className='form-builder-wrap-popup-inputs'>
                 <div className='save-email-templates-add'>
                     {saveEmail && (<div className="popup ">
-                        <div className="popup-content save">
+                        <div className="popup-content save email">
                             <div className="save-email-template-popup">
                                 <div className='cancle-save-email' onClick={() => setSaveEmail(false)}>
                                     <img src={cancleimg} alt="" />
@@ -8936,7 +8946,7 @@ const EmailTemplateCreate = () => {
                 </div>
                 <div className='save-email-templates-add'>
                     {cancelEmail && (<div className="popup ">
-                        <div className="popup-content save">
+                        <div className="popup-content save ">
                             <div className="save-email-template-popup">
                                 <div className='cancle-save-email' onClick={() => setCancelEmail(false)}>
                                     <img src={cancleimg} alt="" />

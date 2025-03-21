@@ -276,24 +276,18 @@ export default function Pricing() {
         }
     };
 
-    const handleDelete = async (chargeId, planName) => {
-        console.log("handleDelete called with chargeId:", chargeId, "and planName:", planName);
-        if (planName === 'Form Builder Pro Plan' || planName === 'Form Builder Pro Plus Plan') {
-            setDeletePlanData({ chargeId, planName });
-            setIsDeletePopupVisible(true);
-        }
-        await proceedWithDeletion(chargeId);
+    const handleDelete = (chargeId, planName) => {
+        setDeletePlanData({ chargeId, planName });
+        setIsDeletePopupVisible(true);
     };
 
     const proceedWithDeletion = async (chargeId) => {
-        console.log("proceedWithDeletion called with chargeId:", chargeId);
         if (isSubmitting) return;
         setIsSubmitting(true);
 
         try {
             const formData = new FormData();
             formData.append("charge_id", chargeId);
-            console.log("Sending deletion request with formData:", formData);
             await submit(formData, { method: "delete" });
 
             const paymentData = {
@@ -306,7 +300,6 @@ export default function Pricing() {
                 billingOn: new Date().toISOString(),
             };
 
-            console.log("Sending payment confirmation with data:", paymentData);
             const response = await axios.post(`${apiUrl}/payment/confirm`, paymentData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -321,12 +314,9 @@ export default function Pricing() {
         }
     };
 
-
-
     const handleConfirmDelete = async () => {
         setIsLoading(true);
         setIsDeletePopupVisible(false);
-
         try {
             if (deletePlanData.chargeId) {
 

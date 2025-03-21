@@ -1,13 +1,13 @@
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useRouteError, useNavigation } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
-import { useState, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 
-const Loader = lazy(() => import("./app.loader")); 
+const Loader = lazy(() => import("./app.loader"));
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -18,34 +18,28 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const { apiKey } = useLoaderData();
-  const [loading, setLoading] = useState(false);
-
-  const handleLinkClick = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  };
+  const navigation = useNavigation();
+  const isLoading = navigation.state !== "idle"; 
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>
-        <Link to="/app" rel="home" onClick={handleLinkClick}>Home</Link>
-        <Link to="/app/forms/list" onClick={handleLinkClick}>Forms</Link>
-        <Link to="/app/customer"onClick={handleLinkClick}>Customers</Link>
-        <Link to="/app/setting" onClick={handleLinkClick}>Settings</Link> 
-        <Link to="/app/pricing" onClick={handleLinkClick}>Pricing</Link>
-        <Link to="/app/support" onClick={handleLinkClick}>Support</Link>
-        <Link to="/app/email-template/list" onClick={handleLinkClick}>Email Template</Link>
-  
+        <Link to="/app" rel="home">Home</Link>
+        <Link to="/app/forms/list">Forms</Link>
+        <Link to="/app/customer">Customers</Link>
+        <Link to="/app/setting">Settings</Link> 
+        <Link to="/app/pricing">Pricing</Link>
+        <Link to="/app/support">Support</Link>
+        <Link to="/app/email-template/list">Email Template</Link>
+
         <ul>
           <li><Link to="/app/forms/new">Create</Link></li>
           <li><Link to="/app/email-template/new">EmailTemplate</Link></li>
         </ul>
       </NavMenu>
 
-      <Suspense fallback={<div></div>}>
-        {loading ? <Loader /> : <Outlet />}
+      <Suspense fallback={<div>Loading...</div>}>
+        {isLoading ? <Loader /> : <Outlet />}
       </Suspense>
     </AppProvider>
   );
@@ -58,6 +52,70 @@ export function ErrorBoundary() {
 export const headers = (headersArgs) => {
   return boundary.headers(headersArgs);
 };
+
+
+
+
+// import { json } from "@remix-run/node";
+// import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
+// import { boundary } from "@shopify/shopify-app-remix/server";
+// import { AppProvider } from "@shopify/shopify-app-remix/react";
+// import { NavMenu } from "@shopify/app-bridge-react";
+// import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
+// import { authenticate } from "../shopify.server";
+// import { useState, lazy, Suspense } from "react";
+
+// const Loader = lazy(() => import("./app.loader")); 
+
+// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+
+// export const loader = async ({ request }) => {
+//   await authenticate.admin(request);
+//   return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+// };
+
+// export default function App() {
+//   const { apiKey } = useLoaderData();
+//   const [loading, setLoading] = useState(false);
+
+//   const handleLinkClick = () => {
+//     setLoading(true);
+//     setTimeout(() => {
+//       setLoading(false);
+//     }, 3000);
+//   };
+
+//   return (
+//     <AppProvider isEmbeddedApp apiKey={apiKey}>
+//       <NavMenu>
+//         <Link to="/app" rel="home" onClick={handleLinkClick}>Home</Link>
+//         <Link to="/app/forms/list" onClick={handleLinkClick}>Forms</Link>
+//         <Link to="/app/customer"onClick={handleLinkClick}>Customers</Link>
+//         <Link to="/app/setting" onClick={handleLinkClick}>Settings</Link> 
+//         <Link to="/app/pricing" onClick={handleLinkClick}>Pricing</Link>
+//         <Link to="/app/support" onClick={handleLinkClick}>Support</Link>
+//         <Link to="/app/email-template/list" onClick={handleLinkClick}>Email Template</Link>
+  
+//         <ul>
+//           <li><Link to="/app/forms/new">Create</Link></li>
+//           <li><Link to="/app/email-template/new">EmailTemplate</Link></li>
+//         </ul>
+//       </NavMenu>
+
+//       <Suspense fallback={<div></div>}>
+//         {loading ? <Loader /> : <Outlet />}
+//       </Suspense>
+//     </AppProvider>
+//   );
+// }
+
+// export function ErrorBoundary() {
+//   return boundary.error(useRouteError());
+// }
+
+// export const headers = (headersArgs) => {
+//   return boundary.headers(headersArgs);
+// };
 
 
 

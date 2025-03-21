@@ -1011,8 +1011,8 @@ export default function EmailTemplate() {
                 </div>
             ) : (
                 <div className="email-template-section">
-
                     <div className='container'>
+                    <div className='email-template-container-wrapeed'>
                         <div className="email-tempalte-your">
                             <div className="email-tempalte-wrap">
                                 <div className="email-template-h2">
@@ -1021,7 +1021,7 @@ export default function EmailTemplate() {
                                 <div className="email-templete-search-bar">
                                     <div className='create-email-templates' onClick={handleCreateTemplate}>
                                         <img src={plusicon} alt="" />
-                                        <p>Create blank email</p>
+                                        <p>New Email Templete</p>
                                     </div>
                                     {upgradePopup && <div className='form_builder_plan_upgrade_popup'>
                                         <div className='form_builder_plan_upgrade_popup_wrapp'>
@@ -1042,7 +1042,7 @@ export default function EmailTemplate() {
                                     <div className="show_forms_all">
                                         <span className="name_build">
                                             Sort by :
-                                            <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleFormNames}>
+                                            <span style={{ fontWeight: 600, cursor: 'pointer' }} onClick={handleToggleFormNames}>
                                                 Email name <span className="form-short">
                                                     <img src={down} alt="" />
                                                 </span>
@@ -1165,7 +1165,7 @@ export default function EmailTemplate() {
                                         <div className="show_forms_all">
                                             <span className="name_build">
                                                 Sort by :
-                                                <span style={{ fontWeight: 700, cursor: 'pointer' }} onClick={handleToggleTemplate}>
+                                                <span style={{ fontWeight: 600, cursor: 'pointer' }} onClick={handleToggleTemplate}>
                                                     Email name <span className="form-short">
                                                         <img src={down} alt="" />
                                                     </span>
@@ -1268,6 +1268,7 @@ export default function EmailTemplate() {
                                     </nav>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                     {deletePopup && (
