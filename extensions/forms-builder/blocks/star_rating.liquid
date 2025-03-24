@@ -848,7 +848,7 @@
           }
 
           displayFormData(data);
-          console.log(data);
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
           $('#formData-{{ block.id }}').append('<p></p>');
@@ -1068,10 +1068,11 @@
       if (passwordStatus === 'on') {
         const hasNumber = /\d/.test(password);
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const hasUppercase = /[A-Z]/.test(password);
 
-        if (!hasNumber || !hasSpecialChar) {
+        if (!hasNumber || !hasSpecialChar || !hasUppercase) {
           isValid = false;
-          errorText = `Password must be at least ${minLength} characters long, include at least one number, and one special character.`;
+          errorText = `Password must be at least ${minLength} characters long, include at least one uppercase letter, one number, and one special character.`;
         }
       }
 
@@ -1637,7 +1638,7 @@
               />
                <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/pass.png?v=1740467283" 
                onclick="togglePasswordVisibility(this)" 
-                style="position: absolute; right: 10px; top: 21px; cursor: pointer; user-select: none; width: 21px; height: 15px;"
+                style="position: absolute; right: 10px; top: 19px; cursor: pointer; user-select: none; width: 21px; height: 15px;"
               alt="Show Password"
               />
               <small style="color: red; display: none;"></small>
@@ -2290,13 +2291,10 @@
               url: 'https://apps.syncform.app/get/data',
               method: 'GET',
               success: function (data) {
-                console.log('Fetched data:', data);
-
+               
                 const matchingForm = data.data.find((form) => form.form_ids.includes(formData.id));
 
                 if (matchingForm) {
-                  console.log('Matched form data:', matchingForm);
-
                   $.ajax({
                     url: 'https://apps.syncform.app/api/template',
                     method: 'POST',

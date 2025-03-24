@@ -1322,17 +1322,19 @@ input:checked+.slider:before {
     padding-bottom: 10px;
 }
 
-
 .form-builder-wrap-popup-inputs .popup-content {
     background: #fff;
     padding: 40px;
     border-radius: 8px;
-    background-image: url(./images/wring.png) !important;
     width: 100%;
     max-width: 28%;
     box-sizing: border-box;
     background-size: cover;
     background-repeat: no-repeat;
+}
+
+.popup-content.save.cancel {
+    background-image: url(./images/wring.png) !important;
 }
 
 .popup-content.save.email {
@@ -2504,7 +2506,7 @@ button.cancle-form-btn {
 
 .form_build_icon_search {
     position: absolute;
-    top: 12px;
+    top: 10px;
     left: 10px;
 }
 
@@ -2532,6 +2534,10 @@ button.cancle-form-btn {
     display: flex;
     gap: 0px;
     z-index: 999;
+}
+
+img.form-builder-wred-starr-requid.support {
+    top: -5px;
 }
 
 .form-builder-wred-starr-requid {
@@ -3487,7 +3493,7 @@ p.form_build_h2_four {
 
 .form_builder_support .form_builder_reasons {
     margin: 25px 0;
-    background-image: url('../app//images/testbg.png');
+    background-image: url('../app//images/dashbord.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -8510,7 +8516,7 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 33px;
+        font-size: 29px;
         line-height: 36px;
     }
 
@@ -8580,8 +8586,8 @@ button.form_email_btn {
     }
 
     .form_build_contact .form_build_count p {
-        font-size: 25px;
-        line-height: 32px;
+        font-size: 23px;
+        line-height: 30px;
     }
 
     .form_build_contact .contact_img {

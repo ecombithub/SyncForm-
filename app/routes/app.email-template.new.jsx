@@ -3665,7 +3665,7 @@ const EmailTemplateCreate = () => {
                                                                                                         );
                                                                                                         setFields(updatedFields);
                                                                                                     }}
-                                                                                                    placeholder="Column Label"
+                                                                                                    placeholder="Button Label"
                                                                                                 />
                                                                                             </div>
                                                                                             <div className='form-builder-chaneging-wrap number'>
@@ -7690,7 +7690,7 @@ const EmailTemplateCreate = () => {
                                                                                                     .find((f) => f.id === selectedFieldId)?.splitbtn
                                                                                             }
 
-                                                                                            placeholder="Letter Spacing"
+                                                                                            placeholder="Button Label"
                                                                                         />
                                                                                     </div>
                                                                                     <div className='form-builder-chaneging-wrap number'>
@@ -8946,7 +8946,7 @@ const EmailTemplateCreate = () => {
                 </div>
                 <div className='save-email-templates-add'>
                     {cancelEmail && (<div className="popup ">
-                        <div className="popup-content save ">
+                        <div className="popup-content save cancel ">
                             <div className="save-email-template-popup">
                                 <div className='cancle-save-email' onClick={() => setCancelEmail(false)}>
                                     <img src={cancleimg} alt="" />
@@ -9237,7 +9237,7 @@ const EmailTemplateCreate = () => {
                     </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-and-condition.html">Terms and Conditions</a></div>
         </div >
     );
 };

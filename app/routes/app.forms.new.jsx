@@ -297,7 +297,7 @@ const Formgenerated = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [selectedimage, setSelectedimage] = useState([]);
     const [userPlan, setUserPlan] = useState(null);
-    const [sliderValue, setSliderValue] = useState(1);
+    const [sliderValue, setSliderValue] = useState(0);
     const [subject, setSubject] = useState('');
     const [passwordStatus, setPasswordStatus] = useState("off");
     const [fileOptions, setFileOptions] = useState({});
@@ -561,12 +561,9 @@ const Formgenerated = () => {
 
             setEditorValue(editorValue);
             setSubmissionOption(prev => {
-                console.log("Previous submissionOption:", prev);
                 return location.state.submissionOption || '';
             });
-
-            console.log("After setting state, submissionOption:", submissionOption);
-
+            
             setSubject(styles.subject);
 
             if (fields && fields.length > 0) {
@@ -638,7 +635,6 @@ const Formgenerated = () => {
                 }
             }
         }
-        console.log(location.state)
     }, [location.state]);
 
     // const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
@@ -701,7 +697,7 @@ const Formgenerated = () => {
             headingLineheight: type === 'heading' ? '' : undefined,
             linktext: type === 'link' ? 'Link' : undefined,
             linkUrl: type === 'link' ? '' : undefined,
-            min: type === 'slider' ? 1 : undefined,
+            min: type === 'slider' ? 0 : undefined,
             max: type === 'slider' ? 100 : undefined,
             step: type === 'slider' ? 10 : undefined,
             value: type === 'slider' ? (existingField ? existingField.value : 0) : undefined,
@@ -1261,11 +1257,6 @@ const Formgenerated = () => {
         const formId = generateUniqueId();
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
 
-        console.log('Form status:', status);
-
-        console.log('Fields:', fields);
-
-
         if (status !== 'live' && status !== 'draft') {
 
             return;
@@ -1284,7 +1275,7 @@ const Formgenerated = () => {
             },
         });
 
-        console.log('Sanitized Content:', sanitizedContent);
+     
 
         const backgroundImageUrl = imageFile ? `url(${imageFile})` : backgroundImage || 'none';
 
@@ -1468,7 +1459,7 @@ const Formgenerated = () => {
 
         request
             .then(response => {
-                console.log(isEditing ? 'Form updated successfully:' : 'Form data saved successfully:', response.data);
+                // console.log(isEditing ? 'Form updated successfully:' : 'Form data saved successfully:', response.data);
                 const updatedForms = isEditing
                     ? createdForms.map(form => form.formId === editingFormId ? newForm : form)
                     : [...createdForms, newForm];
@@ -1564,9 +1555,8 @@ const Formgenerated = () => {
     }, [editedFieldIndex]);
 
     useEffect(() => {
-        console.log('selectedField', selectedField);
-        console.log('headingText', headingText);
-
+        // console.log('selectedField', selectedField);
+        // console.log('headingText', headingText);
         if (selectedField) {
             const updatedField = {
                 ...selectedField,
@@ -5749,7 +5739,7 @@ const Formgenerated = () => {
                         </div>
                     </div>)}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-and-condition.html">Terms and Conditions</a></div>
         </div>
     );
 };

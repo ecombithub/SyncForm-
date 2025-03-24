@@ -254,7 +254,7 @@ export default function Support() {
                                 <p>Please provide the details of the problem</p>
                                 <div className="service-form-input">
                                     <div className="servies-input">
-                                        <label htmlFor="name">Name<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /> </label>
+                                        <label htmlFor="name">Name<img className='form-builder-wred-starr-requid support' src={star} alt="Required Field" /> </label>
                                         <input type="name" value={name} onChange={(e) => {
                                             const newValue = e.target.value.replace(/[0-9]/g, "");
                                             setName(newValue);
@@ -262,7 +262,7 @@ export default function Support() {
                                         {/\d/.test(name) && <p className="error-message">Numbers are not allowed</p>}
                                     </div>
                                     <div className="servies-input">
-                                        <label htmlFor="email">E-mail<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
+                                        <label htmlFor="email">E-mail<img className='form-builder-wred-starr-requid support' src={star} alt="Required Field" /></label>
                                         <input type="email" value={email} onChange={(e) => {
                                             setEmail(e.target.value);
                                             validateEmail(e.target.value);
@@ -271,19 +271,19 @@ export default function Support() {
                                         {error && <p style={{ color: "red" }} className="error-message">{error}</p>}
                                     </div>
                                     <div className="servies-input">
-                                        <label htmlFor="Department">Category<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
+                                        <label htmlFor="Department">Category<img className='form-builder-wred-starr-requid support' src={star} alt="Required Field" /></label>
                                         <input type="test" value={category} onChange={(e) => setCategory(e.target.value)} />
                                     </div>
                                     <div className="servies-input">
-                                        <label htmlFor="Computer ID">Theme ID or Collaborator Code<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
+                                        <label htmlFor="Computer ID">Theme ID or Collaborator Code<img className='form-builder-wred-starr-requid support' src={star} alt="Required Field" /></label>
                                         <input type="test" value={theme} onChange={(e) => setTheme(e.target.value)} />
                                     </div>
                                     <div className="servies-input shop">
-                                        <label htmlFor="Shop">Shop <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
+                                        <label htmlFor="Shop">Shop <img className='form-builder-wred-starr-requid support' src={star} alt="Required Field" /></label>
                                         <input type="test" value={shop} onChange={(e) => setShop(e.target.value)} />
                                     </div>
                                     <div className="servies-input textarea">
-                                        <label htmlFor="Describe the Problem">Describe the Problem<img className='form-builder-wred-starr-requid' src={star} alt="Required Field" /></label>
+                                        <label htmlFor="Describe the Problem">Describe the Problem<img className='form-builder-wred-starr-requid support' src={star} alt="Required Field" /></label>
                                         <textarea id="w3review" name="w3review" style={{ resize: 'vertical' }} rows="4" cols="50" value={describe}
                                             onChange={(e) => {
                                                 const newValue = e.target.value.replace(/[0-9]/g, "");
@@ -317,7 +317,7 @@ export default function Support() {
                     </div>
                 )}
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-and-condition.html">Terms and Conditions</a></div>
         </div>
     )
 }

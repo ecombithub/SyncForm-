@@ -65,12 +65,11 @@ export const action = async ({ request }) => {
                             selectedPlan === "pro_plus" ? 14.99 :
                                 selectedPlan === "pro_plus_yearly" ? 149.99 : 0,
                     return_url: `https://${shop}/admin/apps/syncform/app/pricing`,
-                    trial_days: 7,
-                    test: true,
+                    // trial_days: 7,
+                    //  test: true,
                     interval: selectedPlan === "pro_yearly" || selectedPlan === "pro_plus_yearly" ? "annual" : "every_30_days"
                 }
             };
-
 
         if (!chargeData) {
             return { success: false, message: "Free plan selected. No charge required." };
@@ -218,7 +217,7 @@ export default function Pricing() {
         try {
             const response = await axios.get(`${apiUrl}/payment/active-plan?shop=${shop}`);
             setData(response.data);
-            console.log(response.data)
+            // console.log(response.data)
         } catch (error) {
             console.error("Error fetching active plan:", error);
         } finally {
@@ -306,7 +305,7 @@ export default function Pricing() {
                 }
             });
 
-            console.log("Payment confirmation response:", response);
+            // console.log("Payment confirmation response:", response);
         } catch (error) {
             console.error("Error during deletion:", error.response ? error.response.data : error.message);
         } finally {
@@ -1070,7 +1069,7 @@ export default function Pricing() {
                     <a href="https://syncform.app/pricing.html" target='_blank'><button style={{ cursor: "pointer" }}>View All Features</button></a>
                 </div>
             </div>
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-and-condition.html">Terms and Conditions</a></div>
             {isPopupVisible && (<div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>

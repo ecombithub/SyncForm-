@@ -172,7 +172,7 @@ const Formdata = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [copiedFormId, setCopiedFormId] = React.useState(null);
     const [loading, setLoading] = useState(false);
-    const [sliderValue, setSliderValue] = useState(1);
+    const [sliderValue, setSliderValue] = useState(0);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1280);
     const [activeBrand, setActiveBrand] = useState('');
 
@@ -182,7 +182,7 @@ const Formdata = () => {
                 const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
                 setActiveBrand(response.data.status);
             } catch (error) {
-
+                
             }
         };
 
@@ -374,7 +374,7 @@ const Formdata = () => {
                 const filteredForms = formsData.filter((form) => form.shop === shop);
 
                 setCreatedForms(filteredForms);
-                console.log(filteredForms)
+                // console.log(filteredForms)
                 const response2 = await axios.get(`${apiUrl}/api/forms`);
                 const apiFormsData = response2.data;
 
@@ -1265,7 +1265,7 @@ const Formdata = () => {
                     </div>
                 </div >
             )}
-            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-condition.html">Terms and Conditions</a></div>
+            <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-and-condition.html">Terms and Conditions</a></div>
         </>
     );
 };
