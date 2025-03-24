@@ -2107,23 +2107,28 @@ app.post('/user-email', async (req, res) => {
         if (submissionCount >= numberValueParsed && status === "active") {
           console.log(`Form ${form.title} has reached ${numberValueParsed} submissions. Sending email...`);
 
-          const selectedForm = {
-            _id: form._id,
-            title: form.title,
-            id: form.id,
-            shop: form.shop,
-            currentUrl: form.currentUrl,
-            fields: JSON.stringify(form.fields),
-            timestamp: form.timestamp,
-            submissions: form.submissions.map(submission => ({
+          const latestSubmissions = form.submissions.slice(0, numberValueParsed); 
+          const formattedSubmissions = latestSubmissions.map(submission => {
+            const flatFields = submission.fields.reduce((acc, field) => {
+              acc[field.name] = field.value; 
+              return acc;
+            }, {});
+          
+            return {
+              _id: form._id,
+              title: form.title,
+              id: form.id,
+              shop: form.shop,
+              currentUrl: form.currentUrl,
+              formTimestamp: form.timestamp, 
               submissionId: submission._id,
-              submissionFields: JSON.stringify(submission.fields),
+              ...flatFields,
               submissionTimestamp: submission.timestamp,
-            })),
-          };
-
+            };
+          });
+          
           const csvParser = new Parser();
-          const csvData = csvParser.parse([selectedForm]);
+          const csvData = csvParser.parse(formattedSubmissions) ;
 
           const transporter = nodemailer.createTransport({
             service: 'gmail',
