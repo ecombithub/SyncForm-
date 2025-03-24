@@ -231,44 +231,46 @@ export default function EmailTemplate() {
     const handleTemplate = async (form) => {
         try {
             setLoading(true);
-
+    
             if (userPlan?.plan === 'free' && userPlan.status === 'active') {
                 console.log("User is on a Free Plan");
-
+    
                 const base64Response = await axios.get(`${apiUrl}/get/base64`);
                 const matchingTemplate = base64Response.data.data.find(item => item.shop === shop);
-
+    
                 if (!matchingTemplate) {
                     console.log("No matching template found in base64. Fetching main template data...");
-
+    
                     const response = await axios.get(`${apiUrl}/template/data`);
                     const fetchedData = response.data.data || [];
                     const selectedTemplate = fetchedData.find(item => item.templateId === form.templateId);
-
+    
                     if (selectedTemplate) {
-                        const payload = { ...selectedTemplate, shop };
+                        const newTemplateId = `${selectedTemplate.templateId}-${Date.now()}`;
+                        const payload = { ...selectedTemplate, templateId: newTemplateId, shop };
                         await axios.post(`${apiUrl}/send/api`, payload);
-
-                        console.log("Template sent to API successfully.");
+    
+                        console.log("Template sent to API successfully with unique templateId.");
                         fetchForms();
                     }
                 } else {
                     console.log("Template already exists. Showing upgrade popup.");
                     setUphradePopup(true);
                 }
-
+    
             } else {
                 console.log("User is NOT on a Free Plan. Executing normal workflow.");
-
+    
                 const response = await axios.get(`${apiUrl}/template/data`);
                 const fetchedData = response.data.data || [];
                 const matchedData = fetchedData.find(item => item.templateId === form.templateId);
-
+    
                 if (matchedData) {
-                    const payload = { ...matchedData, shop };
+                    const newTemplateId = `${matchedData.templateId}-${Date.now()}`;
+                    const payload = { ...matchedData, templateId: newTemplateId, shop };
                     await axios.post(`${apiUrl}/send/api`, payload);
-
-                    console.log("Template sent to API successfully.");
+    
+                    console.log("Template sent to API successfully with unique templateId.");
                     fetchForms();
                 } else {
                     console.log("No matching template found.");
@@ -280,7 +282,7 @@ export default function EmailTemplate() {
             setLoading(false);
         }
     };
-
+    
 
     const handleDeleteForm = async () => {
         if (!formToDelete) return;
