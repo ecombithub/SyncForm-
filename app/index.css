@@ -8138,6 +8138,14 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .form_builder_action_status p {
+        line-height: 27px;
+    }
+
+    .form_builder_comple_email p {
+        line-height: 27px;
+    }
+
     .input-field.input-gap.small-width {
         width: 100% !important;
     }
@@ -8438,9 +8446,14 @@ button.form_email_btn {
     .form_annualy_plans._plans {
         padding: 8px 7px;
     }
+    .form_build_contact .form_build_count p {
+        font-size: 31px;
+        line-height: 42px;
+    }
 }
 
 @media screen and (max-width:390px) {
+    
     .save-email-template-popup p {
         margin: 20px 0;
         font-size: 18px;

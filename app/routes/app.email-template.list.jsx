@@ -98,24 +98,22 @@ export default function EmailTemplate() {
         setIsLoading(true);
         try {
             const response = await axios.get(`${apiUrl}/get/base64`);
-            let fetchedData = response.data.data || [];
-
+            let fetchedData = Array.isArray(response.data.data) ? response.data.data : [];
+    
             fetchedData = fetchedData.filter(form => form.shop === shop);
-
+    
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
+            if (!planResponse.data) throw new Error("Invalid plan response");
+    
             setUserPlan(planResponse.data);
-            // console.log("User Plan:", planResponse.data);
-
+    
             if (planResponse.data?.plan === "free" && planResponse.data.status === "active") {
                 if (fetchedData.length > 1) {
                     const [firstTemplate, ...formsToDelete] = fetchedData;
-
-                    // console.log("Forms to delete:", formsToDelete);
-
+    
                     await Promise.all(formsToDelete.map(async (form) => {
                         const idToDelete = form.formId || form.templateId || form._id;
                         if (idToDelete) {
-                            // console.log("Deleting Form ID:", idToDelete);
                             try {
                                 await axios.delete(`${apiUrl}/delete/${idToDelete}`);
                             } catch (err) {
@@ -125,20 +123,20 @@ export default function EmailTemplate() {
                             console.error("Skipping deletion. Missing valid ID for:", form);
                         }
                     }));
-
+    
                     fetchedData = [firstTemplate];
                 }
             }
-
-            fetchedData = fetchedData.slice().reverse();
-            setFormsData(fetchedData);
-            // console.log("Final templates:", fetchedData);
+    
+            setFormsData(fetchedData.reverse());
         } catch (error) {
+            console.error("Error fetching forms:", error);
             setError(`Error fetching forms: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
     };
+    
 
     const handlePreviw1 = async (form) => {
         try {
