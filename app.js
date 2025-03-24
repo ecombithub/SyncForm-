@@ -1181,22 +1181,48 @@ const sendEmails = async (formData) => {
       `,
     };
 
+    const userEmailTemplate = `
+    <html>
+    <head>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+      <style>
+        body {
+          font-family: 'Montserrat', sans-serif;
+        }
+      </style>
+    </head>
+    <body>
+      <div style="background-color: #f3f3f3; padding: 50px; text-align: center;">
+        <div style="background-color: white; max-width: 50%; margin: 0 auto; padding: 50px; font-family: 'Montserrat', sans-serif;">
+          <div>
+            <img src="https://cdn.shopify.com/s/files/1/0679/9022/5150/files/Logo-SyncForm_1.svg?v=1741247523" style="width:170px">
+          </div> 
+          <p style="font-weight:600; font-size:18px">
+            Hello ${formData.name},  
+            <br><br>
+            Thank you for reaching out to us! Your query has been successfully received, and our team is reviewing your inquiry.  
+            We will get back to you within a business day.  
+            <br><br>
+            If you have any other queries, feel free to reply to this email.
+          </p>
+          <p>Best Regards,</p>
+          <p>SyncForm Support Team</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
     const userMailOptions = {
       from: 'syncform@hubsyntax.com',
       to: formData.email,
       subject: 'Support Request Received',
-      text: `Hello ${formData.name},
-      Thank you for reaching out to us! Your query has been successfully received, and our team is reviewing your inquiry. We will get back to you within a business day.
-      If you have any other query, feel free to reply to this email.
-
-      Best Regards, 
-      SyncForm Support Team
-      `,
+      html: userEmailTemplate, 
     };
 
     await transportered.sendMail(adminMailOptions);
     await transportered.sendMail(userMailOptions);
-    
+
     console.log('Emails sent successfully.');
   } catch (error) {
     console.error('Error sending emails:', error);
@@ -2115,15 +2141,15 @@ app.post('/user-email', async (req, res) => {
             }, {});
           
             return {
-              _id: form._id,
-              title: form.title,
+              _Id: form._id,
+             "Form name": form.title,
               id: form.id,
-              shop: form.shop,
-              currentUrl: form.currentUrl,
-              formTimestamp: form.timestamp, 
-              submissionId: submission._id,
+              Shop: form.shop,
+              CurrentUrl: form.currentUrl,
+              FormTimestamp: form.timestamp, 
+              SubmissionId: submission._id,
               ...flatFields,
-              submissionTimestamp: submission.timestamp,
+              SubmissionTimestamp: submission.timestamp,
             };
           });
           

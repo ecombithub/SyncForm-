@@ -839,7 +839,7 @@
       $('#formData-{{ block.id }}').empty();
 
       $.ajax({
-        url: `https://apps.syncform.app/get-form/${id}`,
+        url: `http://localhost:4001/get-form/${id}`,
         method: 'GET',
         success: function (data) {
           if (data.status === 'draft') {
@@ -883,7 +883,7 @@
 
       async function getBrandLogo(formshop) {
         try {
-          const response = await fetch(`https://apps.syncform.app/data/brandLogo/${formshop}`);
+          const response = await fetch(`http://localhost:4001/data/brandLogo/${formshop}`);
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
@@ -2263,7 +2263,7 @@
       }
 
       $.ajax({
-        url: 'https://apps.syncform.app/api/forms',
+        url: 'http://localhost:4001/api/forms',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -2288,7 +2288,7 @@
 
           if (formData.id) {
             $.ajax({
-              url: 'https://apps.syncform.app/get/data',
+              url: 'http://localhost:4001/get/data',
               method: 'GET',
               success: function (data) {
                
@@ -2296,7 +2296,7 @@
 
                 if (matchingForm) {
                   $.ajax({
-                    url: 'https://apps.syncform.app/api/template',
+                    url: 'http://localhost:4001/api/template',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({

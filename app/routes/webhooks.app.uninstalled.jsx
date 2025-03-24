@@ -17,7 +17,7 @@ export const action = async ({ request }) => {
         await shopify.sessionStorage.deleteSessions(sessionIds);
         console.log(`🗑️ Deleted all sessions for ${shop}`);
 
-        const response = await fetch("https://apps.syncform.app/api/store", {
+        const response = await fetch("http://localhost:4001/api/store", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
