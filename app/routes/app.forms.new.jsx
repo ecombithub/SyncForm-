@@ -728,7 +728,7 @@ const Formgenerated = () => {
 
 
     const handleToggleChange = () => {
-        if (!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        if (!['pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUphradePopup(true);
             return;
         }
@@ -1649,7 +1649,7 @@ const Formgenerated = () => {
     }, [editMode]);
 
     const handleFileChange = (event) => {
-        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUphradePopup(true);
             return;
         }
@@ -1668,7 +1668,7 @@ const Formgenerated = () => {
 
     const handleBackgroundFileDrop = (e) => {
         e.preventDefault();
-        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        if (!['pro', 'pro-plus', 'pro_yearly', 'pro-plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUphradePopup(true);
             return;
         }
@@ -2225,14 +2225,14 @@ const Formgenerated = () => {
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('textarea')}><span className='form_builder_field_img'><img src={text1} alt="" /></span> <span><h4>Text area</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('url')}><span className='form_builder_field_img'><img src={url1} alt="" /></span> <span><h4>Url</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('file')} ><span className='form_builder_field_img'><img src={single} alt="" /></span> <span><h4>File Upload</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-file'); }}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi-File Upload</h4></span></button> {!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-file'); }}><span className='form_builder_field_img'><img src={multi} alt="" /></span> <span><h4>Multi-File Upload</h4></span></button> {!['pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('images')}><span className='form_builder_field_img'><img src={singleimage} alt="" /></span> <span><h4>Images</h4></span></button></div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-image'); }}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi-Image</h4></span></button>{!['pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('multi-image'); }}><span className='form_builder_field_img'><img src={image} alt="" /></span> <span><h4>Multi-Image</h4></span></button>{!['pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro +</span>)}</div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('toggle')}><span className='form_builder_field_img'><img src={toggle} alt="" /></span> <span><h4>Toggle</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp'> <button onClick={() => addInputField('button')}><span className='form_builder_field_img'><img src={btn} alt="" /></span> <span><h4>Button</h4></span></button></div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('divider')}><span className='form_builder_field_img'><img src={divider2} alt="" /></span> <span><h4>Divider</h4></span></button> </div>
                                                 <div className='builderr_field_wrpp form-plan'> <button onClick={() => addInputField('link')}><span className='form_builder_field_img'><img src={link1} alt="" /></span> <span><h4>Link</h4></span></button> </div>
-                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro </span>)}</div>
+                                                <div className='builderr_field_wrpp form-plan'> <button onClick={() => { if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) { setUphradePopup(true); return; } addInputField('slider'); }}> <span className='form_builder_field_img'><img src={slider} alt="Slider Icon" /> </span> <span><h4>Slider</h4> </span></button>{!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan) && (<span className="payment-plan">Pro </span>)}</div>
                                             </div>
                                         ) : (
                                             <div className='form-scroll-bar'>
@@ -2282,7 +2282,7 @@ const Formgenerated = () => {
                                                                     <div
                                                                         className='option-content'
                                                                         onClick={() => {
-                                                                            if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                            if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                 setUphradePopup(true);
                                                                                 return;
                                                                             }
@@ -2302,7 +2302,7 @@ const Formgenerated = () => {
                                                                 {submissionOption === 'Hide form and show thank you message' && (
                                                                     <div className='option-content'
                                                                         onClick={() => {
-                                                                            if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                            if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                 setUphradePopup(true);
                                                                                 return;
                                                                             }
@@ -5119,7 +5119,7 @@ const Formgenerated = () => {
                                                                     type="text"
                                                                     value={selectedField?.customClass || ''}
                                                                     onClick={() => {
-                                                                        if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                        if (!['pro', 'pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                             setUphradePopup(true);
                                                                         }
                                                                     }}
@@ -5234,7 +5234,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro ${fileOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro', 'pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5247,7 +5247,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro-plus ${fileOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5277,7 +5277,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro ${multiOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro', 'pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5290,7 +5290,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro-plus ${multiOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5320,7 +5320,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro ${imageOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro', 'pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5333,7 +5333,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro-plus ${imageOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5363,7 +5363,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro ${multiimagesOptions[selectedField.id] === 'option2' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro', 'pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro', 'pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }
@@ -5376,7 +5376,7 @@ const Formgenerated = () => {
                                                                             <span
                                                                                 className={`file-option pro-plus ${multiimagesOptions[selectedField.id] === 'option3' ? 'active' : ''}`}
                                                                                 onClick={() => {
-                                                                                    if (!['pro_plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
+                                                                                    if (!['pro-plus', 'pro_yearly'].includes(userPlan?.activePlan?.plan)) {
                                                                                         setUphradePopup(true);
                                                                                         return;
                                                                                     }

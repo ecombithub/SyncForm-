@@ -453,7 +453,7 @@ function Customer() {
     }
 
     const handleshowPopup = () => {
-        if (!['pro', 'pro_plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+        if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
             setUphradePopup(true);
             return;
         }
