@@ -53,26 +53,20 @@ export const action = async ({ request }) => {
         const selectedPlan = formData.get('plan');
 
         const chargeData = selectedPlan === "free" ? null :
-            {
+            selectedPlan === "pro" || selectedPlan === "pro-plus" ? {
                 recurring_application_charge: {
-                    name: selectedPlan === "pro" ? "Form Builder Pro Plan" :
-                        selectedPlan === "pro_yearly" ? "Form Builder Pro Yearly Plan" :
-                            selectedPlan === "pro_plus" ? "Form Builder Pro Plus Plan" :
-                                selectedPlan === "pro_plus_yearly" ? "Form Builder Pro Plus Yearly Plan" :
-                                    "Unknown Plan",
+                    name: selectedPlan === "pro" ? "pro" :
+                        selectedPlan === "pro-plus" ? "pro-plus" :
+                            "Unknown Plan",
                     price: selectedPlan === "pro" ? 4.99 :
-                        selectedPlan === "pro_yearly" ? 49.99 :
-                            selectedPlan === "pro_plus" ? 14.99 :
-                                selectedPlan === "pro_plus_yearly" ? 149.99 : 0,
+                        selectedPlan === "pro-plus" ? 14.99 : 0,
                     return_url: `https://${shop}/admin/apps/syncform/app/pricing`,
-                    // trial_days: 7,
-                    //  test: true,
-                    interval: selectedPlan === "pro_yearly" || selectedPlan === "pro_plus_yearly" ? "annual" : "every_30_days"
+                    interval: "every_30_days"
                 }
-            };
+            } : null;
 
         if (!chargeData) {
-            return { success: false, message: "Free plan selected. No charge required." };
+            return { success: false, message: "No charge required for selected plan." };
         }
 
         try {
@@ -196,7 +190,7 @@ export default function Pricing() {
         const paymentData = {
             shop: shop,
             name: charge.name,
-            plan: charge.name.includes('Pro Plus') ? 'pro_plus' : charge.name.includes('Yearly') ? 'pro_yearly' : 'pro',
+            plan: charge.name.includes('Pro Plus') ? 'pro-plus' : charge.name.includes('Yearly') ? 'pro_yearly' : 'pro',
             price: charge.price,
             status: charge.status,
             billingOn: new Date(),
@@ -235,7 +229,7 @@ export default function Pricing() {
     }, [activePlan]);
 
     const handleChoosePlan = async (plan) => {
-        if (data?.activePlan?.plan === "pro_plus" && plan === "pro") {
+        if (data?.activePlan?.plan === "pro-plus" && plan === "pro") {
             setPopupPlan(plan);
             setIsPopupVisible(true);
             return;
@@ -416,7 +410,7 @@ export default function Pricing() {
                                                 <>
                                                     {activePlan && activePlan.status === 'active' ? (
                                                         <div className="charge-item">
-                                                             <p>Free</p>
+                                                            <p>Free</p>
                                                             <h2>$0.00<span className='monthly-number'>/lifetime</span></h2>
                                                             <p className='form_builder_plan_btn' onClick={() => handleDelete(activePlan.chargeId, activePlan.name)}>
                                                                 Choose this plan
@@ -512,7 +506,7 @@ export default function Pricing() {
                                         </p>
                                     </div>
 
-                                    {activePlan && activePlan.name === 'Form Builder Pro Plan' ? (
+                                    {activePlan && activePlan.name === 'pro' ? (
                                         <div>
                                             <img src={proplan} />
                                             <p className='form_builder_plan_btn' style={{ backgroundColor: '#33AADE', color: 'white', border: '1px solid white' }}>Current Plan</p>
@@ -588,14 +582,14 @@ export default function Pricing() {
                                         </p>
                                     </div>
 
-                                    {activePlan && activePlan.name === 'Form Builder Pro Plus Plan' ? (
+                                    {activePlan && activePlan.name === 'pro-plus' ? (
                                         <div>
                                             <img src={proplan} />
                                             <p className='form_builder_plan_btn' style={{ backgroundColor: '#EE8208', color: 'white', border: '1px solid white' }}>Current Plan</p>
                                         </div>
                                     ) : (
                                         <p className='form_builder_plan_btn'
-                                            onClick={() => handleChoosePlan('pro_plus')}
+                                            onClick={() => handleChoosePlan('pro-plus')}
                                         >
                                             Choose this plan
                                         </p>
@@ -927,7 +921,7 @@ export default function Pricing() {
                                         </div>
                                     ) : (
                                         <p className='form_builder_plan_btn'
-                                            onClick={() => handleChoosePlan('pro_plus_yearly')}
+                                            onClick={() => handleChoosePlan('pro-plus_yearly')}
                                         >
 
                                             Choose this plan
@@ -1073,7 +1067,7 @@ export default function Pricing() {
             {isPopupVisible && (<div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>
-                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before  proceeding.</p></span>
+                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
                     <div className="form-buuilder-pricing-plan-btn">
                         <button className='pricing-plan-btn-wrapp' onClick={handleConfirmPlanChange}>Yes</button>
                         <button className='pricing-plan-btn-wrapp no' onClick={() => setIsPopupVisible(false)}>No</button>
@@ -1086,7 +1080,7 @@ export default function Pricing() {
             {isDeletePopupVisible && (<div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>
-                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before  proceeding.</p></span>
+                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
                     <div className="form-buuilder-pricing-plan-btn">
                         <button className='pricing-plan-btn-wrapp' onClick={handleConfirmDelete}>Yes</button>
                         <button className='pricing-plan-btn-wrapp no' onClick={handleCancelDelete}>No</button>
@@ -1099,4 +1093,3 @@ export default function Pricing() {
         </div>
     );
 }
-  
