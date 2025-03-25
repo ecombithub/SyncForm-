@@ -1,4 +1,7 @@
 import { json } from "@remix-run/node";
+import crypto from "crypto";
+
+const SHOPIFY_API_SECRET_KEY = process.env.SHOPIFY_API_SECRET_KEY;
 
 export const action = async ({ request }) => {
     if (request.method !== "POST") {
@@ -9,8 +12,26 @@ export const action = async ({ request }) => {
         const rawText = await request.text();
         console.log("📦 Raw Webhook Payload:", rawText);
 
-        const payload = JSON.parse(rawText);
+        const receivedHmac = request.headers.get("X-Shopify-Hmac-Sha256");
 
+        if (!receivedHmac) {
+            console.error("❌ Missing HMAC signature");
+            return json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const computedHmac = crypto
+            .createHmac("sha256", SHOPIFY_API_SECRET_KEY)
+            .update(rawText, "utf8")
+            .digest("base64");
+
+        if (computedHmac !== receivedHmac) {
+            console.error("❌ HMAC validation failed");
+            return json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        console.log("✅ HMAC validation successful");
+
+        const payload = JSON.parse(rawText);
         console.log("🔍 Incoming Headers:", JSON.stringify([...request.headers.entries()], null, 2));
 
         const topic = request.headers.get("x-shopify-topic") || request.headers.get("X-Shopify-Topic");
@@ -20,6 +41,7 @@ export const action = async ({ request }) => {
         if (!allowedTopics.includes(topic)) {
             return json({ error: "Unrecognized topic" }, { status: 400 });
         }
+
         const response = await fetch("https://apps.syncform.app/api/CostomerRequest", {
             method: "POST",
             headers: {
