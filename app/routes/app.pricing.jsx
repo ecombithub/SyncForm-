@@ -1073,7 +1073,7 @@ export default function Pricing() {
             {isPopupVisible && (<div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>
-                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
+                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before  proceeding.</p></span>
                     <div className="form-buuilder-pricing-plan-btn">
                         <button className='pricing-plan-btn-wrapp' onClick={handleConfirmPlanChange}>Yes</button>
                         <button className='pricing-plan-btn-wrapp no' onClick={() => setIsPopupVisible(false)}>No</button>
@@ -1086,7 +1086,7 @@ export default function Pricing() {
             {isDeletePopupVisible && (<div className='form_builder_plan_upgrade_popup'>
                 <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>
-                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
+                    <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before  proceeding.</p></span>
                     <div className="form-buuilder-pricing-plan-btn">
                         <button className='pricing-plan-btn-wrapp' onClick={handleConfirmDelete}>Yes</button>
                         <button className='pricing-plan-btn-wrapp no' onClick={handleCancelDelete}>No</button>
@@ -1099,3 +1099,4 @@ export default function Pricing() {
         </div>
     );
 }
+  

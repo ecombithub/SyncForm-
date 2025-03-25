@@ -986,6 +986,17 @@ span.rm-btn.bg-img img {
     border-top-color: black;
 }
 
+.form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup{
+    background-image: url(./images/form-bg.png);
+    max-width: 37%;
+   
+}
+
+.form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup p {
+    font-size: 30px;
+}
+
+
 .formId-copy:hover .noUi-tooltip-id {
     display: flex;
 }
@@ -4067,7 +4078,7 @@ button.plus_option {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 9999999;
 }
 
 .form_builder_upgrade_popup_cancle {
@@ -4513,7 +4524,7 @@ button.btn-templates {
 .form_builder_plan_upgrade_popup_wrapp.password-popup {
     background-image: url(/app/images/unlock.png);
     height: 220px;
-    max-width: 27%;
+    max-width: 32%;
     display: flex;
 }
 
@@ -6103,6 +6114,10 @@ button.form_email_btn {
         padding: 0 20px;
     }
 
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 48%;
+    }
+
     .form-builder-wrap-popup-inputs .popup-content {
         max-width: 42%;
     }
@@ -6318,6 +6333,11 @@ button.form_email_btn {
         left: 60px;
     }
 
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 57%;
+    }
+
+
     .email-template-section .email-templete-search-bar {
         width: 66%;
     }
@@ -6417,6 +6437,15 @@ button.form_email_btn {
 @media screen and (max-width: 1024px) {
     .form-builder-wrap-popup-inputs .popup-content {
         max-width: 45%;
+    }
+
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 78%;
+    }
+
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup p {
+
+        max-width: 100%;
     }
 
     .form_builder_plan_upgrade_popup.connect.support .form_builder_plan_upgrade_popup_wrapp.connect-email.suporrt-wraped {
@@ -7561,6 +7590,9 @@ button.form_email_btn {
     .email-show-icon {
         width: 25px;
     }
+    .confirmation-popup-content {
+        max-width: 460px;
+    }
 
     .form-builder-wrap-popup-inputs .popup-content {
         max-width: 70%;
@@ -7751,6 +7783,13 @@ button.form_email_btn {
 }
 
 @media screen and (max-width: 480px) {
+    .confirmation-popup-content {
+        max-width: 440px;
+    }
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup {
+        max-width: 90%;
+    }
+
     .email-show-icon {
         width: 23px;
     }
@@ -8138,6 +8177,15 @@ button.form_email_btn {
 }
 
 @media screen and (max-width:430px) {
+    .confirmation-popup-content {
+        max-width: 380px;
+    }
+
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup p {
+        max-width: 100%;
+        font-size: 26px;
+    }
+
     .form_builder_action_status p {
         line-height: 27px;
     }
@@ -8450,10 +8498,21 @@ button.form_email_btn {
         font-size: 31px;
         line-height: 42px;
     }
+    .form_builder_plan_upgrade_popup.publishing-form .form_builder_plan_upgrade_popup_wrapp.password-popup p {
+        line-height: 32px;
+    }
+
 }
 
 @media screen and (max-width:390px) {
     
+    .confirmation-popup-content {
+        max-width: 360px;
+    }
+    .confirmation-popup-actions button {
+        padding: 10px 10px;
+        font-size: 13px;
+    }
     .save-email-template-popup p {
         margin: 20px 0;
         font-size: 18px;
@@ -8490,6 +8549,12 @@ button.form_email_btn {
 @media screen and (max-width:375px) {
     .form_builder_action_status p {
         line-height: 23px;
+    }
+    .confirmation-popup-content {
+        max-width: 295px;
+    }
+    .confirmation-popup-content {
+        max-width: 340px;
     }
 
     .form_builder_comple_email p {

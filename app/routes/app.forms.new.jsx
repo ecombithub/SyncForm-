@@ -315,6 +315,7 @@ const Formgenerated = () => {
     const [linkaline, setLinkaline] = useState('');
     const [linkTarget, setLinkTarget] = useState('_self');
     const [passwordpopop, setPasswordpopup] = useState(false);
+    const [publishPopup, setPublishPopup] = useState(false);
 
     const shopName = shopData.name;
     const shopEmail = shopData.email;
@@ -563,7 +564,7 @@ const Formgenerated = () => {
             setSubmissionOption(prev => {
                 return location.state.submissionOption || '';
             });
-            
+
             setSubject(styles.subject);
 
             if (fields && fields.length > 0) {
@@ -1241,7 +1242,7 @@ const Formgenerated = () => {
 
     const handleStatusChange = (status) => {
         if (fields.length === 0) {
-
+            setPublishPopup(true);
             setShowConfirmationPopup(false);
             return;
         }
@@ -1262,11 +1263,7 @@ const Formgenerated = () => {
             return;
         }
 
-        if (!formTitle.trim()) {
-
-            return;
-        }
-
+        const finalTitle = formTitle.trim() || `Untitled Form ${Math.floor(Math.random() * 10000)}`;
         const sanitizedContent = sanitizeHtml(editorValue, {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
             allowedAttributes: {
@@ -1275,13 +1272,11 @@ const Formgenerated = () => {
             },
         });
 
-     
-
         const backgroundImageUrl = imageFile ? `url(${imageFile})` : backgroundImage || 'none';
 
         const newForm = {
             formId: isEditing ? editingFormId : formId,
-            title: formTitle,
+            title: finalTitle,
             shop,
             fields: fields.map(field => {
 
@@ -2089,6 +2084,17 @@ const Formgenerated = () => {
 
     return (
         <div>
+
+
+           {publishPopup && ( <div className='form_builder_plan_upgrade_popup  publishing-form'>
+                <div className='form_builder_plan_upgrade_popup_wrapp password-popup'>
+                    <p>Please Select At Least One Field Before Publishing</p>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={()=>setPublishPopup(false)}>
+                        <img src={cancleimg} alt="" />
+                    </div>
+                </div>
+            </div>)}
+
 
             {passwordpopop && (
                 <div className='form_builder_plan_upgrade_popup '>

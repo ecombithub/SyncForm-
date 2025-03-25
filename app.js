@@ -124,7 +124,7 @@ app.post("/api/CostomerRequest", async (req, res) => {
 
       const mailOptions = {
           from: "syncform@hubsyntax.com",
-          to:'sahil@hubsyntax.com',
+          to:existingShop.email,
           subject: `Shopify Webhook Received: ${topic}`,
           text: `
            Webhook Topic: ${topic}
