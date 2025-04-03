@@ -63,8 +63,12 @@ export const action = async ({ request }) => {
                     price: selectedPlan === "pro" ? 4.99 : 14.99,
                     return_url: `https://${shop}/admin/apps/syncform/app/pricing`,
                     interval: "every_30_days",
+
                     trial_days: 7,
                     test: true,
+                    // trial_days: 7,
+                    // test: true,
+
                 }
             } : null;
 
@@ -199,7 +203,7 @@ export default function Pricing() {
             billingOn: new Date(),
             chargeId: charge.id,
         };
-    
+
         try {
             await axios.post(`${apiUrl}/payment/confirm`, paymentData);
         } catch (error) {
