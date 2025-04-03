@@ -55,15 +55,16 @@ export const action = async ({ request }) => {
         const chargeData = selectedPlan === "free" ? null :
             selectedPlan === "pro" || selectedPlan === "pro-plus" ? {
                 recurring_application_charge: {
-                    name: selectedPlan === "pro" ? "pro" :
-                        selectedPlan === "pro-plus" ? "pro-plus" :
-                            "Unknown Plan",
-                    price: selectedPlan === "pro" ? 4.99 :
-                        selectedPlan === "pro-plus" ? 14.99 : 0,
+                    name: selectedPlan,
+                    plan: selectedPlan,
+                    price: selectedPlan === "pro" ? 4.99 : 14.99,
                     return_url: `https://${shop}/admin/apps/syncform/app/pricing`,
-                    interval: "every_30_days"
+                    interval: "every_30_days",
+                    trial_days: 7,
+                    test: true,
                 }
             } : null;
+
 
         if (!chargeData) {
             return { success: false, message: "No charge required for selected plan." };
@@ -187,21 +188,22 @@ export default function Pricing() {
     }, [actionData]);
 
     const savePaymentData = async (charge) => {
+        const lowerCaseName = charge.name.toLowerCase(); 
+    
         const paymentData = {
             shop: shop,
             name: charge.name,
-            plan: charge.name.includes('Pro Plus') ? 'pro-plus' : charge.name.includes('Yearly') ? 'pro_yearly' : 'pro',
+            plan: lowerCaseName === 'pro-plus' ? 'pro-plus' : lowerCaseName === 'pro' ? 'pro' : 'unknown',
             price: charge.price,
             status: charge.status,
             billingOn: new Date(),
             chargeId: charge.id,
         };
-
+    
         try {
             await axios.post(`${apiUrl}/payment/confirm`, paymentData);
-
         } catch (error) {
-
+            console.error("Error saving payment data:", error);
         }
     };
 
