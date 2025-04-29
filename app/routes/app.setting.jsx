@@ -112,17 +112,17 @@ export default function Setting() {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/get-status/${shop}`);
-                setStatus(response.data.status);
-                setNumberValue(response.data.numberValue || 50);
-
+                const response = await axios.get(`${apiUrl}/api/get-shop/${shop}`);
+                setStatus(response.data.data.status); 
+                setNumberValue(response.data.data.numberValue || 50);
             } catch (error) {
+                console.error('Error fetching shop status:', error);
             }
         };
-
+    
         fetchStatus();
     }, [shop, apiUrl]);
-
+    
     useEffect(() => {
         if (status === 'active' && numberValue >= 50) {
             sendData();
@@ -153,10 +153,7 @@ export default function Setting() {
     })
 
     const toggleStatus = () => {
-        if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
-            setUpgradePopup(true);
-            return;
-        }
+       
         setStatus(prevStatus => (prevStatus === 'active' ? 'disactive' : 'active'));
     };
 
@@ -170,33 +167,33 @@ export default function Setting() {
 
     const sendData = async () => {
         try {
-            const postData = {
-                status,
-                numberValue,
-                shop,
-                shopData,
-            };
-            const response = await axios.post(`${apiUrl}/user-email`, postData);
-
-
-            if (response.data.message === 'Email will be sent when form count matches.') {
-                const statusResponse = await axios.get(`${apiUrl}/get-status/${shop}`);
-                setStatus(statusResponse.data.status);
-
-            }
+          const postData = {
+            status,
+            numberValue,
+            shop,
+          };
+      
+          const response = await axios.post(`${apiUrl}/api/save-shop`, postData);
+      
+          if (response.status === 5001) {
+            console.log('Data processed successfully. Email will be sent when submission count matches.');
+          
+            console.log('Status set to disactive immediately after email submission.');
+          }
         } catch (error) {
+          console.error('Error sending data:', error);
         }
-    };
+      };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${apiUrl}/save-settings`, {
+            const response = await fetch(`${apiUrl}/api/save-shop`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ shop, email, password })
+                body: JSON.stringify({shop,notificationsEmail: email, notificationsPassword:password })
             });
 
             const result = await response.json();
@@ -214,10 +211,7 @@ export default function Setting() {
     };
 
     const handleBrandLogo = () => {
-        if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
-            setUpgradePopup(true);
-            return;
-        }
+       
 
         const newStatus = activeBrand === 'active' ? 'disactive' : 'active';
         setActiveBrand(newStatus);
@@ -225,23 +219,28 @@ export default function Setting() {
 
     useEffect(() => {
         let timeoutId;
-
+    
         const sendStatusUpdate = async () => {
+            console.log('Sending brandLogoStatus:', activeBrand); 
+    
             try {
-                await fetch(`${apiUrl}/api/brandLogo`, {
+                const response = await fetch(`${apiUrl}/api/save-shop`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: activeBrand, shop }),
+                    body: JSON.stringify({ brandLogoStatus: activeBrand, shop }),
                 });
+    
+                const data = await response.json();
+                console.log('API response:', data);
             } catch (error) {
-
+                console.error('Error updating brand logo status:', error);
             }
         };
-
+    
         if (activeBrand) {
             timeoutId = setTimeout(sendStatusUpdate, 300);
         }
-
+    
         return () => clearTimeout(timeoutId);
     }, [activeBrand]);
 
@@ -249,8 +248,9 @@ export default function Setting() {
     useEffect(() => {
         const fetchStatusBrand = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
-                setActiveBrand(response.data.status);
+                const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
+                setActiveBrand(response.data.brandLogoStatus);
+                console.log("ddddddddd",response.data);
             } catch (error) {
 
             }
@@ -260,7 +260,6 @@ export default function Setting() {
             fetchStatusBrand();
         }
     }, [shop, apiUrl]);
-
 
     const handleNumbercancle = () => {
         setNumberPopup(false);

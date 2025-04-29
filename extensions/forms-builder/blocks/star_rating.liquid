@@ -1,199 +1,58 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+<link rel="stylesheet" href="{{ 'index.css' | asset_url }}">
 
 <div class="form_builder_app {{ block.id }}" id="formBuilderApp-{{ block.id }}">
-  <form
-    id="formData-{{ block.id }}"
-    style="background-size: cover;"
-    onsubmit="
-       submitFormData(event, '{{ block.id }}', 'formID',
-      'formTitle', 'formshop', 'shopNameHeading',
-      'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail','onwerShopData','nofieldValue', this)
-    "
-  ></form>
+  <div id="formContent-{{ block.id }}">
+    <form
+      id="formData-{{ block.id }}"
+      style="background-size: cover;"
+      onsubmit="submitFormData(event, '{{ block.id }}', 'formID',
+        'formTitle', 'formshop', 'shopNameHeading',
+        'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail', 'onwerShopData', 'nofieldValue', this)">
+ 
+    </form>
+  </div>
 </div>
-<style>
-  .input-field.input-gap {
-    width: 100%;
-  }
-
-  .iti.iti--allow-dropdown input {
-    height: 52px !important;
-  }
-
-  .slider-value {
-    position: absolute;
-    bottom: 4px;
-    left: 15px;
-    transform: translateX(-50%);
-    background-color: #23c66d;
-    color: white;
-    padding: 0px 5px;
-    border-radius: 1px;
-    font-size: 11px;
-    font-weight: bold;
-  }
-
-  .custom-select-container .custom-select-option {
-    color: gray;
-    text-align: left;
-  }
-
-  .email-files.drop.files h2 {
-    margin: 0;
-  }
-  .form_builder_app .iti__arrow {
-    display: block !important;
-  }
-
-  .form_builder_app input {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-
-  .form_builder_app textarea {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-  .form_builder_app input {
-    font-size: 15px !important;
-  }
-
-  .form_builder_app select {
-    font-size: 15px !important;
-  }
-
-  .form_builder_app textarea {
-    font-size: 15px !important;
-  }
-  img.form-builder-wred-starr-requid {
-    width: 7px;
-    top: 3px;
-    height: 7px;
-    margin-left: 5px;
-  }
-
-  .form_radio_flex input {
-    width: 20px;
-    height: 20px;
-    margin: 0;
-  }
-  .form_checkbox_flex input {
-    margin: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  img.form-builder-wred-starr-requid.toggle {
-    position: absolute;
-  }
-
-  .input-field.input-gap label {
-    display: flex;
-  }
-  .input-field.input-gap .iti__flag-container {
-    border: 1px solid grey;
-    border-radius: 5px;
-    width: 44px;
-  }
-
-  .form_builder_app .iti__flag {
-    display: block !important;
-  }
-
-  .form_builder_app ul {
-    padding: 0;
-  }
-  .brand-logos {
-    display: flex;
-    width: 100%;
-    justify-content: right;
-    padding-top: 20px;
-  }
-
-  .select-error-message {
-    border: 1px solid #cad2ca;
-    width: 100%;
-    max-width: 25%;
-    padding: 10px;
-    text-align: center;
-    border-radius: 4px;
-    position: absolute;
-    left: 38%;
-    bottom: -29px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-    color: black;
-    background:white;
-    box-shadow: -5px -5px 10px 0px rgba(255, 255, 255, 0.5), 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
-  }
-
-  .select-error-message img {
-    width: 23px;
-}
-
-  .error-icon {
-    width: 19px!important;
-    height: 11px!important;
-    position: absolute;
-    top: -11px;
-    left: 40px;
-}
-
-
-  @media screen and (max-width: 640px) {
-    .small-width {
-      width: 50% !important;
-    }
-  }
-
-  @media screen and (max-width: 540px) {
-    .form_builder_app .form-builder-changes-file-wraped .email-files.drop {
-      width: 50% !important;
-      margin: auto;
-    }
-    .form-builder-chaneging-wrap.file .email-files.drop.files {
-      width: 100% !important;
-    }
-
-    .form-builder-chaneging-wrap.file .email-files.drop.files p {
-      max-width: 80% !important;
-      margin-bottom: 20px !important;
-    }
-    .form-builder-chaneging-wrap.file .email-files.drop.files span {
-      padding: 10px 12px !important;
-    }
-
-    .drag-and-drop-text.first.multi-imagess h3 {
-      margin-bottom: 20px !important;
-      font-size: 16px !important;
-      line-height: 20px !important;
-    }
-  }
-
-  @media screen and (max-width: 540px) {
-    .small-width {
-      width: 100% !important;
-    }
-  }
-</style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var appEmbedBlock = document.querySelector('[data-block-handle="floating_image"]');
-    var formBlocks = document.querySelectorAll('[id^="formBuilderApp-"]');
 
-    formBlocks.forEach(function (formBlock) {
-      if (appEmbedBlock) {
-        formBlock.style.display = 'block';
-      } else {
-        formBlock.style.display = 'none';
-      }
-    });
+  document.addEventListener("DOMContentLoaded", function() {
+    const blockId = '{{ block.id }}'; 
+    const formDiv = document.getElementById('formContent-' + blockId);
+
+    const form = document.createElement('form');
+    form.setAttribute('id', 'formData-' + blockId);
+    form.setAttribute('style', 'background-size: cover;');
+
+    formDiv.appendChild(form);
+
+    form.onsubmit = function(event) {
+      submitFormData(event, blockId, 'formID', 'formTitle', 'formshop', 'shopNameHeading', 'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail', 'onwerShopData', 'nofieldValue', form);
+    };
+});
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var specificElement = document.querySelector('#shopify-block-AUllQZ05GMkxsZXB0M__11622374179798680724');
+    
+    if (specificElement) {
+      var editorBlockData = JSON.parse(specificElement.getAttribute('data-shopify-editor-block'));
+    
+      var formBlocks = document.querySelectorAll('[id^="formBuilderApp-"]');
+      formBlocks.forEach(function(formBlock) {
+        if (formBlock) {
+          formBlock.style.display = 'block';  
+        }
+      });
+    } else {
+      var formBlocks = document.querySelectorAll('[id^="formBuilderApp-"]');
+      formBlocks.forEach(function(formBlock) {
+        if (formBlock) {
+          formBlock.style.display = 'none';  
+        }
+      });
+    }
   });
 
   function toggleDropdown(event, fieldId) {
@@ -843,13 +702,20 @@
         url: `https://apps.syncform.app/get-form/${id}`,
         method: 'GET',
         success: function (data) {
+            console.log(data);
+          
           if (data.status === 'draft') {
             $('#formData-{{ block.id }}').append('');
             return;
           }
 
+          if (data.status === 'app uninstall') {
+            $('#formData-{{ block.id }}').append('');
+            return;
+          }
+    
           displayFormData(data);
-
+  
         },
         error: function (jqXHR, textStatus, errorThrown) {
           $('#formData-{{ block.id }}').append('<p></p>');
@@ -859,6 +725,14 @@
 
     function displayFormData(formData) {
       const container = $('#formData-{{ block.id }}');
+      const currentShop = Shopify.shop;     
+      const formShop = formData.shop;  
+
+      if (currentShop !== formShop) {
+        console.log('Shop mismatch. Form will not be displayed.');
+        return;
+      }
+  
       const formTitle = formData.title || 'Form Data';
       const formID = formData.formId || 'Unknown ID';
       const formshop = formData.shop || 'Form shop';
@@ -884,13 +758,13 @@
 
       async function getBrandLogo(formshop) {
         try {
-          const response = await fetch(`https://apps.syncform.app/data/brandLogo/${formshop}`);
+          const response = await fetch(`https://apps.syncform.app/get/save-shop/${formshop}`);
           if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(`HTTP error! Status: ${response.brandLogoStatus}`);
           }
 
           const BrandLogo = await response.json();
-          if (BrandLogo.status === 'active') {
+          if (BrandLogo.brandLogoStatus === 'active') {
             container.append(`
               <div class="brand-logos">
               <img src="https://cdn.shopify.com/s/files/1/0682/5974/1942/files/brandlogos.png?v=1741174088">

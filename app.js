@@ -46,27 +46,6 @@ const upload = multer({ storage: storage });
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-const CostomerRequest = new mongoose.Schema({
-  myshopify_domain: { type: String, required: true, unique: true },
-  email: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  shopify_id: { type: Number, required: true }, 
-  name: { type: String, required: false }, 
-});
-
-const CostomerRequestdata = mongoose.model("costomerRequests", CostomerRequest);
-
-const shopDataSchema = new mongoose.Schema({
-  myshopifyDomain: { type: String, required: true, unique: true },
-  email: { type: String, required: true },
-  name: { type: String, required: true },
-  primaryDomain: {
-    host: { type: String, required: true }
-  }
-});
-
-const StoreShopData = mongoose.model('store ShopDatas', shopDataSchema);
-
 app.post("/api/CostomerRequest", async (req, res) => {
   console.log("✅ Received Webhook Data in Backend:", JSON.stringify(req.body, null, 2));
   console.log("🔍 Incoming Headers:", req.headers);
@@ -76,116 +55,59 @@ app.post("/api/CostomerRequest", async (req, res) => {
 
   const allowedTopics = ["customers/redact", "customers/data_request", "shop/redact"];
   if (!allowedTopics.includes(topic)) {
-      console.log("❌ Unrecognized Webhook Topic:", topic);
-      return res.status(400).json({ error: "Invalid Webhook Topic" });
+    console.log("❌ Unrecognized Webhook Topic:", topic);
+    return res.status(400).json({ error: "Invalid Webhook Topic" });
   }
 
   const { shop_id, shop_domain, customer } = req.body;
 
   if (!shop_id || !shop_domain || (topic !== "shop/redact" && !customer?.email)) {
-      console.log("❌ Invalid Payload Structure:", req.body);
-      return res.status(400).json({ error: "Invalid Data" });
+    console.log("❌ Invalid Payload Structure:", req.body);
+    return res.status(400).json({ error: "Invalid Data" });
   }
 
   try {
-      const existingShop = await StoreShopData.findOne({ myshopifyDomain: shop_domain });
+    const existingShop = await ShopDetails.findOne({ shop: shop_domain });
 
-      if (!existingShop) {
-          console.log("❌ No matching shop found for the domain:", shop_domain);
-          return res.status(404).json({ error: "Shop not found" });
-      }
-      
-      console.log("✅ Matching Shop Found:", existingShop);
-      console.log("✅ Matching Shop Found: Email -", existingShop.email);
+    if (!existingShop) {
+      console.log("❌ No matching shop found for the domain:", shop_domain);
+      return res.status(404).json({ error: "Shop not found" });
+    }
 
-      const existingRequest = await CostomerRequestdata.findOne({ myshopify_domain: shop_domain });
+    console.log("✅ Matching Shop Found:", existingShop);
+    console.log("✅ Matching Shop Found: Email -", existingShop.storeEmail);
 
-      if (!existingRequest) {
-          const newRequest = new CostomerRequestdata({
-              shopify_id: shop_id,
-              myshopify_domain: shop_domain,
-              email: customer?.email || "N/A",
-              name: customer?.name || "Unknown",
-          });
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "syncform@hubsyntax.com",
+        pass: "jaaf dnhy rndg rpic",
+      },
+    });
 
-          await newRequest.save();
-          console.log("✅ Data Successfully Saved to MongoDB");
-      } else {
-          console.log("⚠️ Duplicate Entry Found: Skipping Database Insertion");
-      }
-
-      const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-              user: "syncform@hubsyntax.com",
-              pass: "jaaf dnhy rndg rpic", 
-          },
-      });
-
-      const mailOptions = {
-          from: "syncform@hubsyntax.com",
-          to:existingShop.email,
-          subject: `Shopify Webhook Received: ${topic}`,
-          text: `
+    const mailOptions = {
+      from: "syncform@hubsyntax.com",
+      to: existingShop.storeEmail,
+      subject: `Shopify Webhook Received: ${topic}`,
+      text: `
            Webhook Topic: ${topic}
            Shop ID: ${shop_id}
            Shop Domain: ${shop_domain}
            Customer Email: ${customer?.email || "N/A"}
            Customer Name: ${customer?.name || "Unknown"}
           `,
-      };
+    };
 
-      await transporter.sendMail(mailOptions);
-      console.log("📧 Email Sent Successfully!");
+    await transporter.sendMail(mailOptions);
+    console.log("📧 Email Sent Successfully!");
 
-      return res.json({ success: true, message: "Email sent successfully!" });
-
-  } catch (error) {
-      console.error("❌ Error:", error);
-      res.status(500).json({ success: false, error: "Internal Server Error" });
-  }
-});
-
-app.post('/store-shopData', async (req, res) => {
-  if (!req.body || !req.body.myshopifyDomain || !req.body.email || !req.body.name || !req.body.primaryDomain?.host) {
-    return res.status(400).json({ success: false, message: "Invalid request body: Missing required fields" });
-  }
-
-  try {
-    const store = await StoreShopData.findOneAndUpdate(
-      { myshopifyDomain: req.body.myshopifyDomain },
-      {
-        $set: {
-          email: req.body.email,
-          name: req.body.name,
-          primaryDomain: {
-            host: req.body.primaryDomain.host
-          }
-        }
-      },
-      { new: true, upsert: true } 
-    );
-
-    return res.json({ success: true, message: store ? "Store updated successfully" : "Store created successfully", store });
+    return res.json({ success: true, message: "Email sent successfully!" });
 
   } catch (error) {
-    console.error("Error processing request:", error);
-
-    if (error.code === 11000) {
-      return res.status(400).json({ success: false, message: "Store already exists" });
-    }
-
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("❌ Error:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
-
-const StoreSchema = new mongoose.Schema({
-  myshopify_domain: { type: String, required: true, unique: true },
-  email: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-});
-
-const Store = mongoose.model("Stores", StoreSchema);
 
 app.post("/api/store", async (req, res) => {
   console.log("Received Body:", req.body);
@@ -196,7 +118,7 @@ app.post("/api/store", async (req, res) => {
 
   try {
 
-    let store = await Store.findOne({ myshopify_domain: req.body.myshopify_domain });
+    let store = await ShopDetails.findOne({ shop: req.body.myshopify_domain });
 
     if (store) {
       console.log("Store found in DB:", req.body.myshopify_domain);
@@ -232,10 +154,9 @@ app.post("/api/store", async (req, res) => {
             service: 'gmail',
             auth: {
               user: 'syncform@hubsyntax.com',
-              pass: 'jaaf dnhy rndg rpic'  
+              pass: 'jaaf dnhy rndg rpic'
             }
           });
-
           await transporter.sendMail({
             from: '"Syncform" <syncform@hubsyntax.com>',
             to: req.body.email,
@@ -244,6 +165,49 @@ app.post("/api/store", async (req, res) => {
           });
 
           console.log('Uninstall email sent successfully');
+          const latestStore = await ShopDetails.findOne({ shop: req.body.myshopify_domain });
+
+          if (!latestStore) {
+            console.error('Store not found during initial access token check.');
+            return;
+          }
+
+          if (latestStore.accessToken !== store.accessToken) {
+            console.log('Access token changed before timeout, skipping form status update.');
+            return;
+          }
+
+          setTimeout(async () => {
+            try {
+              const delayedStore = await ShopDetails.findOne({ shop: req.body.myshopify_domain });
+
+              if (!delayedStore) {
+                console.error('Store not found after 2 minutes.');
+                return;
+              }
+              if (delayedStore.accessToken !== store.accessToken) {
+                console.log('Access token changed after 2 minutes, skipping form status update.');
+                return;
+              }
+
+              const updateResult = await FormModel.updateMany(
+                { shop: req.body.myshopify_domain },
+                { $set: { status: 'app uninstall' } }
+              );
+
+              const templateUpdateResult = await Email.updateMany(
+                { shop: req.body.myshopify_domain },
+                { $set: { status: 'app uninstall' } }
+              );
+              console.log(`Email templates updated for shop ${req.body.myshopify_domain}:`, templateUpdateResult.modifiedCount);
+
+
+              console.log(`Forms updated for shop ${req.body.myshopify_domain}:`, updateResult.modifiedCount);
+            } catch (error) {
+              console.error('Error during delayed form status update:', error);
+            }
+          }, 48 * 60 * 60 * 1000);
+
         } catch (error) {
           console.error('Error sending email:', error);
         }
@@ -252,8 +216,8 @@ app.post("/api/store", async (req, res) => {
       return res.json({ success: true, message: "Store found", store });
     }
 
-    store = new Store({
-      myshopify_domain: req.body.myshopify_domain,
+    store = new ShopDetails({
+      shop: req.body.myshopify_domain,
       email: req.body.email,
     });
 
@@ -274,7 +238,7 @@ app.post("/api/store", async (req, res) => {
     <div style="background-color: white; max-width: 50%; margin: 0 auto; padding: 50px;font-family: 'Montserrat', sans-serif;">
       <div><img src = "https://cdn.shopify.com/s/files/1/0679/9022/5150/files/Logo-SyncForm_1.svg?v=1741247523"style = "width:170px" ></div> 
       <p style="font-weight:600; font-size:18px">As you uninstall the app, the running subscriptions of your store will be paused and will be deleted after 48 hours. You can install the app within 48 hours if you want to continue the subscriptions.</p>
-      <p> ${req.body.myshopify_domain}</p>
+      <p> ${req.body.shop}</p>
       <p>Thank you.</p>
     </div>
   </div>
@@ -286,7 +250,7 @@ app.post("/api/store", async (req, res) => {
         service: 'gmail',
         auth: {
           user: 'syncform@hubsyntax.com',
-          pass: 'jaaf dnhy rndg rpic'  
+          pass: 'jaaf dnhy rndg rpic'
         }
       });
 
@@ -310,7 +274,6 @@ app.post("/api/store", async (req, res) => {
   }
 });
 
-
 const formCreateSchema = new mongoose.Schema({
   formId: { type: String, required: true },
   title: { type: String, required: true },
@@ -320,7 +283,7 @@ const formCreateSchema = new mongoose.Schema({
     type: {
       type: String,
       required: true,
-      enum: ['text', 'name', 'button', 'divider', 'heading', 'radio', 'file', 'multi-file', 'number', 'date', 'datetime', 'images', 'multi-image', 'multi-file' ,'link', 'checkbox', 'location', 'toggle', 'select', 'textarea', 'password', 'email', 'phone', 'time', 'description', 'url', 'slider']
+      enum: ['text', 'name', 'button', 'divider', 'heading', 'radio', 'file', 'multi-file', 'number', 'date', 'datetime', 'images', 'multi-image', 'multi-file', 'link', 'checkbox', 'location', 'toggle', 'select', 'textarea', 'password', 'email', 'phone', 'time', 'description', 'url', 'slider']
     },
     label: { type: String, required: true, default: function () { return this.name || 'Unnamed Field'; } },
     name: String,
@@ -370,15 +333,15 @@ const formCreateSchema = new mongoose.Schema({
     passwordCharacter: { type: String, required: false },
     colorHeading: { type: String, default: '' },
     passwordStatus: { type: String, required: false },
-    fileOptions: {type: Map,of: String, required: false,},
+    fileOptions: { type: Map, of: String, required: false, },
     ImagePreview: { type: String, enum: ['on', 'off'] },
     multifilePreview: { type: String, enum: ['on', 'off'] },
     signlePreview: { type: String, enum: ['on', 'off'] },
     textHeading: { type: String, default: '' },
     multiIamgePreview: { type: String, enum: ['on', 'off'] },
-    multiOptions: {type: Map,of: String, required: false,},
-    imageOptions: {type: Map,of: String, required: false,},
-    multiimagesOptions: {type: Map,of: String, required: false,},
+    multiOptions: { type: Map, of: String, required: false, },
+    imageOptions: { type: Map, of: String, required: false, },
+    multiimagesOptions: { type: Map, of: String, required: false, },
     btncolor: { type: String, required: false },
     styles: {
       display: { type: String, default: 'block' },
@@ -430,7 +393,7 @@ const formCreateSchema = new mongoose.Schema({
   },
 });
 
-const FormModel = mongoose.model('forms_data', formCreateSchema);
+const FormModel = mongoose.model('forms', formCreateSchema);
 
 const formSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -456,7 +419,7 @@ const formSchema = new mongoose.Schema({
   }]
 });
 
-const Form = mongoose.model('costumer submitted datas', formSchema);
+const Form = mongoose.model('costumers', formSchema);
 
 const paymentDataSchema = new mongoose.Schema({
   shop: { type: String, required: true },
@@ -468,14 +431,23 @@ const paymentDataSchema = new mongoose.Schema({
   chargeId: { type: String, required: true, unique: true },
 });
 
-const Payment = mongoose.model('payments', paymentDataSchema);
+const Payment = mongoose.model('plans', paymentDataSchema);
 
 const shopDetailsSchema = new mongoose.Schema({
-  shop: { type: String, required: true, unique: true },
-  accessToken: { type: String, required: true },
+  shop: { type: String, required: false, unique: true },
+  accessToken: { type: String, required: false },
+  brandLogoStatus: { type: String, required: false },
+  storeEmail: { type: String, required: false },
+  storeName: { type: String, required: false },
+  notificationsEmail: { type: String, required: false },
+  notificationsPassword: { type: String, required: false },
+  numberValue: { type: Number, required: true },
+  status: {
+    type: String, enum: ['active', 'disactive'], required: true
+  },
 });
 
-const ShopDetails = mongoose.model('ShopDetails', shopDetailsSchema);
+const ShopDetails = mongoose.model('Shops', shopDetailsSchema);
 
 const columnSchema = new mongoose.Schema({
   columnIndex: { type: Number, required: false },
@@ -490,6 +462,7 @@ const emailTemplateSchema = new mongoose.Schema({
   templateId: { type: String, required: true },
   shop: { type: String, required: true },
   TemplateImage: { type: String, required: true },
+  status: { type: String, default: 'live', enum: ['live', 'draft', 'archived'], },
   form_ids: {
     type: [String],
     required: true,
@@ -525,7 +498,7 @@ const emailTemplateSchema = new mongoose.Schema({
       headerbtn: { type: String, required: false },
       columnCount: { type: Number, required: false },
       columnData: { type: [columnSchema], required: false },
-      children:{type: Object ,requid: false},
+      children: { type: Object, requid: false },
       value: { type: Object, required: false, default: { typeValue: 'No Value Provided', customIcons: [] } },
       bannerImageWidth: { type: String, required: false },
       bannerImageHeight: { type: String, required: false },
@@ -817,7 +790,7 @@ const ShowTemplats = new mongoose.Schema({
       headerbtn: { type: String, required: false },
       columnCount: { type: Number, required: false },
       columnData: { type: [columnSchema], required: false },
-      children:{type: Object ,requid: false},
+      children: { type: Object, requid: false },
       value: { type: Object, required: false, default: { typeValue: 'No Value Provided', customIcons: [] } },
       bannerImageWidth: { type: String, required: false },
       bannerImageHeight: { type: String, required: false },
@@ -1063,19 +1036,6 @@ const ShowTemplats = new mongoose.Schema({
 
 const Templated = mongoose.model('save Templates', ShowTemplats);
 
-const templateSchema = new mongoose.Schema({
-  TemplateAll: { type: Object, required: false },
-  email: { type: String, required: true },
-  subject: { type: String, required: false },
-  formFields: { type: Object, required: false },
-  title: { type: Object, required: false },
-  shop: { type: Object, required: false },
-  shopowner: { type: String, required: false },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const Template = mongoose.model('sendTemplates', templateSchema);
-
 const supportdata = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
@@ -1087,73 +1047,6 @@ const supportdata = new mongoose.Schema({
 });
 
 const Support = mongoose.model('supportEmails', supportdata);
-
-const fontfamily = new mongoose.Schema({
-  fontFamily: { type: String, required: true, unique: true },
-  fontUrl: { type: String, required: true },
-});
-
-const Fontfamily = mongoose.model('font_familys', fontfamily);
-
-const brandLogo = new mongoose.Schema({
-  status: { type: String, required: true },
-  shop: { type: String, required: true },
-});
-
-const BrandLogoStatus = mongoose.model('brandLogos', brandLogo);
-
-app.get('/data/brandLogo/:shop', async (req, res) => { 
-  try {
-    const { shop } = req.params;
-
-    const brandLogo = await BrandLogoStatus.findOne({ shop });
-
-    if (!brandLogo) {
-      return res.status(404).json({ message: 'Brand logo status not found' });
-    }
-
-    res.status(200).json({ status: brandLogo.status });
-  } catch (error) {
-    console.error("Error fetching brand logo status:", error);
-    res.status(500).json({ message: 'Error fetching brand logo status', error: error.message });
-  }
-});
-
-app.post('/api/brandLogo', async (req, res) => {
-  try {
-    const { status, shop } = req.body;
-
-    const existingEntry = await BrandLogoStatus.findOneAndUpdate(
-      { shop }, 
-      { status }, 
-      { new: true } 
-    );
-
-    if (existingEntry) {
-      return res.status(200).json({ message: 'Status updated successfully!', data: existingEntry });
-    }
-
-    const newEntry = new BrandLogoStatus({ status, shop });
-    await newEntry.save();
-
-    res.status(201).json({ message: 'New shop entry created successfully!', data: newEntry });
-
-  } catch (error) {
-    console.error('Error processing the request:', error);
-    res.status(500).json({ message: 'Error processing the request', error });
-  }
-});
-
-app.get('/font-family', async (req, res) => {
-  try {
-
-    const fonts = await Fontfamily.find({});
-    res.status(200).json({ message: 'Font data retrieved', data: fonts });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching fonts', error: error.message });
-  }
-});
 
 const transportered = nodemailer.createTransport({
   service: 'gmail',
@@ -1217,7 +1110,7 @@ const sendEmails = async (formData) => {
       from: 'syncform@hubsyntax.com',
       to: formData.email,
       subject: 'Support Request Received',
-      html: userEmailTemplate, 
+      html: userEmailTemplate,
     };
 
     await transportered.sendMail(adminMailOptions);
@@ -1255,18 +1148,18 @@ app.post('/email-submit', async (req, res) => {
 
 app.post('/api/template', async (req, res) => {
   try {
-    const { TemplateAll, email,subject,formFields,title,shop,shopowner,createdAt } = req.body;
-    console.log('Received template data:', TemplateAll, 'Email:', email,subject,formFields,title,shop,shopowner,createdAt);
-    const newTemplate = new Template({ TemplateAll, email,subject,formFields,title,shop,shopowner,createdAt });
-    await newTemplate.save();
-    await sendEmail(email, TemplateAll, subject,formFields,title,shop,shopowner,createdAt);
+    const { TemplateAll, email, subject, formFields, title, shop, shopowner, createdAt } = req.body;
+    console.log('Received template data:', TemplateAll, 'Email:', email, subject, formFields, title, shop, shopowner, createdAt);
+    
+    await sendEmail(email, TemplateAll, subject, formFields, title, shop, shopowner, createdAt);
 
-    res.status(200).json({ message: 'Template data received and stored successfully!' });
+    res.status(200).json({ message: 'Email sent successfully!' });
   } catch (error) {
-    console.error('Error receiving template data:', error);
+    console.error('Error sending email:', error);
     res.status(500).json({ message: 'Error processing the request', error });
   }
 });
+
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -1287,62 +1180,20 @@ const saveBase64Image = (base64Str, fileName) => {
   return filePath;
 };
 
-const SettingsSchema = new mongoose.Schema({
-  shop: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: {
-    type: String, required: true
-  },
-}, { timestamps: true });
-
-const Settings = mongoose.model('email_password(not show)s', SettingsSchema);
-
-app.post('/save-settings', async (req, res) => {
-  try {
-    const { shop, email, password } = req.body;
-
-    const existingSettings = await Settings.findOne({ shop });
-
-    if (existingSettings) {
-      existingSettings.email = email;
-      existingSettings.password = password;
-      await existingSettings.save();
-      res.status(200).json({ message: 'Settings updated successfully!' });
-    } else {
-
-      const settings = new Settings({ shop, email, password });
-      await settings.save();
-      res.status(200).json({ message: 'Settings saved successfully!' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.get('/get-settings', async (req, res) => {
-  try {
-    const settings = await Settings.find();
-    res.status(200).json(settings);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-
-const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopowner,createdAt) => {
+const sendEmail = async (email, TemplateAll, subject, formFields, title, shop, shopowner, createdAt) => {
   try {
     console.log('Preparing to send email');
     console.log('Email:', email);
     console.log('TemplateAll:', TemplateAll);
 
-    const settings = await Settings.findOne({ shop: TemplateAll.shop });
+    const settings = await ShopDetails.findOne({ shop: TemplateAll.shop });
 
     let emailUser = 'syncform@hubsyntax.com';
     let emailPass = 'jaaf dnhy rndg rpic';
 
-    if (settings && settings.email && settings.password) {
-      emailUser = settings.email;
-      emailPass = settings.password;
+    if (settings && settings.notificationsEmail && settings.notificationsPassword) {
+      emailUser = settings.notificationsEmail;
+      emailPass = settings.notificationsPassword;
       console.log('Using shop-specific email and password:', emailUser);
     } else {
       console.log('No shop-specific credentials found. Using default email.');
@@ -1379,7 +1230,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                 });
 
 
-    const headingStyle = `
+              const headingStyle = `
     background-image: url('${field.headingbgImage || ''}');
     background-color: ${field.headingbg || '#ffffff'};
     background-size: cover;
@@ -1392,7 +1243,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     margin: ${field.headingmargin || '0'}px;
   `;
 
-     const buttonStyle = `
+              const buttonStyle = `
      
     font-size: ${field.headingbtnFontSize || 16}px;
     min-width: ${field.headingbtnwidth || 'auto'}px;
@@ -1410,7 +1261,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     font-family: ${field.headingbtnfamily.replace(/"/g, '') || '"Poppins", sans-serif'};
   `;
 
-  const HeadingTag = field.headingLevel || 'h1'; 
+              const HeadingTag = field.headingLevel || 'h1';
 
               return `
     <div style="${headingStyle}">
@@ -1490,8 +1341,8 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
 
             case 'description':
               return `<p style="font-size: ${field.descritionFontSize || 16}px; color: ${field.descritionColor || '#000'}; font-weight: ${field.descritionFontWeight || 'normal'};">${field.value}</p>`;
-              case 'button': {
-                return `
+            case 'button': {
+              return `
                     <div style=" font-family: ${field.buttonfamily.replace(/"/g, '') || '"Poppins", sans-serif'}; background-color: ${field.buttonbgColor || '#008CBA'}; text-align: ${field.buttonaline || 'left'};">
                         <a href="${field.buttonUrll || '#'}" target="_blank" style="text-decoration: none;">
                             <button style="
@@ -1512,7 +1363,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                     </div>
                 `;
             }
-            
+
             case 'Multicolumn': {
               const columnsPerRow = field.columnsPerRow || 1;
               let columnCount = 0;
@@ -1616,7 +1467,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                   </tr>
                 </table>`;
             }
-          
+
             case 'costum': {
               return `
                 <div style="
@@ -1636,14 +1487,14 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
             case 'split-group': {
               const value = field.value || '';
               const updatedValue = value.replace(/data:image\/[a-zA-Z]*;base64,[^" ]*/g, () => '');
-        
+
               let childrenHtml = field.children
-                  .map((child) => {
-                      let childVerticalAlign = ['top', 'middle', 'bottom', 'center', 'end'].includes(child.splittext)
-                          ? (child.splittext === 'center' ? 'middle' : child.splittext === 'end' ? 'bottom' : child.splittext)
-                          : 'top';
-          
-                      return `
+                .map((child) => {
+                  let childVerticalAlign = ['top', 'middle', 'bottom', 'center', 'end'].includes(child.splittext)
+                    ? (child.splittext === 'center' ? 'middle' : child.splittext === 'end' ? 'bottom' : child.splittext)
+                    : 'top';
+
+                  return `
                           <td style="
                               width: ${TemplateAll?.styles?.viewMode === 'mobile' ? '100%' : child.width || '50%'};
                               padding: ${child.splitPadding || 0}px;
@@ -1651,10 +1502,9 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                               letter-spacing: ${child.splitletter || 1}px;
                               vertical-align: ${childVerticalAlign};
                           ">
-                              ${
-                                  child.add === 'image'
-                                      ? `<img src= ${child.value} style="width: 100%; height: auto;vertical-align: bottom;" />`
-                                      : `<div style="width: 100%;">
+                              ${child.add === 'image'
+                      ? `<img src= ${child.value} style="width: 100%; height: auto;vertical-align: bottom;" />`
+                      : `<div style="width: 100%;">
                                           ${child.value}
                                           ${field.showbtnsplit ? `
                                               <a href="${field.splitbtnurl || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
@@ -1676,14 +1526,14 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                                                       ${child.splitbtn || 'Click Me'}
                                                   </button>
                                               </a>` : ''
-                                          }
+                      }
                                       </div>`
-                              }
+                    }
                           </td>
                       `;
-                  })
-                  .join('');
-          
+                })
+                .join('');
+
               return `
                   <div style="
                       overflow: hidden;
@@ -1708,11 +1558,11 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                       </table>
                   </div>
               `;
-          }
-          
-          
-          case 'product':
-            return `
+            }
+
+
+            case 'product':
+              return `
               <div>
                 ${field.products && field.products.length > 0 ? `
                   <table role="presentation" cellspacing="0" cellpadding="0" 
@@ -1731,14 +1581,14 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
         
     ">
   ${(() => {
-      const isMobile = TemplateAll?.styles?.viewMode === 'mobile';
-      let productsPerRow = isMobile ? 1 : field.productsPerRow;
-      
-      let rows = [];
-      for (let i = 0; i < field.products.length; i += field.productsPerRow) {
-        rows.push(field.products.slice(i, i + field.productsPerRow));
-      }
-      return rows.map(row => `
+                    const isMobile = TemplateAll?.styles?.viewMode === 'mobile';
+                    let productsPerRow = isMobile ? 1 : field.productsPerRow;
+
+                    let rows = [];
+                    for (let i = 0; i < field.products.length; i += field.productsPerRow) {
+                      rows.push(field.products.slice(i, i + field.productsPerRow));
+                    }
+                    return rows.map(row => `
         <tr >
           ${row.map(product => `
             <td style="
@@ -1795,13 +1645,13 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
           `).join('')}
         </tr>
       `).join('');
-  })()}
+                  })()}
 </table>
 
                 ` : '<p>No products available</p>'}
               </div>
             `;
-          
+
             case 'divider':
               return `
                 <div style="background-color: ${field.dividerbgColor || 'transparent'}; width: 100%;">
@@ -1815,7 +1665,7 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
                     margin-right: ${field.dividerAline === 'center' ? 'auto' : field.dividerAline === 'right' ? '0' : 'auto'};
                   " />
                 </div>`;
-                       
+
 
             case 'html convert':
               return `<div style=" font-family:${field.htmlfamily || '"Poppins", sans-serif'}  text-align: ${field.htmlaline || TemplateAll.styles.textAlign}; color: ${field.htmlColor || '#000'}; font-size: ${field.htmlFontSize || '16px'};">${field.value}</div>`;
@@ -2015,36 +1865,36 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
     </html>
   `;
 
-  // const formattedDate = createdAt 
-  // ? new Date(createdAt).toLocaleString() 
-  // : "N/A";
+    // const formattedDate = createdAt 
+    // ? new Date(createdAt).toLocaleString() 
+    // : "N/A";
 
-  // const formFieldsHtml = formFields
-  // .map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`)
-  // .join('');
-  //   const adminHtmlContent = `
-  //     <html>
-  //    <body>
-  //   <div style="font-family: 'Poppins', sans-serif;width: 100%; max-width: 60%; margin: auto; border: 1px solid grey;border-radius:4px; background-color: white; padding: 20px; color: black;">
-  //     <div>Hi <strong>${shopowner}</strong>,</div>
-  //     <div>Your form "<strong>${title}</strong>" has been successfully submitted. Now, you can start collecting responses.</div>
-  //     <div>
-  //       <p><strong>Form Details:</strong></p>
-  //       <p>Form Name: <strong>${title}</strong></p>
-  //       <p>Created: ${formattedDate}</p>
-  //       ${formFieldsHtml}
-  //       <p>Embed the form in your store.</p>
-  //       <p>Track responses in the app dashboard.</p>
+    // const formFieldsHtml = formFields
+    // .map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`)
+    // .join('');
+    //   const adminHtmlContent = `
+    //     <html>
+    //    <body>
+    //   <div style="font-family: 'Poppins', sans-serif;width: 100%; max-width: 60%; margin: auto; border: 1px solid grey;border-radius:4px; background-color: white; padding: 20px; color: black;">
+    //     <div>Hi <strong>${shopowner}</strong>,</div>
+    //     <div>Your form "<strong>${title}</strong>" has been successfully submitted. Now, you can start collecting responses.</div>
+    //     <div>
+    //       <p><strong>Form Details:</strong></p>
+    //       <p>Form Name: <strong>${title}</strong></p>
+    //       <p>Created: ${formattedDate}</p>
+    //       ${formFieldsHtml}
+    //       <p>Embed the form in your store.</p>
+    //       <p>Track responses in the app dashboard.</p>
 
-  //       <p>Let us know if you need any assistance.</p>
-  //       <p>Best Regards,</p>
-  //       <p><strong>Sync Form Builder</strong></p>
-  //     </div>
-  //   </div>
-  //  </body>
-  //  </html>
+    //       <p>Let us know if you need any assistance.</p>
+    //       <p>Best Regards,</p>
+    //       <p><strong>Sync Form Builder</strong></p>
+    //     </div>
+    //   </div>
+    //  </body>
+    //  </html>
 
-  //   `;
+    //   `;
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -2080,160 +1930,6 @@ const sendEmail = async (email, TemplateAll,subject,formFields,title,shop,shopow
   }
 };
 
-const costomerData = new mongoose.Schema({
-  status: {
-    type: String, enum: ['active', 'disactive'], required: true
-  },
-  numberValue: { type: Number, required: true },
-  shop: { type: String, required: true },
-  shopData: { email: { type: String, required: true, } },
-
-});
-
-const CostomerAll = mongoose.model('Customer Datas', costomerData);
-
-let emailCheckIntervals = {};
-
-app.post('/user-email', async (req, res) => {
-  try {
-    const { status, numberValue, shop, shopData } = req.body;
-    console.log('Received numberValue:', numberValue);
-    console.log('Received shop:', shop);
-    console.log('Sending email to:', shopData.email);
-    console.log('Received status:', status);
-
-    const numberValueParsed = Number(numberValue);
-
-    const existingShop = await CostomerAll.findOne({ shop });
-
-    if (existingShop) {
-      await CostomerAll.updateOne(
-        { shop },
-        { $set: { status, numberValue: numberValueParsed } }
-      );
-      console.log(`Shop data updated for ${shop}`);
-    } else {
-      const newSetting = new CostomerAll({
-        status,
-        numberValue: numberValueParsed,
-        shop,
-        shopData,
-      });
-      await newSetting.save();
-      console.log(`New shop data added for ${shop}`);
-    }
-
-    async function checkAndSendEmail() {
-      const forms = await Form.find({ shop: shop });
-
-      for (const form of forms) {
-        const submissionCount = form.submissions.length;
-        console.log(`Checking form: ${form.title} (ID: ${form._id}), Submissions: ${submissionCount}, Required: ${numberValueParsed}`);
-
-        if (submissionCount >= numberValueParsed && status === "active") {
-          console.log(`Form ${form.title} has reached ${numberValueParsed} submissions. Sending email...`);
-
-          const latestSubmissions = form.submissions.slice(0, numberValueParsed); 
-          const formattedSubmissions = latestSubmissions.map(submission => {
-            const flatFields = submission.fields.reduce((acc, field) => {
-              acc[field.name] = field.value; 
-              return acc;
-            }, {});
-          
-            return {
-              _Id: form._id,
-             "Form name": form.title,
-              id: form.id,
-              Shop: form.shop,
-              CurrentUrl: form.currentUrl,
-              FormTimestamp: form.timestamp, 
-              SubmissionId: submission._id,
-              ...flatFields,
-              SubmissionTimestamp: submission.timestamp,
-            };
-          });
-          
-          const csvParser = new Parser();
-          const csvData = csvParser.parse(formattedSubmissions) ;
-
-          const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'syncform@hubsyntax.com',
-              pass: 'jaaf dnhy rndg rpic',
-            },
-          });
-
-          const mailOptions = {
-            from: 'syncform@hubsyntax.com',
-            to: shopData.email,
-            subject: `Congrats! Your Form "${form.title}" has Reached ${numberValueParsed} Submissions`,
-            text: `We’re excited to inform you that your form "${form.title}" has successfully reached ${numberValueParsed} submissions! 
-Thank you for using our SyncForm app to connect with your customers. If you have any questions or need further assistance, please feel free to reach out.`,
-            attachments: [
-              {
-                filename: 'formData.csv',
-                content: csvData,
-              },
-            ],
-          };
-
-          transporter.sendMail(mailOptions, async (error, info) => {
-            if (error) {
-              console.error('Error sending email:', error);
-            } else {
-              console.log(`Email sent successfully for form "${form.title}":`, info);
-              try {
-                await CostomerAll.updateOne({ shop: shop }, { status: 'disactive' });
-                console.log('Status updated to disactive for shop:', shop);
-
-                clearInterval(emailCheckIntervals[shop]);
-                delete emailCheckIntervals[shop];
-              } catch (updateError) {
-                console.error('Error updating status to disactive:', updateError);
-              }
-            }
-          });
-
-          break;
-        }
-      }
-    }
-
-    if (!emailCheckIntervals[shop]) {
-      emailCheckIntervals[shop] = setInterval(checkAndSendEmail, 10000);
-      console.log(`Started checking for shop: ${shop}`);
-    }
-
-    res.status(201).json({ message: 'Data processed successfully. Email will be sent when submission count matches.', data: { shop, status, numberValue: numberValueParsed } });
-
-  } catch (error) {
-    console.error('Error saving data or sending email:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-app.get('/get-status/:shop', async (req, res) => {
-  try {
-    const { shop } = req.params;
-    const shopData = await CostomerAll.findOne({ shop });
-
-    if (shopData) {
-      const numberValue = shopData.numberValue;
-
-      return res.json({
-        status: shopData.status,
-        numberValue: numberValue
-      });
-    } else {
-      return res.status(404).json({ message: 'Shop not found' });
-    }
-  } catch (error) {
-    console.error("Error fetching status:", error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
 
 
 app.get('/check-title/:title', async (req, res) => {
@@ -2281,7 +1977,7 @@ app.get('/get/data', async (req, res) => {
 app.get('/get/base64', async (req, res) => {
   try {
 
-    const data = await Email.find({}).select('templateId shop TemplateImage form_ids title createdAt');
+    const data = await Email.find({}).select('templateId shop TemplateImage form_ids title createdAt status');
     res.status(200).json({ message: 'Form data retrieved', data: data });
   } catch (error) {
     console.error(error);
@@ -2414,7 +2110,7 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
         });
       }
     });
-    
+
 
     const formData = new Email({
       templateId,
@@ -2424,7 +2120,8 @@ app.post('/send/api', upload.single('file'), async (req, res) => {
       form_ids: formIds,
       fields: fieldsArray,
       createdAt,
-      styles
+      styles,
+      status: 'live'
     });
 
     const savedForm = await formData.save();
@@ -2504,7 +2201,7 @@ app.put('/update/:id', async (req, res) => {
         });
       }
     });
-    
+
     const updatedForm = await Email.findByIdAndUpdate(id, updatedFormData, {
       new: true,
       runValidators: true,
@@ -2657,24 +2354,174 @@ app.delete('/delete/:id', async (req, res) => {
   }
 });
 
+app.get('/get/save-shop/:shop', async (req, res) => {
+  try {
+    const { shop } = req.params;
+
+    const brandLogo = await ShopDetails.findOne({ shop });
+
+    if (!brandLogo) {
+      return res.status(404).json({ message: 'Brand logo status not found' });
+    }
+
+    res.status(200).json({ brandLogoStatus: brandLogo.brandLogoStatus });
+  } catch (error) {
+    console.error("Error fetching brand logo status:", error);
+    res.status(500).json({ message: 'Error fetching brand logo status', error: error.message });
+  }
+});
+
+let emailCheckIntervals = {};
 
 app.post('/api/save-shop', async (req, res) => {
   try {
-    const { shop, accessToken } = req.body;
-
-    if (!shop || !accessToken) {
-      return res.status(400).json({ error: "Shop domain and access token are required" });
-    }
+    const { shop, accessToken, brandLogoStatus, storeEmail, storeName, notificationsEmail, notificationsPassword, status, numberValue, shopData } = req.body;
 
     const updatedShopDetails = await ShopDetails.findOneAndUpdate(
       { shop },
-      { accessToken },
+      { accessToken, brandLogoStatus, storeEmail, storeName, notificationsEmail, notificationsPassword, status, numberValue },
       { new: true, upsert: true }
     );
-    return res.json({ success: true, message: 'Shop details processed successfully.' });
-  } catch (e) {
-    console.error('Error occurred:', e);
-    return res.status(500).json({ error: 'Internal server error: ' + e.message });
+    console.log('Shop details processed successfully:', updatedShopDetails);
+
+    const numberValueParsed = Number(numberValue);
+    if (isNaN(numberValueParsed)) {
+      return res.status(400).json({ message: 'Invalid number value' });
+    }
+
+    const existingShop = await ShopDetails.findOne({ shop });
+
+    if (existingShop) {
+      await ShopDetails.updateOne(
+        { shop },
+        { $set: { status, numberValue: numberValueParsed } }
+      );
+      console.log(`Shop data updated for ${shop}`);
+    } else {
+      const newSetting = new ShopDetails({
+        status,
+        numberValue: numberValueParsed,
+        shop,
+        shopData,
+      });
+      await newSetting.save();
+      console.log(`New shop data added for ${shop}`);
+    }
+
+    async function checkAndSendEmail() {
+      const forms = await Form.find({ shop: shop });
+
+      let totalSubmissions = 0;
+      let allSubmissions = [];
+
+      for (const form of forms) {
+        totalSubmissions += form.submissions.length;
+
+        const formattedSubmissions = form.submissions.map(submission => {
+          const flatFields = submission.fields.reduce((acc, field) => {
+            acc[field.name] = field.value;
+            return acc;
+          }, {});
+
+          return {
+            _Id: form._id,
+            "Form name": form.title,
+            id: form.id,
+            Shop: form.shop,
+            CurrentUrl: form.currentUrl,
+            FormTimestamp: form.timestamp,
+            SubmissionId: submission._id,
+            ...flatFields,
+            SubmissionTimestamp: submission.timestamp,
+          };
+        });
+
+        allSubmissions = allSubmissions.concat(formattedSubmissions);
+      }
+
+      console.log(`Total submissions for shop ${shop}: ${totalSubmissions}, Required: ${numberValueParsed}`);
+
+      if (totalSubmissions >= numberValueParsed && status === "active") {
+        console.log(`Total submissions reached ${numberValueParsed}. Sending email...`);
+
+        const latestSubmissions = allSubmissions.slice(0, numberValueParsed);
+
+        const csvParser = new Parser();
+        const csvData = csvParser.parse(latestSubmissions);
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'syncform@hubsyntax.com',
+            pass: 'jaaf dnhy rndg rpic',
+          },
+        });
+
+        const mailOptions = {
+          from: 'syncform@hubsyntax.com',
+          to: storeEmail,
+          subject: `Congrats! Your Forms have Reached ${numberValueParsed} Submissions`,
+          text: `We’re excited to inform you that your forms have successfully reached ${numberValueParsed} submissions! 
+Thank you for using our SyncForm app to connect with your customers. If you have any questions or need further assistance, please feel free to reach out.`,
+          attachments: [
+            {
+              filename: 'formData.csv',
+              content: csvData,
+            },
+          ],
+        };
+
+        transporter.sendMail(mailOptions, async (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+          } else {
+            console.log(`Email sent successfully for shop "${shop}":`, info);
+            try {
+              await ShopDetails.updateOne({ shop: shop }, { status: 'disactive' });
+              console.log('Status updated to disactive for shop:', shop);
+
+              clearInterval(emailCheckIntervals[shop]);
+              delete emailCheckIntervals[shop];
+            } catch (updateError) {
+              console.error('Error updating status to disactive:', updateError);
+            }
+          }
+        });
+      }
+    }
+
+    if (!emailCheckIntervals[shop]) {
+      emailCheckIntervals[shop] = setInterval(checkAndSendEmail, 10000); // check every 10 seconds
+      console.log(`Started checking for shop: ${shop}`);
+    }
+
+    res.status(201).json({ message: 'Data processed successfully. Email will be sent when total submissions match.', data: { shop, status, numberValue: numberValueParsed } });
+
+  } catch (error) {
+    console.error('Error saving data or sending email:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+app.get('/api/get-shop/:shop', async (req, res) => {
+  try {
+    const { shop } = req.params;
+    const shopDetails = await ShopDetails.findOne({ shop });
+
+    if (!shopDetails) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
+
+    console.log('Shop details retrieved successfully:', shopDetails);
+
+    res.status(200).json({
+      message: 'Shop details retrieved successfully',
+      data: shopDetails,
+    });
+  } catch (error) {
+    console.error('Error retrieving shop details:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -2742,9 +2589,9 @@ app.post('/payment/confirm', async (req, res) => {
     await Payment.updateMany({ shop, status: 'active' }, { $set: { status: 'disactive' } });
 
     const payment = await Payment.findOneAndUpdate(
-      { chargeId, shop }, 
-      { name, plan, price, status, billingOn, chargeId, shop }, 
-      { new: true, upsert: true } 
+      { chargeId, shop },
+      { name, plan, price, status, billingOn, chargeId, shop },
+      { new: true, upsert: true }
     );
 
     res.json({ success: true, payment });
@@ -2845,7 +2692,7 @@ app.post('/api/forms', async (req, res) => {
     await form.save();
 
     if (onwerShop === shop) {
- 
+
       const fieldValues = fields.map(field => `<p><strong>${field.name}:</strong> ${field.value}</p>`).join('');
 
 
@@ -2882,7 +2729,7 @@ app.post('/api/forms', async (req, res) => {
         from: 'syncform@hubsyntax.com',
         to: shopEmail,
         subject: `New Form Submission - ${title}`,
-        html: adminHtmlContent 
+        html: adminHtmlContent
       };
 
       transporter.sendMail(mailOptions, (error, info) => {

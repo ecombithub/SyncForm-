@@ -179,8 +179,8 @@ const Formdata = () => {
     useEffect(() => {
         const fetchStatusBrand = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
-                setActiveBrand(response.data.status);
+                const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
+                setActiveBrand(response.data.brandLogoStatus);
             } catch (error) {
                 
             }
@@ -308,7 +308,6 @@ const Formdata = () => {
                 setCreatedForms(updatedForms);
                 localStorage.setItem('createdForms', JSON.stringify(updatedForms));
 
-
                 if (updatedForms.length === 0 && view === 'live') {
                     setView('draft');
                 }
@@ -371,8 +370,7 @@ const Formdata = () => {
                     throw new Error('Network response was not ok');
                 }
                 const formsData = await response1.json();
-                const filteredForms = formsData.filter((form) => form.shop === shop);
-
+                const filteredForms = formsData.filter((form) => form.shop === shop && form.status !== 'app uninstall');
                 setCreatedForms(filteredForms);
                 // console.log(filteredForms)
                 const response2 = await axios.get(`${apiUrl}/api/forms`);

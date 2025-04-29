@@ -100,8 +100,9 @@ export default function EmailTemplate() {
             const response = await axios.get(`${apiUrl}/get/base64`);
             let fetchedData = Array.isArray(response.data.data) ? response.data.data : [];
     
-            fetchedData = fetchedData.filter(form => form.shop === shop);
-    
+            fetchedData = fetchedData.filter(
+                form => form.shop === shop && form.status !== 'app uninstall'
+              );
             const planResponse = await axios.get(`${apiUrl}/payment/plan?shop=${shop}`);
             if (!planResponse.data) throw new Error("Invalid plan response");
     
@@ -236,7 +237,8 @@ export default function EmailTemplate() {
                 console.log("User is on a Free Plan");
     
                 const base64Response = await axios.get(`${apiUrl}/get/base64`);
-                const matchingTemplate = base64Response.data.data.find(item => item.shop === shop);
+                const matchingTemplate = base64Response.data.data.find(item => item.shop === shop && item.status !== 'app uninstall');
+
     
                 if (!matchingTemplate) {
                     console.log("No matching template found in base64. Fetching main template data...");
@@ -931,7 +933,7 @@ export default function EmailTemplate() {
                 const templatesResponse = await axios.get(`${apiUrl}/get/base64`);
                 const fetchedData = templatesResponse.data.data || [];
 
-                const shopTemplates = fetchedData.filter(template => template.shop === shop);
+                const shopTemplates = fetchedData.filter(template => template.shop === shop && template.status !== 'app uninstall');
 
                 if (shopTemplates.length >= 1) {
                     setUphradePopup(true);

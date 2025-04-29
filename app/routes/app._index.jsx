@@ -15,7 +15,7 @@ import axios from 'axios';
 import cancleimg from '../images/cancleimg.png';
 
 export const loader = async ({ request }) => {
- 
+
   const { session } = await authenticate.admin(request);
   console.log("Session Data:", session);
 
@@ -151,56 +151,9 @@ function Index() {
   const navigator = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    let timeoutId;
+  const storeEmail = shopData.email;
+  const storeName = shopData.name;
 
-    const sendStatusUpdate = async () => {
-      try {
-        await fetch(`${apiUrl}/api/brandLogo`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: "active", shop }),
-        });
-      } catch (error) {
-
-      }
-    };
-
-    if ("active") {
-      timeoutId = setTimeout(sendStatusUpdate, 300);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, ["active"]);
-
-  const sendShopData = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/store-shopData`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(shopData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setResponseData(data);
-
-      } else {
-        const errorData = await response.json();
-
-      }
-    } catch (error) {
-
-    }
-  };
-
-  useEffect(() => {
-    if (shopData && shopData.myshopifyDomain) {
-      sendShopData();
-    }
-  }, [shopData]);
 
   useEffect(() => {
     const saveShopDetails = async () => {
@@ -212,7 +165,7 @@ function Index() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ shop, accessToken }),
+            body: JSON.stringify({ shop, accessToken, brandLogoStatus: 'active', storeEmail,storeName }),
           });
 
           if (!response.ok) {
@@ -222,11 +175,11 @@ function Index() {
 
           const data = await response.json();
           if (data.success) {
-            // console.log("Shop details sent to the server.");
+            console.log("Shop details sent to the server.");
             setDataSent(true);
           }
         } catch (error) {
-          // console.error("Error sending shop details:", error);
+          console.error("Error sending shop details:", error);
         }
       }
     };
@@ -313,7 +266,7 @@ function Index() {
         }
 
         const data = await response.json();
-        const filteredForms = data.filter((form) => form.shop === shop);
+        const filteredForms = data.filter((form) => form.shop === shop && form.status !== 'app uninstall');
         setCreatedForms(filteredForms);
         // console.log('Filtered Forms:', filteredForms);
 
