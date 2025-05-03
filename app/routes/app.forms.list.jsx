@@ -182,7 +182,7 @@ const Formdata = () => {
                 const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
                 setActiveBrand(response.data.brandLogoStatus);
             } catch (error) {
-                
+
             }
         };
 
@@ -453,16 +453,16 @@ const Formdata = () => {
             setUphradePopup(true);
             return;
         }
-    
+
         const formToCopy = createdForms.find((form) => form.formId === formId);
         const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss a");
-    
+
         if (!formToCopy) {
             return;
         }
-    
+
         setIsLoading(true);
-    
+
         const copiedForm = {
             ...formToCopy,
             formId: generateUniqueId(),
@@ -470,13 +470,13 @@ const Formdata = () => {
             createdAt: timestamp,
             fields: formToCopy.fields.map((field) => ({
                 ...field,
-                id: ['file', 'images', 'multi-image','multi-file'].includes(field.type) ? field.id : generateUniqueId(),
+                id: ['file', 'images', 'multi-image', 'multi-file'].includes(field.type) ? field.id : generateUniqueId(),
             })),
             status: 'live',
         };
-    
+
         delete copiedForm._id;
-    
+
         try {
             setTimeout(async () => {
                 const response = await fetch(`${apiUrl}/copy-form`, {
@@ -486,11 +486,11 @@ const Formdata = () => {
                     },
                     body: JSON.stringify(copiedForm),
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to copy form');
                 }
-    
+
                 const result = await response.json();
                 setCreatedForms((prevForms) => [...prevForms, result]);
                 setIsLoading(false);
@@ -499,7 +499,7 @@ const Formdata = () => {
             setIsLoading(false);
         }
     };
-    
+
 
     const generateUniqueId = (length = 21) => {
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -509,6 +509,11 @@ const Formdata = () => {
             uniqueId += charset[randomIndex];
         }
         return uniqueId;
+    };
+
+    const truncateText = (text, maxLength) => {
+        if (!text) return '';
+        return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
     };
 
     return (
@@ -674,9 +679,7 @@ const Formdata = () => {
                                                             {currentForms.filter(form => form.status === view).map(form => (
                                                                 <tr key={form.formId}>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" >
-                                                                        <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} > {form.title.length > 10 ? `${form.title.substring(0, 10)}...` : form.title}
-                                                                            <div class="noUi-tooltip">Edit</div>
-                                                                        </div>
+                                                                        <div className="form-builder-wrpp-show-Polaris" onClick={() => handleEdit(form.formId)} >{form.title ? truncateText(form.title, 10) : 'Untitled'} </div>
                                                                     </th>
                                                                     <th
                                                                         data-polaris-header-cell="true"
@@ -684,8 +687,16 @@ const Formdata = () => {
                                                                         scope="col"
                                                                     >
                                                                         <div className="form-builder-wrpp-show-Polaris">
-                                                                            <span className="full-id">{form.formId}</span>
-                                                                            <span className="short-id">{form.formId.substring(0, 8)}...</span>
+                                                                            {form.formId ? (
+                                                                                <>
+                                                                                    <span className="full-id">{form.formId}</span>
+                                                                                    <span className="short-id">
+                                                                                        {form.formId.length > 8 ? truncateText(form.formId, 8) : form.formId}
+
+                                                                                    </span>
+                                                                                </>
+                                                                            ) : 'N/A'}
+
                                                                             <div className="formId-copy-popup-Id" onClick={() => handleFormId(form.formId)}>
                                                                                 <img src={copy22} alt="" />
                                                                             </div>
@@ -698,17 +709,19 @@ const Formdata = () => {
                                                                         </div>
                                                                     </th>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header templete-hide " scope="col">
-                                                                        {isSmallScreen ? `${form.templateTitle.substring(0, 12)}...` : form.templateTitle}
+                                                                        {isSmallScreen
+                                                                            ? (form.templateTitle ? truncateText(form.templateTitle, 12) : 'No Template')
+                                                                            : (form.templateTitle || 'No Template')}
                                                                     </th>
                                                                     <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide" scope="col" style={{ textAlign: "center" }}>
                                                                         {form.totalSubmissions || 0}
                                                                     </th>
-                                                                    <th
-                                                                        data-polaris-header-cell="true"
+                                                                    <th data-polaris-header-cell="true"
                                                                         className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header form-hide"
-                                                                        scope="col"
-                                                                    >
-                                                                        {isSmallScreen ? `${form.createdAt.substring(0, 15)}...` : form.createdAt}
+                                                                        scope="col">
+                                                                        {isSmallScreen
+                                                                            ? (form.createdAt ? truncateText(form.createdAt, 15) : 'Unknown')
+                                                                            : (form.createdAt || 'Unknown')}
                                                                     </th>
                                                                     <td style={{ textAlign: "center" }}>
                                                                         <th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--header" scope="col" style={{ textAlign: "center" }}>
@@ -896,7 +909,7 @@ const Formdata = () => {
                                                             {field.type !== 'link' && field.type !== 'button' && field.type !== 'divider' && field.type !== 'heading' && field.type !== 'description' && field.type !== 'toggle' && <label style={{ color: form.styles.labelColor }}>{field.label} {field.required && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />} {field.emailRequid && <img className='form-builder-wred-starr-requid' src={star} alt="Required Field" />}</label>}
                                                             {field.type === 'name' && <input type="name" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
                                                             {field.type === 'text' && <input type="text" placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ padding: field.inputPadding, borderRadius: `${form.styles.inputRadious}px`, borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} />}
-                                                            {field.type === 'textarea' && <textarea placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly}  style={{ borderRadius: `${form.styles.inputRadious}px`,resize: 'vertical', borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
+                                                            {field.type === 'textarea' && <textarea placeholder={field.placeholder} required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ borderRadius: `${form.styles.inputRadious}px`, resize: 'vertical', borderWidth: `${form.styles.inputwidth}px`, borderStyle: `${form.styles.inputstyle}`, borderColor: `${form.styles.inputborderColor}`, backgroundColor: `${form.styles.inputBgColor}`, }} name="w3review" rows="4" cols="50"></textarea>}
                                                             {field.type === 'description' && <p style={{ paddingLeft: `${field.textPadding}px`, paddingRight: `${field.textPadding}px`, fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline }}>{field.text}</p>}
                                                             {field.type === 'toggle' && (
                                                                 <div className='form-build-toggle'>

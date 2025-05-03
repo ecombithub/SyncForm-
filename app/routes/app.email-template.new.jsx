@@ -1858,8 +1858,9 @@ const EmailTemplateCreate = () => {
 
     const handleRemoveProductFromForm = (index) => {
         const productToRemove = productTitles?.[index];
-
         if (!productToRemove) return;
+
+        const isLastProduct = productTitles.length === 1;
 
         setProductTitles((prevTitles) =>
             Array.isArray(prevTitles) ? prevTitles.filter((_, i) => i !== index) : prevTitles
@@ -1873,14 +1874,20 @@ const EmailTemplateCreate = () => {
 
         setFields((prevFields) =>
             Array.isArray(prevFields)
-                ? prevFields.map((field) =>
-                    field.type === 'product'
-                        ? {
-                            ...field,
-                            products: field.products.filter((_, i) => i !== index),
+                ? prevFields
+                    .map((field) => {
+                        if (field.type === 'product') {
+                            const updatedProducts = field.products.filter((_, i) => i !== index);
+                            return {
+                                ...field,
+                                products: updatedProducts,
+                            };
                         }
-                        : field
-                )
+                        return field;
+                    })
+                    .filter((field) => {
+                        return field.type !== 'product' || (field.products && field.products.length > 0);
+                    })
                 : prevFields
         );
 
@@ -1889,6 +1896,10 @@ const EmailTemplateCreate = () => {
                 ? prevProductImages.filter((_, i) => i !== index)
                 : prevProductImages
         );
+
+        if (isLastProduct && typeof removeField === 'function') {
+            removeField();
+        }
     };
 
     const togglePrice = (e, fieldId) => {
@@ -9010,9 +9021,18 @@ const EmailTemplateCreate = () => {
                                                         ) : (
                                                             <p>No image available</p>
                                                         )}
-                                                        <div className='product-itm-all-prices'>
-                                                            <h3>{product.title}</h3>
-                                                            <p className='price-product-all'>Price: ${product.price}</p>
+                                                          <div className='product-itm-all-prices'>
+                                                            <h3>
+                                                                {product.title.split(" ").length > 3
+                                                                    ? product.title.split(" ").slice(0, 3).join(" ") + " ..."
+                                                                    : product.title}
+                                                            </h3>
+                                                            <p className='price-product-all'>
+                                                                Price: $
+                                                                {product.price.toString().split(" ").length > 3
+                                                                    ? product.price.toString().split(" ").slice(0, 3).join(" ") + " ..."
+                                                                    : product.price}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>

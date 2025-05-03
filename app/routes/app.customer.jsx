@@ -83,6 +83,12 @@ function Customer() {
     const [dataExport, setDataExport] = useState(false);
     const [searchTerm1, setSearchTerm1] = useState('');
 
+    const truncateText = (text, maxLength) => {
+        if (!text) return '';
+        return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+      };
+
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth <= 430) {
@@ -165,14 +171,14 @@ function Customer() {
                 await new Promise((resolve) => setTimeout(resolve, 3000));
                 const response = await axios.get(`${apiUrl}/api/forms`);
                 const filteredForms = response.data.filter(form => form.shop === shop);
-    
+
                 if (filteredForms.length > 0) {
                     const formsWithProcessedSubmissions = filteredForms.map(form => {
                         const seenEmails = new Set();
                         const uniqueSubmissions = form.submissions.filter(submission => {
                             let hasEmail = false;
                             let isUniqueEmail = false;
-    
+
                             submission.fields.forEach(field => {
                                 if (field.name === "Email") {
                                     hasEmail = true;
@@ -182,13 +188,13 @@ function Customer() {
                                     }
                                 }
                             });
-    
+
                             return hasEmail ? isUniqueEmail : true;
                         });
-    
+
                         return { ...form, uniqueSubmissions };
                     });
-    
+
                     setCreatedForms(formsWithProcessedSubmissions);
                 } else {
                     setCreatedForms([]);
@@ -199,10 +205,10 @@ function Customer() {
                 setLoading(false);
             }
         };
-    
+
         fetchForms();
     }, [shop, apiUrl]);
-    
+
 
 
     useEffect(() => {
@@ -462,7 +468,6 @@ function Customer() {
 
     return (
         <>
-
             {dataExport && (<div className='form_builder_plan_upgrade_popup costomer-data'>
                 <div className='form_builder_plan_upgrade_popup_wrapp'>
                     <p>Please select at least one form to download</p>
@@ -526,7 +531,7 @@ function Customer() {
 
                                     <span>
                                         <span style={{ color: "#00AC4F" }}>   <img src={arrow} alt="" /> {percentage}%
-                                          <span className="text-content">this month</span>
+                                            <span className="text-content">this month</span>
                                         </span>
                                     </span>
 
@@ -629,7 +634,7 @@ function Customer() {
                                                 <div className='show_forms_all'>
                                                     <span className='name_build'>
                                                         Sort by :
-                                                        <span style={{ fontWeight:600, cursor: "pointer" }} onClick={handleToggle}>
+                                                        <span style={{ fontWeight: 600, cursor: "pointer" }} onClick={handleToggle}>
                                                             Forms name <span className='form-short'><img src={down} alt="" /></span>
                                                         </span>
                                                     </span>
@@ -671,7 +676,7 @@ function Customer() {
                                                     {currentFormsed.length > 0 ? (
                                                         currentFormsed
                                                             .filter(form =>
-                                                                form.title.toLowerCase().includes(searchTerm1.toLowerCase()) 
+                                                                form.title.toLowerCase().includes(searchTerm1.toLowerCase())
                                                             )
                                                             .map(form => (
                                                                 <div key={form.id} className="table-row-data">
@@ -685,8 +690,9 @@ function Customer() {
                                                                         <label htmlFor={`checkbox-${form.id}`}></label>
                                                                     </div>
                                                                     <div className="data_forms">{form.title}</div>
-                                                                    <div className="data_forms"> {isSmallScreen ? `${form.id.substring(0, 10)}...` : form.id}</div>
-
+                                                                    <div className="data_forms">
+                                                                        {isSmallScreen ? (form.id ? truncateText(form.id, 10) : 'No ID') : form.id || 'No ID'}
+                                                                    </div>
                                                                     <div className="data_forms phone-forms">
                                                                         {form.submissionCount || form.submissions.length || 0}
                                                                     </div>
@@ -735,10 +741,10 @@ function Customer() {
                                                 return (
                                                     <div key={index} className="table-row-data">
                                                         <div className="data_forms">
-                                                            {isSmallScreen ? `${formTitle.substring(0, 10)}...` : formTitle}
+                                                            {isSmallScreen ? truncateText(formTitle, 10) : formTitle || ''}
                                                         </div>
                                                         <div className="data_forms">
-                                                            {isSmallScreen ? `${email.substring(0, 10)}...` : email}
+                                                            {isSmallScreen ? truncateText(email, 10) : email || ''}
                                                         </div>
                                                         <div className="data_forms phone-forms">{phone}</div>
                                                         <div className="data_forms costomer-name-wrap">{fullName}</div>

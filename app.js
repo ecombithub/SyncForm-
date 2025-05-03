@@ -419,7 +419,7 @@ const formSchema = new mongoose.Schema({
   }]
 });
 
-const Form = mongoose.model('costumers', formSchema);
+const Form = mongoose.model('customers', formSchema);
 
 const paymentDataSchema = new mongoose.Schema({
   shop: { type: String, required: true },
@@ -1046,7 +1046,7 @@ const supportdata = new mongoose.Schema({
   submittedAt: { type: Date, default: Date.now },
 });
 
-const Support = mongoose.model('supportEmails', supportdata);
+const Support = mongoose.model('support tickets', supportdata);
 
 const transportered = nodemailer.createTransport({
   service: 'gmail',

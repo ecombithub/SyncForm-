@@ -122,7 +122,7 @@ export default function Setting() {
     
         fetchStatus();
     }, [shop, apiUrl]);
-    
+
     useEffect(() => {
         if (status === 'active' && numberValue >= 50) {
             sendData();
@@ -153,7 +153,10 @@ export default function Setting() {
     })
 
     const toggleStatus = () => {
-       
+        if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUpgradePopup(true);
+            return;
+        }
         setStatus(prevStatus => (prevStatus === 'active' ? 'disactive' : 'active'));
     };
 
@@ -185,7 +188,7 @@ export default function Setting() {
         }
       };
 
-    const handleSubmit = async (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await fetch(`${apiUrl}/api/save-shop`, {
@@ -211,7 +214,10 @@ export default function Setting() {
     };
 
     const handleBrandLogo = () => {
-       
+        if (!['pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'].includes(userPlan?.activePlan?.plan)) {
+            setUpgradePopup(true);
+            return;
+        }
 
         const newStatus = activeBrand === 'active' ? 'disactive' : 'active';
         setActiveBrand(newStatus);
@@ -250,7 +256,6 @@ export default function Setting() {
             try {
                 const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
                 setActiveBrand(response.data.brandLogoStatus);
-                console.log("ddddddddd",response.data);
             } catch (error) {
 
             }

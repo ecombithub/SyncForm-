@@ -21,17 +21,30 @@
   document.addEventListener("DOMContentLoaded", function() {
     const blockId = '{{ block.id }}'; 
     const formDiv = document.getElementById('formContent-' + blockId);
-
-    const form = document.createElement('form');
-    form.setAttribute('id', 'formData-' + blockId);
-    form.setAttribute('style', 'background-size: cover;');
-
-    formDiv.appendChild(form);
-
-    form.onsubmit = function(event) {
-      submitFormData(event, blockId, 'formID', 'formTitle', 'formshop', 'shopNameHeading', 'toggleStatus', 'editorValue', 'submissionOption', 'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail', 'onwerShopData', 'nofieldValue', form);
-    };
-});
+    let form = document.getElementById('formData-' + blockId);
+  
+    if (!form) {
+      form = document.createElement('form');
+      form.setAttribute('id', 'formData-' + blockId);
+      form.setAttribute('style', 'background-size: cover;');
+      formDiv.appendChild(form);
+  
+      form.onsubmit = function(event) {
+        submitFormData(
+          event, blockId, 'formID', 'formTitle', 'formshop',
+          'shopNameHeading', 'toggleStatus', 'editorValue', 'submissionOption',
+          'thankYouTimer', 'formUrl', 'emailsubject', 'shopNameEmail',
+          'onwerShopData', 'nofieldValue', form
+        );
+      };
+    }
+  
+    form.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+      }
+    });
+  });
 
   document.addEventListener('DOMContentLoaded', function () {
     var specificElement = document.querySelector('#shopify-block-AUllQZ05GMkxsZXB0M__11622374179798680724');
@@ -1528,14 +1541,14 @@
           return `<input type="text" ${
             field.readonly ? 'readonly' : ''
           } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
-        case 'date':
+          case 'date':
           return `<input type="date" ${
             field.readonly ? 'readonly' : ''
-          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /><div class="description" style="word-break: break-word;min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}  placeholder="${field.placeholder || ''}" min="1900-01-01" max="2100-12-31" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /><div class="description" style="word-break: break-word;min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'datetime':
           return `<input type="datetime-local" ${
             field.readonly ? 'readonly' : ''
-          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}   placeholder="${field.placeholder || ''}" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
+          } ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''}   placeholder="${field.placeholder || ''}" min="1900-01-01" max="2100-12-31" style="width:100%; padding: ${field.inputPadding};border-radius: ${inputRadius}px; border-color: ${inputBorderColor}; background-color:${inputBgColor}; border-width:${inputWidth}px; border-style:${inputStyle} "  " /> <div class="description" style="word-break: break-word; min-height: ${maxDescriptionHeight}px;">${field.description}</div>`;
         case 'time':
           return `<input type="time" ${
             field.readonly ? 'readonly' : ''
