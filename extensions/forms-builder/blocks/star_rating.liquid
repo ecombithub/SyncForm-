@@ -1199,13 +1199,15 @@
                              ${field.description}
                         </div>
                       </div>`;
-        case 'description':
+          case 'description':
           return `<p style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
                   line-height:${field.textlineheight}px;
                   padding-left: ${field.textPadding || '5'}px;
                   padding-right: ${field.textPadding || '5'}px;
-                  text-align: ${field.textAline || 'left'};">
+                  text-align: ${field.textAline || 'left'};
+                  margin: 0;
+                  margin-bottom: 20px;">
                   ${field.text || 'Default description'}
                   </p>`;
         case 'heading':

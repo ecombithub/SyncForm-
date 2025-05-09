@@ -226,10 +226,10 @@ const Formgenerated = () => {
     const [backgroundColor, setBackgroundColor] = useState('');
     const [backgroundImage, setBackgroundImage] = useState(null);
     const [imageFile, setImageFile] = useState(null);
-    const [boxShadow, setBoxShadow] = useState('');
+    const [boxShadow, setBoxShadow] = useState('rgba(0, 0, 0, 0.35) 0px 5px 15px');
     const [formWidth, setFormWidth] = useState('1200px');
     const [padding, setPadding] = useState('20');
-    const [borderRadius, setBorderRadius] = useState('0');
+    const [borderRadius, setBorderRadius] = useState('10');
     const [borderColor, setBorderColor] = useState('#000000');
     const [borderColorcode, setBorderColorcode] = useState('#ffffff');
     const formRef = useRef(null);
@@ -638,21 +638,22 @@ const Formgenerated = () => {
         }
     }, [location.state]);
 
-    const defaultFields = ['heading', 'description', 'name', 'email', 'phone', 'button'];
+
+    const defaultFields = ['heading', 'description', 'name', 'email', 'phone', 'textarea', 'button'];
     const fieldsAdded = useRef(false);
-    
+
     useEffect(() => {
 
         if (!location.state && fields.length === 0 && !fieldsAdded.current) {
             fieldsAdded.current = true;
-    
+
             defaultFields.forEach((type) => {
                 addInputField(type);
                 if (type === 'name') {
                     addInputField(type);
                 }
             });
-    
+
             setTimeout(() => {
                 setFields((prevFields) => {
                     let nameCount = 0;
@@ -663,22 +664,26 @@ const Formgenerated = () => {
                         }
 
                         if (field.type === 'description') {
-                            return { ...field, text: 'If you have a question or need support, fill out the form below. We’ll get back to you as soon as possible.',
-                                textAline:'center'
-                             };
+                            return {
+                                ...field, text: 'If you have a question or need support, fill out the form below. We’ll get back to you as soon as possible.',
+                                textAline: 'center'
+                            };
+                        }
+
+                        if (field.type === 'textarea') {
+                            return { ...field, label: 'Message' };
                         }
 
                         if (field.type === 'name') {
                             nameCount++;
                             if (nameCount === 1) {
-                                return { ...field, label: 'First Name',width: '50%' };
+                                return { ...field, label: 'First Name', width: '50%' };
                             } else if (nameCount === 2) {
-                                return { ...field, label: 'Last Name',width: '50%' };
+                                return { ...field, label: 'Last Name', width: '50%' };
                             } else {
-                                return { ...field, label: '', labelStyle: { display: 'none'},width: '50%' };
+                                return { ...field, label: '', labelStyle: { display: 'none' }, width: '50%' };
                             }
                         }
-
                         return field;
                     });
 
@@ -722,10 +727,10 @@ const Formgenerated = () => {
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
-            buttonaline: type === 'button' ? 'center' : undefined,
+            buttonaline: type === 'button' ? '' : undefined,
+            buttonLable: type === 'button' ? 'Submit' : undefined,
             btncolor: type === 'button' ? '#FFFFFF' : undefined,
             btnradious: type === 'button' ? '4' : undefined,
-            buttonLable: type === 'button' ? 'Submit' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
             textSize: type === 'description' ? '16' : undefined,
             textAline: type === 'description' ? '' : undefined,
@@ -745,7 +750,7 @@ const Formgenerated = () => {
             linkaline: type === 'link' ? '' : undefined,
             linkfontsize: type === 'link' ? '14' : undefined,
             linkTarget: type === 'link' ? '_self' : undefined,
-            textPadding: type === 'description' ? '10' : undefined,
+            textPadding: type === 'description' ? '0' : undefined,
             dividerAline: type === 'divider' ? 'left' : undefined,
             dividerWidth: type === 'divider' ? '100%' : undefined,
             emailRequid: type === 'email' ? true : undefined,
@@ -815,8 +820,20 @@ const Formgenerated = () => {
             newField = createInputField(type);
             setSelectedimage('');
             setFields((prevFields) => [...prevFields, newField]);
-        }
-        else {
+        } else if (type === 'button') {
+            if (fields.length === 0 || fields[fields.length - 1].type !== 'button') {
+                newField = {
+                    ...newField,
+                    buttonaline: 'right',
+                };
+            } else {
+                newField = {
+                    ...newField,
+                    buttonaline: 'left',
+                };
+            }
+            setFields((prevFields) => [...prevFields, newField]);
+        } else {
             newField = createInputField(type);
             setFields((prevFields) => [...prevFields, newField]);
         }
@@ -1251,25 +1268,24 @@ const Formgenerated = () => {
         }
     };
 
-
     const removeField = (id) => {
         setFields((prevFields) => {
             const fieldToRemove = prevFields.find(field => field && field.id === id);
-    
+
             if (fieldToRemove?.type === 'button') {
                 const buttonCount = prevFields.filter(field => field?.type === 'button').length;
-    
+
                 if (buttonCount <= 1) {
                     return prevFields;
                 }
             }
-    
+
             const newFields = prevFields.filter(field => field && field.id !== id);
-    
+
             if (selectedField && selectedField.id === id) {
                 setSelectedField(null);
             }
-    
+
             return newFields;
         });
     };
@@ -1419,13 +1435,13 @@ const Formgenerated = () => {
                     return {
                         ...field,
                         level: field.level,
-                        fontSize: field.fontSize
+                        fontSize: field.fontSize,
                     };
                 }
                 if (field.type === 'button') {
                     return {
                         ...field,
-                        buttonLable:field.buttonLable,
+                        buttonLable: field.buttonLable,
                         padding: field.padding,
                         color: field.color,
                         fontSize: field.fontSize,
@@ -1866,20 +1882,20 @@ const Formgenerated = () => {
             'Redirect to other page',
             'Hide form and show thank you message'
         ];
-    
+
         const allowedPlans = [
             'pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'
         ];
-    
+
         const userPlanName = userPlan?.activePlan?.plan;
-    
+
         if (restrictedOptions.includes(selectedValue) && !allowedPlans.includes(userPlanName)) {
             setUphradePopup(true);
-    
+
             setSubmissionOption('');
             return;
         }
-    
+
         setSubmissionOption(selectedValue);
     };
 
@@ -2127,9 +2143,9 @@ const Formgenerated = () => {
     useEffect(() => {
         const fetchStatusBrand = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/data/brandLogo/${shop}`);
+                const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
 
-                setActiveBrand(response.data.status);
+                setActiveBrand(response.data.brandLogoStatus);
             } catch (error) {
 
             }
@@ -2144,10 +2160,10 @@ const Formgenerated = () => {
         <div>
 
 
-           {publishPopup && ( <div className='form_builder_plan_upgrade_popup  publishing-form'>
+            {publishPopup && (<div className='form_builder_plan_upgrade_popup  publishing-form'>
                 <div className='form_builder_plan_upgrade_popup_wrapp password-popup'>
                     <p>Please Select At Least One Field Before Publishing</p>
-                    <div className="form_builder_upgrade_popup_cancle" onClick={()=>setPublishPopup(false)}>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={() => setPublishPopup(false)}>
                         <img src={cancleimg} alt="" />
                     </div>
                 </div>
@@ -2836,7 +2852,6 @@ const Formgenerated = () => {
                                                         </div>
                                                     )}
 
-
                                                     {field.type === 'text' && (
                                                         <div className={`input-field ${field.customClass}`} style={{
                                                             width: "100%",
@@ -2936,6 +2951,7 @@ const Formgenerated = () => {
                                                             </div>
                                                         </div>
                                                     )}
+
                                                     {field.type === 'description' && (
                                                         <div className={`input-field ${field.customClass || ''}`} style={{
                                                             width: field.width || '100%',
@@ -2956,7 +2972,7 @@ const Formgenerated = () => {
                                                                     setHoveredFieldId(null);
                                                                 }
                                                             }}>
-                                                            <div className='form_builder_heading_hover' style={{ width: '100%' }}>
+                                                            <div className='form_builder_heading_hover' style={{ width: '100%', marginBottom:'20px' }}>
                                                                 <label>
                                                                     <div className="description-field" style={{ paddingLeft: `${field.textPadding}px`, paddingRight: `${field.textPadding}px`, fontSize: `${field.textSize}px`, lineHeight: `${field.textlineheight}px`, color: field.textColor, textAlign: field.textAline, width: field.width, opacity: field.opacity || 1 }}
                                                                     >
@@ -4347,7 +4363,6 @@ const Formgenerated = () => {
                                                                             {Array.from(selectedimage).map((file, index) => (
                                                                                 <li key={index}>{file.name}
                                                                                     <div style={{ cursor: 'pointer' }} onClick={() => handleRemoveimage(index)}>
-
                                                                                         <img src="https://cdn.shopify.com/s/files/1/0780/6255/1355/files/cancle1_1.png?v=1738132508" alt="" />
                                                                                     </div>
 
@@ -4380,11 +4395,10 @@ const Formgenerated = () => {
                                                                     }
                                                                 }}
                                                             >
-                                                                <div className='fom-bilder-wred-btn' style={{ textAlign: field.buttonaline }}>
+                                                                <div className='fom-bilder-wred-btn' style={{ textAlign: field.buttonaline || 'right' }}>
                                                                     <button
                                                                         type="button"
                                                                         style={{
-
                                                                             minWidth: `${Math.max(100, field.btnwidth)}px`,
                                                                             maxWidth: `${Math.min(800, Math.max(800, field.btnwidth))}px`,
                                                                             minHeight: field.buttonHeight,
