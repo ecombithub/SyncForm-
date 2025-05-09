@@ -1200,14 +1200,14 @@
                         </div>
                       </div>`;
         case 'description':
-          return `<span style="font-size: ${field.textSize || '16px'}px; 
+          return `<p style="font-size: ${field.textSize || '16px'}px; 
                   color: ${field.textColor || '#000'}; 
                   line-height:${field.textlineheight}px;
                   padding-left: ${field.textPadding || '5'}px;
                   padding-right: ${field.textPadding || '5'}px;
                   text-align: ${field.textAline || 'left'};">
                   ${field.text || 'Default description'}
-                  </span>`;
+                  </p>`;
         case 'heading':
           let fontSize = '';
           if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(field.level)) {

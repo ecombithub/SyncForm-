@@ -1254,23 +1254,22 @@ const Formgenerated = () => {
 
     const removeField = (id) => {
         setFields((prevFields) => {
+            const fieldToRemove = prevFields.find(field => field && field.id === id);
+    
+            if (fieldToRemove?.type === 'button') {
+                const buttonCount = prevFields.filter(field => field?.type === 'button').length;
+    
+                if (buttonCount <= 1) {
+                    return prevFields;
+                }
+            }
+    
             const newFields = prevFields.filter(field => field && field.id !== id);
-
-            // if (newFields.length === 0) {
-            //     setBackgroundImage('');
-            //     setBackgroundColor('#ffffff');
-            //     setImageFile(null);
-            //     setBoxShadow('');
-            //     setFormWidth('1200px');
-            //     setPadding('20px');
-            //     setBorderColor('#ffffff');
-            //     setBorderRadius('0');
-            // }
-
+    
             if (selectedField && selectedField.id === id) {
                 setSelectedField(null);
             }
-
+    
             return newFields;
         });
     };
