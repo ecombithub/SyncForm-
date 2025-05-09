@@ -326,7 +326,7 @@ export default function Setting() {
                             </div>
                             <span>Enable this option to get notified once a particular number of form submissions are completed, you will automatically receive an email containing a CSV file. This file contains all collected data without manually exporting.</span>
                         </div>
-                        <div className='form_builder_complte_toggle_wraped'>
+                        {/* <div className='form_builder_complte_toggle_wraped'>
                             <div className='form_builder_action_status'>
                                 <p>Brand Logo</p>
                                 <div className="toggle-switched">
@@ -340,7 +340,7 @@ export default function Setting() {
                                 </div>
                             </div>
                             <span>This option toggles the app logo display in your form. When enabled, the logo does not appear on the form.</span>
-                        </div>
+                        </div> */}
 
                         <div className='form_builder_complte_toggle_wraped'>
                             <div className='form_builder_action_status'>

@@ -2140,21 +2140,21 @@ const Formgenerated = () => {
     }
 
 
-    useEffect(() => {
-        const fetchStatusBrand = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
+    // useEffect(() => {
+    //     const fetchStatusBrand = async () => {
+    //         try {
+    //             const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
 
-                setActiveBrand(response.data.brandLogoStatus);
-            } catch (error) {
+    //             setActiveBrand(response.data.brandLogoStatus);
+    //         } catch (error) {
 
-            }
-        };
+    //         }
+    //     };
 
-        if (shop) {
-            fetchStatusBrand();
-        }
-    }, [shop, apiUrl]);
+    //     if (shop) {
+    //         fetchStatusBrand();
+    //     }
+    // }, [shop, apiUrl]);
 
     return (
         <div>
@@ -4395,7 +4395,7 @@ const Formgenerated = () => {
                                                                     }
                                                                 }}
                                                             >
-                                                                <div className='fom-bilder-wred-btn' style={{ textAlign: field.buttonaline || 'right' }}>
+                                                                <div className='fom-bilder-wred-btn' style={{ textAlign: field.buttonaline }}>
                                                                     <button
                                                                         type="button"
                                                                         style={{
@@ -4566,7 +4566,7 @@ const Formgenerated = () => {
                                             </div>
                                         )}
                                     </div>
-                                    {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>}
+                                    {/* {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>} */}
                                 </div>
                             </div>
                             {showFieldPro && (

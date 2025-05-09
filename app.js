@@ -165,6 +165,33 @@ app.post("/api/store", async (req, res) => {
           });
 
           console.log('Uninstall email sent successfully');
+
+             try {
+            await Payment.updateMany(
+              { shop: req.body.myshopify_domain, status: "active" },
+              { $set: { status: "disactive" } }
+            );
+
+            const freePlan = await Payment.findOneAndUpdate(
+              { shop: req.body.myshopify_domain, plan: "free" },
+              {
+                $set: {
+                  name: "lifeTime",
+                  plan: "free",
+                  price: 0,
+                  status: "active",
+                  billingOn: new Date(),
+                  chargeId: "uninstall-free"
+                }
+              },
+              { upsert: true, new: true }
+            );
+
+            console.log("Payment updated for uninstall:", freePlan);
+          } catch (paymentError) {
+            console.error("Error updating payment during uninstall:", paymentError);
+          }
+
           const latestStore = await ShopDetails.findOne({ shop: req.body.myshopify_domain });
 
           if (!latestStore) {

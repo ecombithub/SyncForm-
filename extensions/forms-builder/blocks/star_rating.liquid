@@ -769,7 +769,7 @@
          '${submissionOption}', '${thankYouTimer}','${formUrl}','${emailsubject}','${shopNameEmail}','${onwerShopData}', '${nofieldValue}',this)`
       );
 
-      async function getBrandLogo(formshop) {
+      {% comment %} async function getBrandLogo(formshop) {
         try {
           const response = await fetch(`https://apps.syncform.app/get/save-shop/${formshop}`);
           if (!response.ok) {
@@ -789,7 +789,7 @@
         }
       }
 
-      getBrandLogo(formshop);
+      getBrandLogo(formshop); {% endcomment %}
 
       if (formData.styles) {
         const backgroundOverlay = $(

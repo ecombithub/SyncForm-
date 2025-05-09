@@ -176,20 +176,20 @@ const Formdata = () => {
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1280);
     const [activeBrand, setActiveBrand] = useState('');
 
-    useEffect(() => {
-        const fetchStatusBrand = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
-                setActiveBrand(response.data.brandLogoStatus);
-            } catch (error) {
+    // useEffect(() => {
+    //     const fetchStatusBrand = async () => {
+    //         try {
+    //             const response = await axios.get(`${apiUrl}/get/save-shop/${shop}`);
+    //             setActiveBrand(response.data.brandLogoStatus);
+    //         } catch (error) {
 
-            }
-        };
+    //         }
+    //     };
 
-        if (shop) {
-            fetchStatusBrand();
-        }
-    }, [shop, apiUrl]);
+    //     if (shop) {
+    //         fetchStatusBrand();
+    //     }
+    // }, [shop, apiUrl]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -1264,7 +1264,7 @@ const Formdata = () => {
                                                         <img src={cancle1} alt="" />
                                                     </div>
                                                 </div>
-                                                {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>}
+                                                {/* {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>} */}
 
                                             </div>
 
