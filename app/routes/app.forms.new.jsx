@@ -722,7 +722,7 @@ const Formgenerated = () => {
             buttonBorderColor: type === 'button' ? '#000000' : undefined,
             buttonBorderWidth: type === 'button' ? '1' : undefined,
             buttonBorderStyle: type === 'button' ? 'solid' : undefined,
-            buttonaline: type === 'button' ? '' : undefined,
+            buttonaline: type === 'button' ? 'center' : undefined,
             btncolor: type === 'button' ? '#FFFFFF' : undefined,
             btnradious: type === 'button' ? '4' : undefined,
             buttonLable: type === 'button' ? 'Submit' : undefined,
