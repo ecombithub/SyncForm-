@@ -1203,7 +1203,7 @@ const Formdata = () => {
                                                                 borderRadius: `${field.btnradious}px`,
                                                                 borderStyle: field.buttonBorderStyle,
                                                                 borderColor: field.buttonBorderColor,
-                                                            }}> <label>{field.label}</label> </button></div>}
+                                                            }}> <label>{field.buttonLable}</label> </button></div>}
 
                                                             {field.type === 'divider' && (
                                                                 <div style={{ display: 'flex', justifyContent: field.dividerAline }}><hr required={field.required} disabled={field.disabled} readOnly={field.readonly} style={{ border: '1px solid ' + (field.dividerColor || '#000'), width: field.dividerWidth, margin: '0' }} /></div>

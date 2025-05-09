@@ -638,17 +638,55 @@ const Formgenerated = () => {
         }
     }, [location.state]);
 
-    // const defaultFields = ['heading', 'name', 'text', 'email', 'button'];
-    // const fieldsAdded = useRef(false);
+    const defaultFields = ['heading', 'description', 'name', 'email', 'phone', 'button'];
+    const fieldsAdded = useRef(false);
+    
+    useEffect(() => {
 
-    // useEffect(() => {
-    //     if (fields.length === 0 && !fieldsAdded.current) {
-    //         fieldsAdded.current = true;
-    //         defaultFields.forEach((type) => {
-    //             addInputField(type);
-    //         });
-    //     }
-    // }, [fields]);
+        if (!location.state && fields.length === 0 && !fieldsAdded.current) {
+            fieldsAdded.current = true;
+    
+            defaultFields.forEach((type) => {
+                addInputField(type);
+                if (type === 'name') {
+                    addInputField(type);
+                }
+            });
+    
+            setTimeout(() => {
+                setFields((prevFields) => {
+                    let nameCount = 0;
+
+                    const updatedFields = prevFields.map((field) => {
+                        if (field.type === 'heading') {
+                            return { ...field, headingText: 'Contact Us', text: 'Contact Us', textHeading: 'center' };
+                        }
+
+                        if (field.type === 'description') {
+                            return { ...field, text: 'If you have a question or need support, fill out the form below. We’ll get back to you as soon as possible.',
+                                textAline:'center'
+                             };
+                        }
+
+                        if (field.type === 'name') {
+                            nameCount++;
+                            if (nameCount === 1) {
+                                return { ...field, label: 'First Name',width: '50%' };
+                            } else if (nameCount === 2) {
+                                return { ...field, label: 'Last Name',width: '50%' };
+                            } else {
+                                return { ...field, label: '', labelStyle: { display: 'none'},width: '50%' };
+                            }
+                        }
+
+                        return field;
+                    });
+
+                    return updatedFields;
+                });
+            }, 0);
+        }
+    }, [fields, location.state]);
 
     const createInputField = (type, options = [], isFieldEnabled = true, existingField = null) => {
         const baseField = {
@@ -687,6 +725,7 @@ const Formgenerated = () => {
             buttonaline: type === 'button' ? '' : undefined,
             btncolor: type === 'button' ? '#FFFFFF' : undefined,
             btnradious: type === 'button' ? '4' : undefined,
+            buttonLable: type === 'button' ? 'Submit' : undefined,
             text: type === 'description' ? 'Add description' : undefined,
             textSize: type === 'description' ? '16' : undefined,
             textAline: type === 'description' ? '' : undefined,
@@ -1387,6 +1426,7 @@ const Formgenerated = () => {
                 if (field.type === 'button') {
                     return {
                         ...field,
+                        buttonLable:field.buttonLable,
                         padding: field.padding,
                         color: field.color,
                         fontSize: field.fontSize,
@@ -1821,8 +1861,27 @@ const Formgenerated = () => {
     }
 
     const handleOptionChange = (event) => {
-        setSubmissionOption(event.target.value);
+        const selectedValue = event.target.value;
 
+        const restrictedOptions = [
+            'Redirect to other page',
+            'Hide form and show thank you message'
+        ];
+    
+        const allowedPlans = [
+            'pro', 'pro-plus', 'pro_yearly', 'pro_plus_yearly'
+        ];
+    
+        const userPlanName = userPlan?.activePlan?.plan;
+    
+        if (restrictedOptions.includes(selectedValue) && !allowedPlans.includes(userPlanName)) {
+            setUphradePopup(true);
+    
+            setSubmissionOption('');
+            return;
+        }
+    
+        setSubmissionOption(selectedValue);
     };
 
     const handleTimerChange = (event) => {
@@ -4341,7 +4400,7 @@ const Formgenerated = () => {
                                                                         }}
 
                                                                     >
-                                                                        {field.label}
+                                                                        {field.buttonLable}
                                                                     </button>
                                                                 </div>
 
@@ -4676,8 +4735,8 @@ const Formgenerated = () => {
                                                                                 <label>Button Label</label>
                                                                                 <input
                                                                                     type="text"
-                                                                                    value={selectedField.label}
-                                                                                    onChange={(e) => updateFieldProperty('label', e.target.value)}
+                                                                                    value={selectedField.buttonLable}
+                                                                                    onChange={(e) => updateFieldProperty('buttonLable', e.target.value)}
                                                                                 />
                                                                             </div>
 

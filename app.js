@@ -310,6 +310,7 @@ const formCreateSchema = new mongoose.Schema({
     buttonaline: { type: String, required: false },
     inputBorderRadious: { type: String, default: '4px' },
     buttonBorderColor: { type: String, required: false },
+    buttonLable: { type: String, required: false },
     buttonBorderWidth: { type: String, required: false },
     buttonBorderStyle: { type: String, required: false },
     textSize: { type: String, required: false },
