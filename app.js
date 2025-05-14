@@ -174,7 +174,7 @@ app.post("/api/store", async (req, res) => {
             );
 
             const freePlan = await Payment.findOneAndUpdate(
-              { shop: shop, chargeId: shop },
+              { shop: shop, chargeId: `free-plan-${shop}` },
               {
                 $set: {
                   name: "lifeTime",
