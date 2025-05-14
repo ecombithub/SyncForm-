@@ -166,14 +166,15 @@ app.post("/api/store", async (req, res) => {
 
           console.log('Uninstall email sent successfully');
 
-             try {
+          try {
+            const shop = req.body.myshopify_domain;
             await Payment.updateMany(
-              { shop: req.body.myshopify_domain, status: "active" },
+              { shop: shop, status: "active" },
               { $set: { status: "disactive" } }
             );
 
             const freePlan = await Payment.findOneAndUpdate(
-              { shop: req.body.myshopify_domain, plan: "free" },
+              { shop: shop, chargeId: shop },
               {
                 $set: {
                   name: "lifeTime",
@@ -181,12 +182,11 @@ app.post("/api/store", async (req, res) => {
                   price: 0,
                   status: "active",
                   billingOn: new Date(),
-                  chargeId: "uninstall-free"
+                  chargeId: shop 
                 }
               },
               { upsert: true, new: true }
             );
-
             console.log("Payment updated for uninstall:", freePlan);
           } catch (paymentError) {
             console.error("Error updating payment during uninstall:", paymentError);
@@ -1178,7 +1178,7 @@ app.post('/api/template', async (req, res) => {
   try {
     const { TemplateAll, email, subject, formFields, title, shop, shopowner, createdAt } = req.body;
     console.log('Received template data:', TemplateAll, 'Email:', email, subject, formFields, title, shop, shopowner, createdAt);
-    
+
     await sendEmail(email, TemplateAll, subject, formFields, title, shop, shopowner, createdAt);
 
     res.status(200).json({ message: 'Email sent successfully!' });
@@ -2553,9 +2553,7 @@ app.get('/api/get-shop/:shop', async (req, res) => {
   }
 });
 
-
 app.get('/payment/plan', async (req, res) => {
-
   const shop = req.query.shop;
   if (!shop) {
     return res.status(400).json({ error: 'Shop parameter is required' });
@@ -2617,9 +2615,9 @@ app.post('/payment/confirm', async (req, res) => {
     await Payment.updateMany({ shop, status: 'active' }, { $set: { status: 'disactive' } });
 
     const payment = await Payment.findOneAndUpdate(
-      { chargeId, shop },
-      { name, plan, price, status, billingOn, chargeId, shop },
-      { new: true, upsert: true }
+      { chargeId, shop }, 
+      { name, plan, price, status, billingOn, chargeId, shop }, 
+      { new: true, upsert: true } 
     );
 
     res.json({ success: true, payment });

@@ -65,7 +65,6 @@ export const action = async ({ request }) => {
                     interval: "every_30_days",
                     trial_days: 7,
                     test: true,
-
                 }
             } : null;
 
