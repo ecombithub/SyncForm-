@@ -168,13 +168,14 @@ app.post("/api/store", async (req, res) => {
 
           try {
             const shop = req.body.myshopify_domain;
+             const chargeId = `free-plan-${shop}`;
             await Payment.updateMany(
               { shop: shop, status: "active" },
               { $set: { status: "disactive" } }
             );
 
             const freePlan = await Payment.findOneAndUpdate(
-              { shop: shop, chargeId: `free-plan-${shop}` },
+              { shop: shop, chargeId: chargeId },
               {
                 $set: {
                   name: "lifeTime",
@@ -182,7 +183,7 @@ app.post("/api/store", async (req, res) => {
                   price: 0,
                   status: "active",
                   billingOn: new Date(),
-                  chargeId: shop 
+                  chargeId: chargeId 
                 }
               },
               { upsert: true, new: true }
