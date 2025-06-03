@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "9a390d651825c642518ca581ba64c579"
-application_url = "https://advisory-hamburg-transformation-llp.trycloudflare.com"
+application_url = "https://apps.syncform.app"
 embedded = true
 name = "SyncForm"
 handle = "syncForm"
@@ -16,21 +16,21 @@ api_version = "2024-07"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
-  uri = "https://advisory-hamburg-transformation-llp.trycloudflare.com/webhooks/app/uninstalled"
+  uri = "https://apps.syncform.app/webhooks/app/uninstalled"
 
   [[webhooks.subscriptions]]
   compliance_topics = [ "customers/redact", "customers/data_request", "shop/redact" ]
-  uri = "https://advisory-hamburg-transformation-llp.trycloudflare.com/webhooks/compliance"
+  uri = "https://apps.syncform.app/webhooks/compliance"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_products,read_themes,write_themes"
+scopes = "read_products,read_themes,write_themes,write_app_proxy"
 
 [auth]
 redirect_urls = [
-  "https://advisory-hamburg-transformation-llp.trycloudflare.com/auth/callback",
-  "https://advisory-hamburg-transformation-llp.trycloudflare.com/auth/shopify/callback",
-  "https://advisory-hamburg-transformation-llp.trycloudflare.com/api/auth/callback"
+  "https://apps.syncform.app/auth/callback",
+  "https://apps.syncform.app/auth/shopify/callback",
+  "https://apps.syncform.app/api/auth/callback"
 ]
 
 [pos]

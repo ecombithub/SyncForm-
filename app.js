@@ -2675,7 +2675,7 @@ app.get('/api/forms', async (req, res) => {
   }
 });
 
-app.post('/api/forms', async (req, res) => {
+app.post('/api/formsData', async (req, res) => {
 
   try {
     const formsData = req.body;
