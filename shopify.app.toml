@@ -27,11 +27,9 @@ api_version = "2024-07"
 scopes = "read_products,read_themes,write_themes,write_app_proxy"
 
 [auth]
-redirect_urls = [
-  "https://apps.syncform.app/auth/callback",
-  "https://apps.syncform.app/auth/shopify/callback",
-  "https://apps.syncform.app/api/auth/callback"
-]
+redirect_urls = ["https://apps.syncform.app/auth/callback", 
+"https://apps.syncform.app/auth/shopify/callback",
+ "https://apps.syncform.app/api/auth/callback"]
 
 [pos]
 embedded = true

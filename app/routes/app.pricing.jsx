@@ -600,7 +600,7 @@ export default function Pricing() {
 
                                     <p>Pro +</p>
                                     <div className='before-adding'>
-                                        <h2>14.99<span className='monthly-number'>/mo</span></h2>
+                                        <h2>$14.99<span className='monthly-number'>/mo</span></h2>
                                         <p className='form_build_h2_four'>
                                             {/* <span className='strikethrough'>$49.99</span><span className='monthly-number'>/mo</span> */}
                                         </p>
