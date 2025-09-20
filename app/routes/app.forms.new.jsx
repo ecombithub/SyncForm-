@@ -53,7 +53,6 @@ import star from '../images/star1.png';
 import edit from '../images/edit.png';
 import brandlogos from '../images/brandlogos.png';
 
-
 import 'react-quill/dist/quill.snow.css';
 import sanitizeHtml from 'sanitize-html';
 import { authenticate, apiVersion } from "../shopify.server";
@@ -517,7 +516,6 @@ const Formgenerated = () => {
 
     }, []);
 
-
     useEffect(() => {
         if (location.state) {
             const { formTitle, fields, formId, styles, toggleStatus, url, editorValue, thankYouTimer } = location.state;
@@ -637,8 +635,7 @@ const Formgenerated = () => {
             }
         }
     }, [location.state]);
-
-
+    
     const defaultFields = ['heading', 'description', 'name', 'email', 'phone', 'textarea', 'button'];
     const fieldsAdded = useRef(false);
 
@@ -4565,7 +4562,7 @@ const Formgenerated = () => {
                                             </div>
                                         )}
                                     </div>
-                                    {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>}
+                                    {/* {activeBrand === 'active' && <div className='form_builder-brand-logos-form-list'><img src={brandlogos} alt="" /></div>} */}
                                 </div>
                             </div>
                             {showFieldPro && (
@@ -5822,4 +5819,3 @@ const Formgenerated = () => {
 };
 
 export default Formgenerated;
-
