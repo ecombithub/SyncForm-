@@ -359,3 +359,4 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 - [Getting started with internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
 
 # ignore backend folder
+/app.js
