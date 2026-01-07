@@ -20,12 +20,14 @@ import { useSubmit, useActionData } from "@remix-run/react";
 import React, { useState, useEffect } from 'react';
 import { useLoaderData } from "@remix-run/react";
 
+
 export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const apiUrl = process.env.PUBLIC_REACT_APP_API_URL;
     const { shop, accessToken } = session;
     console.log('Access Token:', accessToken);
     console.log('Shop:', shop);
+
     try {
         const response = await axios.get(`https://${shop}/admin/api/${apiVersion}/recurring_application_charges.json`, {
             headers: {
@@ -40,6 +42,7 @@ export const loader = async ({ request }) => {
         return { charges: [], error: error.response ? error.response.data : error.message };
     }
 };
+
 
 export const action = async ({ request }) => {
     const { session } = await authenticate.admin(request);
@@ -152,7 +155,6 @@ export const action = async ({ request }) => {
     }
 };
 
-
 export default function Pricing() {
     const [selectedPlanadd, setSelectedPlanadd] = useState('monthly');
     const submit = useSubmit();
@@ -168,16 +170,15 @@ export default function Pricing() {
     const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
     const [deletePlanData, setDeletePlanData] = useState({ chargeId: null, planName: null });
     const [isLoading, setIsLoading] = useState(false);
+    const [closing, setClosing] = useState(false);
 
     const toggleViewMore = (section) => {
         setActiveSection((prevSection) => (prevSection === section ? null : section));
     }
 
-
     const handleTogglePlans = (planType) => {
         setSelectedPlanadd(planType);
     };
-
 
     useEffect(() => {
         if (actionData?.success && actionData.confirmationUrl) {
@@ -189,7 +190,6 @@ export default function Pricing() {
 
     const savePaymentData = async (charge) => {
         const lowerCaseName = charge.name.toLowerCase(); 
-    
         const paymentData = {
             shop: shop,
             name: charge.name,
@@ -207,6 +207,7 @@ export default function Pricing() {
         }
     };
 
+
     const [data, setData] = useState(null);
     const fetchActivePlan = async () => {
         setIsLoading(true);
@@ -222,8 +223,10 @@ export default function Pricing() {
     };
 
     const activePlan = data?.activePlan || charges.find(charge => charge.status === 'active');
+    console.log("Active Plan:", activePlan);
 
     useEffect(() => {
+        console.log("Active Plan Changed:", activePlan);
         if (activePlan && activePlan.id !== lastChargeId) {
             savePaymentData(activePlan);
             setLastChargeId(activePlan.id);
@@ -231,39 +234,44 @@ export default function Pricing() {
     }, [activePlan]);
 
     const handleChoosePlan = async (plan) => {
+        console.log("Chosen Plan:", plan);
         if (data?.activePlan?.plan === "pro-plus" && plan === "pro") {
             setPopupPlan(plan);
             setIsPopupVisible(true);
             return;
         }
-
         processPlanSelection(plan);
     };
 
     const processPlanSelection = async (plan) => {
-        if (isSubmitting || (activePlan && activePlan.name.includes(plan))) return;
-
+        console.log("Processing Plan:", plan);
+        if (isSubmitting || (activePlan && activePlan.plan === plan)) return;
         setIsSubmitting(true);
         setTransactionStatus(null);
         setSelectedPlan(plan);
-
+    
         const formData = new FormData();
         formData.append('plan', plan);
-
+    
         if (plan === 'free' && hasActiveCharge) {
-
             alertPopup("You are already on a Free plan. You cannot switch to Free again.");
             setIsSubmitting(false);
             return;
         }
-
+    
         try {
-            submit(formData, { method: 'post' });
+            console.log("Submitting form data for plan:", plan);
+            const response = await submit(formData, { method: 'post' });
+            console.log("Form data submitted, response:", response);
+            fetchActivePlan();  
+        } catch (error) {
+            console.error("Error submitting form:", error);
         } finally {
             setIsSubmitting(false);
         }
     };
-
+    
+    
     const handleConfirmPlanChange = () => {
         setIsPopupVisible(false);
         if (popupPlan) {
@@ -271,10 +279,22 @@ export default function Pricing() {
         }
     };
 
+   const handleIsPopupVisible = ()=>{
+    setClosing(true)
+    setTimeout(() => {
+        setIsPopupVisible(false);
+        setClosing(false);
+    }, 600);
+    }
+
     const handleDelete = (chargeId, planName) => {
         setDeletePlanData({ chargeId, planName });
         setIsDeletePopupVisible(true);
     };
+
+    useEffect(() => {
+        fetchActivePlan(); 
+    }, []);
 
     const proceedWithDeletion = async (chargeId) => {
         if (isSubmitting) return;
@@ -301,7 +321,7 @@ export default function Pricing() {
                 }
             });
 
-            // console.log("Payment confirmation response:", response);
+            console.log("Payment confirmation response:", response);
         } catch (error) {
             console.error("Error during deletion:", error.response ? error.response.data : error.message);
         } finally {
@@ -331,12 +351,14 @@ export default function Pricing() {
         fetchActivePlan();
     }, [shop]);
 
-
     const handleCancelDelete = () => {
-        setIsDeletePopupVisible(false);
-        setDeletePlanData({ chargeId: null, planName: null });
+        setClosing(true)
+        setTimeout(() => {
+            setIsDeletePopupVisible(false);
+            setDeletePlanData({ chargeId: null, planName: null });
+            setClosing(false);
+        }, 600);
     };
-
 
     return (
         <div className='from_builder_pricing'>
@@ -1067,20 +1089,20 @@ export default function Pricing() {
             </div>
             <div className='form-builder-add-text-wraped'>The Form builder app by <a target='_blank' href="https://syncform.app/index.html"><span style={{ fontWeight: '600', color: '#686767' }}>Hubsyntax App</span></a> | <a target='_blank' href="https://syncform.app/privacy-policy.html">Privacy policy</a> | <a target='_blank' href="https://syncform.app/terms-and-condition.html">Terms and Conditions</a></div>
             {isPopupVisible && (<div className='form_builder_plan_upgrade_popup'>
-                <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
+                <div className={`form_builder_plan_upgrade_popup_wrapp pricing-plan ${closing ? "popup-close" : "popup-animate"}`}>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>
                     <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
                     <div className="form-buuilder-pricing-plan-btn">
                         <button className='pricing-plan-btn-wrapp' onClick={handleConfirmPlanChange}>Yes</button>
-                        <button className='pricing-plan-btn-wrapp no' onClick={() => setIsPopupVisible(false)}>No</button>
+                        <button className='pricing-plan-btn-wrapp no' onClick={handleIsPopupVisible}>No</button>
                     </div>
-                    <div className="form_builder_upgrade_popup_cancle" onClick={() => setIsPopupVisible(false)}>
+                    <div className="form_builder_upgrade_popup_cancle" onClick={handleIsPopupVisible}>
                         <img src={cancleimg} alt="" />
                     </div>
                 </div>
             </div>)}
             {isDeletePopupVisible && (<div className='form_builder_plan_upgrade_popup'>
-                <div className='form_builder_plan_upgrade_popup_wrapp pricing-plan'>
+                <div className={`form_builder_plan_upgrade_popup_wrapp pricing-plan ${closing ? "popup-close" : "popup-animate"}`}>
                     <p>Are You Sure You Want to Downgrade Your Plan?</p>
                     <span><p>By switching to lower plan, all your previous data will be deleted and cannot be recovered. Make sure to download important information before any proceeding.</p></span>
                     <div className="form-buuilder-pricing-plan-btn">
